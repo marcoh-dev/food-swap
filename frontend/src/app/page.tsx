@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main>
-      <h2 className="text-h2">Home</h2>
-      <Link href="/about">About</Link>
-    </main>
+    <>
+      <h2 className="text-h2">Welcome to FoodSwap!</h2>
+      <p>Share what you have, find what you need.</p>
+    </>
   );
 }
