@@ -4,7 +4,10 @@ import "./globals.css";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,10 +26,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={cn(geistSans.variable, geistMono.variable, "font-mono", jetbrainsMono.variable)}>
-      <body style={{ padding: "1em" }}>
+    <html
+      lang="en"
+      className={cn(
+        geistSans.variable,
+        geistMono.variable,
+        "font-mono",
+        jetbrainsMono.variable,
+      )}
+    >
+      <body className="p-[1em] text-body">
         <header>
-          <h1>
+          <h1 className="text-h1">
             <Link href="/">Let's Swap!</Link>
           </h1>
         </header>
