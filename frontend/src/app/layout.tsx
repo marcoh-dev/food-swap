@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -36,9 +37,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="p-[1em] text-body">
-        <header>
+        <header className="flex flex-row h-22.5">
+          <div>
+            <Image
+              src="/logo.png"
+              alt="food swap logo"
+              width="50"
+              height="50"
+            />
+          </div>
           <h1 className="text-h1">
-            <Link href="/">Let's Swap!</Link>
+            <Link href="/">FoodSwap</Link>
           </h1>
         </header>
         {children}
