@@ -364,6 +364,7 @@
 		font-family: var(--font-mono);
 	}
 }
+/*
 :root,
 :root[data-mode] {
 	--background: var(--v-canvas);
@@ -398,10 +399,16 @@
 	--muted-foreground-ink: #2e2a24;
 	--muted-foreground-tinted: #4a443c;
 }
+*/
 /*---break---*/
+/*
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
-
+*/
 svg {
 	width: auto;
 	height: auto;
+}
+
+a {
+	color: inherit;
 }
