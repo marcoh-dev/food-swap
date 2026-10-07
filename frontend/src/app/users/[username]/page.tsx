@@ -1,3 +1,4 @@
+import { getUserByUsername } from "@/lib/users/users.service";
 import { notFound } from "next/navigation";
 
 export default async function UserPage({
@@ -5,10 +6,8 @@ export default async function UserPage({
 }: PageProps<"/users/[username]">) {
     const {username} = await params;
 
-    const userData = await getUserByUsername(username);
-    if(userData.statusCode === 404) {
-        notFound()
-    }
+    const user = await getUserByUsername(username);
+    if (!user) notFound();
 
-    return(<h2>Profil von {userData.username}</h2>)
+    return(<h2>Profil von {user.username}</h2>)
 }
