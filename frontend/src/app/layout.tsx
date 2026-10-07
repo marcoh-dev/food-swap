@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			className={cn(jetbrainsMono.variable, geistSans.variable, geistMono.variable)}
 		>
 			<body className="text-body font-mono">
-				<header className="flex flex-row justify-between items-center p-[1em] h-22.5 bg-red-200 dark:bg-red-950">
+				<header className="flex flex-row justify-between items-center p-[1em] h-22.5 bg-red-200 dark:bg-red-800">
 					<div className="flex flex-row gap-5">
 						<div>
 							<Link href="/">
