@@ -1,0 +1,93 @@
+@layer cojeev-states {
+/* Cojeev authored subparts, state precedence, and irreducible shapes; scoped to this registry item. */
+.v-scrim:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  position: fixed;
+  inset: 0;
+  background: var(--v-scrim);
+  z-index: var(--z-sheet);
+}
+.v-dialog__head:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+.v-dialog__actions:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  display: flex;
+  gap: var(--s-2);
+  justify-content: flex-end;
+}
+/* Scrim paint and retained close use the shared opacity-only Motion lane. */
+.v-dialog__head:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  align-items: start;
+}
+.v-dialog__head:where([data-slot="sheet"], [data-slot^="sheet-"]) .v-section {
+  font-size: var(--fs-section);
+  line-height: 1.15;
+  padding-top: var(--s-2);
+}
+.v-dialog__actions:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  margin-top: var(--s-2);
+  gap: var(--s-3);
+}
+.v-sheet:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  scrollbar-gutter: stable;
+}
+.v-sheet:where([data-slot="sheet"], [data-slot^="sheet-"])::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.v-sheet:where(
+    [data-slot="sheet"],
+    [data-slot^="sheet-"]
+  )::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: var(--r-pill);
+}
+.v-sheet:where(
+    [data-slot="sheet"],
+    [data-slot^="sheet-"]
+  )::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--v-ink) 34%, transparent);
+  border-radius: var(--r-pill);
+  border: 4px solid transparent;
+  background-clip: content-box;
+  min-height: 36px;
+}
+.v-sheet:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  scrollbar-gutter: stable;
+}
+.v-sheet:where([data-slot="sheet"], [data-slot^="sheet-"]) {
+  scrollbar-gutter: stable;
+}
+@keyframes v-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="sheet"],
+  [data-slot^="sheet-"],
+  [data-slot="sheet"]::before,
+  [data-slot="sheet"]::after,
+  [data-slot^="sheet-"]::before,
+  [data-slot^="sheet-"]::after {
+    animation-duration: 0s;
+    animation-iteration-count: 1;
+    transition-duration: 0s;
+    scroll-behavior: auto;
+  }
+}
+
+[data-slot="sheet-content"] {
+  max-height: calc(100dvh - 2 * var(--shell-inset));
+}
+
+[data-slot="sheet-content"] { min-width:0; overscroll-behavior:contain; }
+[data-slot="sheet-title"], [data-slot="sheet-description"] { overflow-wrap:anywhere; }
+[data-slot="sheet-footer"] { flex-wrap:wrap; }
+[data-slot="sheet-content"] { --sheet-edge:var(--shell-inset); inset-inline-end:var(--sheet-edge); }
+[data-slot="sheet-content"][data-side="start"] { inset-inline-start:var(--sheet-edge); inset-inline-end:auto; }
+@media (max-width:640px) { [data-slot="sheet-content"] { --sheet-edge:12px; top:12px; bottom:12px; width:calc(100% - 24px); max-height:calc(100dvh - 24px); padding:var(--s-5); } }
+
+}
