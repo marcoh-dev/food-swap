@@ -1,9 +1,10 @@
+import { loginAction } from "@/app/actions";
 import Link from "next/link";
 
 export function UserLogin() {
   return (
     <>
-      <form className="my-4">
+      <form className="my-4" action={loginAction}>
         <div className="flex flex-col gap-3">
 			<div className="grid gap-0.5">
             <label htmlFor="username">Benutzername</label>

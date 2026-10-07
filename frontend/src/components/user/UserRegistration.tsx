@@ -1,9 +1,10 @@
+import { registerAction } from "@/app/actions";
 import Link from "next/link";
 
 export function UserRegistration() {
   return (
     <>
-       <form className="my-4">
+       <form className="my-4" action={registerAction}>
         <div className="flex flex-col gap-3">
 			<div className="grid gap-0.5">
             <label htmlFor="username">Benutzername</label>
@@ -33,7 +34,7 @@ export function UserRegistration() {
         </div>
       </form>
           <div className="font-light text-[10px]">
-        Du hast bereits einen Account? Hier geht's zum{" "}
+        Du hast schon ein Konto? Hier geht's zum{" "}
         <Link href="/login">Login</Link>.
       </div>
     </>
