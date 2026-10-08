@@ -47,10 +47,10 @@ export async function loginAction(formData: FormData) {
     maxAge: 60 * 60,
   });
 
-  redirect(`/users/${encodeURIComponent(username)}`);
+  redirect(`/users/${encodeURIComponent(username.toLowerCase())}`);
 }
 
-export async function nameAction(formData: FormData) {
+export async function setProfileNameAction(formData: FormData) {
   console.log("name", Array.from(formData.entries()));
 
   const name = formData.get("name") as string;

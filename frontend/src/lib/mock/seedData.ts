@@ -1,5 +1,5 @@
 import { MockUser } from "../types/user.types";
-import { getCurrentIsoDate } from "../utils/date";
+import { getCurrentIsoDate } from "../../utils/date";
 
 const globalForMock = globalThis as unknown as { mockUsers?: MockUser[] };
 

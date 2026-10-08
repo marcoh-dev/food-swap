@@ -1,9 +1,9 @@
-import { nameAction } from "@/app/actions";
+import { setProfileNameAction } from "@/app/actions";
 
-export function UserName({ currentName }: { currentName?: string }) {
+export function UserNameUpdate({ currentName }: { currentName?: string }) {
   return (
     <section className="mt-8">
-      <form className="my-4" action={nameAction}>
+      <form className="my-4" action={setProfileNameAction}>
         <div className="flex flex-col gap-3">
           <div className="grid gap-0.5">
             <label htmlFor="name">Profilname</label>
