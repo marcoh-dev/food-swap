@@ -1,9 +1,9 @@
-import Link from "next/link";
+import { createListingAction } from "@/app/action";
 
-export default function listingForm() {
+export default async function NewListingPage() {
   return (
     <>
-      <form className="my-4">
+      <form className="my-4" action={createListingAction}>
         <div className="flex flex-col gap-3">
           <div className="grid gap-0.5">
             <label htmlFor="name">Name</label>
@@ -17,21 +17,21 @@ export default function listingForm() {
             />
           </div>
           <div className="grid gap-0.5">
-            <label htmlFor="beschreibung">Beschreibung</label>
+            <label htmlFor="description">Beschreibung</label>
             <input
-              id="beschreibung"
-              name="beschreibung"
+              id="description"
+              name="description"
               type="text"
-              placeholder="3 Tomaten über von meiner Ernte…"
+              placeholder="3 Tomaten von meiner Ernte…"
               required
               className="border-2 border-gray-300 rounded-lg px-3 py-2"
             />
           </div>
           <div className="grid gap-0.5">
-            <label htmlFor="ort">Ort</label>
+            <label htmlFor="location">Ort</label>
             <input
-              id="ort"
-              name="ort"
+              id="location"
+              name="location"
               type="text"
               placeholder="Hamburg"
               required
@@ -42,11 +42,11 @@ export default function listingForm() {
           <fieldset className="grid gap-1">
             <legend>Art</legend>
             <label className="flex items-center gap-2">
-              <input type="radio" name="art" value="tauschen" required />
+              <input type="radio" name="type" value="tauschen" required />
               Tauschen
             </label>
             <label className="flex items-center gap-2">
-              <input type="radio" name="art" value="verschenken" />
+              <input type="radio" name="type" value="verschenken" />
               Verschenken
             </label>
           </fieldset>
