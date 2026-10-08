@@ -1,0 +1,32 @@
+info:
+  name: Find all Listings
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseURL}}/listings"
+  params:
+    - name: limit
+      value: "4"
+      type: query
+      disabled: true
+    - name: page
+      value: "4"
+      type: query
+      disabled: true
+    - name: type
+      value: giveaway
+      type: query
+      disabled: true
+    - name: type
+      value: swap
+      type: query
+      disabled: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,21 +1,21 @@
 info:
-  name: Update User
+  name: Update Listing
   type: http
-  seq: 2
+  seq: 4
 
 http:
   method: PATCH
-  url: "{{baseURL}}/users/:id"
+  url: "{{baseURL}}/listings/:id"
   params:
     - name: id
-      value: f07a8b59-163d-4d66-8e77-af332db8abba
+      value: d1d8d2da-3e8c-4943-9e84-f62a598b6286
       type: path
   body:
     type: json
-    data: |-
-      {
-        "password": "myCoolPassword"
-      }
+    data: |2-
+       {
+          "title": "2,5kg Tomaten"
+        }
   auth: inherit
 
 settings:

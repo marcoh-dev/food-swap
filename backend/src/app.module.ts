@@ -8,6 +8,8 @@ import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwtAuth.guard';
 import { User } from './users/entities/user.entity';
+import { Listing } from './listings/entities/listing.entity';
+import { ListingsModule } from './listings/listings.module';
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { User } from './users/entities/user.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
-        entities: [User],
+        entities: [User, Listing],
         synchronize: true,
         logging: false,
         enableWAL: true,
@@ -28,6 +30,7 @@ import { User } from './users/entities/user.entity';
     }),
     AuthModule,
     UsersModule,
+    ListingsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
