@@ -27,12 +27,6 @@ export async function loginAction(formData: FormData) {
 
   const authData = await loginUser({ username, password });
 
-  console.log("login attempt:", {
-    username,
-    statusCode: authData.statusCode,
-    hasToken: Boolean(authData.access_token),
-  });
-
   if (authData.statusCode === 401 || !authData.access_token) {
     redirect("/login?error=invalid-credentials");
   }
@@ -47,7 +41,13 @@ export async function loginAction(formData: FormData) {
     maxAge: 60 * 60,
   });
 
-  redirect(`/users/${encodeURIComponent(username.toLowerCase())}`);
+  const user = await getCurrentUser();
+
+  if (user === null) {
+    redirect("/login?error=user-not-found");
+  }
+
+  redirect(`/users/${user.id}`);
 }
 
 export async function setProfileNameAction(formData: FormData) {

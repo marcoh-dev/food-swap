@@ -1,15 +1,13 @@
 import { UserDelete } from "@/components/user/UserDelete";
 import { UserNameUpdate } from "@/components/user/UserNameUpdate";
-import { getUserByUsername } from "@/lib/users.service";
+import { getUserById } from "@/lib/users.service";
 import { formatDate } from "@/utils/date";
 import { notFound } from "next/navigation";
 
-export default async function UserPage({
-  params,
-}: PageProps<"/users/[username]">) {
-  const { username } = await params;
+export default async function UserPage({ params }: PageProps<"/users/[id]">) {
+  const { id } = await params;
 
-  const user = await getUserByUsername(username);
+  const user = await getUserById(id);
   if (!user) notFound();
 
   return (

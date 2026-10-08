@@ -21,7 +21,7 @@ export async function loginUser({
       };
     }
 
-    return { access_token: `mock-token-${username}` };
+    return { access_token: `mock-token-${matchingUser.id}` };
   }
 
   const response = await fetch(
