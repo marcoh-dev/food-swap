@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { UserResponseDto } from '../../users/dtos/userResponse.dto';
+import { ListingType } from '../entities/listing.entity';
 
 export class ListingResponseDto {
   @Expose()
@@ -12,14 +13,17 @@ export class ListingResponseDto {
   description!: string;
 
   @Expose()
+  image!: string | null;
+
+  @Expose()
+  location!: string;
+
+  @Expose()
+  type!: ListingType;
+
+  @Expose()
   @Type(() => UserResponseDto)
-  seller!: UserResponseDto;
-
-  @Expose()
-  startingPrice!: number;
-
-  @Expose()
-  currentPrice!: number | null;
+  owner!: UserResponseDto;
 
   @Expose()
   @Type(() => Date)
