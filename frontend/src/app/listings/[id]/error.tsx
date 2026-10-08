@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 export default function Error({
   error,
   reset,
@@ -10,7 +12,9 @@ export default function Error({
   return (
     <div>
       <p>{error.message}</p>
-      <button onClick={reset}>Nochmal versuchen.</button>
+      <Button variant={"secondary"} onClick={reset}>
+        Nochmal versuchen.
+      </Button>
     </div>
   );
 }
