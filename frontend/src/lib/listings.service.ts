@@ -1,19 +1,5 @@
 import { randomUUID } from "crypto";
-
-type ListingResponse = {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  type: string;
-};
-
-type NewListing = {
-  name: string;
-  description: string;
-  location: string;
-  type: string;
-};
+import { ListingResponse, NewListing } from "./types/listing.types";
 
 const listings: ListingResponse[] = [];
 
@@ -34,4 +20,18 @@ export async function getListingById(
 ): Promise<ListingResponse | undefined> {
   const listing = listings.find((listing) => listing.id === id);
   return listing;
+}
+
+export async function updateListing(
+  id: string,
+  data: NewListing,
+): Promise<ListingResponse | undefined> {
+  const listing = listings.find((l) => l.id === id);
+  if (listing) Object.assign(listing, data);
+  return listing;
+}
+
+export async function deleteListing(id: string): Promise<void> {
+  const index = listings.findIndex((l) => l.id === id);
+  if (index !== -1) listings.splice(index, 1);
 }

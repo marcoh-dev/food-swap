@@ -1,9 +1,11 @@
 import { createListingAction } from "@/app/action";
+import ListingForm from "@/components/ListingForm";
 
 export default async function NewListingPage() {
   return (
     <>
-      <form className="my-4" action={createListingAction}>
+      <ListingForm action={createListingAction} />
+      {/* <form className="my-4" action={createListingAction}>
         <div className="flex flex-col gap-3">
           <div className="grid gap-0.5">
             <label htmlFor="name">Name</label>
@@ -59,7 +61,7 @@ export default async function NewListingPage() {
             Erstellen
           </button>
         </div>
-      </form>
+      </form> */}
     </>
   );
 }
