@@ -1,0 +1,26 @@
+opencollection: 1.0.0
+
+info:
+  name: Food Swap
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxOWI1My0wNWEzLTRkYmUtYWY4MS03Y2Y2MjViNWNhOWQiLCJpYXQiOjE3OTE0NTQzOTUsImV4cCI6MTc5MTQ1Nzk5NX0.KK5rhK9W-28m8F98mv6pY44Hv61gvE9h5M0Nr9xhlJo
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
