@@ -28,3 +28,10 @@ export async function createListing(
 export async function getListings(): Promise<ListingResponse[]> {
   return listings;
 }
+
+export async function getListingById(
+  id: string,
+): Promise<ListingResponse | undefined> {
+  const listing = listings.find((listing) => listing.id === id);
+  return listing;
+}
