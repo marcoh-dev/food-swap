@@ -1,9 +1,12 @@
+import * as SheetParts from "@/components/ui/sheet";
 import { logoutAction } from "@/app/actions";
 
 export function UserLogout() {
   return (
     <form action={logoutAction}>
-      <button type="submit">Logout</button>
+        <SheetParts.SheetClose asChild>
+        <button type="submit">Abmelden</button>
+      </SheetParts.SheetClose>
     </form>
   );
 }

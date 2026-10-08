@@ -1,11 +1,13 @@
-import { mockUsers } from "./seedData";
+import { mockUsers } from "./mock/seedData";
 import { User } from "./types/user.types";
 import { cookies } from "next/headers";
 
 const useMockApi = process.env.USE_MOCK_API === "true";
 const AUTH_COOKIE = "auth_token";
 
-export async function getUserByUsername(username: string): Promise<User | null> {
+export async function getUserByUsername(
+  username: string,
+): Promise<User | null> {
   if (useMockApi) {
     const mockUser = mockUsers.find((user) => user.username === username);
 
@@ -18,11 +20,11 @@ export async function getUserByUsername(username: string): Promise<User | null> 
     };
   }
 
-   const response = await fetch(
+  const response = await fetch(
     `${process.env.API_URL}/users/${encodeURIComponent(username)}`,
   );
 
-   if (response.status === 404) return null;
+  if (response.status === 404) return null;
 
   if (!response.ok) {
     throw new Error(`Failed to fetch user: ${response.status}`);
@@ -32,17 +34,16 @@ export async function getUserByUsername(username: string): Promise<User | null> 
 }
 
 export async function getCurrentUser(): Promise<User | null> {
- const cookieStore = await cookies();
- const token = cookieStore.get(AUTH_COOKIE)?.value;
- console.log("token: ", token)
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_COOKIE)?.value;
 
-if (!token) return null;
+  if (!token) return null;
 
-if (useMockApi) {
-  const username = token.replace("mock-token-", "");
-  return getUserByUsername(username)
-}
-return null
+  if (useMockApi) {
+    const username = token.replace("mock-token-", "");
+    return getUserByUsername(username);
+  }
+  return null;
 }
 
 export async function updateUser(
@@ -82,4 +83,25 @@ export async function updateUser(
 
   const updatedUser: User = await response.json();
   return updatedUser;
+}
+
+export async function deleteUser(username: string): Promise<boolean> {
+  if (useMockApi) {
+    const index = mockUsers.findIndex((user) => user.username === username);
+
+    if (index === -1) return false;
+
+    mockUsers.splice(index, 1);
+    return true;
+  }
+  const response = await fetch(
+    `${process.env.API_URL}/users/${encodeURIComponent(username)}`,
+    { method: "DELETE" },
+  );
+
+  if (response.status === 404) return false;
+  if (!response.ok) {
+    throw new Error(`Failed to delete user: ${response.status}`);
+  }
+  return true;
 }

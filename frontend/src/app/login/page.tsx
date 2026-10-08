@@ -1,5 +1,10 @@
-import { UserLogin } from "@/components/user/UserLogin"
+import { UserLogin } from "@/components/user/UserLogin";
 
 export default function Login() {
-	return (<><h2>Willkommen zurück! Was tauschst du heute?</h2><UserLogin/></>);
+  return (
+    <>
+      <h2>Was tauschst du heute?</h2>
+      <UserLogin />
+    </>
+  );
 }
