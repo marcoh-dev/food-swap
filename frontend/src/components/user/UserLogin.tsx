@@ -29,7 +29,7 @@ export function UserLogin() {
             />
           </div>
         </div>
-        <div className="flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <button type="submit" className="bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2 mt-5 w-full">Login</button>
         </div>
       </form>

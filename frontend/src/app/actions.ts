@@ -2,11 +2,14 @@
 
 import { redirect, unauthorized } from "next/navigation";
 import { loginUser, registerUser } from "@/lib/auth.service";
+import { updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
+
 
 const AUTH_COOKIE = "foodswap-backend_token";
 
 export async function registerAction(formData: FormData) {
+    console.log("register: ", formData)
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
     
@@ -19,6 +22,7 @@ export async function registerAction(formData: FormData) {
 }
 
 export async function loginAction(formData: FormData) {
+    console.log("login: ", formData)
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
 
@@ -38,6 +42,17 @@ export async function loginAction(formData: FormData) {
   });
 
     redirect(`/users/${encodeURIComponent(username)}`);
+}
+
+export async function nameAction(formData: FormData) {
+
+    console.log("name", Array.from(formData.entries()));
+    const username = formData.get("username") as string;
+    const name = formData.get("name") as string;
+
+await updateUser({ username, name });
+ 
+      redirect(`/users/${encodeURIComponent(username)}`);
 }
 
 export async function logoutAction() {
