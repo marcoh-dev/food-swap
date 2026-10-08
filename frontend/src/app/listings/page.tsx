@@ -9,11 +9,8 @@ export default async function ListingsPage() {
   return (
     <ul className="flex flex-col gap-3 my-4">
       {listings.map((listing) => (
-        <Link href={`/listings/${listing.id}`}>
-          <li
-            key={listing.id}
-            className="border-2 border-gray-300 rounded-lg px-3 py-2"
-          >
+        <Link key={listing.id} href={`/listings/${listing.id}`}>
+          <li className="border-2 border-gray-300 rounded-lg px-3 py-2">
             <p className="font-semibold">{listing.name}</p>
             <p>{listing.description}</p>
             <p className="text-sm text-gray-500">
