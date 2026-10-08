@@ -2,11 +2,10 @@
 
 import { redirect, unauthorized } from "next/navigation";
 import { loginUser, registerUser } from "@/lib/auth.service";
-import { updateUser } from "@/lib/users.service";
+import { getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 
-
-const AUTH_COOKIE = "foodswap-backend_token";
+const AUTH_COOKIE = "auth_token";
 
 export async function registerAction(formData: FormData) {
     console.log("register: ", formData)
@@ -36,6 +35,7 @@ export async function loginAction(formData: FormData) {
 
   cookieStore.set(AUTH_COOKIE, authData.access_token, {
     httpOnly: true,
+    //secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60,
@@ -47,12 +47,14 @@ export async function loginAction(formData: FormData) {
 export async function nameAction(formData: FormData) {
 
     console.log("name", Array.from(formData.entries()));
-    const username = formData.get("username") as string;
+    
     const name = formData.get("name") as string;
 
-await updateUser({ username, name });
+    const currentUser = await getCurrentUser();
+if (!currentUser) redirect("/login")
+    await updateUser(currentUser.username, {name});
  
-      redirect(`/users/${encodeURIComponent(username)}`);
+      redirect(`/users/${encodeURIComponent(currentUser.username)}`);
 }
 
 export async function logoutAction() {

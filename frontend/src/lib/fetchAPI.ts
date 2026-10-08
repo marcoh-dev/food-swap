@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-const AUTH_COOKIE = "foodswap-backend_token";
+const AUTH_COOKIE = "auth_token";
 
 export async function fetchAPI(path: string, options: RequestInit = {}) {
 	const cookieStore = await cookies();

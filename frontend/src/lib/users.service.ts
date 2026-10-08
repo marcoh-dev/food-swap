@@ -1,7 +1,9 @@
 import { mockUsers } from "./seedData";
 import { User } from "./types/user.types";
+import { cookies } from "next/headers";
 
 const useMockApi = process.env.USE_MOCK_API === "true";
+const AUTH_COOKIE = "auth_token";
 
 export async function getUserByUsername(username: string): Promise<User | null> {
   if (useMockApi) {
@@ -29,20 +31,36 @@ export async function getUserByUsername(username: string): Promise<User | null> 
   return user;
 }
 
-export async function updateUser({
-  username,
-  name,
-}: {
-  username: string;
-  name: string;
-}): Promise<User | null> {
+export async function getCurrentUser(): Promise<User | null> {
+ const cookieStore = await cookies();
+ const token = cookieStore.get(AUTH_COOKIE)?.value;
+ console.log("token: ", token)
+
+if (!token) return null;
+
+if (useMockApi) {
+  const username = token.replace("mock-token-", "");
+  return getUserByUsername(username)
+}
+return null
+}
+
+export async function updateUser(
+  username: string,
+  data: { name: string },
+): Promise<User | null> {
   if (useMockApi) {
     const existingUser = mockUsers.find((user) => user.username === username);
 
     if (!existingUser) return null;
 
-    existingUser.name = name;
-    return existingUser;
+    existingUser.name = data.name;
+
+    return {
+      username: existingUser.username,
+      name: existingUser.name,
+      createdAt: existingUser.createdAt,
+    };
   }
 
   const response = await fetch(
@@ -52,7 +70,7 @@ export async function updateUser({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(data),
     },
   );
 

@@ -11,5 +11,5 @@ export default async function UserPage({
     const user = await getUserByUsername(username);
     if (!user) notFound();
 
-    return(<><h2 className="text-h2">Profil</h2><p>Benutzername: {user.username}</p><p>Name: {user.name}</p><p>Registriert seit: {formatDate(user.createdAt)}</p><UserName username={user.username} currentName={user.name}/></>)
+    return(<><h2 className="text-h2">Profil</h2><p>Benutzername: {user.username}</p><p>Name: {user.name}</p><p>Registriert seit: {formatDate(user.createdAt)}</p><UserName currentName={user.name}/></>)
 }

@@ -14,7 +14,7 @@ export async function loginUser({ username, password }: UserCredentials): Promis
       return { access_token: "", statusCode: 401, message: "Invalid credentials" };
     }
 
-    return { access_token: "mock-token" };
+    return { access_token: `mock-token-${username}` };
   }
     
     const response = await fetch(

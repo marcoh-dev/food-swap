@@ -1,6 +1,6 @@
 import { nameAction } from "@/app/actions";
 
-export function UserName({username, currentName}: {username: string, currentName?: string}) {
+export function UserName({currentName}: {currentName?: string}) {
   return (
    
     
@@ -23,8 +23,7 @@ export function UserName({username, currentName}: {username: string, currentName
         <div className="flex flex-col gap-3">
           <button type="submit" className="bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2 mt-5 w-full">Speichern</button>
         </div>
-         <input type="hidden" name="username" value={username} />
-      </form>
+               </form>
      
       );
 }
