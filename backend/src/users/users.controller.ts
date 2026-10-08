@@ -35,7 +35,7 @@ export class UsersController {
     @Body() userPayload: UpdateUserDto,
     @Request() req: AuthenticatedRequest,
   ) {
-    return this.usersService.updateUser(id, userPayload, req.user);
+    return this.usersService.update(id, userPayload, req.user);
   }
 
   @Delete(':id')
@@ -44,6 +44,6 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req: AuthenticatedRequest,
   ) {
-    return this.usersService.deleteUser(id, req.user);
+    return this.usersService.remove(id, req.user);
   }
 }

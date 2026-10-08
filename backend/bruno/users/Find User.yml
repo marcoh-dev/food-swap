@@ -1,21 +1,15 @@
 info:
-  name: Update User
+  name: Find User
   type: http
-  seq: 2
+  seq: 1
 
 http:
-  method: PATCH
+  method: GET
   url: "{{baseURL}}/users/:id"
   params:
     - name: id
-      value: f07a8b59-163d-4d66-8e77-af332db8abba
+      value: 75019b53-05a3-4dbe-af81-7cf625b5ca9d
       type: path
-  body:
-    type: json
-    data: |-
-      {
-        "password": "myCoolPassword"
-      }
   auth: inherit
 
 settings:

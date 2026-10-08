@@ -20,16 +20,6 @@ export class UsersService {
     private readonly users: Repository<User>,
   ) {}
 
-  private normalizeName(name: string | null): string | null {
-    if (name === null) {
-      return null;
-    }
-
-    const trimmed = name.trim();
-
-    return trimmed === '' ? null : trimmed;
-  }
-
   async findById(id: string): Promise<User | null> {
     return this.users.findOne({
       where: { id },
@@ -61,17 +51,13 @@ export class UsersService {
     const user = this.users.create({
       username,
       passwordHash,
-      name: name !== undefined ? this.normalizeName(name) : null,
+      name: name ?? null,
     });
 
     return this.users.save(user);
   }
 
-  async updateUser(
-    userId: string,
-    userPayload: UpdateUserDto,
-    currentUser: User,
-  ) {
+  async update(userId: string, userPayload: UpdateUserDto, currentUser: User) {
     const user = await this.users.findOne({
       where: { id: userId },
     });
@@ -86,13 +72,9 @@ export class UsersService {
       );
     }
 
-    const { password, name, ...updates } = userPayload;
+    const { password, ...updates } = userPayload;
 
     Object.assign(user, updates);
-
-    if (name !== undefined) {
-      user.name = this.normalizeName(name);
-    }
 
     if (password) {
       user.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -101,7 +83,7 @@ export class UsersService {
     return this.users.save(user);
   }
 
-  async deleteUser(userId: string, currentUser: User) {
+  async remove(userId: string, currentUser: User) {
     const user = await this.users.findOne({
       where: { id: userId },
     });
