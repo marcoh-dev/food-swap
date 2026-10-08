@@ -1,0 +1,26 @@
+info:
+  name: Update User
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseURL}}/users/:id"
+  params:
+    - name: id
+      value: f07a8b59-163d-4d66-8e77-af332db8abba
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "password": "myCoolPassword"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
