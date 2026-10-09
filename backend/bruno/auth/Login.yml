@@ -1,0 +1,22 @@
+info:
+  name: Login
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/login"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "newuser5",
+        "password": "myCoolPassword1!"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

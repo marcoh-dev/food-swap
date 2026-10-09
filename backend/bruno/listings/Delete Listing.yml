@@ -1,0 +1,20 @@
+info:
+  name: Delete Listing
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseURL}}/listings/:id"
+  params:
+    - name: id
+      value: d1d8d2da-3e8c-4943-9e84-f62a598b6286
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

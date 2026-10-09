@@ -1,0 +1,22 @@
+info:
+  name: Register
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/register"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "newuser6",
+        "password": "myCoolPassword1!"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

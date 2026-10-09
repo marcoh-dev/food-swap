@@ -1,0 +1,26 @@
+info:
+  name: Create Listing
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseURL}}/listings"
+  body:
+    type: json
+    data: |2-
+       {
+          "title": "5kg Tomaten",
+          "description":
+            "frisch aus privatem Anbau",
+         "location": "Hamburg",
+         "type":"swap"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

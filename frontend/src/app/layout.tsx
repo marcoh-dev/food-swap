@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import * as SheetParts from "@/components/ui/sheet";
 import { Icon } from "@/components/ui/icon";
+import { UserLogout } from "@/components/user/UserLogout";
+import { isAuthenticated } from "./actions";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -27,7 +29,8 @@ export const metadata: Metadata = {
   description: "Lebensmittel Tauschbörse",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const isLoggedIn = await isAuthenticated();
   return (
     <html
       lang="en"
@@ -88,20 +91,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </SheetParts.SheetHeader>
                 <ul>
                   <li>
-                    <SheetParts.SheetClose asChild>
-                      <Link href="/listings/new">Neues Angebot</Link>
-                    </SheetParts.SheetClose>
+                    {isLoggedIn ? (
+                      <UserLogout />
+                    ) : (
+                      <SheetParts.SheetClose asChild>
+                        <Link href="/login">Anmelden</Link>
+                      </SheetParts.SheetClose>
+                    )}
                   </li>
-                  <li>
-                    <SheetParts.SheetClose asChild>
-                      <Link href="/login">Anmelden</Link>
-                    </SheetParts.SheetClose>
-                  </li>
-                  <li>
-                    <SheetParts.SheetClose asChild>
-                      <Link href="/registration">Registrieren</Link>
-                    </SheetParts.SheetClose>
-                  </li>
+                  {!isLoggedIn && (
+                    <li>
+                      <SheetParts.SheetClose asChild>
+                        <Link href="/registration">Registrieren</Link>
+                      </SheetParts.SheetClose>
+                    </li>
+                  )}
                 </ul>
               </SheetParts.SheetContent>
             </SheetParts.Sheet>

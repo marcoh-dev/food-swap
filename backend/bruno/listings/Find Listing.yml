@@ -1,0 +1,20 @@
+info:
+  name: Find Listing
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseURL}}/listings/:id"
+  params:
+    - name: id
+      value: d1d8d2da-3e8c-4943-9e84-f62a598b6286
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
