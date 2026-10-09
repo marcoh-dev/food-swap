@@ -1,3 +1,5 @@
+import { PaginationMetaResponse } from "./common.types";
+
 export type ListingResponse = {
   id: string;
   name: string;
@@ -11,4 +13,9 @@ export type NewListing = {
   description: string;
   location: string;
   type: string;
+};
+
+export type PaginatedListingsResponse = {
+  data: ListingResponse[];
+  meta: PaginationMetaResponse;
 };

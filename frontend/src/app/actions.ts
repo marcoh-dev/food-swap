@@ -5,6 +5,13 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
+import { NewListing } from "@/lib/types/listing.types";
+import {
+  createListing,
+  deleteListing,
+  updateListing,
+} from "@/lib/listings.service";
+import { revalidatePath } from "next/cache";
 
 export async function registerAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -79,4 +86,31 @@ export async function isAuthenticated(): Promise<boolean> {
   const token = cookieStore.get(AUTH_COOKIE)?.value;
 
   return token ? true : false;
+}
+
+function readListing(formData: FormData): NewListing {
+  return {
+    name: formData.get("name") as string,
+    description: formData.get("description") as string,
+    location: formData.get("location") as string,
+    type: formData.get("type") as string,
+  };
+}
+
+export async function createListingAction(formData: FormData) {
+  const listing = await createListing(readListing(formData));
+  revalidatePath("/listings");
+  redirect(`/listings/${listing.id}`);
+}
+
+export async function updateListingAction(id: string, formData: FormData) {
+  await updateListing(id, readListing(formData));
+  revalidatePath("/listings");
+  revalidatePath(`/listings/${id}`);
+}
+
+export async function deleteListingAction(id: string) {
+  await deleteListing(id);
+  revalidatePath("/listings");
+  redirect("/listings");
 }

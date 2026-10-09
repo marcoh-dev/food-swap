@@ -1,15 +1,20 @@
 import { getListings } from "@/lib/listings.service";
 import Link from "next/link";
 import Image from "next/image";
+import { SearchParams } from "next/dist/server/request/search-params";
 
-export default async function ListingsPage() {
-  const listings = await getListings();
-  if (listings.length === 0) {
-    return <p>Noch keine Eintraege.</p>;
-  }
+export default async function ListingsPage({
+  searchParams,
+}: {
+  searchParams: Partial<SearchParams>;
+}) {
+  const params = await searchParams;
+  const page = Number(params.page) | 1;
+  const listingsData = await getListings({ page });
+
   return (
     <ul className="grid grid-cols-2 gap-12">
-      {listings.map((listing) => (
+      {listingsData.data.map((listing) => (
         <li
           key={listing.id}
           className="border-2 border-gray-300 rounded-lg px-3 py-2 basis-1/2 bg-gray-200"

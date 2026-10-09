@@ -1,25 +1,52 @@
-import { randomUUID } from "crypto";
-import { ListingResponse, NewListing } from "./types/listing.types";
+import {
+  ListingResponse,
+  NewListing,
+  PaginatedListingsResponse,
+} from "./types/listing.types";
+import { fetchAPI } from "./fetchAPI";
+import { PaginationMetaResponse } from "./types/common.types";
 
-const listings: ListingResponse[] = [];
+const API_URL = process.env.NEXT_PUBLIC_FOODSWAP_API_URL;
+
+export async function getListings({
+  page,
+}: Partial<PaginationMetaResponse>): Promise<PaginatedListingsResponse> {
+  if (!API_URL) {
+    throw new Error("API_URL is not set.");
+  }
+  const response = await fetchAPI(API_URL + `/listings?page=${page}`);
+  const listingsData = await response.json();
+  return listingsData;
+}
 
 export async function createListing(
   data: NewListing,
 ): Promise<ListingResponse> {
-  const listing = { id: randomUUID(), ...data };
-  listings.push(listing);
-  return listing;
-}
+  if (!API_URL) {
+    throw new Error("API_URL is not set.");
+  }
+  const response = await fetchAPI(API_URL + "/listings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const listingData = await response.json();
 
-export async function getListings(): Promise<ListingResponse[]> {
-  return listings;
+  return listingData;
 }
 
 export async function getListingById(
   id: string,
 ): Promise<ListingResponse | undefined> {
-  const listing = listings.find((listing) => listing.id === id);
-  return listing;
+  if (!API_URL) {
+    throw new Error("API_URL is not set.");
+  }
+  const response = await fetchAPI(API_URL + `/listings/${id}`);
+  const listingsData = await response.json();
+
+  return listingsData;
 }
 
 export async function updateListing(
