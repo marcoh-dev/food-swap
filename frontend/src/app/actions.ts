@@ -4,31 +4,28 @@ import { redirect, unauthorized } from "next/navigation";
 import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
-
-const AUTH_COOKIE = "auth_token";
+import { AUTH_COOKIE } from "@/lib/fetchAPI";
 
 export async function registerAction(formData: FormData) {
-  console.log("register: ", formData);
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
 
   const authData = await registerUser({ username, password });
 
-  if (authData.statusCode === 409) {
-    redirect("/registration?error=username-taken");
+  if (authData.statusCode) {
+    throw new Error(authData.message);
   }
   redirect("/login");
 }
 
 export async function loginAction(formData: FormData) {
-  console.log("login: ", formData);
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
 
   const authData = await loginUser({ username, password });
 
   if (authData.statusCode === 401 || !authData.access_token) {
-    redirect("/login?error=invalid-credentials");
+    throw new Error(authData.message);
   }
 
   const cookieStore = await cookies();
@@ -42,31 +39,26 @@ export async function loginAction(formData: FormData) {
   });
 
   const user = await getCurrentUser();
-
-  if (user === null) {
-    redirect("/login?error=user-not-found");
-  }
-
-  redirect(`/users/${user.id}`);
+  redirect(`/users/${user?.id}`);
 }
 
-export async function setProfileNameAction(formData: FormData) {
-  console.log("name", Array.from(formData.entries()));
-
+export async function updateUserAction(formData: FormData) {
   const name = formData.get("name") as string;
 
   const currentUser = await getCurrentUser();
   if (!currentUser) unauthorized();
-  await updateUser(currentUser.username, { name });
 
-  redirect(`/users/${encodeURIComponent(currentUser.username)}`);
+  await updateUser(currentUser.id, { name });
+
+  redirect(`/users/${currentUser.id}`);
 }
 
 export async function deleteUserAction() {
   const currentUser = await getCurrentUser();
   if (!currentUser) unauthorized();
 
-  await deleteUser(currentUser.username);
+  await deleteUser(currentUser.id);
+
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_COOKIE);
 
