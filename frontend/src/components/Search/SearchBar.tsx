@@ -5,8 +5,8 @@ import TermSearch from "./TermSearch";
 
 export default function SearchBar() {
   return (
-    <form role="search" className="p-[1em]" action={searchAction}>
-      <div className="flex flex-col gap-3">
+    <form role="search" className="pb-6" action={searchAction}>
+      <div className="flex flex-col gap-1">
         <TermSearch />
         <LocationSearch />
         <RadiusSearch />

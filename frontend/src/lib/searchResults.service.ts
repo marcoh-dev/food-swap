@@ -1,34 +1,33 @@
 import { fetchAPI } from "./fetchAPI";
-
-type Listing = {
-  title: string;
-  description: string;
-};
+import { ListingResponse } from "./types/listing.types";
 
 type SearchParams = {
   term?: string;
   location?: string;
-  radius?: string;
 };
 
 export async function getSearchResults({
   term,
   location,
-  radius,
-}: SearchParams): Promise<Listing[]> {
+}: {
+  term?: string;
+  location?: string;
+}): Promise<ListingResponse[]> {
   const searchParams = new URLSearchParams();
 
   if (term) searchParams.set("term", term);
   if (location) searchParams.set("location", location);
-  if (radius) searchParams.set("radius", radius);
 
   const response = await fetchAPI(
     process.env.NEXT_PUBLIC_FOODSWAP_API_URL +
       `/listings?${searchParams.toString()}`,
     { cache: "no-store" },
   );
+  console.log("status:", response.status);
 
   if (!response.ok) return [];
 
-  return response.json();
+  const result = await response.json();
+  console.log("result:", JSON.stringify(result).slice(0, 300));
+  return result.data ?? [];
 }

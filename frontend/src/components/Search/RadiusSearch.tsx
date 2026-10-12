@@ -5,7 +5,7 @@ export default function RadiusSearch() {
         type="search"
         name="radius"
         aria-label="Suchradius"
-        placeholder="Radius festlegen"
+        placeholder="Radius"
         className="border-2 border-gray-300 rounded-lg px-3 py-2"
       />
     </div>

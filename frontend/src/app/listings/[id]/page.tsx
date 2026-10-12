@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import ListingActions from "@/components/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
+import SearchBar from "@/components/Search/SearchBar";
 
 export default async function ListingDetailPage({
   params,
@@ -15,6 +16,7 @@ export default async function ListingDetailPage({
 
   return (
     <>
+      <SearchBar />
       <div className="flex flex-col p-4 bg-gray-200 w-fit">
         <Image
           width={450}

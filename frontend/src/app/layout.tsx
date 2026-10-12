@@ -143,7 +143,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </SheetParts.Sheet>
           </div>
         </header>
-        <SearchBar />
         <main className="p-[1em]"> {children}</main>
       </body>
     </html>

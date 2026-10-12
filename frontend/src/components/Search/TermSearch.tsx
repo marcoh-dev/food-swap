@@ -5,7 +5,7 @@ export default function TermSearch() {
         type="search"
         name="term"
         aria-label="Suchbegriff"
-        placeholder="Suchbegriff eingeben"
+        placeholder="🔍"
         className="border-2 border-gray-300 rounded-lg px-3 py-2"
       />
     </div>
