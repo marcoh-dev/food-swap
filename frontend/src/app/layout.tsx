@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import * as SheetParts from "@/components/ui/sheet";
 import { Icon } from "@/components/ui/icon";
-import { UserLogout } from "@/components/user/UserLogout";
+import { UserLogout } from "@/components/User/UserLogout";
 import { isAuthenticated } from "./actions";
+import SearchBar from "@/components/Search/SearchBar";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -111,7 +112,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </SheetParts.Sheet>
           </div>
         </header>
-        <main className="p-[1em]">{children}</main>
+        <SearchBar />
+        <main className="p-[1em]"> {children}</main>
       </body>
     </html>
   );

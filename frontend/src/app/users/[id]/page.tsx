@@ -1,5 +1,5 @@
-import { UserDelete } from "@/components/user/UserDelete";
-import { UserUpdate } from "@/components/user/UserUpdate";
+import { UserDelete } from "@/components/User/UserDelete";
+import { UserUpdate } from "@/components/User/UserUpdate";
 import { getUserById } from "@/lib/users.service";
 import { formatDate } from "@/utils/date";
 import { notFound } from "next/navigation";
