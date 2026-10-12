@@ -3,7 +3,7 @@ export default function RadiusSearch() {
     <div className="grid gap-0.5">
       <input
         type="search"
-        name="term"
+        name="radius"
         aria-label="Suchradius"
         placeholder="Radius festlegen"
         className="border-2 border-gray-300 rounded-lg px-3 py-2"

@@ -1,3 +1,4 @@
+import { searchAction } from "@/app/actions";
 import LocationSearch from "./LocationSearch";
 import RadiusSearch from "./RadiusSearch";
 import TermSearch from "./TermSearch";
