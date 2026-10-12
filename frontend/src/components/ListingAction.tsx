@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import ListingForm from "@/components/ListingForm";
-import { updateListingAction, deleteListingAction } from "@/app/action";
+import { updateListingAction, deleteListingAction } from "@/app/actions";
 import { ListingResponse } from "@/lib/types/listing.types";
 
 export default function ListingActions({

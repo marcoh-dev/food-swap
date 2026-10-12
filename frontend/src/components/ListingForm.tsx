@@ -15,13 +15,13 @@ export default function ListingForm({
     <form className="my-4" action={action}>
       <div className="flex flex-col gap-3">
         <div className="grid gap-0.5">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="title">Name</label>
           <input
-            id="name"
-            name="name"
+            id="title"
+            name="title"
             type="text"
             placeholder="Tomaten"
-            defaultValue={defaultValues?.name}
+            defaultValue={defaultValues?.title}
             required
             className="border-2 border-gray-300 rounded-lg px-3 py-2"
           />
@@ -35,6 +35,17 @@ export default function ListingForm({
             placeholder="3 Tomaten von meiner Ernte…"
             defaultValue={defaultValues?.description}
             required
+            className="border-2 border-gray-300 rounded-lg px-3 py-2"
+          />
+        </div>
+        <div className="grid gap-0.5">
+          <label htmlFor="image">Bild(URL)</label>
+          <input
+            id="image"
+            name="image"
+            type="text"
+            placeholder="https://placeholder.png"
+            defaultValue={defaultValues?.image ?? ""}
             className="border-2 border-gray-300 rounded-lg px-3 py-2"
           />
         </div>
@@ -56,8 +67,8 @@ export default function ListingForm({
             <input
               type="radio"
               name="type"
-              value="tauschen"
-              defaultChecked={defaultValues?.type === "tauschen"}
+              value="swap"
+              defaultChecked={defaultValues?.type === "swap"}
               required
             />
             Tauschen
@@ -66,8 +77,8 @@ export default function ListingForm({
             <input
               type="radio"
               name="type"
-              value="verschenken"
-              defaultChecked={defaultValues?.type === "verschenken"}
+              value="giveaway"
+              defaultChecked={defaultValues?.type === "giveaway"}
             />
             Verschenken
           </label>

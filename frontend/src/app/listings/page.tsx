@@ -14,23 +14,26 @@ export default async function ListingsPage({
 
   return (
     <ul className="grid grid-cols-2 gap-12">
-      {listingsData.data.map((listing) => (
+      {listingsData?.data.map((listing) => (
         <li
           key={listing.id}
           className="border-2 border-gray-300 rounded-lg px-3 py-2 basis-1/2 bg-gray-200"
         >
           <Link href={`/listings/${listing.id}`} className="no-underline">
-            <Image
-              width={450}
-              height={400}
-              src="/placeholder.png"
-              alt="placeholder image"
-            ></Image>
-            <h2 className="text-h2">{listing.name}</h2>
+            <div className="aspect-[3/2] w-full overflow-hidden">
+              <Image
+                src={listing.image ?? "/placeholder.png"}
+                alt={listing.title}
+                width={250}
+                height={200}
+                className="h-full w-full rounded-lg object-cover"
+              />
+            </div>
+            <h2 className="text-h2">{listing.title}</h2>
             <p className="text-body">{listing.description}</p>
             <p className="text-sm text-gray-500">
               {listing.location} ·{" "}
-              {listing.type === "tauschen" ? "Tauschen" : "Verschenken"}
+              {listing.type === "swap" ? "Tauschen" : "Verschenken"}
             </p>
           </Link>
         </li>
