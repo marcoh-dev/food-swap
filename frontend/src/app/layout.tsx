@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/icon";
 import { UserLogout } from "@/components/User/UserLogout";
 import { isAuthenticated } from "./actions";
 import SearchBar from "@/components/Search/SearchBar";
+import { getCurrentUser } from "@/lib/users.service";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -32,6 +33,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const isLoggedIn = await isAuthenticated();
+  const currentUser = await getCurrentUser();
+
   return (
     <html
       lang="en"
@@ -91,15 +94,43 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                   </SheetParts.SheetClose>
                 </SheetParts.SheetHeader>
                 <ul>
-                  <li>
-                    {isLoggedIn ? (
-                      <UserLogout />
-                    ) : (
+                  {isLoggedIn ? (
+                    <>
+                      <li>
+                        <SheetParts.SheetClose asChild>
+                          <Link href="/listings/" className="no-underline">
+                            Alle Angebote
+                          </Link>
+                        </SheetParts.SheetClose>
+                      </li>
+                      <li>
+                        <SheetParts.SheetClose asChild>
+                          <Link href="/listings/new" className="no-underline">
+                            Neues Angebot
+                          </Link>
+                        </SheetParts.SheetClose>
+                      </li>
+                      <li>
+                        <SheetParts.SheetClose asChild>
+                          <Link
+                            href={`/users/${currentUser?.id}`}
+                            className="no-underline"
+                          >
+                            Mein Profil
+                          </Link>
+                        </SheetParts.SheetClose>
+                      </li>
+                      <li>
+                        <UserLogout />
+                      </li>
+                    </>
+                  ) : (
+                    <li>
                       <SheetParts.SheetClose asChild>
                         <Link href="/login">Anmelden</Link>
                       </SheetParts.SheetClose>
-                    )}
-                  </li>
+                    </li>
+                  )}
                   {!isLoggedIn && (
                     <li>
                       <SheetParts.SheetClose asChild>

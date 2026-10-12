@@ -22,7 +22,7 @@ import { ListingsModule } from './listings/listings.module';
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
         entities: [User, Listing],
-        synchronize: true,
+        synchronize: false,
         logging: false,
         enableWAL: true,
         statementCacheSize: 100,

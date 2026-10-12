@@ -5,6 +5,13 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
+import { ListingType, NewListing } from "@/lib/types/listing.types";
+import {
+  createListing,
+  deleteListing,
+  updateListing,
+} from "@/lib/listings.service";
+import { revalidatePath } from "next/cache";
 
 export async function registerAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -95,4 +102,40 @@ export async function searchAction(formData: FormData) {
   if (radius) searchParams.set("radius", radius);
 
   redirect(`/s?${searchParams.toString()}`);
+}
+
+function readListing(formData: FormData): NewListing {
+  return {
+    title: formData.get("title") as string,
+    description: formData.get("description") as string,
+    image: formData.get("image") as string,
+    location: formData.get("location") as string,
+    type: formData.get("type") as ListingType,
+  };
+}
+
+export async function createListingAction(formData: FormData) {
+  const listing = await createListing(readListing(formData));
+  const currentUser = await getCurrentUser();
+  if (!currentUser) unauthorized();
+
+  revalidatePath("/listings");
+  redirect(`/listings/${listing.id}`);
+}
+
+export async function updateListingAction(id: string, formData: FormData) {
+  await updateListing(id, readListing(formData));
+  const currentUser = await getCurrentUser();
+  if (!currentUser) unauthorized();
+
+  revalidatePath("/listings");
+  revalidatePath(`/listings/${id}`);
+}
+
+export async function deleteListingAction(id: string) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) unauthorized();
+  await deleteListing(id);
+  revalidatePath("/listings");
+  redirect("/listings");
 }
