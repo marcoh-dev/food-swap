@@ -27,3 +27,5 @@ export type PaginatedListingsResponse = {
 };
 
 export type ListingType = "swap" | "giveaway";
+
+export type SortOption = "newest" | "oldest";
