@@ -1,13 +1,22 @@
-export default function LocationSearchForm() {
+import { Field, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
+
+export default function LocationSearchForm({
+  defaultValue = "",
+}: {
+  defaultValue?: string;
+}) {
   return (
-    <div className="grid gap-0.5">
-      <input
-        type="search"
+    <Field>
+      <FieldLabel htmlFor="location" className="sr-only">
+        Ort
+      </FieldLabel>
+      <Input
+        id="location"
         name="location"
-        aria-label="Location suchen"
         placeholder="Ort"
-        className="border-2 border-gray-300 rounded-lg px-3 py-2"
+        defaultValue={defaultValue}
       />
-    </div>
+    </Field>
   );
 }

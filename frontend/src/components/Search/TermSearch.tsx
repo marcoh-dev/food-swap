@@ -1,13 +1,23 @@
-export default function TermSearch() {
+import { Field, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
+
+export default function TermSearch({
+  defaultValue = "",
+}: {
+  defaultValue?: string;
+}) {
   return (
-    <div className="grid gap-0.5">
-      <input
-        type="search"
+    <Field>
+      <FieldLabel htmlFor="term" className="sr-only">
+        Suchbegriff
+      </FieldLabel>
+      <Input
+        id="term"
         name="term"
-        aria-label="Suchbegriff"
-        placeholder="🔍"
-        className="border-2 border-gray-300 rounded-lg px-3 py-2"
+        type="search"
+        placeholder="Was suchst du?"
+        defaultValue={defaultValue}
       />
-    </div>
+    </Field>
   );
 }

@@ -1,10 +1,5 @@
 import { fetchAPI } from "./fetchAPI";
-import { ListingResponse } from "./types/listing.types";
-
-type SearchParams = {
-  term?: string;
-  location?: string;
-};
+import { PaginatedListingsResponse } from "./types/listing.types";
 
 export async function getSearchResults({
   term,
@@ -12,7 +7,7 @@ export async function getSearchResults({
 }: {
   term?: string;
   location?: string;
-}): Promise<ListingResponse[]> {
+}): Promise<PaginatedListingsResponse | null> {
   const searchParams = new URLSearchParams();
 
   if (term) searchParams.set("term", term);
@@ -23,11 +18,8 @@ export async function getSearchResults({
       `/listings?${searchParams.toString()}`,
     { cache: "no-store" },
   );
-  console.log("status:", response.status);
 
-  if (!response.ok) return [];
+  if (!response.ok) return null;
 
-  const result = await response.json();
-  console.log("result:", JSON.stringify(result).slice(0, 300));
-  return result.data ?? [];
+  return response.json();
 }

@@ -90,16 +90,11 @@ export async function isAuthenticated(): Promise<boolean> {
 
 export async function searchAction(formData: FormData) {
   const term = formData.get("term") as string;
-  console.log(term);
   const location = formData.get("location") as string;
-  console.log(location);
-  const radius = formData.get("radius") as string;
-  console.log(radius);
 
   const searchParams = new URLSearchParams();
   if (term) searchParams.set("term", term);
   if (location) searchParams.set("location", location);
-  if (radius) searchParams.set("radius", radius);
 
   redirect(`/s?${searchParams.toString()}`);
 }

@@ -7,8 +7,10 @@ import SearchBar from "@/components/Search/SearchBar";
 
 export default async function ListingDetailPage({
   params,
+  searchParams,
 }: PageProps<"/listings/[id]">) {
   const { id } = await params;
+  const { term, location } = await searchParams;
   const listing = await getListingById(id);
   const currentUser = await getCurrentUser();
 
@@ -16,7 +18,10 @@ export default async function ListingDetailPage({
 
   return (
     <>
-      <SearchBar />
+      <SearchBar
+        defaultTerm={typeof term === "string" ? term : undefined}
+        defaultLocation={typeof location === "string" ? location : undefined}
+      />
       <div className="flex flex-col p-4 bg-gray-200 w-fit">
         <Image
           width={450}
