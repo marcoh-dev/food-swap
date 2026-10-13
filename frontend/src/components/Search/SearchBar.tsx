@@ -1,4 +1,4 @@
-import { searchAction } from "@/app/actions";
+import { searchListingAction } from "@/app/actions";
 import LocationSearch from "./LocationSearch";
 import TermSearch from "./TermSearch";
 import { FieldGroup } from "../ui/field";
@@ -12,7 +12,7 @@ export default function SearchBar({
   defaultLocation?: string;
 }) {
   return (
-    <form role="search" className="pb-6" action={searchAction}>
+    <form role="search" className="pb-6" action={searchListingAction}>
       <FieldGroup>
         <TermSearch defaultValue={defaultTerm} />
         <LocationSearch defaultValue={defaultLocation} />

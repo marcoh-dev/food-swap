@@ -88,7 +88,7 @@ export async function isAuthenticated(): Promise<boolean> {
   return token ? true : false;
 }
 
-export async function searchAction(formData: FormData) {
+export async function searchListingAction(formData: FormData) {
   const term = formData.get("term") as string;
   const location = formData.get("location") as string;
 
