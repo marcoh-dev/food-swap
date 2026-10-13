@@ -1,4 +1,4 @@
-import SearchBar from "@/components/searchbar/SearchBar";
+import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { getSearchResults } from "@/lib/searchResults.service";
 import { SortOption } from "@/lib/types/listing.types";
