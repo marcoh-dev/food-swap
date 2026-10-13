@@ -19,7 +19,6 @@ export async function getListings({
       `/listings?page=${page}&sort=${sort}`,
   );
   if (!response.ok) {
-    console.log(response.status, await response.json());
     return null;
   }
   const listingsData = await response.json();
