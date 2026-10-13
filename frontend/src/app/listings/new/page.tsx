@@ -1,5 +1,5 @@
 import { createListingAction, isAuthenticated } from "@/app/actions";
-import ListingForm from "@/components/ListingForm";
+import ListingForm from "@/components/listing/ListingForm";
 import { redirect } from "next/navigation";
 
 export default async function NewListingPage() {
