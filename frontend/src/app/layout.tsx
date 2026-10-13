@@ -9,6 +9,8 @@ import { Icon } from "@/components/ui/icon";
 import { UserLogout } from "@/components/user/UserLogout";
 import { isAuthenticated } from "./actions";
 import { getCurrentUser } from "@/lib/users.service";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -42,107 +44,118 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         geistSans.variable,
         geistMono.variable,
       )}
+      suppressHydrationWarning
     >
       <body className="text-body font-mono">
-        <header className="flex flex-row justify-between items-center p-[1em] h-22.5 bg-red-200 dark:bg-red-800">
-          <div className="flex flex-row gap-5">
-            <div>
-              <Link href="/">
-                <Image
-                  src="/logo.png"
-                  alt="food swap logo"
-                  width="50"
-                  height="50"
-                />
-              </Link>
-            </div>
-            <h1 className="text-h1">
-              <Link href="/" className="no-underline">
-                FoodSwap
-              </Link>
-            </h1>
-          </div>
-          <div>
-            <SheetParts.Sheet>
-              <SheetParts.SheetTrigger asChild>
-                <button type="button" aria-label="Menü öffnen">
-                  <Icon
-                    name="menu"
-                    style={{ color: "var(--v-accent-ink)" }}
-                    feedbackDuration={0.7}
-                    feedbackEase="gentle"
-                    width={50}
-                    height={50}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <header className="flex flex-row justify-between items-center p-[1em] h-22.5 bg-red-200 dark:bg-red-800">
+            <div className="flex flex-row gap-5">
+              <div>
+                <Link href="/">
+                  <Image
+                    src="/logo.png"
+                    alt="food swap logo"
+                    width="50"
+                    height="50"
                   />
-                </button>
-              </SheetParts.SheetTrigger>
-              <SheetParts.SheetContent className="w-full">
-                <SheetParts.SheetHeader>
-                  <SheetParts.SheetClose
-                    className="ml-auto"
-                    aria-label="Menü schließen"
-                  >
+                </Link>
+              </div>
+              <h1 className="text-h1">
+                <Link href="/" className="no-underline">
+                  FoodSwap
+                </Link>
+              </h1>
+            </div>
+            <div>
+              <SheetParts.Sheet>
+                <SheetParts.SheetTrigger asChild>
+                  <button type="button" aria-label="Menü öffnen">
                     <Icon
-                      name="close"
+                      name="menu"
                       style={{ color: "var(--v-accent-ink)" }}
                       feedbackDuration={0.7}
                       feedbackEase="gentle"
                       width={50}
                       height={50}
                     />
-                  </SheetParts.SheetClose>
-                </SheetParts.SheetHeader>
-                <ul>
-                  {isLoggedIn ? (
-                    <>
+                  </button>
+                </SheetParts.SheetTrigger>
+                <SheetParts.SheetContent className="w-full">
+                  <SheetParts.SheetHeader>
+                    <SheetParts.SheetClose
+                      className="ml-auto"
+                      aria-label="Menü schließen"
+                    >
+                      <Icon
+                        name="close"
+                        style={{ color: "var(--v-accent-ink)" }}
+                        feedbackDuration={0.7}
+                        feedbackEase="gentle"
+                        width={50}
+                        height={50}
+                      />
+                    </SheetParts.SheetClose>
+                  </SheetParts.SheetHeader>
+                  <ul>
+                    {isLoggedIn ? (
+                      <>
+                        <li>
+                          <SheetParts.SheetClose asChild>
+                            <Link href="/listings/" className="no-underline">
+                              Alle Angebote
+                            </Link>
+                          </SheetParts.SheetClose>
+                        </li>
+                        <li>
+                          <SheetParts.SheetClose asChild>
+                            <Link href="/listings/new" className="no-underline">
+                              Neues Angebot
+                            </Link>
+                          </SheetParts.SheetClose>
+                        </li>
+                        <li>
+                          <SheetParts.SheetClose asChild>
+                            <Link
+                              href={`/users/${currentUser?.id}`}
+                              className="no-underline"
+                            >
+                              Mein Profil
+                            </Link>
+                          </SheetParts.SheetClose>
+                        </li>
+                        <li>
+                          <UserLogout />
+                        </li>
+                      </>
+                    ) : (
                       <li>
                         <SheetParts.SheetClose asChild>
-                          <Link href="/listings/" className="no-underline">
-                            Alle Angebote
-                          </Link>
+                          <Link href="/login">Anmelden</Link>
                         </SheetParts.SheetClose>
                       </li>
+                    )}
+                    {!isLoggedIn && (
                       <li>
                         <SheetParts.SheetClose asChild>
-                          <Link href="/listings/new" className="no-underline">
-                            Neues Angebot
-                          </Link>
+                          <Link href="/registration">Registrieren</Link>
                         </SheetParts.SheetClose>
                       </li>
-                      <li>
-                        <SheetParts.SheetClose asChild>
-                          <Link
-                            href={`/users/${currentUser?.id}`}
-                            className="no-underline"
-                          >
-                            Mein Profil
-                          </Link>
-                        </SheetParts.SheetClose>
-                      </li>
-                      <li>
-                        <UserLogout />
-                      </li>
-                    </>
-                  ) : (
+                    )}
                     <li>
-                      <SheetParts.SheetClose asChild>
-                        <Link href="/login">Anmelden</Link>
-                      </SheetParts.SheetClose>
+                      <ModeToggle />
                     </li>
-                  )}
-                  {!isLoggedIn && (
-                    <li>
-                      <SheetParts.SheetClose asChild>
-                        <Link href="/registration">Registrieren</Link>
-                      </SheetParts.SheetClose>
-                    </li>
-                  )}
-                </ul>
-              </SheetParts.SheetContent>
-            </SheetParts.Sheet>
-          </div>
-        </header>
-        <main className="p-[1em]">{children}</main>
+                  </ul>
+                </SheetParts.SheetContent>
+              </SheetParts.Sheet>
+            </div>
+          </header>
+          <main className="p-[1em]">{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );
