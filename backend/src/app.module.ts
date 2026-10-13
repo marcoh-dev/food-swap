@@ -10,6 +10,8 @@ import { JwtAuthGuard } from './auth/jwtAuth.guard';
 import { User } from './users/entities/user.entity';
 import { Listing } from './listings/entities/listing.entity';
 import { ListingsModule } from './listings/listings.module';
+import { ChatsModule } from './chats/chats.module';
+import { Chat } from './chats/entities/chat.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { ListingsModule } from './listings/listings.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
-        entities: [User, Listing],
+        entities: [User, Listing, Chat],
         synchronize: false,
         logging: false,
         enableWAL: true,
@@ -31,6 +33,7 @@ import { ListingsModule } from './listings/listings.module';
     AuthModule,
     UsersModule,
     ListingsModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

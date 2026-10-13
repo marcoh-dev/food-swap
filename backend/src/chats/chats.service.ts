@@ -1,0 +1,231 @@
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Chat } from './entities/chat.entity';
+import { EntityManager, Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
+import { plainToInstance } from 'class-transformer';
+import { ChatListItemDto } from './dtos/chatListItem.dto';
+import { MessageResponseDto } from './dtos/messageResponse.dto';
+import { StartChatDto } from './dtos/startChat.dto';
+import { Listing } from '../listings/entities/listing.entity';
+import { Message } from './entities/message.entity';
+import { ChatDetailDto } from './dtos/chatDetail.dto';
+
+@Injectable()
+export class ChatsService {
+  constructor(
+    @InjectRepository(Chat)
+    private readonly chats: Repository<Chat>,
+  ) {}
+
+  async findAll(currentUser: User): Promise<ChatListItemDto[]> {
+    const userId = currentUser.id;
+    const chats = await this.chats
+      .createQueryBuilder('chat')
+      .leftJoin('chat.listing', 'listing')
+      .addSelect(['listing.id', 'listing.title'])
+      .leftJoin('chat.owner', 'owner')
+      .addSelect(['owner.id', 'owner.username'])
+      .leftJoin('chat.user', 'chatUser')
+      .addSelect(['chatUser.id', 'chatUser.username'])
+      .leftJoinAndSelect(
+        'chat.messages',
+        'message',
+        'message.id = (SELECT m.id FROM messages m WHERE m."chatId" = chat.id ORDER BY m."createdAt" DESC LIMIT 1)',
+      )
+      .where(
+        '(chat.ownerId = :userId AND chat.deletedByOwner = false) OR (chat.userId = :userId AND chat.deletedByUser = false)',
+        { userId },
+      )
+      .orderBy('chat.lastMessageAt', 'DESC')
+      .getMany();
+
+    const items = chats.map((chat) => {
+      const other = chat.ownerId === userId ? chat.user : chat.owner;
+      return {
+        id: chat.id,
+        listingTitle: chat.listing?.title ?? null,
+        otherUsername: other?.username ?? null,
+        lastMessage: chat.messages[0]?.content ?? null,
+        lastMessageAt: chat.lastMessageAt,
+      };
+    });
+
+    return plainToInstance(ChatListItemDto, items);
+  }
+
+  async findOne(chatId: string, currentUser: User): Promise<ChatDetailDto> {
+    const { id: userId } = currentUser;
+    const chat = await this.chats
+      .createQueryBuilder('chat')
+      .leftJoin('chat.listing', 'listing')
+      .addSelect(['listing.id', 'listing.title'])
+      .leftJoin('chat.owner', 'owner')
+      .addSelect(['owner.id', 'owner.username'])
+      .leftJoin('chat.user', 'chatUser')
+      .addSelect(['chatUser.id', 'chatUser.username'])
+      .leftJoinAndSelect('chat.messages', 'message')
+      .where('chat.id = :chatId', { chatId })
+      .andWhere(
+        '((chat.ownerId = :userId AND chat.deletedByOwner = false) OR (chat.userId = :userId AND chat.deletedByUser = false))',
+        { userId },
+      )
+      .orderBy('message.createdAt', 'ASC')
+      .getOne();
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
+
+    const other = chat.ownerId === userId ? chat.user : chat.owner;
+    const conversation = {
+      id: chat.id,
+      listingId: chat.listingId,
+      listingTitle: chat.listing?.title ?? null,
+      otherUsername: other?.username ?? null,
+      canReply: chat.ownerId !== null && chat.userId !== null,
+      messages: chat.messages,
+    };
+
+    return plainToInstance(ChatDetailDto, conversation);
+  }
+
+  async sendToListing(
+    chatPayload: StartChatDto,
+    currentUser: User,
+  ): Promise<MessageResponseDto> {
+    const { listingId, content } = chatPayload;
+    const { id: senderId } = currentUser;
+
+    return this.chats.manager.transaction<MessageResponseDto>(
+      async (manager): Promise<MessageResponseDto> => {
+        const listing = await manager.findOne(Listing, {
+          where: { id: listingId },
+          relations: { owner: true },
+        });
+
+        if (!listing) {
+          throw new NotFoundException('Listing not found');
+        }
+
+        if (listing.owner.id === senderId) {
+          throw new ForbiddenException(
+            'You cannot start a chat on your own listing',
+          );
+        }
+
+        const result = await manager
+          .createQueryBuilder()
+          .insert()
+          .into(Chat)
+          .values({
+            listingId,
+            ownerId: listing.owner.id,
+            userId: senderId,
+            deletedByOwner: false,
+            deletedByUser: false,
+            lastMessageAt: () => 'now()',
+          })
+          .orUpdate(
+            ['deletedByOwner', 'deletedByUser', 'lastMessageAt'],
+            ['listingId', 'ownerId', 'userId'],
+          )
+          .returning('id')
+          .execute();
+
+        const raw = result.raw as { id: string }[];
+        const chatId = raw[0].id;
+
+        return this.saveMessage(manager, chatId, senderId, content);
+      },
+    );
+  }
+
+  async reply(
+    chatId: string,
+    content: string,
+    currentUser: User,
+  ): Promise<MessageResponseDto> {
+    const { id: senderId } = currentUser;
+
+    return this.chats.manager.transaction<MessageResponseDto>(
+      async (manager): Promise<MessageResponseDto> => {
+        const chat = await manager.findOne(Chat, {
+          where: { id: chatId },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!chat || (chat.ownerId !== senderId && chat.userId !== senderId)) {
+          throw new NotFoundException('Chat not found');
+        }
+
+        if (chat.ownerId === null || chat.userId === null) {
+          throw new ForbiddenException(
+            'The other user has deleted their account',
+          );
+        }
+
+        await manager.update(Chat, chat.id, {
+          deletedByOwner: false,
+          deletedByUser: false,
+          lastMessageAt: () => 'now()',
+        });
+
+        return this.saveMessage(manager, chat.id, senderId, content);
+      },
+    );
+  }
+
+  async remove(chatId: string, currentUser: User): Promise<void> {
+    const { id: userId } = currentUser;
+
+    await this.chats.manager.transaction(async (manager): Promise<void> => {
+      const chat = await manager.findOne(Chat, {
+        where: { id: chatId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!chat || (chat.ownerId !== userId && chat.userId !== userId)) {
+        throw new NotFoundException('Chat not found');
+      }
+
+      if (chat.ownerId === userId) {
+        chat.deletedByOwner = true;
+      }
+
+      if (chat.userId === userId) {
+        chat.deletedByUser = true;
+      }
+
+      if (chat.deletedByOwner && chat.deletedByUser) {
+        await manager.delete(Chat, chat.id);
+      } else {
+        await manager.update(Chat, chat.id, {
+          deletedByOwner: chat.deletedByOwner,
+          deletedByUser: chat.deletedByUser,
+        });
+      }
+    });
+  }
+
+  private async saveMessage(
+    manager: EntityManager,
+    chatId: string,
+    senderId: string,
+    content: string,
+  ): Promise<MessageResponseDto> {
+    const message = await manager.save(
+      manager.create(Message, {
+        chatId,
+        senderId,
+        content,
+      }),
+    );
+
+    return plainToInstance(MessageResponseDto, message);
+  }
+}
