@@ -1,15 +1,18 @@
 import SearchBar from "@/components/Search/SearchBar";
+import { SortingMenu } from "@/components/SortingMenu";
 import { getSearchResults } from "@/lib/searchResults.service";
+import { SortOption } from "@/lib/types/listing.types";
 import Image from "next/image";
 import Link from "next/link";
 
 type PageProps = {
-  searchParams: Promise<{ term?: string; location?: string }>;
+  searchParams: Promise<{ term?: string; location?: string; sort?: string }>;
 };
 
 export default async function SearchResults({ searchParams }: PageProps) {
-  const { term, location } = await searchParams;
-  const searchResults = await getSearchResults({ term, location });
+  const { term, location, sort: sortParam } = await searchParams;
+  const sort: SortOption = sortParam === "oldest" ? "oldest" : "newest";
+  const searchResults = await getSearchResults({ term, location, sort });
 
   const listings = searchResults?.data ?? [];
   const total = searchResults?.meta.total ?? 0;
@@ -21,6 +24,11 @@ export default async function SearchResults({ searchParams }: PageProps) {
         <p>Es wurden leider keine Ergebnisse für deine Suche gefunden.</p>
       ) : (
         <>
+          {total > 1 && (
+            <div className="flex w-full justify-end mb-2">
+              <SortingMenu sort={sort} />
+            </div>
+          )}
           <p className="mb-3">
             {total} {total === 1 ? "Ergebnis" : "Ergebnisse"}
             {term && ` für "${term}"`}
