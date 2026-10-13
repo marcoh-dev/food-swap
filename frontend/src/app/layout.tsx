@@ -8,7 +8,6 @@ import * as SheetParts from "@/components/ui/sheet";
 import { Icon } from "@/components/ui/icon";
 import { UserLogout } from "@/components/User/UserLogout";
 import { isAuthenticated } from "./actions";
-import SearchBar from "@/components/Search/SearchBar";
 import { getCurrentUser } from "@/lib/users.service";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -143,7 +142,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </SheetParts.Sheet>
           </div>
         </header>
-        <main className="p-[1em]"> {children}</main>
+        <main className="p-[1em]">{children}</main>
       </body>
     </html>
   );

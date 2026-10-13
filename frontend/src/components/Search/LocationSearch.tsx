@@ -14,6 +14,7 @@ export default function LocationSearchForm({
       <Input
         id="location"
         name="location"
+        type="search"
         placeholder="Ort"
         defaultValue={defaultValue}
       />
