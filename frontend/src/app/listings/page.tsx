@@ -2,7 +2,7 @@ import { getListings } from "@/lib/listings.service";
 import Link from "next/link";
 import Image from "next/image";
 import { SearchParams } from "next/dist/server/request/search-params";
-import SearchBar from "@/components/Search/SearchBar";
+import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { SortOption } from "@/lib/types/listing.types";
 

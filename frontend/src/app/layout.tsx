@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import * as SheetParts from "@/components/ui/sheet";
 import { Icon } from "@/components/ui/icon";
-import { UserLogout } from "@/components/User/UserLogout";
+import { UserLogout } from "@/components/user/UserLogout";
 import { isAuthenticated } from "./actions";
 import { getCurrentUser } from "@/lib/users.service";
 
