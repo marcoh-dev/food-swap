@@ -2,7 +2,8 @@ import { getListings } from "@/lib/listings.service";
 import Link from "next/link";
 import Image from "next/image";
 import { SearchParams } from "next/dist/server/request/search-params";
-import { DropdownMenuRadioGroupDemo } from "@/components/SortingMenu";
+import { SortingMenu } from "@/components/SortingMenu";
+import { SortOption } from "@/lib/types/listing.types";
 
 export default async function ListingsPage({
   searchParams,
@@ -10,13 +11,14 @@ export default async function ListingsPage({
   searchParams: Partial<SearchParams>;
 }) {
   const params = await searchParams;
-  const page = Number(params.page) | 1;
-  const listingsData = await getListings({ page });
+  const page = Number(params.page) || 1;
+  const sort: SortOption = params.sort === "oldest" ? "oldest" : "newest";
+  const listingsData = await getListings({ page, sort });
 
   return (
     <>
       <div className="flex w-full justify-end mb-2">
-        <DropdownMenuRadioGroupDemo />
+        <SortingMenu sort={sort} />
       </div>
       <ul className="grid grid-cols-2 gap-12">
         {listingsData?.data.map((listing) => (
