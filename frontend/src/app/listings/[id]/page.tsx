@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import ListingActions from "@/components/listing/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
-import SearchBar from "@/components/search/SearchBar";
+import SearchBar from "@/components/searchbar/SearchBar";
 
 export default async function ListingDetailPage({
   params,
