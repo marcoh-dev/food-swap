@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import ListingForm from "@/components/ListingForm";
+import ListingForm from "@/components/listing/ListingForm";
 import { updateListingAction, deleteListingAction } from "@/app/actions";
 import { ListingResponse } from "@/lib/types/listing.types";
 

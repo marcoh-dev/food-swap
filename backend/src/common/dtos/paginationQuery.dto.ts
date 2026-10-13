@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { ListingType } from '../../listings/entities/listing.entity';
 
 export class PaginationQueryDto {
@@ -19,4 +19,8 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsEnum(ListingType)
   type?: ListingType;
+
+  @IsOptional()
+  @IsIn(['newest', 'oldest'])
+  sort?: 'newest' | 'oldest';
 }

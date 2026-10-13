@@ -27,7 +27,7 @@ export class ListingsService {
   async findAll(
     query: ListingsQueryDto,
   ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
-    const { page, limit, type, term, location } = query;
+    const { page, limit, type, sort, term, location } = query;
 
     const baseFilter: FindOptionsWhere<Listing> = {};
 
@@ -43,7 +43,7 @@ export class ListingsService {
 
     const [data, total] = await this.listings.findAndCount({
       where: whereFilter,
-      order: { createdAt: 'DESC' },
+      order: { createdAt: sort === 'oldest' ? 'ASC' : 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
       relations: {

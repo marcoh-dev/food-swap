@@ -1,7 +1,7 @@
 import { getListingById } from "@/lib/listings.service";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import ListingActions from "@/components/ListingAction";
+import ListingActions from "@/components/listing/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
 import SearchBar from "@/components/Search/SearchBar";
 
