@@ -88,6 +88,17 @@ export async function isAuthenticated(): Promise<boolean> {
   return token ? true : false;
 }
 
+export async function searchListingAction(formData: FormData) {
+  const term = formData.get("term") as string;
+  const location = formData.get("location") as string;
+
+  const searchParams = new URLSearchParams();
+  if (term) searchParams.set("term", term);
+  if (location) searchParams.set("location", location);
+
+  redirect(`/s?${searchParams.toString()}`);
+}
+
 function readListing(formData: FormData): NewListing {
   return {
     title: formData.get("title") as string,

@@ -16,11 +16,11 @@ import {
 import { ListingsService } from './listings.service';
 import { CreateListingDto } from './dtos/createListing.dto';
 import { ListingResponseDto } from './dtos/listingResponse.dto';
-import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 import { PaginatedListingsResponseDto } from './dtos/paginatedListingsResponse.dto';
 import { Public } from '../common/decorators/public.decorator';
 import type { AuthenticatedRequest } from '../auth/login.type';
 import { UpdateListingDto } from './dtos/updateListing.dto';
+import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 
 @Controller('listings')
 export class ListingsController {
@@ -29,8 +29,8 @@ export class ListingsController {
   @Public()
   @Get()
   @SerializeOptions({ type: PaginatedListingsResponseDto })
-  findAll(@Query() pagination: PaginationQueryDto) {
-    return this.listingsService.findAll(pagination);
+  findAll(@Query() query: ListingsQueryDto) {
+    return this.listingsService.findAll(query);
   }
 
   @Public()

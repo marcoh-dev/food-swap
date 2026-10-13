@@ -3,11 +3,14 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import ListingActions from "@/components/listing/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
+import SearchBar from "@/components/Search/SearchBar";
 
 export default async function ListingDetailPage({
   params,
+  searchParams,
 }: PageProps<"/listings/[id]">) {
   const { id } = await params;
+  const { term, location } = await searchParams;
   const listing = await getListingById(id);
   const currentUser = await getCurrentUser();
 
@@ -15,6 +18,10 @@ export default async function ListingDetailPage({
 
   return (
     <>
+      <SearchBar
+        defaultTerm={typeof term === "string" ? term : undefined}
+        defaultLocation={typeof location === "string" ? location : undefined}
+      />
       <div className="flex flex-col p-4 bg-gray-200 w-fit">
         <Image
           width={450}

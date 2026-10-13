@@ -2,6 +2,7 @@ import { getListings } from "@/lib/listings.service";
 import Link from "next/link";
 import Image from "next/image";
 import { SearchParams } from "next/dist/server/request/search-params";
+import SearchBar from "@/components/Search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { SortOption } from "@/lib/types/listing.types";
 
@@ -17,6 +18,7 @@ export default async function ListingsPage({
 
   return (
     <>
+      <SearchBar />
       <div className="flex w-full justify-end mb-2">
         <SortingMenu sort={sort} />
       </div>
@@ -36,6 +38,7 @@ export default async function ListingsPage({
                   className="h-full w-full rounded-lg object-cover"
                 />
               </div>
+
               <h2 className="text-h2 wrap-break-word">{listing.title}</h2>
               <p className="text-sm">{listing.description}</p>
               <p className="text-xs text-gray-500">

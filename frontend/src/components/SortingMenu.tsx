@@ -10,11 +10,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SortOption } from "@/lib/types/listing.types";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowDownUp } from "lucide-react";
 
 export function SortingMenu({ sort }: { sort: SortOption }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  function handleSortChange(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("sort", value);
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`);
+  }
 
   return (
     <DropdownMenu>
@@ -28,10 +37,7 @@ export function SortingMenu({ sort }: { sort: SortOption }) {
       </div>
       <DropdownMenuContent className="w-32">
         <DropdownMenuGroup>
-          <DropdownMenuRadioGroup
-            value={sort}
-            onValueChange={(value) => router.push(`/listings?sort=${value}`)}
-          >
+          <DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
             <DropdownMenuRadioItem value="newest">
               Neueste
             </DropdownMenuRadioItem>

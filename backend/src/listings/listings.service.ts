@@ -8,10 +8,11 @@ import { CreateListingDto } from './dtos/createListing.dto';
 import { Repository } from 'typeorm';
 import { Listing } from './entities/listing.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 import { PaginationMetaResponseDto } from '../common/dtos/paginationMetaResponse.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
+import { FindOptionsWhere, ILike } from 'typeorm';
+import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
@@ -24,15 +25,21 @@ export class ListingsService {
   ) {}
 
   async findAll(
-    pagination: PaginationQueryDto,
+    query: ListingsQueryDto,
   ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
-    const { page, limit, type, sort } = pagination;
+    const { page, limit, type, sort, term, location } = query;
 
-    let whereFilter = {};
+    const baseFilter: FindOptionsWhere<Listing> = {};
 
-    if (type) {
-      whereFilter = { ...whereFilter, type };
-    }
+    if (type) baseFilter.type = type;
+    if (location) baseFilter.location = ILike(`%${location}%`);
+
+    const whereFilter: FindOptionsWhere<Listing>[] = term
+      ? [
+          { ...baseFilter, title: ILike(`%${term}%`) },
+          { ...baseFilter, description: ILike(`%${term}%`) },
+        ]
+      : [baseFilter];
 
     const [data, total] = await this.listings.findAndCount({
       where: whereFilter,

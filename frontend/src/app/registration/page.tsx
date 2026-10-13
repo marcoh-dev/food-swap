@@ -1,4 +1,4 @@
-import { UserRegistration } from "@/components/user/UserRegistration";
+import { UserRegistration } from "@/components/User/UserRegistration";
 
 export default async function Registration({
   searchParams,
