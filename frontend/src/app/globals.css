@@ -1,14 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/*@import "../styles/cojeev-fonts.css";*/
-@import "../styles/cojeev/tokens.css";
-@import "../styles/cojeev/theme.css";
-@import "../styles/cojeev/base.css";
-@import "../styles/cojeev/morph.css";
-@import "../styles/cojeev/flow-press.css";
-@import "../styles/cojeev/sheet.css";
-@import "../styles/cojeev/icon.css";
 
 @custom-variant dark (&:is(.dark *));
 /* @custom-variant dark (@media (prefers-color-scheme: dark)); */
@@ -260,10 +252,6 @@
   --color-ring-offset: var(--ring-offset);
   --spacing-card-padding: var(--card-padding);
   --spacing-topbar-height: var(--topbar-height);
-  /*
-	--font-cojeev-text: var(--font-text);
-	--font-cojeev-display: var(--font-display);
-	*/
 
   /* custom */
 
@@ -278,6 +266,8 @@
   --text-body: 18px;
   --text-body--line-height: 32px;
   --text-body--letter-spacing: 0.01em;
+
+  --text-body-small: 14px;
 }
 
 :root {

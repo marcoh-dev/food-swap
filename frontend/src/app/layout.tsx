@@ -2,15 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
-import * as SheetParts from "@/components/ui/sheet";
-import { Icon } from "@/components/ui/icon";
-import { UserLogout } from "@/components/user/UserLogout";
-import { isAuthenticated } from "./actions";
-import { getCurrentUser } from "@/lib/users.service";
+import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import BurgerMenu from "@/components/BurgerMenu";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -33,9 +28,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const isLoggedIn = await isAuthenticated();
-  const currentUser = await getCurrentUser();
-
   return (
     <html
       lang="en"
@@ -71,88 +63,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                 </Link>
               </h1>
             </div>
-            <div>
-              <SheetParts.Sheet>
-                <SheetParts.SheetTrigger asChild>
-                  <button type="button" aria-label="Menü öffnen">
-                    <Icon
-                      name="menu"
-                      style={{ color: "var(--v-accent-ink)" }}
-                      feedbackDuration={0.7}
-                      feedbackEase="gentle"
-                      width={50}
-                      height={50}
-                    />
-                  </button>
-                </SheetParts.SheetTrigger>
-                <SheetParts.SheetContent className="w-full">
-                  <SheetParts.SheetHeader>
-                    <SheetParts.SheetClose
-                      className="ml-auto"
-                      aria-label="Menü schließen"
-                    >
-                      <Icon
-                        name="close"
-                        style={{ color: "var(--v-accent-ink)" }}
-                        feedbackDuration={0.7}
-                        feedbackEase="gentle"
-                        width={50}
-                        height={50}
-                      />
-                    </SheetParts.SheetClose>
-                  </SheetParts.SheetHeader>
-                  <ul>
-                    {isLoggedIn ? (
-                      <>
-                        <li>
-                          <SheetParts.SheetClose asChild>
-                            <Link href="/listings/" className="no-underline">
-                              Alle Angebote
-                            </Link>
-                          </SheetParts.SheetClose>
-                        </li>
-                        <li>
-                          <SheetParts.SheetClose asChild>
-                            <Link href="/listings/new" className="no-underline">
-                              Neues Angebot
-                            </Link>
-                          </SheetParts.SheetClose>
-                        </li>
-                        <li>
-                          <SheetParts.SheetClose asChild>
-                            <Link
-                              href={`/users/${currentUser?.id}`}
-                              className="no-underline"
-                            >
-                              Mein Profil
-                            </Link>
-                          </SheetParts.SheetClose>
-                        </li>
-                        <li>
-                          <UserLogout />
-                        </li>
-                      </>
-                    ) : (
-                      <li>
-                        <SheetParts.SheetClose asChild>
-                          <Link href="/login">Anmelden</Link>
-                        </SheetParts.SheetClose>
-                      </li>
-                    )}
-                    {!isLoggedIn && (
-                      <li>
-                        <SheetParts.SheetClose asChild>
-                          <Link href="/registration">Registrieren</Link>
-                        </SheetParts.SheetClose>
-                      </li>
-                    )}
-                    <li>
-                      <ModeToggle />
-                    </li>
-                  </ul>
-                </SheetParts.SheetContent>
-              </SheetParts.Sheet>
-            </div>
+            <BurgerMenu />
           </header>
           <main className="p-[1em]">{children}</main>
         </ThemeProvider>

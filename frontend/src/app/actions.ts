@@ -19,6 +19,8 @@ export async function registerAction(formData: FormData) {
 
   const authData = await registerUser({ username, password });
 
+  console.log("auth", authData);
+
   if (authData.statusCode) {
     throw new Error(authData.message);
   }
