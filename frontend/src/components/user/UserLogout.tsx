@@ -4,7 +4,7 @@ import { logoutAction } from "@/app/actions";
 export function UserLogout() {
   return (
     <form action={logoutAction}>
-        <SheetParts.SheetClose asChild>
+      <SheetParts.SheetClose asChild>
         <button type="submit">Abmelden</button>
       </SheetParts.SheetClose>
     </form>
