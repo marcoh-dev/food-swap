@@ -3,7 +3,6 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-/* @custom-variant dark (@media (prefers-color-scheme: dark)); */
 
 @theme inline {
   --font-mono: var(--font-jetbrains-mono);
