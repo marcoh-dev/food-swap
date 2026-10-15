@@ -1,5 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  ArrayUnique,
+  IsArray,
   IsDate,
   IsEnum,
   IsNotEmpty,
@@ -42,6 +44,12 @@ export class CreateListingDto {
   @IsOptional()
   @IsUUID()
   categoryId?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('all', { each: true })
+  tagIds?: string[];
 
   @IsOptional()
   @Type(() => Date)

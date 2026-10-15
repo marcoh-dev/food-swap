@@ -15,6 +15,7 @@ import { UpdateListingDto } from './dtos/updateListing.dto';
 import { FindOptionsWhere, ILike } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { CategoriesService } from '../categories/category.service';
+import { TagsService } from '../tags/tags.service';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
@@ -25,6 +26,7 @@ export class ListingsService {
     @InjectRepository(Listing)
     private readonly listings: Repository<Listing>,
     private readonly categoriesService: CategoriesService,
+    private readonly tagsService: TagsService,
   ) {}
 
   async findAll(
@@ -52,6 +54,7 @@ export class ListingsService {
       relations: {
         owner: true,
         category: true,
+        tags: true,
       },
     });
 
@@ -72,6 +75,7 @@ export class ListingsService {
       relations: {
         owner: true,
         category: true,
+        tags: true,
       },
     });
     if (!listing) {
@@ -100,12 +104,16 @@ export class ListingsService {
     if (endDate.getTime() < createdAt.getTime() + ONE_DAY_IN_MS) {
       throw new ConflictException('Listing has to last at least one day.');
     }
+    const tags = listingPayload.tagIds
+      ? await this.tagsService.findByIdsOrFail(listingPayload.tagIds)
+      : undefined;
 
     const newListing = this.listings.create({
       ...listingPayload,
       createdAt,
       owner: currentUser,
       endDate,
+      tags: tags ?? [],
     });
 
     return this.listings.save(newListing);
@@ -130,12 +138,6 @@ export class ListingsService {
         `You are not allowed to modify this listing.`,
       );
     }
-    if (
-      listingPayload.categoryId &&
-      !(await this.categoriesService.exists(listingPayload.categoryId))
-    ) {
-      throw new BadRequestException('Category does not exist.');
-    }
 
     const { endDate } = listingPayload;
 
@@ -151,9 +153,24 @@ export class ListingsService {
       }
     }
 
-    Object.assign(listing, listingPayload);
+    if (
+      listingPayload.categoryId &&
+      !(await this.categoriesService.exists(listingPayload.categoryId))
+    ) {
+      throw new BadRequestException('Category does not exist.');
+    }
 
-    return this.listings.save(listing);
+    const tags = listingPayload.tagIds
+      ? await this.tagsService.findByIdsOrFail(listingPayload.tagIds)
+      : undefined;
+
+    const { tagIds: _tagIds, ...listingData } = listingPayload;
+
+    Object.assign(listing, listingData);
+    if (tags) listing.tags = tags;
+
+    await this.listings.save(listing);
+    return this.findOne(listingId);
   }
 
   async remove(listingId: string, currentUser: User) {
