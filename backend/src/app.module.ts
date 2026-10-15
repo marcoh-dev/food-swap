@@ -10,6 +10,8 @@ import { JwtAuthGuard } from './auth/jwtAuth.guard';
 import { User } from './users/entities/user.entity';
 import { Listing } from './listings/entities/listing.entity';
 import { ListingsModule } from './listings/listings.module';
+import { Category } from './categories/entities/category.entity';
+import { Tag } from './tags/entities/tag.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { ListingsModule } from './listings/listings.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
-        entities: [User, Listing],
+        entities: [User, Listing, Category, Tag],
         synchronize: false,
         logging: false,
         enableWAL: true,
