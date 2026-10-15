@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeftIcon, TrashIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -62,20 +62,20 @@ export function ChatConversation({
 	const chat = conversation?.id === chatId ? conversation : null;
 
 	return (
-		<section aria-label="Conversation" className="flex h-full min-h-0 flex-col">
+		<section aria-label="Unterhaltung" className="flex h-full min-h-0 flex-col">
 			<header className="flex items-center gap-2 border-b px-2 py-2 md:px-4">
 				<Button
 					variant="ghost"
 					size="icon-sm"
 					className="md:hidden"
 					onClick={onBack}
-					aria-label="Back to chats"
+					aria-label="Zurück zur Chat-Übersicht"
 				>
 					<ArrowLeftIcon />
 				</Button>
 				<div className="min-w-0 flex-1">
 					<h2 className="truncate text-sm font-semibold">
-						{chat ? (chat.otherUsername ?? "Deleted user") : " "}
+						{chat ? (chat.otherName ?? "Gelöschtes Konto") : " "}
 					</h2>
 					{chat && (
 						<p className="truncate text-xs text-muted-foreground">
@@ -84,7 +84,7 @@ export function ChatConversation({
 									{chat.listingTitle}
 								</Link>
 							) : (
-								"Deleted listing"
+								"Gelöschtes Angebot"
 							)}
 						</p>
 					)}
@@ -100,10 +100,9 @@ export function ChatConversation({
 							<ChatForm onSend={sendReply} />
 						) : (
 							<Alert>
-								<WarningCircleIcon />
+								<CircleAlertIcon />
 								<AlertDescription>
-									The other user has deleted their account. You can&apos;t reply
-									anymore.
+									Die andere Person hat ihr Konto gelöscht. Du kannst nicht mehr antworten.
 								</AlertDescription>
 							</Alert>
 						)}
@@ -112,8 +111,8 @@ export function ChatConversation({
 			) : error ? (
 				<div className="p-4">
 					<Alert variant="destructive">
-						<WarningCircleIcon />
-						<AlertTitle>This chat can&apos;t be shown</AlertTitle>
+						<CircleAlertIcon />
+						<AlertTitle>Dieser Chat kann nicht angezeigt werden</AlertTitle>
 						<AlertDescription>{error}</AlertDescription>
 					</Alert>
 				</div>
@@ -130,7 +129,7 @@ export function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; curren
 	return (
 		<MessageScrollerProvider autoScroll>
 			<MessageScroller className="flex-1">
-				<MessageScrollerViewport aria-label="Messages">
+				<MessageScrollerViewport aria-label="Nachrichten">
 					<MessageScrollerContent className="gap-3 p-4">
 						{chat.messages.map((message, index) => {
 							const own = message.senderId === currentUserId;
@@ -204,16 +203,15 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 			}}
 		>
 			<AlertDialogTrigger asChild>
-				<Button variant="ghost" size="icon-sm" aria-label="Delete chat">
-					<TrashIcon />
+				<Button variant="ghost" size="icon-sm" aria-label="Chat löschen">
+					<Trash2Icon />
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent size="sm">
 				<AlertDialogHeader>
-					<AlertDialogTitle>Delete this chat?</AlertDialogTitle>
+					<AlertDialogTitle>Diesen Chat löschen?</AlertDialogTitle>
 					<AlertDialogDescription>
-						The chat disappears only for you. If the other person writes again, it comes
-						back.
+						Der Chat verschwindet nur für dich. Schreibt die andere Person erneut, erscheint er wieder.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				{error && (
@@ -222,7 +220,7 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 					</p>
 				)}
 				<AlertDialogFooter>
-					<AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+					<AlertDialogCancel disabled={deleting}>Abbrechen</AlertDialogCancel>
 					<AlertDialogAction
 						variant="destructive"
 						disabled={deleting}
@@ -232,7 +230,7 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 						}}
 					>
 						{deleting && <Spinner />}
-						Delete
+						Löschen
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

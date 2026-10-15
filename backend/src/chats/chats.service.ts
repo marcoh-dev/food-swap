@@ -15,6 +15,7 @@ import { Listing } from '../listings/entities/listing.entity';
 import { Message } from './entities/message.entity';
 import { ChatDetailDto } from './dtos/chatDetail.dto';
 import { ChatsGateway } from './chats.gateway';
+import { ListingChatStatusDto } from './dtos/listingChatStatus.dto';
 
 type SavedMessage = {
   message: MessageResponseDto;
@@ -36,9 +37,9 @@ export class ChatsService {
       .leftJoin('chat.listing', 'listing')
       .addSelect(['listing.id', 'listing.title'])
       .leftJoin('chat.owner', 'owner')
-      .addSelect(['owner.id', 'owner.username'])
+      .addSelect(['owner.id', 'owner.username', 'owner.name'])
       .leftJoin('chat.user', 'chatUser')
-      .addSelect(['chatUser.id', 'chatUser.username'])
+      .addSelect(['chatUser.id', 'chatUser.username', 'chatUser.name'])
       .leftJoinAndSelect(
         'chat.messages',
         'message',
@@ -56,7 +57,7 @@ export class ChatsService {
       return {
         id: chat.id,
         listingTitle: chat.listing?.title ?? null,
-        otherUsername: other?.username ?? null,
+        otherName: other ? (other.name ?? other.username) : null,
         lastMessage: chat.messages[0]?.content ?? null,
         lastMessageAt: chat.lastMessageAt,
       };
@@ -72,9 +73,9 @@ export class ChatsService {
       .leftJoin('chat.listing', 'listing')
       .addSelect(['listing.id', 'listing.title'])
       .leftJoin('chat.owner', 'owner')
-      .addSelect(['owner.id', 'owner.username'])
+      .addSelect(['owner.id', 'owner.username', 'owner.name'])
       .leftJoin('chat.user', 'chatUser')
-      .addSelect(['chatUser.id', 'chatUser.username'])
+      .addSelect(['chatUser.id', 'chatUser.username', 'chatUser.name'])
       .leftJoinAndSelect('chat.messages', 'message')
       .where('chat.id = :chatId', { chatId })
       .andWhere(
@@ -85,7 +86,7 @@ export class ChatsService {
       .getOne();
 
     if (!chat) {
-      throw new NotFoundException('Chat not found');
+      throw new NotFoundException('Chat nicht gefunden');
     }
 
     const other = chat.ownerId === userId ? chat.user : chat.owner;
@@ -93,12 +94,27 @@ export class ChatsService {
       id: chat.id,
       listingId: chat.listingId,
       listingTitle: chat.listing?.title ?? null,
-      otherUsername: other?.username ?? null,
+      otherName: other ? (other.name ?? other.username) : null,
       canReply: chat.ownerId !== null && chat.userId !== null,
       messages: chat.messages,
     };
 
     return plainToInstance(ChatDetailDto, conversation);
+  }
+
+  async findForListing(
+    listingId: string,
+    currentUser: User,
+  ): Promise<ListingChatStatusDto> {
+    const chat = await this.chats.findOne({
+      where: { listingId, userId: currentUser.id },
+      select: { id: true, deletedByUser: true },
+    });
+
+    return plainToInstance(ListingChatStatusDto, {
+      chatId: chat?.id ?? null,
+      hidden: chat?.deletedByUser ?? false,
+    });
   }
 
   async sendToListing(
@@ -117,12 +133,12 @@ export class ChatsService {
           });
 
           if (!listing) {
-            throw new NotFoundException('Listing not found');
+            throw new NotFoundException('Angebot nicht gefunden');
           }
 
           if (listing.owner.id === senderId) {
             throw new ForbiddenException(
-              'You cannot start a chat on your own listing',
+              'Du kannst zu deinem eigenen Angebot keinen Chat starten',
             );
           }
 
@@ -179,12 +195,12 @@ export class ChatsService {
             !chat ||
             (chat.ownerId !== senderId && chat.userId !== senderId)
           ) {
-            throw new NotFoundException('Chat not found');
+            throw new NotFoundException('Chat nicht gefunden');
           }
 
           if (chat.ownerId === null || chat.userId === null) {
             throw new ForbiddenException(
-              'The other user has deleted their account',
+              'Die andere Person hat ihr Konto gelöscht',
             );
           }
 
@@ -221,7 +237,7 @@ export class ChatsService {
       });
 
       if (!chat || (chat.ownerId !== userId && chat.userId !== userId)) {
-        throw new NotFoundException('Chat not found');
+        throw new NotFoundException('Chat nicht gefunden');
       }
 
       if (chat.ownerId === userId) {

@@ -12,7 +12,7 @@ export class ChatDetailDto {
   listingTitle!: string | null;
 
   @Expose()
-  otherUsername!: string | null;
+  otherName!: string | null;
 
   @Expose()
   canReply!: boolean;

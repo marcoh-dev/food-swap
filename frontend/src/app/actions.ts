@@ -133,7 +133,7 @@ export async function deleteListingAction(id: string) {
 function chatErrorMessage(error: unknown, fallback: string): string {
 	if (error instanceof ApiError) {
 		if (error.status === 401) {
-			return "Your session has expired. Please log in again.";
+			return "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.";
 		}
 
 		if ([400, 403, 404].includes(error.status)) {
@@ -148,7 +148,7 @@ export async function getChatsAction(): Promise<ActionResult<ChatListItem[]>> {
 		return { data: await getChats() };
 	} catch (error) {
 		return {
-			error: chatErrorMessage(error, "Your chats could not be loaded. Please try again."),
+			error: chatErrorMessage(error, "Deine Chats konnten nicht geladen werden. Versuche es nochmal."),
 		};
 	}
 }
@@ -158,7 +158,7 @@ export async function getChatAction(chatId: string): Promise<ActionResult<ChatDe
 		return { data: await getChat(chatId) };
 	} catch (error) {
 		return {
-			error: chatErrorMessage(error, "This chat could not be loaded. Please try again."),
+			error: chatErrorMessage(error, "Dieser Chat konnte nicht geladen werden. Versuche es nochmal."),
 		};
 	}
 }
@@ -171,7 +171,7 @@ export async function startChatAction(
 		return { data: await startChat(listingId, content) };
 	} catch (error) {
 		return {
-			error: chatErrorMessage(error, "Message could not be sent. Please try again."),
+			error: chatErrorMessage(error, "Die Nachricht konnte nicht gesendet werden. Versuche es nochmal."),
 		};
 	}
 }
@@ -184,7 +184,7 @@ export async function replyToChatAction(
 		return { data: await replyToChat(chatId, content) };
 	} catch (error) {
 		return {
-			error: chatErrorMessage(error, "Message could not be sent. Please try again."),
+			error: chatErrorMessage(error, "Die Nachricht konnte nicht gesendet werden. Versuche es nochmal."),
 		};
 	}
 }
@@ -195,7 +195,7 @@ export async function deleteChatAction(chatId: string): Promise<ActionResult<nul
 		return { data: null };
 	} catch (error) {
 		return {
-			error: chatErrorMessage(error, "The chat could not be deleted. Please try again."),
+			error: chatErrorMessage(error, "Der Chat konnte nicht gelöscht werden. Versuche es nochmal."),
 		};
 	}
 }

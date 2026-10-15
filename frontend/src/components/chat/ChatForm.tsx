@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type KeyboardEvent, type SubmitEvent } from "react";
-import { PaperPlaneRightIcon } from "@phosphor-icons/react";
+import { SendHorizontalIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -15,7 +15,7 @@ type ChatFormProps = {
 
 const MAX_LENGTH = 2000;
 
-export function ChatForm({ onSend, placeholder = "Write a message…" }: ChatFormProps) {
+export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: ChatFormProps) {
 	const [content, setContent] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [sending, setSending] = useState(false);
@@ -24,7 +24,7 @@ export function ChatForm({ onSend, placeholder = "Write a message…" }: ChatFor
 		const trimmed = content.trim();
 
 		if (!trimmed) {
-			setError("Please enter a message");
+			setError("Bitte gib eine Nachricht ein");
 			return;
 		}
 
@@ -63,15 +63,15 @@ export function ChatForm({ onSend, placeholder = "Write a message…" }: ChatFor
 					}}
 					onKeyDown={handleKeyDown}
 					placeholder={placeholder}
-					aria-label="Message"
+					aria-label="Nachricht"
 					aria-invalid={error ? true : undefined}
 					aria-describedby={error ? "chat-form-error" : undefined}
 					maxLength={MAX_LENGTH}
 					rows={1}
 					className="max-h-40 min-h-9 resize-none"
 				/>
-				<Button type="submit" size="icon" disabled={sending} aria-label="Send">
-					{sending ? <Spinner /> : <PaperPlaneRightIcon />}
+				<Button type="submit" size="icon" disabled={sending} aria-label="Senden">
+					{sending ? <Spinner /> : <SendHorizontalIcon />}
 				</Button>
 			</div>
 			{error && (

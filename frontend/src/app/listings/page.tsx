@@ -1,6 +1,7 @@
 import { getListings } from "@/lib/listings.service";
 import Link from "next/link";
 import Image from "next/image";
+import ListingMeta from "@/components/ListingMeta";
 import { SearchParams } from "next/dist/server/request/search-params";
 
 export default async function ListingsPage({
@@ -31,10 +32,7 @@ export default async function ListingsPage({
             </div>
             <h2 className="text-h2">{listing.title}</h2>
             <p className="text-body">{listing.description}</p>
-            <p className="text-sm text-gray-500">
-              {listing.location} ·{" "}
-              {listing.type === "swap" ? "Tauschen" : "Verschenken"}
-            </p>
+            <ListingMeta listing={listing} />
           </Link>
         </li>
       ))}

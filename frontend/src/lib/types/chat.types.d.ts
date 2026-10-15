@@ -1,7 +1,7 @@
 export type ChatListItem = {
 	id: string;
 	listingTitle: string | null;
-	otherUsername: string | null;
+	otherName: string | null;
 	lastMessage: string | null;
 	lastMessageAt: string;
 };
@@ -18,9 +18,14 @@ export type ChatDetail = {
 	id: string;
 	listingId: string | null;
 	listingTitle: string | null;
-	otherUsername: string | null;
+	otherName: string | null;
 	canReply: boolean;
 	messages: ChatMessage[];
+};
+
+export type ListingChatStatus = {
+	chatId: string | null;
+	hidden: boolean;
 };
 
 export type ChatState = {

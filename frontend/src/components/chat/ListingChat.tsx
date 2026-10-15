@@ -1,73 +1,83 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
-import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Message, MessageContent } from "@/components/ui/message";
-import type { ChatMessage } from "@/lib/types/chat.types";
+import type { ListingChatStatus } from "@/lib/types/chat.types";
 import { useChatStore } from "@/store/chat.store";
 
 import { ChatForm } from "./ChatForm";
-import { ChatMessages } from "./ChatConversation";
 
 type ListingChatProps = {
 	listingId: string;
-	ownerUsername: string;
-	currentUserId: string;
+	ownerName: string;
+	status: ListingChatStatus;
 };
 
-export function ListingChat({ listingId, ownerUsername, currentUserId }: ListingChatProps) {
+export function ListingChat({ listingId, ownerName, status }: ListingChatProps) {
 	const startChat = useChatStore((state) => state.startChat);
-	const conversation = useChatStore((state) => state.conversation);
-	const closeChat = useChatStore((state) => state.closeChat);
-	const [sent, setSent] = useState<ChatMessage | null>(null);
+	const [sent, setSent] = useState(false);
 
-	useEffect(() => () => closeChat(), [closeChat]);
+	if (sent) {
+		return (
+			<ListingChatCard title={`Nachricht an ${ownerName}`}>
+				Nachricht gesendet. Alle deine Chats findest du{" "}
+				<Link href="/chats" className="underline">
+					hier
+				</Link>
+				.
+			</ListingChatCard>
+		);
+	}
 
-	const chat = sent && conversation?.id === sent.chatId ? conversation : null;
+	if (status.chatId && !status.hidden) {
+		return (
+			<ListingChatCard title={`Nachricht an ${ownerName}`}>
+				Du hast {ownerName} bereits geschrieben.{" "}
+				<Link href={`/chats?chat=${status.chatId}`} className="underline">
+					Zum Chat
+				</Link>
+			</ListingChatCard>
+		);
+	}
 
+	return (
+		<ListingChatCard
+			title={`Nachricht an ${ownerName}`}
+			form={
+				<ChatForm
+					onSend={async (content) => {
+						await startChat(listingId, content);
+						setSent(true);
+					}}
+					placeholder={`Schreib ${ownerName}…`}
+				/>
+			}
+		>
+			{status.chatId
+				? `Setze deinen früheren Chat mit ${ownerName} fort.`
+				: "Frag nach dem Angebot oder vereinbare die Übergabe."}
+		</ListingChatCard>
+	);
+}
+
+function ListingChatCard({
+	title,
+	children,
+	form,
+}: {
+	title: string;
+	children: React.ReactNode;
+	form?: React.ReactNode;
+}) {
 	return (
 		<Card className="w-full max-w-[450px]">
 			<CardHeader>
-				<CardTitle>Message {ownerUsername}</CardTitle>
-				<CardDescription>
-					{sent ? (
-						<>
-							Sent. You can also continue in{" "}
-							<Link href={`/chats?chat=${sent.chatId}`}>your chats</Link>.
-						</>
-					) : (
-						"Ask about the listing or arrange the handover."
-					)}
-				</CardDescription>
+				<CardTitle>{title}</CardTitle>
+				<CardDescription>{children}</CardDescription>
 			</CardHeader>
-			<CardContent className="grid gap-3">
-				{chat ? (
-					<div className="flex h-64 flex-col border">
-						<ChatMessages chat={chat} currentUserId={currentUserId} />
-					</div>
-				) : (
-					sent && (
-						<Message align="end">
-							<MessageContent>
-								<Bubble align="end">
-									<BubbleContent className="whitespace-pre-wrap">
-										{sent.content}
-									</BubbleContent>
-								</Bubble>
-							</MessageContent>
-						</Message>
-					)
-				)}
-				<ChatForm
-					onSend={async (content) => {
-						setSent(await startChat(listingId, content));
-					}}
-					placeholder={`Write to ${ownerUsername}…`}
-				/>
-			</CardContent>
+			{form && <CardContent>{form}</CardContent>}
 		</Card>
 	);
 }

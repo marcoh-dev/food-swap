@@ -1,4 +1,4 @@
-import { ChatDetail, ChatListItem, ChatMessage } from "./types/chat.types";
+import { ChatDetail, ChatListItem, ChatMessage, ListingChatStatus } from "./types/chat.types";
 import { fetchAPI } from "./fetchAPI";
 
 export class ApiError extends Error {
@@ -31,6 +31,15 @@ export async function getChat(chatId: string): Promise<ChatDetail> {
 	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/chats/${chatId}`, {
 		cache: "no-store",
 	});
+	await throwIfFailed(response);
+	return response.json();
+}
+
+export async function getListingChatStatus(listingId: string): Promise<ListingChatStatus> {
+	const response = await fetchAPI(
+		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/chats/listing/${listingId}`,
+		{ cache: "no-store" },
+	);
 	await throwIfFailed(response);
 	return response.json();
 }

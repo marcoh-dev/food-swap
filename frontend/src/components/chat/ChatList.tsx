@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatsCircleIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import { CircleAlertIcon, MessagesSquareIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,8 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 		return (
 			<div className="grid gap-3 p-4">
 				<Alert variant="destructive">
-					<WarningCircleIcon />
-					<AlertTitle>Something went wrong</AlertTitle>
+					<CircleAlertIcon />
+					<AlertTitle>Etwas ist schiefgelaufen</AlertTitle>
 					<AlertDescription>{error}</AlertDescription>
 				</Alert>
 				<Button
@@ -39,7 +39,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 					className="justify-self-start"
 					onClick={onRetry}
 				>
-					Try again
+					Erneut versuchen
 				</Button>
 			</div>
 		);
@@ -52,11 +52,11 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 			<Empty>
 				<EmptyHeader>
 					<EmptyMedia variant="icon">
-						<ChatsCircleIcon />
+						<MessagesSquareIcon />
 					</EmptyMedia>
-					<EmptyTitle>You have no chats yet</EmptyTitle>
+					<EmptyTitle>Du hast noch keine Chats</EmptyTitle>
 					<EmptyDescription>
-						Write to someone from a listing page, and your chat will show up here.
+						Schreib jemandem über ein Angebot. Der Chat erscheint dann hier.
 					</EmptyDescription>
 				</EmptyHeader>
 			</Empty>
@@ -78,14 +78,14 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 					>
 						<span className="flex items-baseline justify-between gap-2">
 							<span className="truncate font-medium">
-								{chat.otherUsername ?? "Deleted user"}
+								{chat.otherName ?? "Gelöschtes Konto"}
 							</span>
 							<span className="shrink-0 text-muted-foreground">
 								{formatShortDate(chat.lastMessageAt)}
 							</span>
 						</span>
 						<span className="truncate text-muted-foreground">
-							{chat.listingTitle ?? "Deleted listing"}
+							{chat.listingTitle ?? "Gelöschtes Angebot"}
 						</span>
 						{chat.lastMessage && <span className="truncate">{chat.lastMessage}</span>}
 					</button>
@@ -97,7 +97,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 
 function ChatListSkeleton() {
 	return (
-		<ul aria-busy="true" aria-label="Loading chats">
+		<ul aria-busy="true" aria-label="Chats werden geladen">
 			{[0, 1, 2].map((index) => (
 				<li key={index} className="grid gap-2 border-b px-4 py-3">
 					<Skeleton className="h-3 w-1/2" />

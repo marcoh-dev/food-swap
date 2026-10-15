@@ -8,7 +8,7 @@ export class ChatListItemDto {
   listingTitle!: string | null;
 
   @Expose()
-  otherUsername!: string | null;
+  otherName!: string | null;
 
   @Expose()
   lastMessage!: string | null;

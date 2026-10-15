@@ -13,14 +13,14 @@ import type { ActionResult } from "@/lib/types/common.types";
 
 async function call<T>(action: Promise<ActionResult<T>>): Promise<T> {
 	const result = await action.catch(() => {
-		throw new Error("Could not reach the server. Please check your connection.");
+		throw new Error("Der Server ist nicht erreichbar. Versuche es später nochmal.");
 	});
 	if (result.error !== undefined) throw new Error(result.error);
 	return result.data;
 }
 
 export function errorMessage(error: unknown): string {
-	return error instanceof Error ? error.message : "Something went wrong. Please try again.";
+	return error instanceof Error ? error.message : "Etwas ist schiefgelaufen. Versuche es nochmal.";
 }
 
 function mergeMessages(current: ChatMessage[], incoming: ChatMessage[]): ChatMessage[] {
@@ -78,7 +78,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 
 		if (get().conversation?.id === chatId) {
 			openChatId = null;
-			set({ conversation: null, conversationError: "This chat was deleted." });
+			set({ conversation: null, conversationError: "Dieser Chat wurde gelöscht." });
 		}
 	}
 
@@ -156,11 +156,6 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		startChat: async (listingId, content) => {
 			const message = await call(startChatAction(listingId, content));
 			receiveMessage(message);
-
-			if (get().conversation?.id !== message.chatId) {
-				void get().openChat(message.chatId);
-			}
-
 			return message;
 		},
 

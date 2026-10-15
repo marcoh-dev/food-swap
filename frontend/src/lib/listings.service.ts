@@ -41,9 +41,12 @@ export async function getListingById(
   const response = await fetchAPI(
     process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings/${id}`,
   );
-  const listingsData = await response.json();
 
-  return listingsData;
+  // 404: no such listing, 400: malformed ID; both show the not-found page
+  if (response.status === 404 || response.status === 400) return undefined;
+  if (!response.ok) throw new Error("Das Angebot konnte nicht geladen werden.");
+
+  return response.json();
 }
 
 export async function updateListing(

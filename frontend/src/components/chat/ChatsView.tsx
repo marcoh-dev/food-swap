@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChatsCircleIcon } from "@phosphor-icons/react";
+import { MessagesSquareIcon } from "lucide-react";
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 	return (
 		<div className="grid h-[calc(100dvh-5.625rem-2em)] overflow-hidden border md:grid-cols-[minmax(16rem,20rem)_1fr]">
 			<aside
-				aria-label="Your chats"
+				aria-label="Deine Chats"
 				className={cn(
 					"flex min-h-0 flex-col md:border-r",
 					selectedChatId && "hidden md:flex",
@@ -66,9 +66,9 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 						<Empty className="h-full">
 							<EmptyHeader>
 								<EmptyMedia variant="icon">
-									<ChatsCircleIcon />
+									<MessagesSquareIcon />
 								</EmptyMedia>
-								<EmptyTitle>Select a chat to read and reply</EmptyTitle>
+								<EmptyTitle>Wähle einen Chat aus.</EmptyTitle>
 							</EmptyHeader>
 						</Empty>
 					)

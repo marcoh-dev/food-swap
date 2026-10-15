@@ -24,6 +24,14 @@ export class ChatsController {
     return this.chatsService.findAll(req.user);
   }
 
+  @Get('listing/:listingId')
+  findForListing(
+    @Request() req: AuthenticatedRequest,
+    @Param('listingId', ParseUUIDPipe) listingId: string,
+  ) {
+    return this.chatsService.findForListing(listingId, req.user);
+  }
+
   @Get(':id')
   findOne(
     @Request() req: AuthenticatedRequest,

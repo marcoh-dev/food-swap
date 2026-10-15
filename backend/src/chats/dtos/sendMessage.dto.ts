@@ -7,7 +7,7 @@ const trim = ({ value }: TransformFnParams): unknown =>
 export class SendMessageDto {
   @Transform(trim)
   @IsString()
-  @IsNotEmpty({ message: 'Please enter a message' })
+  @IsNotEmpty({ message: 'Bitte gib eine Nachricht ein' })
   @MaxLength(2000)
   content!: string;
 }

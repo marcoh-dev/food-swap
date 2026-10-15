@@ -4,6 +4,7 @@ import * as React from "react";
 import { useMorph } from "@/lib/cojeev-motion/use-morph";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { XIcon } from "lucide-react";
 import * as Primitive from "@radix-ui/react-dialog";
 import { useDirection } from "@radix-ui/react-direction";
 import { useFlowAppearance } from "@/lib/cojeev-motion/use-flow";
@@ -75,8 +76,8 @@ export function SheetContent({
 			>
 				{children}
 				{showCloseButton && (
-					<SheetClose aria-label="Close" className="absolute right-4 top-4">
-						×
+					<SheetClose aria-label="Schließen" className="absolute right-4 top-4">
+						<XIcon className="size-4" />
 					</SheetClose>
 				)}
 			</Primitive.Content>
