@@ -1,7 +1,7 @@
-import { Category } from "./category.types";
-import { PaginationMetaResponse } from "./common.types";
-import { Tag } from "./tag.types";
-import { User } from "./user.types";
+import type { Category } from "./category.types";
+import type { PaginationMetaResponse } from "./common.types";
+import type { Tag } from "./tag.types";
+import type { User } from "./user.types";
 
 export type ListingResponse = {
   id: string;
