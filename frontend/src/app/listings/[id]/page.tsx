@@ -4,6 +4,8 @@ import Image from "next/image";
 import ListingActions from "@/components/listing/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
 import SearchBar from "@/components/search/SearchBar";
+import { getCategories } from "@/lib/categories.service";
+import CategoryBadge from "@/components/listing/CategoryBadge";
 
 export default async function ListingDetailPage({
   params,
@@ -12,6 +14,7 @@ export default async function ListingDetailPage({
   const { id } = await params;
   const { term, location } = await searchParams;
   const listing = await getListingById(id);
+  const categories = await getCategories();
   const currentUser = await getCurrentUser();
 
   if (!listing) notFound();
@@ -29,14 +32,17 @@ export default async function ListingDetailPage({
           src={listing.image ?? "/placeholder.png"}
           alt="placeholder image"
         ></Image>
-        <h2 className="text-h2">{listing.title}</h2>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <h2 className="text-h2">{listing.title}</h2>
+          <CategoryBadge category={listing.category} />
+        </div>
         <p>{listing.description}</p>
         <p className="text-sm text-gray-500">
           {listing.location} ·{" "}
           {listing.type === "swap" ? "Tauschen" : "Verschenken"}
         </p>
         {currentUser?.id === listing.owner.id && (
-          <ListingActions listing={listing} />
+          <ListingActions listing={listing} categories={categories} />
         )}
       </div>
     </>

@@ -4,11 +4,14 @@ import { useState } from "react";
 import ListingForm from "@/components/listing/ListingForm";
 import { updateListingAction, deleteListingAction } from "@/app/actions";
 import { ListingResponse } from "@/lib/types/listing.types";
+import { Category } from "@/lib/types/category.types";
 
 export default function ListingActions({
   listing,
+  categories,
 }: {
   listing: ListingResponse;
+  categories: Category[];
 }) {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -27,7 +30,11 @@ export default function ListingActions({
       <div>
         <ListingForm
           action={handleUpdate}
-          defaultValues={listing}
+          categories={categories}
+          defaultValues={{
+            ...listing,
+            categoryId: listing.category?.id ?? null,
+          }}
           submitLabel="Speichern"
         />
         <button

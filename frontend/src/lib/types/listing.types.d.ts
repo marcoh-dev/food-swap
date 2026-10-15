@@ -1,3 +1,4 @@
+import { Category } from "./category.types";
 import { PaginationMetaResponse } from "./common.types";
 import { User } from "./user.types";
 
@@ -9,6 +10,7 @@ export type ListingResponse = {
   location: string;
   type: ListingType;
   owner: User;
+  category: Category;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -19,6 +21,7 @@ export type NewListing = {
   image?: string;
   location: string;
   type: ListingType;
+  categoryId?: string | null;
 };
 
 export type PaginatedListingsResponse = {

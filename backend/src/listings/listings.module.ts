@@ -4,9 +4,10 @@ import { ListingsController } from './listings.controller';
 import { Listing } from './entities/listing.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Listing, User])],
+  imports: [TypeOrmModule.forFeature([Listing, User]), CategoriesModule],
   controllers: [ListingsController],
   providers: [ListingsService],
   exports: [ListingsService, TypeOrmModule],

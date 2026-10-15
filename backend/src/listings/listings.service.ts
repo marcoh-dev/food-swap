@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -13,6 +14,7 @@ import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
 import { FindOptionsWhere, ILike } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
+import { CategoriesService } from '../categories/category.service';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
@@ -22,6 +24,7 @@ export class ListingsService {
   constructor(
     @InjectRepository(Listing)
     private readonly listings: Repository<Listing>,
+    private readonly categoriesService: CategoriesService,
   ) {}
 
   async findAll(
@@ -48,6 +51,7 @@ export class ListingsService {
       take: limit,
       relations: {
         owner: true,
+        category: true,
       },
     });
 
@@ -67,6 +71,7 @@ export class ListingsService {
       where: { id },
       relations: {
         owner: true,
+        category: true,
       },
     });
     if (!listing) {
@@ -80,6 +85,13 @@ export class ListingsService {
     const endDate =
       listingPayload.endDate ??
       new Date(createdAt.getTime() + FOUR_WEEKS_IN_MS);
+
+    if (
+      listingPayload.categoryId &&
+      !(await this.categoriesService.exists(listingPayload.categoryId))
+    ) {
+      throw new BadRequestException('Category does not exist.');
+    }
 
     if (endDate.getTime() < createdAt.getTime()) {
       throw new ConflictException('Listing end cannot be in the past.');
@@ -117,6 +129,12 @@ export class ListingsService {
       throw new ForbiddenException(
         `You are not allowed to modify this listing.`,
       );
+    }
+    if (
+      listingPayload.categoryId &&
+      !(await this.categoriesService.exists(listingPayload.categoryId))
+    ) {
+      throw new BadRequestException('Category does not exist.');
     }
 
     const { endDate } = listingPayload;

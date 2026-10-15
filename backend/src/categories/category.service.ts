@@ -14,4 +14,8 @@ export class CategoriesService {
   async findAll(): Promise<CategoryResponseDto[]> {
     return this.categories.find({ order: { name: 'ASC' } });
   }
+
+  async exists(id: string): Promise<boolean> {
+    return this.categories.exists({ where: { id } });
+  }
 }

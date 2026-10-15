@@ -106,6 +106,7 @@ function readListing(formData: FormData): NewListing {
     image: formData.get("image") as string,
     location: formData.get("location") as string,
     type: formData.get("type") as ListingType,
+    categoryId: (formData.get("categoryId") as string) || null,
   };
 }
 

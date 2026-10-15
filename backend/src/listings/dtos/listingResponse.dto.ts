@@ -1,6 +1,7 @@
 import { Expose, Type } from 'class-transformer';
 import { UserResponseDto } from '../../users/dtos/userResponse.dto';
 import { ListingType } from '../entities/listing.entity';
+import { CategoryResponseDto } from '../../categories/dtos/categoryResponse.dto';
 
 export class ListingResponseDto {
   @Expose()
@@ -24,6 +25,10 @@ export class ListingResponseDto {
   @Expose()
   @Type(() => UserResponseDto)
   owner!: UserResponseDto;
+
+  @Expose()
+  @Type(() => CategoryResponseDto)
+  category!: CategoryResponseDto | null;
 
   @Expose()
   @Type(() => Date)
