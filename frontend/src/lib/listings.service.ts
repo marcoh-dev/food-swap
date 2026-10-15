@@ -1,4 +1,4 @@
-import {
+import type {
   ListingResponse,
   ListingStatus,
   NewListing,
@@ -6,7 +6,6 @@ import {
   SortOption,
 } from "./types/listing.types";
 import { fetchAPI } from "./fetchAPI";
-import { PaginationMetaResponse } from "./types/common.types";
 
 export async function getListings({
   page = 1,

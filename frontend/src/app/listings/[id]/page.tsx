@@ -4,6 +4,10 @@ import Image from "next/image";
 import ListingActions from "@/components/listing/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
 import SearchBar from "@/components/search/SearchBar";
+import { getCategories } from "@/lib/categories.service";
+import CategoryBadge from "@/components/listing/CategoryBadge";
+import { getTags } from "@/lib/tags.service";
+import TagList from "@/components/listing/TagList";
 import StatusBadge from "@/components/listing/StatusBadge";
 
 export default async function ListingDetailPage({
@@ -13,6 +17,8 @@ export default async function ListingDetailPage({
   const { id } = await params;
   const { term, location } = await searchParams;
   const listing = await getListingById(id);
+  const categories = await getCategories();
+  const tags = await getTags();
   const currentUser = await getCurrentUser();
 
   if (!listing) notFound();
@@ -26,29 +32,37 @@ export default async function ListingDetailPage({
         defaultLocation={typeof location === "string" ? location : undefined}
       />
       <div className="flex flex-col p-4 bg-gray-200 w-fit">
-        <div className="relative flex flex-col">
-          <Image
-            width={450}
-            height={400}
-            src={listing.image ?? "/placeholder.png"}
-            alt="placeholder image"
-          />
+        <Image
+          width={450}
+          height={400}
+          src={listing.image ?? "/placeholder.png"}
+          alt="placeholder image"
+        ></Image>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <h2 className="text-h2">{listing.title}</h2>
-          <StatusBadge status={listing.status} />
-          <p>{listing.description}</p>
-          <p className="text-sm text-gray-500">
-            {listing.location} ·{" "}
-            {listing.type === "swap" ? "Tauschen" : "Verschenken"}
-          </p>
-          {listing.status === "deactivated" && (
+          <CategoryBadge category={listing.category} />
+        </div>
+        <StatusBadge status={listing.status} />
+        <p>{listing.description}</p>
+        <p className="text-sm text-gray-500">
+          {listing.location} ·{" "}
+          {listing.type === "swap" ? "Tauschen" : "Verschenken"}
+        </p>
+        <TagList tags={listing.tags} />
+              {listing.status === "deactivated" && (
             <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">
               <span className="font-semibold text-white p-4">
                 Diese Anzeige ist nicht mehr verfügbar.
               </span>
             </div>
           )}
-        </div>
-        {isOwner && <ListingActions listing={listing} />}
+        {isOwner && (
+          <ListingActions
+            listing={listing}
+            categories={categories}
+            tags={tags}
+          />
+        )}
       </div>
     </>
   );

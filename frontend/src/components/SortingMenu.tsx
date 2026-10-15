@@ -9,7 +9,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SortOption } from "@/lib/types/listing.types";
+import type { SortOption } from "@/lib/types/listing.types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowDownUp } from "lucide-react";
 

@@ -5,7 +5,7 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import { ListingType, NewListing } from "@/lib/types/listing.types";
+import type { ListingType, NewListing } from "@/lib/types/listing.types";
 import {
   createListing,
   deleteListing,
@@ -108,6 +108,8 @@ function readListing(formData: FormData): NewListing {
     image: formData.get("image") as string,
     location: formData.get("location") as string,
     type: formData.get("type") as ListingType,
+    categoryId: (formData.get("categoryId") as string) || null,
+    tagIds: formData.getAll("tagIds") as string[],
   };
 }
 

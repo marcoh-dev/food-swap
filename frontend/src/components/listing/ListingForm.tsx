@@ -1,13 +1,19 @@
-import { NewListing } from "@/lib/types/listing.types";
+import type { Category } from "@/lib/types/category.types";
+import type { NewListing } from "@/lib/types/listing.types";
+import type { Tag } from "@/lib/types/tag.types";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
+  categories: Category[];
+  tags: Tag[];
   defaultValues?: NewListing;
   submitLabel?: string;
 };
 
 export default function ListingForm({
   action,
+  categories,
+  tags,
   defaultValues,
   submitLabel = "Erstellen",
 }: Props) {
@@ -61,6 +67,39 @@ export default function ListingForm({
             className="border-2 border-gray-300 rounded-lg px-3 py-2"
           />
         </div>
+        <div className="grid gap-0.5">
+          <label htmlFor="categoryId">Kategorie</label>
+          <select
+            id="categoryId"
+            name="categoryId"
+            required
+            defaultValue={defaultValues?.categoryId ?? ""}
+            className="border-2 border-gray-300 rounded-lg px-3 py-2"
+          >
+            <option value="" disabled>
+              Kategorie wählen
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <fieldset className="grid gap-1">
+          <legend>Tags</legend>
+          {tags.map((tag) => (
+            <label key={tag.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="tagIds"
+                value={tag.id}
+                defaultChecked={defaultValues?.tagIds?.includes(tag.id)}
+              />
+              {tag.name}
+            </label>
+          ))}
+        </fieldset>
         <fieldset className="grid gap-1">
           <legend>Art</legend>
           <label className="flex items-center gap-2">

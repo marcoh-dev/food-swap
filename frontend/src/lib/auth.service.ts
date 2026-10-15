@@ -1,5 +1,5 @@
-import { AuthResponse, RegistrationResponse } from "./types/auth.types";
-import { UserCredentials } from "./types/user.types";
+import type { AuthResponse, RegistrationResponse } from "./types/auth.types";
+import type { UserCredentials } from "./types/user.types";
 import { fetchAPI } from "./fetchAPI";
 
 export async function loginUser({

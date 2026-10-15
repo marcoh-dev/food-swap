@@ -1,5 +1,7 @@
-import { PaginationMetaResponse } from "./common.types";
-import { User } from "./user.types";
+import type { Category } from "./category.types";
+import type { PaginationMetaResponse } from "./common.types";
+import type { Tag } from "./tag.types";
+import type { User } from "./user.types";
 
 export type ListingResponse = {
   id: string;
@@ -10,6 +12,8 @@ export type ListingResponse = {
   type: ListingType;
   status: ListingStatus;
   owner: User;
+  category: Category;
+  tags: Tag[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -20,6 +24,8 @@ export type NewListing = {
   image?: string;
   location: string;
   type: ListingType;
+  categoryId?: string | null;
+  tagIds?: string[];
 };
 
 export type PaginatedListingsResponse = {

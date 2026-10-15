@@ -1,7 +1,7 @@
 import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { getSearchResults } from "@/lib/searchResults.service";
-import { SortOption } from "@/lib/types/listing.types";
+import type { SortOption } from "@/lib/types/listing.types";
 import Image from "next/image";
 import Link from "next/link";
 

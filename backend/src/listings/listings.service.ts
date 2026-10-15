@@ -14,6 +14,8 @@ import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
 import { FindOptionsWhere, ILike, In } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
+import { CategoriesService } from '../categories/category.service';
+import { TagsService } from '../tags/tags.service';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -24,6 +26,8 @@ export class ListingsService {
   constructor(
     @InjectRepository(Listing)
     private readonly listings: Repository<Listing>,
+    private readonly categoriesService: CategoriesService,
+    private readonly tagsService: TagsService,
   ) {}
 
   async findAll(
@@ -53,6 +57,8 @@ export class ListingsService {
       take: limit,
       relations: {
         owner: true,
+        category: true,
+        tags: true,
       },
     });
 
@@ -72,6 +78,8 @@ export class ListingsService {
       where: { id },
       relations: {
         owner: true,
+        category: true,
+        tags: true,
       },
     });
     if (!listing) {
@@ -87,6 +95,13 @@ export class ListingsService {
       listingPayload.endDate ??
       new Date(createdAt.getTime() + FOUR_WEEKS_IN_MS);
 
+    if (
+      listingPayload.categoryId &&
+      !(await this.categoriesService.exists(listingPayload.categoryId))
+    ) {
+      throw new BadRequestException('Category does not exist.');
+    }
+
     if (endDate.getTime() < createdAt.getTime()) {
       throw new ConflictException('Listing end cannot be in the past.');
     }
@@ -94,12 +109,16 @@ export class ListingsService {
     if (endDate.getTime() < createdAt.getTime() + ONE_DAY_IN_MS) {
       throw new ConflictException('Listing has to last at least one day.');
     }
+    const tags = listingPayload.tagIds
+      ? await this.tagsService.findByIdsOrFail(listingPayload.tagIds)
+      : undefined;
 
     const newListing = this.listings.create({
       ...listingPayload,
       createdAt,
       owner: currentUser,
       endDate,
+      tags: tags ?? [],
     });
 
     return this.listings.save(newListing);
@@ -139,9 +158,24 @@ export class ListingsService {
       }
     }
 
-    Object.assign(listing, listingPayload);
+    if (
+      listingPayload.categoryId &&
+      !(await this.categoriesService.exists(listingPayload.categoryId))
+    ) {
+      throw new BadRequestException('Category does not exist.');
+    }
 
-    return this.listings.save(listing);
+    const tags = listingPayload.tagIds
+      ? await this.tagsService.findByIdsOrFail(listingPayload.tagIds)
+      : undefined;
+
+    const { tagIds: _tagIds, ...listingData } = listingPayload;
+
+    Object.assign(listing, listingData);
+    if (tags) listing.tags = tags;
+
+    await this.listings.save(listing);
+    return this.findOne(listingId);
   }
 
   async updateStatus(

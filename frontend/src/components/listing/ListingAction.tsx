@@ -2,18 +2,20 @@
 
 import { useState } from "react";
 import ListingForm from "@/components/listing/ListingForm";
-import {
-  updateListingAction,
-  deleteListingAction,
-  updateListingStatusAction,
-} from "@/app/actions";
-import { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
+import { updateListingAction, deleteListingAction, updateListingStatusAction } from "@/app/actions";
 import { statusActions } from "@/lib/constants/listing.constants";
+import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
+import type { Category } from "@/lib/types/category.types";
+import type { Tag } from "@/lib/types/tag.types";
 
 export default function ListingActions({
   listing,
+  categories,
+  tags,
 }: {
   listing: ListingResponse;
+  categories: Category[];
+  tags: Tag[];
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -44,7 +46,13 @@ export default function ListingActions({
       <div>
         <ListingForm
           action={handleUpdate}
-          defaultValues={listing}
+          categories={categories}
+          tags={tags}
+          defaultValues={{
+            ...listing,
+            categoryId: listing.category?.id ?? null,
+            tagIds: listing.tags.map((tag) => tag.id),
+          }}
           submitLabel="Speichern"
         />
         <button

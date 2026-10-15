@@ -8,5 +8,5 @@ export type UserCredentials = {
   password: string;
 };
 
-type User = { id: string; username: string; name?: string; createdAt: string };
+export type User = { id: string; username: string; name?: string; createdAt: string };
 

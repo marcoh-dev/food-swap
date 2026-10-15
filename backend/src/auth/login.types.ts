@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { User } from '../users/entities/user.entity';
 
-type Payload = {
+export type Payload = {
   sub: string;
 };
 
