@@ -12,6 +12,7 @@ import { Listing } from './listings/entities/listing.entity';
 import { ListingsModule } from './listings/listings.module';
 import { Category } from './categories/entities/category.entity';
 import { Tag } from './tags/entities/tag.entity';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Tag } from './tags/entities/tag.entity';
     AuthModule,
     UsersModule,
     ListingsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
