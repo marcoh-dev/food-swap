@@ -8,6 +8,7 @@ import { getCategories } from "@/lib/categories.service";
 import CategoryBadge from "@/components/listing/CategoryBadge";
 import { getTags } from "@/lib/tags.service";
 import TagList from "@/components/listing/TagList";
+import StatusBadge from "@/components/listing/StatusBadge";
 
 export default async function ListingDetailPage({
   params,
@@ -21,6 +22,8 @@ export default async function ListingDetailPage({
   const currentUser = await getCurrentUser();
 
   if (!listing) notFound();
+
+  const isOwner = currentUser?.id === listing.owner.id;
 
   return (
     <>
@@ -39,13 +42,21 @@ export default async function ListingDetailPage({
           <h2 className="text-h2">{listing.title}</h2>
           <CategoryBadge category={listing.category} />
         </div>
+        <StatusBadge status={listing.status} />
         <p>{listing.description}</p>
         <p className="text-sm text-gray-500">
           {listing.location} ·{" "}
           {listing.type === "swap" ? "Tauschen" : "Verschenken"}
         </p>
         <TagList tags={listing.tags} />
-        {currentUser?.id === listing.owner.id && (
+              {listing.status === "deactivated" && (
+            <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">
+              <span className="font-semibold text-white p-4">
+                Diese Anzeige ist nicht mehr verfügbar.
+              </span>
+            </div>
+          )}
+        {isOwner && (
           <ListingActions
             listing={listing}
             categories={categories}

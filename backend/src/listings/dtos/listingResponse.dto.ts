@@ -3,6 +3,7 @@ import { UserResponseDto } from '../../users/dtos/userResponse.dto';
 import { ListingType } from '../entities/listing.entity';
 import { CategoryResponseDto } from '../../categories/dtos/categoryResponse.dto';
 import { TagResponseDto } from '../../tags/dtos/tagResponse.dto';
+import { ListingStatus, ListingType } from '../entities/listing.entity';
 
 export class ListingResponseDto {
   @Expose()
@@ -22,6 +23,9 @@ export class ListingResponseDto {
 
   @Expose()
   type!: ListingType;
+
+  @Expose()
+  status!: ListingStatus;
 
   @Expose()
   @Type(() => UserResponseDto)

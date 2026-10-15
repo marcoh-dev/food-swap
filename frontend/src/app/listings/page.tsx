@@ -6,6 +6,7 @@ import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { SortOption } from "@/lib/types/listing.types";
 import CategoryBadge from "@/components/listing/CategoryBadge";
+import StatusBadge from "@/components/listing/StatusBadge";
 
 export default async function ListingsPage({
   searchParams,
@@ -44,6 +45,7 @@ export default async function ListingsPage({
                 <h2 className="text-h2">{listing.title}</h2>
                 <CategoryBadge category={listing.category} />
               </div>
+              <StatusBadge status={listing.status} />
               <p className="text-sm">{listing.description}</p>
               <p className="text-xs text-gray-500">
                 {listing.location} ·{" "}

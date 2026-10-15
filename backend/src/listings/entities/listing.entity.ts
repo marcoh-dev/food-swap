@@ -17,6 +17,13 @@ export enum ListingType {
   GIVEAWAY = 'giveaway',
 }
 
+export enum ListingStatus {
+  PENDING = 'pending',
+  ACTIVE = 'active',
+  DEACTIVATED = 'deactivated',
+  RESERVED = 'reserved',
+}
+
 @Entity('listings')
 export class Listing {
   @PrimaryGeneratedColumn('uuid')
@@ -39,6 +46,13 @@ export class Listing {
     enum: ListingType,
   })
   type!: ListingType;
+
+  @Column({
+    type: 'enum',
+    enum: ListingStatus,
+    default: ListingStatus.ACTIVE,
+  })
+  status!: ListingStatus;
 
   @ManyToOne(() => User, (user) => user.listings)
   owner!: User;

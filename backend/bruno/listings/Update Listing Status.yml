@@ -1,0 +1,28 @@
+info:
+  name: Update Listing Status
+  type: http
+  seq: 7
+
+http:
+  method: PATCH
+  url: "{{baseURL}}/listings/:id/status"
+  params:
+    - name: id
+      value: 6e739d20-246b-4a92-9145-271420e7ff9d
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "status": "reserved"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZjUwYmQ0ZC02N2M2LTQ2M2QtOWEyMy1kYTkyZjgzZGJkZDAiLCJpYXQiOjE3OTE5ODI3MjksImV4cCI6MTc5MTk4NjMyOX0.MPwYqwKo2pCP2xWmWLVlTp3c212IvEnXDCFKMRiw6xo
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
