@@ -18,7 +18,6 @@ export default async function ListingDetailPage({
   if (!listing) notFound();
 
   const isOwner = currentUser?.id === listing.owner.id;
-  const isUnavailable = listing.status === "deactivated" && !isOwner;
 
   return (
     <>
@@ -26,26 +25,30 @@ export default async function ListingDetailPage({
         defaultTerm={typeof term === "string" ? term : undefined}
         defaultLocation={typeof location === "string" ? location : undefined}
       />
-      {isUnavailable && (
-        <p className="mb-3">Diese Anzeige ist nicht mehr verfügbar.</p>
-      )}
       <div className="flex flex-col p-4 bg-gray-200 w-fit">
-        <Image
-          width={450}
-          height={400}
-          src={listing.image ?? "/placeholder.png"}
-          alt="placeholder image"
-        ></Image>
-        <h2 className="text-h2">{listing.title}</h2>
-        <StatusBadge status={listing.status} />
-        <p>{listing.description}</p>
-        <p className="text-sm text-gray-500">
-          {listing.location} ·{" "}
-          {listing.type === "swap" ? "Tauschen" : "Verschenken"}
-        </p>
-        {currentUser?.id === listing.owner.id && (
-          <ListingActions listing={listing} />
-        )}
+        <div className="relative flex flex-col">
+          <Image
+            width={450}
+            height={400}
+            src={listing.image ?? "/placeholder.png"}
+            alt="placeholder image"
+          />
+          <h2 className="text-h2">{listing.title}</h2>
+          <StatusBadge status={listing.status} />
+          <p>{listing.description}</p>
+          <p className="text-sm text-gray-500">
+            {listing.location} ·{" "}
+            {listing.type === "swap" ? "Tauschen" : "Verschenken"}
+          </p>
+          {listing.status === "deactivated" && (
+            <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">
+              <span className="font-semibold text-white p-4">
+                Diese Anzeige ist nicht mehr verfügbar.
+              </span>
+            </div>
+          )}
+        </div>
+        {isOwner && <ListingActions listing={listing} />}
       </div>
     </>
   );
