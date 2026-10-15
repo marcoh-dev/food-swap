@@ -3,7 +3,3 @@ variables:
   - name: baseURL
     value: http://localhost:3000
     description: ""
-  - name: baseURL
-    value: https://food-swap-bfh0.onrender.com
-    disabled: true
-    description: ""

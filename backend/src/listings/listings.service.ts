@@ -77,7 +77,7 @@ export class ListingsService {
     if (!listing) {
       throw new NotFoundException(`Listing with ID ${id} not found.`);
     }
-    console.log(listing);
+
     return listing;
   }
 
