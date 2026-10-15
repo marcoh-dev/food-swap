@@ -40,7 +40,7 @@ export default async function ListingsPage({
                 />
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between">
                 <h2 className="text-h2">{listing.title}</h2>
                 <CategoryBadge category={listing.category} />
               </div>
