@@ -1,5 +1,6 @@
 import {
   ListingResponse,
+  ListingStatus,
   NewListing,
   PaginatedListingsResponse,
   SortOption,
@@ -76,4 +77,25 @@ export async function deleteListing(id: string): Promise<void> {
   await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings/${id}`, {
     method: "DELETE",
   });
+}
+
+export async function updateListingStatus(
+  id: string,
+  status: ListingStatus,
+): Promise<{ listing?: ListingResponse; error?: string }> {
+  const response = await fetchAPI(
+    process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings/${id}/status`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    },
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    return { error: String(data.message) };
+  }
+
+  return { listing: data };
 }

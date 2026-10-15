@@ -4,6 +4,7 @@ import Image from "next/image";
 import ListingActions from "@/components/listing/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
 import SearchBar from "@/components/search/SearchBar";
+import StatusBadge from "@/components/listing/StatusBadge";
 
 export default async function ListingDetailPage({
   params,
@@ -16,12 +17,18 @@ export default async function ListingDetailPage({
 
   if (!listing) notFound();
 
+  const isOwner = currentUser?.id === listing.owner.id;
+  const isUnavailable = listing.status === "deactivated" && !isOwner;
+
   return (
     <>
       <SearchBar
         defaultTerm={typeof term === "string" ? term : undefined}
         defaultLocation={typeof location === "string" ? location : undefined}
       />
+      {isUnavailable && (
+        <p className="mb-3">Diese Anzeige ist nicht mehr verfügbar.</p>
+      )}
       <div className="flex flex-col p-4 bg-gray-200 w-fit">
         <Image
           width={450}
@@ -30,6 +37,7 @@ export default async function ListingDetailPage({
           alt="placeholder image"
         ></Image>
         <h2 className="text-h2">{listing.title}</h2>
+        <StatusBadge status={listing.status} />
         <p>{listing.description}</p>
         <p className="text-sm text-gray-500">
           {listing.location} ·{" "}
