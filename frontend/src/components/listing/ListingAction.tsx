@@ -5,13 +5,16 @@ import ListingForm from "@/components/listing/ListingForm";
 import { updateListingAction, deleteListingAction } from "@/app/actions";
 import { ListingResponse } from "@/lib/types/listing.types";
 import { Category } from "@/lib/types/category.types";
+import { Tag } from "@/lib/types/tag.types";
 
 export default function ListingActions({
   listing,
   categories,
+  tags,
 }: {
   listing: ListingResponse;
   categories: Category[];
+  tags: Tag[];
 }) {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -31,9 +34,11 @@ export default function ListingActions({
         <ListingForm
           action={handleUpdate}
           categories={categories}
+          tags={tags}
           defaultValues={{
             ...listing,
             categoryId: listing.category?.id ?? null,
+            tagIds: listing.tags.map((tag) => tag.id),
           }}
           submitLabel="Speichern"
         />

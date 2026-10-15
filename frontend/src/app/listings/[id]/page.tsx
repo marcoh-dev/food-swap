@@ -6,6 +6,8 @@ import { getCurrentUser } from "@/lib/users.service";
 import SearchBar from "@/components/search/SearchBar";
 import { getCategories } from "@/lib/categories.service";
 import CategoryBadge from "@/components/listing/CategoryBadge";
+import { getTags } from "@/lib/tags.service";
+import TagList from "@/components/listing/TagList";
 
 export default async function ListingDetailPage({
   params,
@@ -15,6 +17,7 @@ export default async function ListingDetailPage({
   const { term, location } = await searchParams;
   const listing = await getListingById(id);
   const categories = await getCategories();
+  const tags = await getTags();
   const currentUser = await getCurrentUser();
 
   if (!listing) notFound();
@@ -41,8 +44,13 @@ export default async function ListingDetailPage({
           {listing.location} ·{" "}
           {listing.type === "swap" ? "Tauschen" : "Verschenken"}
         </p>
+        <TagList tags={listing.tags} />
         {currentUser?.id === listing.owner.id && (
-          <ListingActions listing={listing} categories={categories} />
+          <ListingActions
+            listing={listing}
+            categories={categories}
+            tags={tags}
+          />
         )}
       </div>
     </>

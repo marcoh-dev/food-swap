@@ -107,6 +107,7 @@ function readListing(formData: FormData): NewListing {
     location: formData.get("location") as string,
     type: formData.get("type") as ListingType,
     categoryId: (formData.get("categoryId") as string) || null,
+    tagIds: formData.getAll("tagIds") as string[],
   };
 }
 
