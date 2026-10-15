@@ -1,5 +1,5 @@
 // components/listing/TagList.tsx
-import { Tag } from "@/lib/types/tag.types";
+import type { Tag } from "@/lib/types/tag.types";
 
 type Props = {
   tags: Tag[];

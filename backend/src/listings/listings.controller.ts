@@ -18,7 +18,7 @@ import { CreateListingDto } from './dtos/createListing.dto';
 import { ListingResponseDto } from './dtos/listingResponse.dto';
 import { PaginatedListingsResponseDto } from './dtos/paginatedListingsResponse.dto';
 import { Public } from '../common/decorators/public.decorator';
-import type { AuthenticatedRequest } from '../auth/login.type';
+import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateListingDto } from './dtos/updateListing.dto';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';

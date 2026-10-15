@@ -5,7 +5,7 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import { ListingType, NewListing } from "@/lib/types/listing.types";
+import type { ListingType, NewListing } from "@/lib/types/listing.types";
 import {
   createListing,
   deleteListing,

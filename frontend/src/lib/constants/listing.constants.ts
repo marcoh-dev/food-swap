@@ -1,4 +1,4 @@
-import { ListingStatus, StatusAction } from "../types/listing.types";
+import type { ListingStatus, StatusAction } from "../types/listing.types";
 
 export const statusActions: Partial<Record<ListingStatus, StatusAction[]>> = {
   active: [

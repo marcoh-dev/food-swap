@@ -3,11 +3,10 @@
 import { useState } from "react";
 import ListingForm from "@/components/listing/ListingForm";
 import { updateListingAction, deleteListingAction, updateListingStatusAction } from "@/app/actions";
-import { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 import { statusActions } from "@/lib/constants/listing.constants";
-import { ListingResponse } from "@/lib/types/listing.types";
-import { Category } from "@/lib/types/category.types";
-import { Tag } from "@/lib/types/tag.types";
+import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
+import type { Category } from "@/lib/types/category.types";
+import type { Tag } from "@/lib/types/tag.types";
 
 export default function ListingActions({
   listing,

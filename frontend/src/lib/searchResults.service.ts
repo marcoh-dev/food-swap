@@ -1,5 +1,5 @@
 import { fetchAPI } from "./fetchAPI";
-import { PaginatedListingsResponse } from "./types/listing.types";
+import type { PaginatedListingsResponse } from "./types/listing.types";
 
 export async function getSearchResults({
   term,

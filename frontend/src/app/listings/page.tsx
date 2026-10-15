@@ -1,10 +1,10 @@
 import { getListings } from "@/lib/listings.service";
 import Link from "next/link";
 import Image from "next/image";
-import { SearchParams } from "next/dist/server/request/search-params";
+import type { SearchParams } from "next/dist/server/request/search-params";
 import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
-import { SortOption } from "@/lib/types/listing.types";
+import type { SortOption } from "@/lib/types/listing.types";
 import CategoryBadge from "@/components/listing/CategoryBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
 

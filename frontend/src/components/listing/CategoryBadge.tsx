@@ -1,4 +1,4 @@
-import { Category } from "@/lib/types/category.types";
+import type { Category } from "@/lib/types/category.types";
 
 export default function CategoryBadge({
   category,

@@ -1,5 +1,0 @@
-name: liveServer
-variables:
-  - name: baseURL
-    value: https://food-swap-bfh0.onrender.com
-    description: ""

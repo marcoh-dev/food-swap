@@ -14,7 +14,7 @@ import { UserResponseDto } from '../users/dtos/userResponse.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from './dtos/login.dto';
-import type { AuthenticatedRequest } from './login.type';
+import type { AuthenticatedRequest } from './login.types';
 
 @Controller('auth')
 export class AuthController {

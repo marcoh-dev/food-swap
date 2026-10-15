@@ -1,6 +1,6 @@
-import { Category } from "@/lib/types/category.types";
-import { NewListing } from "@/lib/types/listing.types";
-import { Tag } from "@/lib/types/tag.types";
+import type { Category } from "@/lib/types/category.types";
+import type { NewListing } from "@/lib/types/listing.types";
+import type { Tag } from "@/lib/types/tag.types";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
