@@ -6,16 +6,16 @@ export class ChatDetailDto {
   id!: string;
 
   @Expose()
-  listingId!: string | null; // null → listing was deleted
+  listingId!: string | null;
 
   @Expose()
   listingTitle!: string | null;
 
   @Expose()
-  otherUsername!: string | null; // null → account was deleted
+  otherUsername!: string | null;
 
   @Expose()
-  canReply!: boolean; // false once the other participant's account is deleted
+  canReply!: boolean;
 
   @Expose()
   @Type(() => MessageResponseDto)

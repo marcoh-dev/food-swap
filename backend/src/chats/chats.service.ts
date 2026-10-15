@@ -14,12 +14,19 @@ import { StartChatDto } from './dtos/startChat.dto';
 import { Listing } from '../listings/entities/listing.entity';
 import { Message } from './entities/message.entity';
 import { ChatDetailDto } from './dtos/chatDetail.dto';
+import { ChatsGateway } from './chats.gateway';
+
+type SavedMessage = {
+  message: MessageResponseDto;
+  participantIds: Array<string | null>;
+};
 
 @Injectable()
 export class ChatsService {
   constructor(
     @InjectRepository(Chat)
     private readonly chats: Repository<Chat>,
+    private readonly chatsGateway: ChatsGateway,
   ) {}
 
   async findAll(currentUser: User): Promise<ChatListItemDto[]> {
@@ -101,48 +108,56 @@ export class ChatsService {
     const { listingId, content } = chatPayload;
     const { id: senderId } = currentUser;
 
-    return this.chats.manager.transaction<MessageResponseDto>(
-      async (manager): Promise<MessageResponseDto> => {
-        const listing = await manager.findOne(Listing, {
-          where: { id: listingId },
-          relations: { owner: true },
-        });
+    const { message, participantIds } =
+      await this.chats.manager.transaction<SavedMessage>(
+        async (manager): Promise<SavedMessage> => {
+          const listing = await manager.findOne(Listing, {
+            where: { id: listingId },
+            relations: { owner: true },
+          });
 
-        if (!listing) {
-          throw new NotFoundException('Listing not found');
-        }
+          if (!listing) {
+            throw new NotFoundException('Listing not found');
+          }
 
-        if (listing.owner.id === senderId) {
-          throw new ForbiddenException(
-            'You cannot start a chat on your own listing',
-          );
-        }
+          if (listing.owner.id === senderId) {
+            throw new ForbiddenException(
+              'You cannot start a chat on your own listing',
+            );
+          }
 
-        const result = await manager
-          .createQueryBuilder()
-          .insert()
-          .into(Chat)
-          .values({
-            listingId,
-            ownerId: listing.owner.id,
-            userId: senderId,
-            deletedByOwner: false,
-            deletedByUser: false,
-            lastMessageAt: () => 'now()',
-          })
-          .orUpdate(
-            ['deletedByOwner', 'deletedByUser', 'lastMessageAt'],
-            ['listingId', 'ownerId', 'userId'],
-          )
-          .returning('id')
-          .execute();
+          const result = await manager
+            .createQueryBuilder()
+            .insert()
+            .into(Chat)
+            .values({
+              listingId,
+              ownerId: listing.owner.id,
+              userId: senderId,
+              deletedByOwner: false,
+              deletedByUser: false,
+              lastMessageAt: () => 'now()',
+            })
+            .orUpdate(
+              ['deletedByOwner', 'deletedByUser', 'lastMessageAt'],
+              ['listingId', 'ownerId', 'userId'],
+            )
+            .returning('id')
+            .execute();
 
-        const raw = result.raw as { id: string }[];
-        const chatId = raw[0].id;
+          const raw = result.raw as { id: string }[];
+          const chatId = raw[0].id;
 
-        return this.saveMessage(manager, chatId, senderId, content);
-      },
-    );
+          return {
+            message: await this.saveMessage(manager, chatId, senderId, content),
+            participantIds: [listing.owner.id, senderId],
+          };
+        },
+      );
+
+    this.chatsGateway.notifyNewMessage(participantIds, message);
+
+    return message;
   }
 
   async reply(
@@ -152,32 +167,48 @@ export class ChatsService {
   ): Promise<MessageResponseDto> {
     const { id: senderId } = currentUser;
 
-    return this.chats.manager.transaction<MessageResponseDto>(
-      async (manager): Promise<MessageResponseDto> => {
-        const chat = await manager.findOne(Chat, {
-          where: { id: chatId },
-          lock: { mode: 'pessimistic_write' },
-        });
+    const { message, participantIds } =
+      await this.chats.manager.transaction<SavedMessage>(
+        async (manager): Promise<SavedMessage> => {
+          const chat = await manager.findOne(Chat, {
+            where: { id: chatId },
+            lock: { mode: 'pessimistic_write' },
+          });
 
-        if (!chat || (chat.ownerId !== senderId && chat.userId !== senderId)) {
-          throw new NotFoundException('Chat not found');
-        }
+          if (
+            !chat ||
+            (chat.ownerId !== senderId && chat.userId !== senderId)
+          ) {
+            throw new NotFoundException('Chat not found');
+          }
 
-        if (chat.ownerId === null || chat.userId === null) {
-          throw new ForbiddenException(
-            'The other user has deleted their account',
-          );
-        }
+          if (chat.ownerId === null || chat.userId === null) {
+            throw new ForbiddenException(
+              'The other user has deleted their account',
+            );
+          }
 
-        await manager.update(Chat, chat.id, {
-          deletedByOwner: false,
-          deletedByUser: false,
-          lastMessageAt: () => 'now()',
-        });
+          await manager.update(Chat, chat.id, {
+            deletedByOwner: false,
+            deletedByUser: false,
+            lastMessageAt: () => 'now()',
+          });
 
-        return this.saveMessage(manager, chat.id, senderId, content);
-      },
-    );
+          return {
+            message: await this.saveMessage(
+              manager,
+              chat.id,
+              senderId,
+              content,
+            ),
+            participantIds: [chat.ownerId, chat.userId],
+          };
+        },
+      );
+
+    this.chatsGateway.notifyNewMessage(participantIds, message);
+
+    return message;
   }
 
   async remove(chatId: string, currentUser: User): Promise<void> {
@@ -210,6 +241,8 @@ export class ChatsService {
         });
       }
     });
+
+    this.chatsGateway.notifyChatRemoved(userId, chatId);
   }
 
   private async saveMessage(

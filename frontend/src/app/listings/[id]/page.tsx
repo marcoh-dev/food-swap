@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import ListingActions from "@/components/ListingAction";
 import { getCurrentUser } from "@/lib/users.service";
+import Link from "next/link";
+import { ListingChat } from "@/components/chat/ListingChat";
 
 export default async function ListingDetailPage({
   params,
@@ -32,6 +34,21 @@ export default async function ListingDetailPage({
           <ListingActions listing={listing} />
         )}
       </div>
+      {currentUser && currentUser.id !== listing.owner.id && (
+        <div className="mt-4">
+          <ListingChat
+            listingId={listing.id}
+            ownerUsername={listing.owner.username}
+            currentUserId={currentUser.id}
+          />
+        </div>
+      )}
+      {!currentUser && (
+        <p className="mt-4 text-sm">
+          <Link href="/login">Anmelden</Link>, um {listing.owner.username} zu
+          schreiben.
+        </p>
+      )}
     </>
   );
 }

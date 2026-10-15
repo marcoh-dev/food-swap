@@ -8,7 +8,7 @@ export class MessageResponseDto {
   chatId!: string;
 
   @Expose()
-  senderId!: string | null; // null → sender deleted their account
+  senderId!: string | null;
 
   @Expose()
   content!: string;

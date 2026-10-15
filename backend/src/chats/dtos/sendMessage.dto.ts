@@ -8,6 +8,6 @@ export class SendMessageDto {
   @Transform(trim)
   @IsString()
   @IsNotEmpty({ message: 'Please enter a message' })
-  @MaxLength(2000) // same limit as Message.content
+  @MaxLength(2000)
   content!: string;
 }

@@ -12,6 +12,7 @@ import { Listing } from './listings/entities/listing.entity';
 import { ListingsModule } from './listings/listings.module';
 import { ChatsModule } from './chats/chats.module';
 import { Chat } from './chats/entities/chat.entity';
+import { Message } from './chats/entities/message.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { Chat } from './chats/entities/chat.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
-        entities: [User, Listing, Chat],
+        entities: [User, Listing, Chat, Message],
         synchronize: false,
         logging: false,
         enableWAL: true,
