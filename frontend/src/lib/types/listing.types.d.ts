@@ -8,6 +8,7 @@ export type ListingResponse = {
   image?: string;
   location: string;
   type: ListingType;
+  status: ListingStatus;
   owner: User;
   createdAt: Date;
   updatedAt: Date;
@@ -29,3 +30,11 @@ export type PaginatedListingsResponse = {
 export type ListingType = "swap" | "giveaway";
 
 export type SortOption = "newest" | "oldest";
+
+export type ListingStatus = "pending" | "active" | "reserved" | "deactivated";
+
+export type StatusAction = {
+  label: string;
+  targetStatus: ListingStatus;
+  className: string;
+};

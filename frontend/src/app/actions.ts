@@ -10,8 +10,10 @@ import {
   createListing,
   deleteListing,
   updateListing,
+  updateListingStatus,
 } from "@/lib/listings.service";
 import { revalidatePath } from "next/cache";
+import type { ListingStatus } from "@/lib/types/listing.types";
 
 export async function registerAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -133,4 +135,23 @@ export async function deleteListingAction(id: string) {
   await deleteListing(id);
   revalidatePath("/listings");
   redirect("/listings");
+}
+
+export async function updateListingStatusAction(
+  id: string,
+  status: ListingStatus,
+) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser)
+    return {
+      error: "Du musst eingeloggt sein, um den Status ändern zu können.",
+    };
+
+  const result = await updateListingStatus(id, status);
+
+  if (result.error) return { error: result.error };
+
+  revalidatePath(`/listings/${id}`);
+  revalidatePath("/listings");
+  return {};
 }

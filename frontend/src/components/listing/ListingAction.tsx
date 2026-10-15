@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import ListingForm from "@/components/listing/ListingForm";
-import { updateListingAction, deleteListingAction } from "@/app/actions";
-import { ListingResponse } from "@/lib/types/listing.types";
+import {
+  updateListingAction,
+  deleteListingAction,
+  updateListingStatusAction,
+} from "@/app/actions";
+import { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
+import { statusActions } from "@/lib/constants/listing.constants";
 
 export default function ListingActions({
   listing,
@@ -11,6 +16,7 @@ export default function ListingActions({
   listing: ListingResponse;
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleUpdate(formData: FormData) {
     await updateListingAction(listing.id, formData);
@@ -20,6 +26,17 @@ export default function ListingActions({
   function handleDelete() {
     if (!confirm("Wirklich löschen?")) return;
     deleteListingAction(listing.id);
+  }
+
+  async function handleStatusChange(targetStatus: ListingStatus) {
+    const result = await updateListingStatusAction(listing.id, targetStatus);
+
+    if (result.error) {
+      setErrorMessage(result.error);
+      return;
+    }
+
+    setErrorMessage(null);
   }
 
   if (isEditing) {
@@ -42,21 +59,38 @@ export default function ListingActions({
   }
 
   return (
-    <div className="flex gap-3 mt-4">
-      <button
-        type="button"
-        onClick={() => setIsEditing(true)}
-        className="bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2"
-      >
-        Bearbeiten
-      </button>
-      <button
-        type="button"
-        onClick={handleDelete}
-        className="bg-red-800 text-white rounded-lg px-3 py-2 disabled:opacity-50"
-      >
-        Löschen
-      </button>
+    <div className="mt-4 flex flex-col gap-3">
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() => setIsEditing(true)}
+          className="bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2"
+        >
+          Bearbeiten
+        </button>
+        {listing.status !== "pending" && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-800 text-white rounded-lg px-3 py-2 disabled:opacity-50"
+          >
+            Löschen
+          </button>
+        )}
+      </div>
+      <div className="flex gap-3">
+        {statusActions[listing.status]?.map((action) => (
+          <button
+            key={action.targetStatus}
+            type="button"
+            onClick={() => handleStatusChange(action.targetStatus)}
+            className={`rounded-lg px-3 py-2  ${action.className}`}
+          >
+            {action.label}
+          </button>
+        ))}
+      </div>
+      {errorMessage && <p className="text-red-800">{errorMessage}</p>}
     </div>
   );
 }

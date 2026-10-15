@@ -8,7 +8,7 @@ http:
   url: "{{baseURL}}/listings/:id"
   params:
     - name: id
-      value: d1d8d2da-3e8c-4943-9e84-f62a598b6286
+      value: a27d619b-9df3-49f3-ba3d-4e5310e87547
       type: path
   auth: inherit
 
