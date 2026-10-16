@@ -6,7 +6,23 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/chats"
+  body:
+    type: json
+    data: |-
+      {
+        "listingId": "{{listingId}}",
+        "content": "Hallo, ist das noch da?"
+      }
   auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Remember the chat for Find Chat, Reply to Chat and Delete Chat
+        if (res.status === 201) {
+          bru.setVar("chatId", res.body.chatId);
+        }
 
 settings:
   encodeUrl: true
