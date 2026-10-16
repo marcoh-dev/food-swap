@@ -17,6 +17,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import ListingMeta from "@/components/listing/ListingMeta";
+
 export default async function ListingsPage({
   searchParams,
 }: {
@@ -66,6 +68,14 @@ export default async function ListingsPage({
                   <p className="text-sm">{listing.description}</p>
                 </CardContent>
               </Card>
+
+              <div className="flex flex-wrap items-center justify-between">
+                <h2 className="text-h2">{listing.title}</h2>
+                <CategoryBadge category={listing.category} />
+              </div>
+              <StatusBadge status={listing.status} />
+              <p className="text-sm">{listing.description}</p>
+              <ListingMeta listing={listing} className="text-xs" />
             </Link>
           </li>
         ))}

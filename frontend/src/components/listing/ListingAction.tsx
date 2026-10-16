@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PencilIcon, Trash2Icon } from "lucide-react";
 import ListingForm from "@/components/listing/ListingForm";
 import { updateListingAction, deleteListingAction, updateListingStatusAction } from "@/app/actions";
 import { statusActions } from "@/lib/constants/listing.constants";
@@ -72,16 +73,18 @@ export default function ListingActions({
         <button
           type="button"
           onClick={() => setIsEditing(true)}
-          className="bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2"
+          className="inline-flex items-center gap-2 bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2"
         >
+          <PencilIcon className="size-4" aria-hidden="true" />
           Bearbeiten
         </button>
         {listing.status !== "pending" && (
           <button
             type="button"
             onClick={handleDelete}
-            className="bg-red-800 text-white rounded-lg px-3 py-2 disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-red-800 text-white rounded-lg px-3 py-2 disabled:opacity-50"
           >
+            <Trash2Icon className="size-4" aria-hidden="true" />
             Löschen
           </button>
         )}

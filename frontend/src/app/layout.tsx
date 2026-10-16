@@ -6,6 +6,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import BurgerMenu from "@/components/BurgerMenu";
+import { cookies } from "next/headers";
+import { AUTH_COOKIE } from "@/lib/fetchAPI";
+import { getCurrentUser } from "@/lib/users.service";
+import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -28,6 +32,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const currentUser = await getCurrentUser();
+  const token = currentUser
+    ? ((await cookies()).get(AUTH_COOKIE)?.value ?? null)
+    : null;
+
   return (
     <html
       lang="en"
@@ -39,6 +48,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="text-body font-mono">
+        <ChatSocketConnector token={token} userId={currentUser?.id ?? null} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
