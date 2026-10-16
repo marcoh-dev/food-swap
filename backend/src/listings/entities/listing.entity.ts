@@ -54,7 +54,10 @@ export class Listing {
   })
   status!: ListingStatus;
 
-  @ManyToOne(() => User, (user) => user.listings)
+  @ManyToOne(() => User, (user) => user.listings, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   owner!: User;
 
   @Column({ name: 'category_id', nullable: true })
@@ -75,12 +78,12 @@ export class Listing {
   })
   tags!: Tag[];
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   endDate!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt!: Date;
 }
