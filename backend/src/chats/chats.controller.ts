@@ -11,7 +11,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { ChatsService } from './chats.service';
-import type { AuthenticatedRequest } from '../auth/login.type';
+import type { AuthenticatedRequest } from '../auth/login.types';
 import { StartChatDto } from './dtos/startChat.dto';
 import { SendMessageDto } from './dtos/sendMessage.dto';
 

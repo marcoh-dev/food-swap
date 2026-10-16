@@ -16,11 +16,12 @@ import {
 import { ListingsService } from './listings.service';
 import { CreateListingDto } from './dtos/createListing.dto';
 import { ListingResponseDto } from './dtos/listingResponse.dto';
-import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 import { PaginatedListingsResponseDto } from './dtos/paginatedListingsResponse.dto';
 import { Public } from '../common/decorators/public.decorator';
-import type { AuthenticatedRequest } from '../auth/login.type';
+import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateListingDto } from './dtos/updateListing.dto';
+import { ListingsQueryDto } from './dtos/listingsQuery.dto';
+import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
 
 @Controller('listings')
 export class ListingsController {
@@ -29,8 +30,8 @@ export class ListingsController {
   @Public()
   @Get()
   @SerializeOptions({ type: PaginatedListingsResponseDto })
-  findAll(@Query() pagination: PaginationQueryDto) {
-    return this.listingsService.findAll(pagination);
+  findAll(@Query() query: ListingsQueryDto) {
+    return this.listingsService.findAll(query);
   }
 
   @Public()
@@ -57,6 +58,16 @@ export class ListingsController {
     @Request() req: AuthenticatedRequest,
   ) {
     return this.listingsService.update(id, listingPayload, req.user);
+  }
+
+  @Patch(':id/status')
+  @SerializeOptions({ type: ListingResponseDto })
+  updateStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() listingPayload: UpdateListingStatusDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
+    return this.listingsService.updateStatus(id, listingPayload, req.user);
   }
 
   @Delete(':id')

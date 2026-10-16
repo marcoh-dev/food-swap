@@ -1,4 +1,4 @@
-import { ChatDetail, ChatListItem, ChatMessage, ListingChatStatus } from "./types/chat.types";
+import type { ChatDetail, ChatListItem, ChatMessage, ListingChatStatus } from "./types/chat.types";
 import { fetchAPI } from "./fetchAPI";
 
 export class ApiError extends Error {

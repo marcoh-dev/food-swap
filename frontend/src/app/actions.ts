@@ -5,8 +5,13 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import { ListingType, NewListing } from "@/lib/types/listing.types";
-import { createListing, deleteListing, updateListing } from "@/lib/listings.service";
+import type { ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
+import {
+	createListing,
+	deleteListing,
+	updateListing,
+	updateListingStatus,
+} from "@/lib/listings.service";
 import { revalidatePath } from "next/cache";
 import {
 	ApiError,
@@ -16,8 +21,8 @@ import {
 	replyToChat,
 	startChat,
 } from "@/lib/chats.service";
-import { ActionResult } from "@/lib/types/common.types";
-import { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
+import type { ActionResult } from "@/lib/types/common.types";
+import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 
 export async function registerAction(formData: FormData) {
 	const username = formData.get("username") as string;
@@ -94,6 +99,17 @@ export async function isAuthenticated(): Promise<boolean> {
 	return token ? true : false;
 }
 
+export async function searchListingAction(formData: FormData) {
+  const term = formData.get("term") as string;
+  const location = formData.get("location") as string;
+
+  const searchParams = new URLSearchParams();
+  if (term) searchParams.set("term", term);
+  if (location) searchParams.set("location", location);
+
+  redirect(`/s?${searchParams.toString()}`);
+}
+
 function readListing(formData: FormData): NewListing {
 	return {
 		title: formData.get("title") as string,
@@ -101,6 +117,8 @@ function readListing(formData: FormData): NewListing {
 		image: formData.get("image") as string,
 		location: formData.get("location") as string,
 		type: formData.get("type") as ListingType,
+		categoryId: (formData.get("categoryId") as string) || null,
+		tagIds: formData.getAll("tagIds") as string[],
 	};
 }
 
@@ -198,4 +216,23 @@ export async function deleteChatAction(chatId: string): Promise<ActionResult<nul
 			error: chatErrorMessage(error, "Der Chat konnte nicht gelöscht werden. Versuche es nochmal."),
 		};
 	}
+}
+
+export async function updateListingStatusAction(
+  id: string,
+  status: ListingStatus,
+) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser)
+    return {
+      error: "Du musst eingeloggt sein, um den Status ändern zu können.",
+    };
+
+  const result = await updateListingStatus(id, status);
+
+  if (result.error) return { error: result.error };
+
+  revalidatePath(`/listings/${id}`);
+  revalidatePath("/listings");
+  return {};
 }

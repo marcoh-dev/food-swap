@@ -14,7 +14,7 @@ import {
 import { UsersService } from './users.service';
 import { Public } from '../common/decorators/public.decorator';
 import { UserResponseDto } from './dtos/userResponse.dto';
-import type { AuthenticatedRequest } from '../auth/login.type';
+import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateUserDto } from './dtos/updateUser.dto';
 
 @Controller('users')

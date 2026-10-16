@@ -1,10 +1,13 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  ArrayUnique,
+  IsArray,
   IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
 } from 'class-validator';
 import { ListingType } from '../entities/listing.entity';
@@ -37,6 +40,16 @@ export class CreateListingDto {
 
   @IsEnum(ListingType)
   type!: ListingType;
+
+  @IsOptional()
+  @IsUUID()
+  categoryId?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('all', { each: true })
+  tagIds?: string[];
 
   @IsOptional()
   @Type(() => Date)

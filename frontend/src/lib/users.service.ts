@@ -1,5 +1,5 @@
 import { fetchAPI } from "./fetchAPI";
-import { User } from "./types/user.types";
+import type { User } from "./types/user.types";
 
 export async function getUserById(id: string): Promise<User | null> {
   const response = await fetchAPI(
