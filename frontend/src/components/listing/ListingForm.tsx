@@ -11,6 +11,8 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { NativeSelect, NativeSelectOption } from "../ui/native-select";
+import { Checkbox } from "../ui/checkbox";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -75,35 +77,37 @@ export default function ListingForm({
         </Field>
         <Field>
           <FieldLabel htmlFor="categoryId">Kategorie</FieldLabel>
-          <select
+          <NativeSelect
             id="categoryId"
             name="categoryId"
             required
             defaultValue={defaultValues?.categoryId ?? ""}
           >
-            <option value="" disabled>
+            <NativeSelectOption value="" disabled>
               Kategorie wählen
-            </option>
+            </NativeSelectOption>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <NativeSelectOption key={category.id} value={category.id}>
                 {category.name}
-              </option>
+              </NativeSelectOption>
             ))}
-          </select>
+          </NativeSelect>
         </Field>
-        <FieldSet className="grid gap-1">
-          <legend>Tags</legend>
-          {tags.map((tag) => (
-            <label key={tag.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="tagIds"
-                value={tag.id}
-                defaultChecked={defaultValues?.tagIds?.includes(tag.id)}
-              />
-              {tag.name}
-            </label>
-          ))}
+        <FieldSet>
+          <FieldLegend>Tags</FieldLegend>
+          <FieldGroup className="gap-3">
+            {tags.map((tag) => (
+              <Field key={tag.id} orientation="horizontal">
+                <Checkbox
+                  id={`tag-${tag.id}`}
+                  name="tagIds"
+                  value={tag.id}
+                  defaultChecked={defaultValues?.tagIds?.includes(tag.id)}
+                />
+                <FieldLabel htmlFor={`tag-${tag.id}`}>{tag.name}</FieldLabel>
+              </Field>
+            ))}
+          </FieldGroup>
         </FieldSet>
         <FieldSet>
           <FieldLegend>Art</FieldLegend>
@@ -119,7 +123,9 @@ export default function ListingForm({
           </RadioGroup>
         </FieldSet>
       </FieldGroup>
-      <Button type="submit">{submitLabel}</Button>
+      <Button type="submit" className="mt-6">
+        {submitLabel}
+      </Button>
     </form>
   );
 }

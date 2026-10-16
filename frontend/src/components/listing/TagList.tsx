@@ -1,4 +1,3 @@
-// components/listing/TagList.tsx
 import type { Tag } from "@/lib/types/tag.types";
 
 type Props = {
