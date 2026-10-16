@@ -32,3 +32,30 @@ export function isSameDay(a: string, b: string): boolean {
 export function formatShortDate(isoDate: string): string {
 	return isSameDay(isoDate, getCurrentIsoDate()) ? formatTime(isoDate) : formatDate(isoDate);
 }
+
+export function formatListingDate(
+	isoDate: string | null | undefined,
+	now: Date = new Date(),
+): string | null {
+	if (!isoDate) return null;
+
+	const date = new Date(isoDate);
+
+	if (Number.isNaN(date.getTime())) return null;
+
+	const yesterday = new Date(now);
+	yesterday.setDate(now.getDate() - 1);
+
+	if (date.toDateString() === now.toDateString()) {
+		return `heute, ${formatTime(isoDate)}`;
+	}
+
+	if (date.toDateString() === yesterday.toDateString()) {
+		return `gestern, ${formatTime(isoDate)}`;
+	}
+
+	return date.toLocaleDateString("de-DE", {
+		day: "2-digit",
+		month: "2-digit",
+	});
+}
