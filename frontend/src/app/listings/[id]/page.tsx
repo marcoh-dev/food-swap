@@ -57,7 +57,7 @@ export default async function ListingDetailPage({
         </div>
         <StatusBadge status={listing.status} />
         <p>{listing.description}</p>
-        <ListingMeta listing={listing} />
+        <ListingMeta listing={listing} dateVariant="full" />
         <TagList tags={listing.tags} />
         {listing.status === "deactivated" && (
           <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">

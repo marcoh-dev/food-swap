@@ -48,7 +48,11 @@ export default async function ListingsPage({
               </div>
               <StatusBadge status={listing.status} />
               <p className="text-sm">{listing.description}</p>
-              <ListingMeta listing={listing} className="text-xs" />
+              <ListingMeta
+                listing={listing}
+                dateVariant="relative"
+                className="text-xs"
+              />
             </Link>
           </li>
         ))}
