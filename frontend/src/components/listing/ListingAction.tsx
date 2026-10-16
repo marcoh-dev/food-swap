@@ -1,13 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { PencilIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, Trash2Icon, ChevronDownIcon } from "lucide-react";
 import ListingForm from "@/components/listing/ListingForm";
-import { updateListingAction, deleteListingAction, updateListingStatusAction } from "@/app/actions";
+import {
+  updateListingAction,
+  deleteListingAction,
+  updateListingStatusAction,
+} from "@/app/actions";
 import { statusActions } from "@/lib/constants/listing.constants";
 import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 import type { Category } from "@/lib/types/category.types";
 import type { Tag } from "@/lib/types/tag.types";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export default function ListingActions({
   listing,
@@ -20,6 +43,8 @@ export default function ListingActions({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const statusItems = statusActions[listing.status] ?? [];
 
   async function handleUpdate(formData: FormData) {
     await updateListingAction(listing.id, formData);
@@ -27,7 +52,6 @@ export default function ListingActions({
   }
 
   function handleDelete() {
-    if (!confirm("Wirklich löschen?")) return;
     deleteListingAction(listing.id);
   }
 
@@ -68,40 +92,65 @@ export default function ListingActions({
   }
 
   return (
-    <div className="mt-4 flex flex-col gap-3">
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={() => setIsEditing(true)}
-          className="inline-flex items-center gap-2 bg-gray-300 dark:bg-gray-600 rounded-lg px-3 py-2"
-        >
+    <div className="flex flex-col gap-3">
+      <div className="flex gap-2">
+        <Button variant="secondary" onClick={() => setIsEditing(true)}>
           <PencilIcon className="size-4" aria-hidden="true" />
           Bearbeiten
-        </button>
-        {listing.status !== "pending" && (
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="inline-flex items-center gap-2 bg-red-800 text-white rounded-lg px-3 py-2 disabled:opacity-50"
-          >
-            <Trash2Icon className="size-4" aria-hidden="true" />
-            Löschen
-          </button>
-        )}
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              Status ändern
+              <ChevronDownIcon aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {listing.status === "pending" && (
+              <DropdownMenuLabel>Ausstehend</DropdownMenuLabel>
+            )}
+            {statusItems.map((action) => (
+              <DropdownMenuItem
+                key={action.targetStatus}
+                onClick={() => handleStatusChange(action.targetStatus)}
+              >
+                {action.label}
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              disabled={listing.status === "pending"}
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2Icon aria-hidden="true" />
+              Löschen
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <div className="flex gap-3">
-        {statusActions[listing.status]?.map((action) => (
-          <button
-            key={action.targetStatus}
-            type="button"
-            onClick={() => handleStatusChange(action.targetStatus)}
-            className={`rounded-lg px-3 py-2  ${action.className}`}
-          >
-            {action.label}
-          </button>
-        ))}
-      </div>
-      {errorMessage && <p className="text-red-800">{errorMessage}</p>}
+
+      {errorMessage && <p className="text-destructive">{errorMessage}</p>}
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Anzeige wirklich löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dieser Schritt kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDelete}>
+              Endgültig löschen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

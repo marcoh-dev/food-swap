@@ -9,7 +9,6 @@ import CategoryBadge from "@/components/listing/CategoryBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,

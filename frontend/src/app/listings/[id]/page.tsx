@@ -14,6 +14,15 @@ import ListingMeta from "@/components/listing/ListingMeta";
 import { ListingChat } from "@/components/chat/ListingChat";
 import { getListingChatStatus } from "@/lib/chats.service";
 import type { ListingChatStatus } from "@/lib/types/chat.types";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 export default async function ListingDetailPage({
   params,
@@ -44,21 +53,42 @@ export default async function ListingDetailPage({
         defaultTerm={typeof term === "string" ? term : undefined}
         defaultLocation={typeof location === "string" ? location : undefined}
       />
-      <div className="flex flex-col p-4 bg-gray-200 w-fit">
-        <Image
-          width={450}
-          height={400}
-          src={listing.image ?? "/placeholder.png"}
-          alt={listing.title}
-        ></Image>
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-          <h2 className="text-h2">{listing.title}</h2>
-          <CategoryBadge category={listing.category} />
+      <Card className="relative overflow-hidden pt-0">
+        <div className="relative aspect-[3/2] w-full">
+          <Image
+            src={listing.image ?? "/placeholder.png"}
+            alt={listing.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover"
+          />
+          <div className="absolute top-2 left-2">
+            <StatusBadge status={listing.status} />
+          </div>
         </div>
-        <StatusBadge status={listing.status} />
-        <p>{listing.description}</p>
-        <ListingMeta listing={listing} />
-        <TagList tags={listing.tags} />
+        <CardHeader>
+          <CardTitle className="text-h2">{listing.title}</CardTitle>
+          <CardDescription>
+            <ListingMeta listing={listing} />
+          </CardDescription>
+          <CardAction>
+            <CategoryBadge category={listing.category} />
+          </CardAction>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p>{listing.description}</p>
+          <TagList tags={listing.tags} />
+        </CardContent>
+
+        {isOwner && (
+          <CardFooter className="flex-col items-stretch">
+            <ListingActions
+              listing={listing}
+              categories={categories}
+              tags={tags}
+            />
+          </CardFooter>
+        )}
         {listing.status === "deactivated" && (
           <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">
             <span className="font-semibold text-white p-4">
@@ -66,28 +96,22 @@ export default async function ListingDetailPage({
             </span>
           </div>
         )}
-        {isOwner && (
-          <ListingActions
-            listing={listing}
-            categories={categories}
-            tags={tags}
-          />
+
+        {chatStatus && (
+          <div className="mt-4">
+            <ListingChat
+              listingId={listing.id}
+              ownerName={ownerName}
+              status={chatStatus}
+            />
+          </div>
         )}
-      </div>
-      {chatStatus && (
-        <div className="mt-4">
-          <ListingChat
-            listingId={listing.id}
-            ownerName={ownerName}
-            status={chatStatus}
-          />
-        </div>
-      )}
-      {!currentUser && (
-        <p className="mt-4 text-sm">
-          <Link href="/login">Anmelden</Link>, um {ownerName} zu schreiben.
-        </p>
-      )}
+        {!currentUser && (
+          <p className="mt-4 text-sm">
+            <Link href="/login">Anmelden</Link>, um {ownerName} zu schreiben.
+          </p>
+        )}
+      </Card>
     </>
   );
 }

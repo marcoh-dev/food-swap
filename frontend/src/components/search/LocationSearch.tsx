@@ -1,5 +1,9 @@
-import { Field, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+import { MapPinIcon } from "lucide-react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
 
 export default function LocationSearchForm({
   defaultValue = "",
@@ -7,17 +11,15 @@ export default function LocationSearchForm({
   defaultValue?: string;
 }) {
   return (
-    <Field>
-      <FieldLabel htmlFor="location" className="sr-only">
-        Ort
-      </FieldLabel>
-      <Input
-        id="location"
+    <InputGroup>
+      <InputGroupAddon>
+        <MapPinIcon />
+      </InputGroupAddon>
+      <InputGroupInput
         name="location"
-        type="search"
         placeholder="Ort"
         defaultValue={defaultValue}
       />
-    </Field>
+    </InputGroup>
   );
 }
