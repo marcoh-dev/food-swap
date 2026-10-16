@@ -10,6 +10,9 @@ import { JwtAuthGuard } from './auth/jwtAuth.guard';
 import { User } from './users/entities/user.entity';
 import { Listing } from './listings/entities/listing.entity';
 import { ListingsModule } from './listings/listings.module';
+import { ChatsModule } from './chats/chats.module';
+import { Chat } from './chats/entities/chat.entity';
+import { Message } from './chats/entities/message.entity';
 import { Category } from './categories/entities/category.entity';
 import { Tag } from './tags/entities/tag.entity';
 import { CategoriesModule } from './categories/categories.module';
@@ -25,7 +28,7 @@ import { TagsModule } from './tags/tags.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
-        entities: [User, Listing, Category, Tag],
+        entities: [User, Listing, Chat, Message, Category, Tag],
         synchronize: false,
         logging: false,
         enableWAL: true,
@@ -35,6 +38,7 @@ import { TagsModule } from './tags/tags.module';
     AuthModule,
     UsersModule,
     ListingsModule,
+    ChatsModule,
     CategoriesModule,
     TagsModule,
   ],

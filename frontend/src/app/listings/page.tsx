@@ -7,6 +7,7 @@ import { SortingMenu } from "@/components/SortingMenu";
 import type { SortOption } from "@/lib/types/listing.types";
 import CategoryBadge from "@/components/listing/CategoryBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
+import ListingMeta from "@/components/listing/ListingMeta";
 
 export default async function ListingsPage({
   searchParams,
@@ -47,10 +48,7 @@ export default async function ListingsPage({
               </div>
               <StatusBadge status={listing.status} />
               <p className="text-sm">{listing.description}</p>
-              <p className="text-xs text-gray-500">
-                {listing.location} ·{" "}
-                {listing.type === "swap" ? "Tauschen" : "Verschenken"}
-              </p>
+              <ListingMeta listing={listing} className="text-xs" />
             </Link>
           </li>
         ))}

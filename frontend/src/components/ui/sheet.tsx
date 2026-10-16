@@ -5,7 +5,7 @@ import { cn } from "cn";
 import { Dialog as SheetPrimitive } from "radix-ui";
 
 import { Button } from "@/components/ui/button";
-import { XIcon } from "@phosphor-icons/react";
+import { XIcon } from "lucide-react";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -76,7 +76,7 @@ function SheetContent({
               size="icon-sm"
             >
               <XIcon size={30} />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">Schließen</span>
             </Button>
           </SheetPrimitive.Close>
         )}

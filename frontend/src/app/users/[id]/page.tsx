@@ -15,7 +15,7 @@ export default async function UserPage({ params }: PageProps<"/users/[id]">) {
       <h2 className="text-h2">{user.name ?? user.username}</h2>
       <p>Benutzername: {user.username}</p>
       <p>Registriert seit: {formatDate(user.createdAt)}</p>
-      <UserUpdate currentName={user.name} />
+      <UserUpdate currentName={user.name ?? undefined} />
       <UserDelete />
     </>
   );

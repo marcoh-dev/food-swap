@@ -8,7 +8,7 @@ export class UserResponseDto {
   username!: string;
 
   @Expose()
-  name!: string;
+  name!: string | null;
 
   @Expose()
   createdAt!: Date;

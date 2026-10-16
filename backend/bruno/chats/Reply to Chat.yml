@@ -1,0 +1,26 @@
+info:
+  name: Reply to Chat
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseURL}}/chats/:id/messages"
+  params:
+    - name: id
+      value: "{{chatId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "content": "Super, wann passt es dir?"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

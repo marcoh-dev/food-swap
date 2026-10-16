@@ -36,13 +36,22 @@ export default async function BurgerMenu() {
               </li>
 
               {isLoggedIn && (
-                <li>
-                  <SheetParts.SheetClose asChild>
-                    <Link href="/listings/new" className="no-underline">
-                      Neues Angebot
-                    </Link>
-                  </SheetParts.SheetClose>
-                </li>
+                <>
+                  <li>
+                    <SheetParts.SheetClose asChild>
+                      <Link href="/listings/new" className="no-underline">
+                        Neues Angebot
+                      </Link>
+                    </SheetParts.SheetClose>
+                  </li>
+                  <li>
+                    <SheetParts.SheetClose asChild>
+                      <Link href="/chats" className="no-underline">
+                        Chats
+                      </Link>
+                    </SheetParts.SheetClose>
+                  </li>
+                </>
               )}
             </ul>
 
