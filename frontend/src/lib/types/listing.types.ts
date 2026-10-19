@@ -14,8 +14,8 @@ export type ListingResponse = {
   owner: User;
   category: Category;
   tags: Tag[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type NewListing = {

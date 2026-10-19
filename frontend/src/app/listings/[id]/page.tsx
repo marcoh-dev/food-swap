@@ -70,7 +70,7 @@ export default async function ListingDetailPage({
           <CardHeader>
             <CardTitle className="text-h2">{listing.title}</CardTitle>
             <CardDescription>
-              <ListingMeta listing={listing} />
+              <ListingMeta listing={listing} dateVariant="full" />
             </CardDescription>
             <CardAction>
               <CategoryBadge category={listing.category} />

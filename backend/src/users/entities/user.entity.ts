@@ -28,9 +28,9 @@ export class User {
   @OneToMany(() => Listing, (listing) => listing.owner)
   listings!: Listing[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt!: Date;
 }

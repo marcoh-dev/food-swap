@@ -1,12 +1,15 @@
 import { GiftIcon, MapPinIcon, RepeatIcon } from "lucide-react";
 import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "@/lib/utils";
+import ListingDate from "./ListingDate";
 
 export default function ListingMeta({
 	listing,
+	dateVariant,
 	className,
 }: {
-	listing: Pick<ListingResponse, "location" | "type">;
+	listing: Pick<ListingResponse, "location" | "type" | "createdAt">;
+	dateVariant?: "relative" | "full";
 	className?: string;
 }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;
@@ -26,6 +29,7 @@ export default function ListingMeta({
 				<TypeIcon className="size-4" aria-hidden="true" />
 				{listing.type === "swap" ? "Tauschen" : "Verschenken"}
 			</span>
+			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
 		</p>
 	);
 }
