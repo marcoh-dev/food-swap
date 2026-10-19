@@ -13,6 +13,8 @@ import { Button } from "../ui/button";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { NativeSelect, NativeSelectOption } from "../ui/native-select";
 import { Checkbox } from "../ui/checkbox";
+import { Textarea } from "../ui/textarea";
+import TagSelect from "./TagSelect";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -45,11 +47,11 @@ export default function ListingForm({
         </Field>
         <Field>
           <FieldLabel htmlFor="description">Beschreibung</FieldLabel>
-          <Input
+          <Textarea
             id="description"
             name="description"
-            type="text"
-            placeholder="3 Tomaten von meiner Ernte…"
+            placeholder="3 Tomaten von meiner Ernte …"
+            rows={4}
             defaultValue={defaultValues?.description}
             required
           />
@@ -95,19 +97,7 @@ export default function ListingForm({
         </Field>
         <FieldSet>
           <FieldLegend>Tags</FieldLegend>
-          <FieldGroup className="gap-3">
-            {tags.map((tag) => (
-              <Field key={tag.id} orientation="horizontal">
-                <Checkbox
-                  id={`tag-${tag.id}`}
-                  name="tagIds"
-                  value={tag.id}
-                  defaultChecked={defaultValues?.tagIds?.includes(tag.id)}
-                />
-                <FieldLabel htmlFor={`tag-${tag.id}`}>{tag.name}</FieldLabel>
-              </Field>
-            ))}
-          </FieldGroup>
+          <TagSelect tags={tags} defaultValue={defaultValues?.tagIds} />
         </FieldSet>
         <FieldSet>
           <FieldLegend>Art</FieldLegend>
