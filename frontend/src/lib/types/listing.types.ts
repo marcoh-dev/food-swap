@@ -42,5 +42,4 @@ export type ListingStatus = "pending" | "active" | "reserved" | "deactivated";
 export type StatusAction = {
   label: string;
   targetStatus: ListingStatus;
-  className: string;
 };

@@ -3,6 +3,7 @@ import LocationSearch from "./LocationSearch";
 import TermSearch from "./TermSearch";
 import { FieldGroup } from "../ui/field";
 import { Button } from "../ui/button";
+import { SearchIcon } from "lucide-react";
 
 export default function SearchBar({
   defaultTerm = "",
@@ -13,10 +14,12 @@ export default function SearchBar({
 }) {
   return (
     <form role="search" className="pb-6" action={searchListingAction}>
-      <FieldGroup>
+      <FieldGroup className="gap-2 sm:flex-row sm:items-center">
         <TermSearch defaultValue={defaultTerm} />
         <LocationSearch defaultValue={defaultLocation} />
-        <Button type="submit">Suchen</Button>
+        <Button type="submit" className="sm:w-auto">
+          Suchen
+        </Button>
       </FieldGroup>
     </form>
   );
