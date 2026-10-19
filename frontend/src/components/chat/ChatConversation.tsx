@@ -102,7 +102,8 @@ export function ChatConversation({
 							<Alert>
 								<CircleAlertIcon />
 								<AlertDescription>
-									Die andere Person hat ihr Konto gelöscht. Du kannst nicht mehr antworten.
+									Die andere Person hat ihr Konto gelöscht. Du kannst nicht mehr
+									antworten.
 								</AlertDescription>
 							</Alert>
 						)}
@@ -211,7 +212,8 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 				<AlertDialogHeader>
 					<AlertDialogTitle>Diesen Chat löschen?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Der Chat verschwindet nur für dich. Schreibt die andere Person erneut, erscheint er wieder.
+						Der Chat verschwindet nur für dich. Schreibt die andere Person erneut,
+						erscheint er wieder.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				{error && (

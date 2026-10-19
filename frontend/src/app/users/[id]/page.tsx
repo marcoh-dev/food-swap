@@ -5,25 +5,25 @@ import { formatDate } from "@/utils/date";
 import { notFound } from "next/navigation";
 
 export default async function UserPage({ params }: PageProps<"/users/[id]">) {
-  const { id } = await params;
+	const { id } = await params;
 
-  const user = await getUserById(id);
-  if (!user) notFound();
+	const user = await getUserById(id);
+	if (!user) notFound();
 
-  const currentUser = await getCurrentUser();
-  const isOwner = currentUser?.id === user.id;
+	const currentUser = await getCurrentUser();
+	const isOwner = currentUser?.id === user.id;
 
-  return (
-    <>
-      <h2 className="text-h2">{user.name ?? user.username}</h2>
-      <p>Benutzername: {user.username}</p>
-      <p>Registriert seit: {formatDate(user.createdAt)}</p>
-      {isOwner && (
-        <>
-          <UserUpdate currentName={user.name ?? undefined} />
-          <UserDelete />
-        </>
-      )}
-    </>
-  );
+	return (
+		<>
+			<h2 className="text-h2">{user.name ?? user.username}</h2>
+			<p>Benutzername: {user.username}</p>
+			<p>Registriert seit: {formatDate(user.createdAt)}</p>
+			{isOwner && (
+				<>
+					<UserUpdate currentName={user.name ?? undefined} />
+					<UserDelete />
+				</>
+			)}
+		</>
+	);
 }
