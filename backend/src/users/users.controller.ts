@@ -39,7 +39,7 @@ export class UsersController {
   @Public()
   @Get(':id/listings')
   @SerializeOptions({ type: PaginatedListingsResponseDto })
-  findAll(
+  findAllListingsByUser(
     @Param('id', ParseUUIDPipe) userId: string,
     @Query() query: PaginationQueryDto,
   ) {
