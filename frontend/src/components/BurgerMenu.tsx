@@ -1,6 +1,7 @@
 import Link from "next/link";
 import * as SheetParts from "@/components/ui/sheet";
 import { UserLogout } from "@/components/user/UserLogout";
+import { AuthLink } from "@/components/user/AuthLink";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -76,16 +77,16 @@ export default async function BurgerMenu() {
 								<>
 									<li>
 										<SheetParts.SheetClose asChild>
-											<Link href="/login" className="no-underline">
+											<AuthLink href="/login" className="no-underline">
 												Anmelden
-											</Link>
+											</AuthLink>
 										</SheetParts.SheetClose>
 									</li>
 									<li>
 										<SheetParts.SheetClose asChild>
-											<Link href="/registration" className="no-underline">
+											<AuthLink href="/registration" className="no-underline">
 												Registrieren
-											</Link>
+											</AuthLink>
 										</SheetParts.SheetClose>
 									</li>
 								</>
