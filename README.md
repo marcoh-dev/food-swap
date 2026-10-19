@@ -24,8 +24,8 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 # Clone the repository
 git clone <repository-url>
 cd food-swap
-bun install
-bun run dev
+npm install
+npm run dev
 ```
 
 Copy `.env.example` to `.env` in both folders (frontend / backend) and fill in the values.
