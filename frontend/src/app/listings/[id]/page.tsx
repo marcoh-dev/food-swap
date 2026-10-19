@@ -53,48 +53,51 @@ export default async function ListingDetailPage({
         defaultTerm={typeof term === "string" ? term : undefined}
         defaultLocation={typeof location === "string" ? location : undefined}
       />
-      <Card className="relative overflow-hidden pt-0">
-        <div className="relative aspect-[3/2] w-full">
-          <Image
-            src={listing.image ?? "/placeholder.png"}
-            alt={listing.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 600px"
-            className="object-cover"
-          />
-          <div className="absolute top-2 left-2">
-            <StatusBadge status={listing.status} />
+      <Card className="gap-0 overflow-hidden pt-0">
+        <div className="relative flex flex-col gap-4 pb-3">
+          <div className="relative aspect-[3/2] w-full">
+            <Image
+              src={listing.image ?? "/placeholder.png"}
+              alt={listing.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 600px"
+              className="object-cover"
+            />
+            <div className="absolute top-2 left-2">
+              <StatusBadge status={listing.status} />
+            </div>
           </div>
+          <CardHeader>
+            <CardTitle className="text-h2">{listing.title}</CardTitle>
+            <CardDescription>
+              <ListingMeta listing={listing} />
+            </CardDescription>
+            <CardAction>
+              <CategoryBadge category={listing.category} />
+            </CardAction>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>{listing.description}</p>
+            <TagList tags={listing.tags} />
+          </CardContent>
+
+          {listing.status === "deactivated" && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gray-500/60">
+              <span className="font-semibold text-white p-4">
+                Diese Anzeige ist nicht mehr verfügbar.
+              </span>
+            </div>
+          )}
         </div>
-        <CardHeader>
-          <CardTitle className="text-h2">{listing.title}</CardTitle>
-          <CardDescription>
-            <ListingMeta listing={listing} />
-          </CardDescription>
-          <CardAction>
-            <CategoryBadge category={listing.category} />
-          </CardAction>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p>{listing.description}</p>
-          <TagList tags={listing.tags} />
-        </CardContent>
 
         {isOwner && (
-          <CardFooter className="flex-col items-stretch">
+          <CardFooter className="relative z-10 flex-col items-stretch">
             <ListingActions
               listing={listing}
               categories={categories}
               tags={tags}
             />
           </CardFooter>
-        )}
-        {listing.status === "deactivated" && (
-          <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">
-            <span className="font-semibold text-white p-4">
-              Diese Anzeige ist nicht mehr verfügbar.
-            </span>
-          </div>
         )}
 
         {chatStatus && (

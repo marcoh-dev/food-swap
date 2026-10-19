@@ -43,3 +43,17 @@ export type StatusAction = {
   label: string;
   targetStatus: ListingStatus;
 };
+
+export const statusLabels: Record<ListingStatus, string> = {
+  pending: "Ausstehend",
+  active: "Aktiv",
+  reserved: "Reserviert",
+  deactivated: "Deaktiv",
+};
+
+export const statusOrder: ListingStatus[] = [
+  "pending",
+  "active",
+  "reserved",
+  "deactivated",
+];

@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { PencilIcon, Trash2Icon, ChevronDownIcon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import ListingForm from "@/components/listing/ListingForm";
 import {
   updateListingAction,
   deleteListingAction,
   updateListingStatusAction,
 } from "@/app/actions";
-import { statusActions } from "@/lib/constants/listing.constants";
 import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 import type { Category } from "@/lib/types/category.types";
 import type { Tag } from "@/lib/types/tag.types";
@@ -23,14 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+import ListingStatusMenu from "./ListingStatusMenu";
 
 export default function ListingActions({
   listing,
@@ -44,7 +36,6 @@ export default function ListingActions({
   const [isEditing, setIsEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const statusItems = statusActions[listing.status] ?? [];
 
   async function handleUpdate(formData: FormData) {
     await updateListingAction(listing.id, formData);
@@ -80,13 +71,14 @@ export default function ListingActions({
           }}
           submitLabel="Speichern"
         />
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => setIsEditing(false)}
           className="rounded-lg px-3 py-2 w-full"
         >
           Abbrechen
-        </button>
+        </Button>
       </div>
     );
   }
@@ -98,36 +90,11 @@ export default function ListingActions({
           <PencilIcon className="size-4" aria-hidden="true" />
           Bearbeiten
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Status ändern
-              <ChevronDownIcon aria-hidden="true" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {listing.status === "pending" && (
-              <DropdownMenuLabel>Ausstehend</DropdownMenuLabel>
-            )}
-            {statusItems.map((action) => (
-              <DropdownMenuItem
-                key={action.targetStatus}
-                onClick={() => handleStatusChange(action.targetStatus)}
-              >
-                {action.label}
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              disabled={listing.status === "pending"}
-              onClick={() => setIsDeleteDialogOpen(true)}
-            >
-              <Trash2Icon aria-hidden="true" />
-              Löschen
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ListingStatusMenu
+          status={listing.status}
+          onStatusChange={handleStatusChange}
+          onDeleteClick={() => setIsDeleteDialogOpen(true)}
+        />
       </div>
 
       {errorMessage && <p className="text-destructive">{errorMessage}</p>}

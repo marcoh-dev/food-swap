@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FieldGroup, Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import PinInput from "../PinInput";
 
 export function UserLogin() {
   return (
@@ -17,17 +18,17 @@ export function UserLogin() {
               type="text"
               placeholder="Pomodoro"
               required
+              autoComplete="username"
               autoFocus
             />
           </Field>
           <Field>
             <FieldLabel htmlFor="password">Passwort</FieldLabel>
-            <Input
+            <PinInput
               id="password"
               name="password"
-              type="password"
+              autoComplete="current-password"
               placeholder="********"
-              required
             />
           </Field>
         </FieldGroup>

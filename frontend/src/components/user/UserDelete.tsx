@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { deleteUserAction } from "@/app/actions";
 import {
   AlertDialog,
