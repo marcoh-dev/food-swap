@@ -6,7 +6,15 @@ export const toastMessages: Record<
 > = {
   registered: {
     type: "success",
-    message: "Registrierung erfolgreich! Du kannst dich jetzt anmelden.",
+    message: "Registrierung erfolgreich! Willkommen bei FoodSwap.",
+  },
+  "register-error": {
+    type: "error",
+    message: "Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.",
+  },
+  "login-error": {
+    type: "error",
+    message: "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch.",
   },
   "user-delete-error": {
     type: "error",

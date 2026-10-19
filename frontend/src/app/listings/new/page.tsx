@@ -9,7 +9,7 @@ export default async function NewListingPage() {
   const categories = await getCategories();
   const tags = await getTags();
   if (!isLoggedIn) {
-    redirect("/login");
+    redirect("/login?redirect=/listings/new");
   }
   return (
     <>

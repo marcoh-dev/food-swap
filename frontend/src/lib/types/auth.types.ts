@@ -5,8 +5,7 @@ export type AuthResponse = {
 };
 
 export type RegistrationResponse = {
-  username: string;
-  id: string;
+  access_token?: string;
   statusCode?: number;
   message?: string;
 };

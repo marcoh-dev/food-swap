@@ -24,8 +24,12 @@ export default function Toast() {
     }
 
     toast[entry.type](entry.message, { id: toastKey });
-    router.replace(pathname);
-  }, [toastKey, pathname, router]);
+
+    const remainingParams = new URLSearchParams(searchParams.toString());
+    remainingParams.delete("toast");
+    const query = remainingParams.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }, [toastKey, pathname, router, searchParams]);
 
   return null;
 }

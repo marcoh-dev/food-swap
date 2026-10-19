@@ -5,10 +5,15 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import PinInput from "../PinInput";
 
-export function UserLogin() {
+export function UserLogin({ redirectTo }: { redirectTo?: string }) {
+  const registrationHref = redirectTo
+    ? `/registration?redirect=${encodeURIComponent(redirectTo)}`
+    : "/registration";
+
   return (
     <>
       <form className="mt-4" action={loginAction}>
+        <input type="hidden" name="redirect" value={redirectTo ?? ""} />
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="username">Benutzername</FieldLabel>
@@ -39,7 +44,7 @@ export function UserLogin() {
       </form>
       <div className="font-light text-[10px]">
         Neu bei FoodSwap? Hier geht's zur{" "}
-        <Link href="/registration" className="underline">
+        <Link href={registrationHref} className="underline">
           Registrierung
         </Link>
         .

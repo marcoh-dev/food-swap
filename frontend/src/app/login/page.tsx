@@ -1,10 +1,14 @@
 import { UserLogin } from "@/components/user/UserLogin";
 
-export default function Login() {
+export default async function Login({ searchParams }: PageProps<"/login">) {
+  const { redirect } = await searchParams;
+
   return (
     <>
       <h2>Was tauschst du heute?</h2>
-      <UserLogin />
+      <UserLogin
+        redirectTo={typeof redirect === "string" ? redirect : undefined}
+      />
     </>
   );
 }

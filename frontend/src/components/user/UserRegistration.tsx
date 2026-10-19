@@ -5,10 +5,15 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import PinInput from "../PinInput";
 
-export function UserRegistration() {
+export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
+  const loginHref = redirectTo
+    ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+    : "/login";
+
   return (
     <>
       <form className="mt-4" action={registerAction}>
+        <input type="hidden" name="redirect" value={redirectTo ?? ""} />
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="username">Benutzername</FieldLabel>
@@ -39,7 +44,7 @@ export function UserRegistration() {
       </form>
       <div className="font-light text-[10px]">
         Du hast schon ein Konto? Hier geht's zum{" "}
-        <Link href="/login" className="underline">
+        <Link href={loginHref} className="underline">
           Login
         </Link>
         .

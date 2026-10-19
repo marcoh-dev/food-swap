@@ -32,40 +32,71 @@ import type {
   ChatMessage,
 } from "@/lib/types/chat.types";
 
-export async function registerAction(formData: FormData) {
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
+function getRedirectTarget(formData: FormData): string {
+  const target = formData.get("redirect");
 
-  const authData = await registerUser({ username, password });
-
-  if (authData.statusCode) {
-    throw new Error(authData.message);
+  if (
+    typeof target !== "string" ||
+    !target.startsWith("/") ||
+    target.startsWith("//") ||
+    target.startsWith("/\\")
+  ) {
+    return "/";
   }
-  redirect("/login?toast=registered");
+
+  return target;
 }
 
-export async function loginAction(formData: FormData) {
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
+function authErrorPath(page: string, toastKey: string, redirectTo: string) {
+  const searchParams = new URLSearchParams({ toast: toastKey });
+  if (redirectTo !== "/") searchParams.set("redirect", redirectTo);
 
-  const authData = await loginUser({ username, password });
+  return `${page}?${searchParams.toString()}`;
+}
 
-  if (authData.statusCode === 401 || !authData.access_token) {
-    throw new Error(authData.message);
-  }
-
+async function setAuthCookie(token: string) {
   const cookieStore = await cookies();
 
-  cookieStore.set(AUTH_COOKIE, authData.access_token, {
+  cookieStore.set(AUTH_COOKIE, token, {
     httpOnly: true,
     //secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60,
   });
+}
 
-  const user = await getCurrentUser();
-  redirect(`/users/${user?.id}`);
+export async function registerAction(formData: FormData) {
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
+  const redirectTo = getRedirectTarget(formData);
+
+  const authData = await registerUser({ username, password });
+
+  if (!authData.access_token) {
+    redirect(authErrorPath("/registration", "register-error", redirectTo));
+  }
+
+  await setAuthCookie(authData.access_token);
+
+  const separator = redirectTo.includes("?") ? "&" : "?";
+  redirect(`${redirectTo}${separator}toast=registered`);
+}
+
+export async function loginAction(formData: FormData) {
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
+  const redirectTo = getRedirectTarget(formData);
+
+  const authData = await loginUser({ username, password });
+
+  if (!authData.access_token) {
+    redirect(authErrorPath("/login", "login-error", redirectTo));
+  }
+
+  await setAuthCookie(authData.access_token);
+
+  redirect(redirectTo);
 }
 
 export async function updateUserAction(formData: FormData) {
@@ -135,18 +166,20 @@ function readListing(formData: FormData): NewListing {
 }
 
 export async function createListingAction(formData: FormData) {
-  const listing = await createListing(readListing(formData));
   const currentUser = await getCurrentUser();
   if (!currentUser) unauthorized();
+
+  const listing = await createListing(readListing(formData));
 
   revalidatePath("/listings");
   redirect(`/listings/${listing.id}?toast=listing-created`);
 }
 
 export async function updateListingAction(id: string, formData: FormData) {
-  await updateListing(id, readListing(formData));
   const currentUser = await getCurrentUser();
   if (!currentUser) unauthorized();
+
+  await updateListing(id, readListing(formData));
 
   revalidatePath("/listings");
   revalidatePath(`/listings/${id}`);

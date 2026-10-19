@@ -111,7 +111,10 @@ export default async function ListingDetailPage({
         )}
         {!currentUser && (
           <p className="mt-3 ml-4 text-sm">
-            <Link href="/login">Anmelden</Link>, um {ownerName} zu schreiben.
+            <Link href={`/login?redirect=/listings/${listing.id}`}>
+              Anmelden
+            </Link>
+            , um {ownerName} zu schreiben.
           </p>
         )}
       </Card>

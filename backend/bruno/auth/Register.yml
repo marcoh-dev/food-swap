@@ -14,6 +14,14 @@ http:
         "password": "myCoolPassword1!"
       }
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 201) {
+          bru.setVar("token", res.body.access_token);
+        }
+
 settings:
   encodeUrl: true
   timeout: 0

@@ -4,7 +4,7 @@ import { ChatsView } from "@/components/chat/ChatsView";
 
 export default async function ChatsPage({ searchParams }: PageProps<"/chats">) {
   const currentUser = await getCurrentUser();
-  if (!currentUser) redirect("/login");
+  if (!currentUser) redirect("/login?redirect=/chats");
 
   const { chat } = await searchParams;
 
