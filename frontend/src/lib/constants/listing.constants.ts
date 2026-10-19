@@ -7,23 +7,23 @@ export const statusActions: Partial<Record<ListingStatus, StatusAction[]>> = {
       targetStatus: "reserved",
     },
     {
-      label: "Deaktiv",
+      label: "Deaktiviert",
       targetStatus: "deactivated",
     },
   ],
   reserved: [
     {
-      label: "Aktiv",
+      label: "Aktiviert",
       targetStatus: "active",
     },
     {
-      label: "Deaktiv",
+      label: "Deaktiviert",
       targetStatus: "deactivated",
     },
   ],
   deactivated: [
     {
-      label: "Aktiv",
+      label: "Aktiviert",
       targetStatus: "active",
     },
   ],
@@ -31,9 +31,9 @@ export const statusActions: Partial<Record<ListingStatus, StatusAction[]>> = {
 
 export const statusLabels: Record<ListingStatus, string> = {
   pending: "Ausstehend",
-  active: "Aktiv",
+  active: "Aktiviert",
   reserved: "Reserviert",
-  deactivated: "Deaktiv",
+  deactivated: "Deaktiviert",
 };
 
 export const statusOrder: ListingStatus[] = [

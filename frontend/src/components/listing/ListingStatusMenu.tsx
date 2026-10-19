@@ -30,10 +30,15 @@ export default function ListingStatusMenu({
     (action) => action.targetStatus,
   );
 
+  const visibleStatuses =
+    status === "pending"
+      ? statusOrder.filter((option) => option === "pending")
+      : statusOrder.filter((option) => option !== "pending");
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" disabled={status === "pending"}>
           {statusLabels[status]}
           <ChevronDownIcon aria-hidden="true" />
         </Button>
@@ -43,7 +48,7 @@ export default function ListingStatusMenu({
           value={status}
           onValueChange={(value) => onStatusChange(value as ListingStatus)}
         >
-          {statusOrder.map((option) => (
+          {visibleStatuses.map((option) => (
             <DropdownMenuRadioItem
               key={option}
               value={option}
@@ -54,11 +59,7 @@ export default function ListingStatusMenu({
           ))}
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          disabled={status === "pending"}
-          onClick={onDeleteClick}
-        >
+        <DropdownMenuItem variant="destructive" onClick={onDeleteClick}>
           <Trash2Icon aria-hidden="true" />
           Löschen
         </DropdownMenuItem>

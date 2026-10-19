@@ -1,7 +1,4 @@
-import { SonnerTypes } from "@/components/SonnerTypes";
-import Toast from "@/components/Toast";
 import { UserLogin } from "@/components/user/UserLogin";
-import { Suspense } from "react";
 
 export default function Login() {
   return (

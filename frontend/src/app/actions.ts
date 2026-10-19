@@ -83,7 +83,11 @@ export async function deleteUserAction() {
   const currentUser = await getCurrentUser();
   if (!currentUser) unauthorized();
 
-  await deleteUser(currentUser.id);
+  try {
+    await deleteUser(currentUser.id);
+  } catch {
+    redirect(`/users/${currentUser.id}?toast=user-delete-error`);
+  }
 
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_COOKIE);
@@ -151,7 +155,12 @@ export async function updateListingAction(id: string, formData: FormData) {
 export async function deleteListingAction(id: string) {
   const currentUser = await getCurrentUser();
   if (!currentUser) unauthorized();
-  await deleteListing(id);
+
+  try {
+    await deleteListing(id);
+  } catch {
+    redirect("/listings?toast=listing-delete-error");
+  }
   revalidatePath("/listings");
   redirect("/listings?toast=listing-deleted");
 }
