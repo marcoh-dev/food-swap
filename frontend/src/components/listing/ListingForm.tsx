@@ -11,8 +11,13 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { NativeSelect, NativeSelectOption } from "../ui/native-select";
-import { Checkbox } from "../ui/checkbox";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import TagSelect from "./TagSelect";
 
@@ -79,21 +84,22 @@ export default function ListingForm({
         </Field>
         <Field>
           <FieldLabel htmlFor="categoryId">Kategorie</FieldLabel>
-          <NativeSelect
-            id="categoryId"
+          <Select
             name="categoryId"
             required
-            defaultValue={defaultValues?.categoryId ?? ""}
+            defaultValue={defaultValues?.categoryId ?? undefined}
           >
-            <NativeSelectOption value="" disabled>
-              Kategorie wählen
-            </NativeSelectOption>
-            {categories.map((category) => (
-              <NativeSelectOption key={category.id} value={category.id}>
-                {category.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
+            <SelectTrigger id="categoryId" className="w-full">
+              <SelectValue placeholder="Kategorie wählen" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={String(category.id)}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
         <FieldSet>
           <FieldLegend>Tags</FieldLegend>
