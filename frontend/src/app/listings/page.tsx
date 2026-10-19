@@ -40,7 +40,7 @@ export default async function ListingsPage({
               <li key={listing.id}>
                 <Link
                   href={`/listings/${listing.id}`}
-                  className="block  h-full no-underline"
+                  className="block h-full no-underline"
                 >
                   <Card className="h-full overflow-hidden pt-0">
                     <div className="relative aspect-[16/9] w-full overflow-hidden">
