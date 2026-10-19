@@ -3,12 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-
-const toastMessages: Record<string, string> = {
-  registered: "Registrierung erfolgreich! Du kannst dich jetzt anmelden.",
-  "listing-created": "Anzeige erfolgreich erstellt!",
-  "listing-deleted": "Anzeige gelöscht.",
-};
+import { toastMessages } from "@/lib/constants/toast.constants";
 
 export default function Toast() {
   const searchParams = useSearchParams();
@@ -22,13 +17,13 @@ export default function Toast() {
       return;
     }
 
-    const message = toastMessages[toastKey];
+    const entry = toastMessages[toastKey];
 
-    if (!message) {
+    if (!entry) {
       return;
     }
 
-    toast.success(message, { id: toastKey });
+    toast[entry.type](entry.message, { id: toastKey });
     router.replace(pathname);
   }, [toastKey, pathname, router]);
 

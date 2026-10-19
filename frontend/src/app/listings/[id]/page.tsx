@@ -53,14 +53,14 @@ export default async function ListingDetailPage({
         defaultTerm={typeof term === "string" ? term : undefined}
         defaultLocation={typeof location === "string" ? location : undefined}
       />
-      <Card className="gap-0 overflow-hidden pt-0">
+      <Card className="mx-auto w-full max-w-2xl overflow-hidden pt-0">
         <div className="relative flex flex-col gap-4 pb-3">
-          <div className="relative aspect-[3/2] w-full">
+          <div className="relative h-64 w-full sm:h-80 md:h-96">
             <Image
               src={listing.image ?? "/placeholder.png"}
               alt={listing.title}
               fill
-              sizes="(max-width: 768px) 100vw, 600px"
+              sizes="(max-width: 768px) 100vw, 672px"
               className="object-cover"
             />
             <div className="absolute top-2 left-2">

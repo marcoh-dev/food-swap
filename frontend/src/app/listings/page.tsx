@@ -32,15 +32,15 @@ export default async function ListingsPage({
       <div className="flex w-full justify-end mb-2">
         <SortingMenu sort={sort} />
       </div>
-      <ul className="grid grid-cols-2 gap-12">
+      <ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
         {listingsData?.data.map((listing) => (
           <li key={listing.id}>
             <Link
               href={`/listings/${listing.id}`}
-              className="block no-underline"
+              className="block  h-full no-underline"
             >
               <Card className="h-full overflow-hidden pt-0">
-                <div className="relative aspect-[3/2] w-full overflow-hidden">
+                <div className="relative aspect-[16/9] w-full overflow-hidden">
                   <Image
                     src={listing.image ?? "/placeholder.png"}
                     alt={listing.title}
