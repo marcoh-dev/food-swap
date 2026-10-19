@@ -110,7 +110,7 @@ export default async function ListingDetailPage({
           </div>
         )}
         {!currentUser && (
-          <p className="mt-4 text-sm">
+          <p className="mt-3 ml-4 text-sm">
             <Link href="/login">Anmelden</Link>, um {ownerName} zu schreiben.
           </p>
         )}
