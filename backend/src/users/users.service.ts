@@ -31,7 +31,7 @@ export class UsersService {
       where: { id },
     });
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found.`);
+      throw new NotFoundException(`User not found.`);
     }
     return user;
   }
