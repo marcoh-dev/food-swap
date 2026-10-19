@@ -1,3 +1,4 @@
+import ListingFilters from "@/components/listing/ListingFilter";
 import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { getSearchResults } from "@/lib/searchResults.service";
@@ -26,6 +27,7 @@ export default async function SearchResults({ searchParams }: PageProps) {
         <>
           {total > 1 && (
             <div className="flex w-full justify-end mb-2">
+              <ListingFilters categories={categories} tags={allTags} />
               <SortingMenu sort={sort} />
             </div>
           )}
