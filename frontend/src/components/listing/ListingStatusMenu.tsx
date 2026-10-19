@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { statusActions } from "@/lib/constants/listing.constants";
-import { statusLabels, statusOrder } from "@/lib/types/listing.types";
+import { statusLabels, statusOrder } from "@/lib/constants/listing.constants";
 import type { ListingStatus } from "@/lib/types/listing.types";
 
 type Props = {

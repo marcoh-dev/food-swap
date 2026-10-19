@@ -10,6 +10,9 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
 import { getCurrentUser } from "@/lib/users.service";
 import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
+import { Toaster } from "@/components/ui/sonner";
+import Toast from "@/components/Toast";
+import { Suspense } from "react";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -76,6 +79,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <BurgerMenu />
           </header>
           <main className="p-[1em]">{children}</main>
+          <Toaster />
+          <Suspense>
+            <Toast />
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>
