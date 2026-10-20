@@ -23,7 +23,7 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
-import { isEndDateInRange, parseEndDate } from "@/utils/date";
+import { getDefaultEndDate, isEndDateInRange, parseEndDate, validateEndDate } from "@/utils/date";
 
 function getRedirectTarget(formData: FormData): string {
 	const target = formData.get("redirect");
@@ -146,7 +146,7 @@ export async function searchListingAction(formData: FormData) {
 	redirect(`/s?${searchParams.toString()}`);
 }
 
-function readListing(formData: FormData, endDate: Date): NewListing {
+function readListing(formData: FormData, endDate?: Date): NewListing {
 	return {
 		title: formData.get("title") as string,
 		description: formData.get("description") as string,
@@ -155,30 +155,27 @@ function readListing(formData: FormData, endDate: Date): NewListing {
 		type: formData.get("type") as ListingType,
 		categoryId: (formData.get("categoryId") as string) || null,
 		tagIds: formData.getAll("tagIds") as string[],
-		endDate: endDate.toISOString(),
+		endDate: endDate?.toISOString(),
 	};
 }
 
-export async function createListingAction(_prevState: FormState, formData: FormData) {
+export async function createListingAction(
+	_prevState: FormState,
+	formData: FormData,
+): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
+	const error = validateEndDate(formData);
+	if (error) return { error };
+
 	const parsed = parseEndDate(formData.get("endDate"));
-	if (
-		parsed.status === "invalid" ||
-		(parsed.status === "valid" && !isEndDateInRange(parsed.date))
-	)
-		return {
-			error: "Das Datum muss mindestens einen Tag und maximal 6 Monate in der Zukunft liegen.",
-		};
 
+	const endDate = parsed.status === "valid" ? parsed.date : getDefaultEndDate();
 
-const endDate = "valid" ? parsed.date : /* valid ? parsed.date : Default */;
+	const listing = await createListing(readListing(formData, endDate));
 
-const listing = await createListing(readListing(formData, endDate));
-
-	const listing = await createListing(readListing(formData));
-
+	console.log(readListing(formData, endDate));
 	revalidatePath("/listings");
 	redirect(`/listings/${listing.id}?toast=listing-created`);
 }
@@ -187,10 +184,18 @@ export async function updateListingAction(id: string, formData: FormData) {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	await updateListing(id, readListing(formData));
+	const error = validateEndDate(formData);
+	if (error) return { error };
+
+	const parsed = parseEndDate(formData.get("endDate"));
+
+	const endDate = parsed.status === "valid" ? parsed.date : undefined;
+
+	await updateListing(id, readListing(formData, endDate));
 
 	revalidatePath("/listings");
 	revalidatePath(`/listings/${id}`);
+	return {};
 }
 
 export async function deleteListingAction(id: string) {

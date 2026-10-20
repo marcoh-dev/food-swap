@@ -17,6 +17,14 @@ export function formatDate(isoDate: string): string {
 	});
 }
 
+export function formatIsoDate(date: Date): string {
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+
+	return `${year}-${month}-${day}`;
+}
+
 export function formatTime(isoDate: string): string {
 	const date = new Date(isoDate);
 
@@ -103,4 +111,16 @@ export function parseEndDate(value: FormDataEntryValue | null): ParsedEndDate {
 
 export function isEndDateInRange(date: Date, now: Date = new Date()): boolean {
 	return date >= getMinEndDate(now) && date <= getMaxEndDate(now);
+}
+
+export function validateEndDate(formData: FormData): string | null {
+	const parsed = parseEndDate(formData.get("endDate"));
+
+	if (
+		parsed.status === "invalid" ||
+		(parsed.status === "valid" && !isEndDateInRange(parsed.date))
+	) {
+		return "Das Datum muss mindestens einen Tag und maximal 6 Monate in der Zukunft liegen.";
+	}
+	return null;
 }

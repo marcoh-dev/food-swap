@@ -8,9 +8,10 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import TagSelect from "./TagSelect";
+import EndDatePicker from "./EndDatePicker";
 
 type Props = {
-	action: (formData: FormData) => Promise<void>;
+	action: (formData: FormData) => void | Promise<void>;
 	categories: Category[];
 	tags: Tag[];
 	defaultValues?: NewListing;
@@ -107,8 +108,8 @@ export default function ListingForm({
 					</RadioGroup>
 				</FieldSet>
 				<Field>
-					<FieldLabel htmlFor="endDate">Verfügbar bis</FieldLabel>
-					<Input id="endDate" name="endDate" />
+					<FieldLabel>Verfügbar bis</FieldLabel>
+					<EndDatePicker defaultValue={defaultValues?.endDate} />
 				</Field>
 			</FieldGroup>
 			<Button type="submit" className="mt-6">

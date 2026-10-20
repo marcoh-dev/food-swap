@@ -15,6 +15,7 @@ export type ListingResponse = {
 	category: Category;
 	tags: Tag[];
 	createdAt: string;
+	endDate: string;
 	updatedAt: string;
 };
 
@@ -26,7 +27,7 @@ export type NewListing = {
 	type: ListingType;
 	categoryId?: string | null;
 	tagIds?: string[];
-	endDate: string;
+	endDate?: string;
 };
 
 export type PaginatedListingsResponse = {

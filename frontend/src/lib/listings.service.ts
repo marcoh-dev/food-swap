@@ -58,8 +58,11 @@ export async function createListing(data: NewListing): Promise<ListingResponse> 
 		body: JSON.stringify(data),
 	});
 
-	const listingData = await response.json();
-	return listingData;
+	if (!response.ok) {
+		const body = await response.text();
+		throw new Error(`createListing failed: ${response.status} ${body}`);
+	}
+	return response.json();
 }
 
 export async function getListingById(id: string): Promise<ListingResponse | undefined> {

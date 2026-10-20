@@ -34,7 +34,14 @@ export default function ListingActions({
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
 	async function handleUpdate(formData: FormData) {
-		await updateListingAction(listing.id, formData);
+		const result = await updateListingAction(listing.id, formData);
+
+		if (result.error) {
+			setErrorMessage(result.error);
+			return;
+		}
+
+		setErrorMessage(null);
 		setIsEditing(false);
 	}
 
@@ -53,9 +60,19 @@ export default function ListingActions({
 		setErrorMessage(null);
 	}
 
+	function handleCancel() {
+		setErrorMessage(null);
+		setIsEditing(false);
+	}
+
 	if (isEditing) {
 		return (
 			<div>
+				{errorMessage && (
+					<p role="alert" className="text-destructive">
+						{errorMessage}
+					</p>
+				)}
 				<ListingForm
 					action={handleUpdate}
 					categories={categories}
@@ -70,7 +87,7 @@ export default function ListingActions({
 				<Button
 					type="button"
 					variant="ghost"
-					onClick={() => setIsEditing(false)}
+					onClick={handleCancel}
 					className="rounded-lg px-3 py-2 w-full"
 				>
 					Abbrechen
