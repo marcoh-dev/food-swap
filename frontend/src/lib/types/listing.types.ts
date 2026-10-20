@@ -43,3 +43,12 @@ export type StatusAction = {
 	label: string;
 	targetStatus: ListingStatus;
 };
+
+export type GetListingsOptions = {
+	page?: number;
+	sort?: SortOption;
+	term?: string;
+	location?: string;
+	category?: string;
+	tags?: string;
+};

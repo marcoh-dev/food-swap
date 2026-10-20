@@ -18,4 +18,8 @@ export class CategoriesService {
   async exists(id: string): Promise<boolean> {
     return this.categories.exists({ where: { id } });
   }
+
+  findBySlug(slug: string): Promise<Category | null> {
+    return this.categories.findOneBy({ slug });
+  }
 }

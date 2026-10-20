@@ -36,7 +36,7 @@ export class ListingsService {
   async findAll(
     query: ListingsQueryDto,
   ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
-    const { page, limit, type, sort, term, location } = query;
+    const { page, limit, type, sort, term, location, category, tags } = query;
     const visibleStatuses = [ListingStatus.ACTIVE, ListingStatus.RESERVED];
 
     const baseFilter: FindOptionsWhere<Listing> = {
@@ -45,6 +45,30 @@ export class ListingsService {
 
     if (type) baseFilter.type = type;
     if (location) baseFilter.location = ILike(`%${location}%`);
+
+    if (category) {
+      const foundCategory = await this.categoriesService.findBySlug(category);
+      if (foundCategory) {
+        baseFilter.categoryId = foundCategory.id;
+      }
+    }
+
+    if (tags && tags.length > 0) {
+      const knowTags = await this.tagsService.findBySlugs(tags);
+
+      if (knowTags.length > 0) {
+        const tagIds = knowTags.map((tag) => tag.id);
+        const listingIds = await this.fingListingIdsWithAllTags(tagIds);
+
+        if (listingIds.length === 0) {
+          return {
+            data: [],
+            meta: { page, limit, total: 0, totalPages: 0 },
+          };
+        }
+        baseFilter.id = In(listingIds);
+      }
+    }
 
     const whereFilter: FindOptionsWhere<Listing>[] = term
       ? [
@@ -297,5 +321,17 @@ export class ListingsService {
     }
 
     return result;
+  }
+  private async fingListingIdsWithAllTags(tagIds: string[]): Promise<string[]> {
+    const rows = await this.listings
+      .createQueryBuilder('listing')
+      .select('listing.id', 'id')
+      .innerJoin('listing.tags', 'tag')
+      .where('tag.id IN (:...tagIds)', { tagIds })
+      .groupBy('listing.id')
+      .having('COUNT(DISTINCT tag.id) = :count', { count: tagIds.length })
+      .getRawMany<{ id: string }>();
+
+    return rows.map((row) => row.id);
   }
 }

@@ -1,4 +1,5 @@
 import type {
+	GetListingsOptions,
 	ListingResponse,
 	ListingStatus,
 	NewListing,
@@ -10,12 +11,22 @@ import { fetchAPI } from "./fetchAPI";
 export async function getListings({
 	page = 1,
 	sort = "newest",
-}: {
-	page?: number;
-	sort?: SortOption;
-}): Promise<PaginatedListingsResponse | null> {
+	term,
+	location,
+	category,
+	tags,
+}: GetListingsOptions): Promise<PaginatedListingsResponse | null> {
+	const query = new URLSearchParams();
+	query.set("page", String(page));
+	query.set("sort", sort);
+
+	if (term) query.set("term", term);
+	if (location) query.set("location", location);
+	if (category) query.set("category", category);
+	if (tags) query.set("tags", tags);
+
 	const response = await fetchAPI(
-		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings?page=${page}&sort=${sort}`,
+		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings?${query.toString()}`,
 	);
 	if (!response.ok) {
 		return null;

@@ -137,12 +137,16 @@ export async function isAuthenticated(): Promise<boolean> {
 export async function searchListingAction(formData: FormData) {
 	const term = formData.get("term") as string;
 	const location = formData.get("location") as string;
+	const category = formData.get("category") as string;
+	const tags = formData.get("tags") as string;
 
 	const searchParams = new URLSearchParams();
 	if (term) searchParams.set("term", term);
 	if (location) searchParams.set("location", location);
+	if (category) searchParams.set("category", category);
+	if (tags) searchParams.set("tags", tags);
 
-	redirect(`/s?${searchParams.toString()}`);
+	redirect(`/listings?${searchParams.toString()}`);
 }
 
 function readListing(formData: FormData): NewListing {
