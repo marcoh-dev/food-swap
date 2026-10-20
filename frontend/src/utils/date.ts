@@ -1,3 +1,5 @@
+import { endDateRules } from "@/lib/constants/listing.constants";
+
 export function getCurrentIsoDate(): string {
 	return new Date().toISOString();
 }
@@ -58,4 +60,28 @@ export function formatListingDate(
 		day: "2-digit",
 		month: "2-digit",
 	});
+}
+
+function getStartOfDay(now: Date): Date {
+	const date = new Date(now);
+	date.setHours(0, 0, 0, 0);
+	return date;
+}
+
+export function getDefaultEndDate(now: Date = new Date()): Date {
+	const date = getStartOfDay(now);
+	date.setDate(date.getDate() + endDateRules.defaultDays);
+	return date;
+}
+
+export function getMinEndDate(now: Date = new Date()): Date {
+	const date = getStartOfDay(now);
+	date.setDate(date.getDate() + endDateRules.minDays);
+	return date;
+}
+
+export function getMaxEndDate(now: Date = new Date()): Date {
+	const date = getStartOfDay(now);
+	date.setMonth(date.getMonth() + endDateRules.maxMonths);
+	return date;
 }
