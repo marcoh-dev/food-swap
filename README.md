@@ -20,22 +20,67 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 
 ## Getting Started
 
+### Requirements
+
+- Node.js 24 (see `.nvmrc`, run `fnm use` or `nvm use`)
+- npm
+- A PostgreSQL database (local, e.g. in Docker, or the live database)
+
+### Setup
+
+All commands run from the **repository root**. The root is an npm workspace for `frontend` and `backend`, so never run `npm install` inside a subfolder.
+
 ```bash
-# Clone the repository
 git clone <repository-url>
 cd food-swap
 npm install
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+npm run migration:run -w backend
 npm run dev
 ```
 
-Copy `.env.example` to `.env` in both folders (frontend / backend) and fill in the values.
+The frontend runs on http://localhost:5173, the backend on http://localhost:3000.
+
+### Environment variables
+
+**`backend/.env`**
+
+| Variable       | Local                                               | Live                                                                |
+| -------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL` | `postgresql://USER:PASSWORD@localhost:5432/DB_NAME` | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
+| `JWT_SECRET`   | any string                                          | long random string, never the local one                             |
+| `PORT`         | `3000`                                              | set by the hosting provider                                         |
+
+**`frontend/.env`**
+
+| Variable                       | Local                   | Live             |
+| ------------------------------ | ----------------------- | ---------------- |
+| `NEXT_PUBLIC_FOODSWAP_API_URL` | `http://localhost:3000` | live backend URL |
+
+Never commit `.env` files, only `.env.example`. When you add a variable, add it to `.env.example` and to the hosting dashboards too.
+
+## Commands
+
+| Command                                                          | What it does                                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------ |
+| `npm run dev`                                                    | starts backend and frontend                            |
+| `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`) |
+| `npm run build`                                                  | builds both projects                                   |
+| `npm run lint`                                                   | lints both projects                                    |
+| `npm run format`                                                 | formats both projects with Prettier                    |
+| `npm install -w frontend <package>`                              | adds a package to one project                          |
+| `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                |
+| `npm run migration:run -w backend`                               | applies pending migrations                             |
+| `npm run migration:revert -w backend`                            | reverts the last migration                             |
+
+CI runs install, lint, format check and build on every pull request to `main`.
+
+### Test endpoints
+
+- `GET /database/connection`
+- `GET /database/tables`
 
 ## Team
 
 Built as a team capstone project during the Neue Fische advanced web development bootcamp.
-
-## Test Endpoint
-
-GET `/database/connection`
-
-GET `/database/tables`
