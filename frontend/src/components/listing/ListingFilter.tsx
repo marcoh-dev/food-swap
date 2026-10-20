@@ -72,7 +72,6 @@ export default function ListingFilters({ categories, tags }: Props) {
 
 	const hasFilters = selectedCategory !== "" || selectedTags.length > 0;
 
-	//
 	return (
 		<div className="flex flex-col gap-4 my-4">
 			<div className="grid gap-1.5">
