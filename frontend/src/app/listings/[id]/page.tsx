@@ -14,6 +14,15 @@ import ListingMeta from "@/components/listing/ListingMeta";
 import { ListingChat } from "@/components/chat/ListingChat";
 import { getListingChatStatus } from "@/lib/chats.service";
 import type { ListingChatStatus } from "@/lib/types/chat.types";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 export default async function ListingDetailPage({
   params,
@@ -44,50 +53,68 @@ export default async function ListingDetailPage({
         defaultTerm={typeof term === "string" ? term : undefined}
         defaultLocation={typeof location === "string" ? location : undefined}
       />
-      <div className="flex flex-col p-4 bg-gray-200 w-fit">
-        <Image
-          width={450}
-          height={400}
-          src={listing.image ?? "/placeholder.png"}
-          alt={listing.title}
-        ></Image>
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-          <h2 className="text-h2">{listing.title}</h2>
-          <CategoryBadge category={listing.category} />
+      <Card className="mx-auto w-full max-w-2xl overflow-hidden pt-0">
+        <div className="relative flex flex-col gap-4 pb-3">
+          <div className="relative h-64 w-full sm:h-80 md:h-96">
+            <Image
+              src={listing.image ?? "/placeholder.png"}
+              alt={listing.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 672px"
+              className="object-cover"
+            />
+            <div className="absolute top-2 left-2">
+              <StatusBadge status={listing.status} />
+            </div>
+          </div>
+          <CardHeader>
+            <CardTitle className="text-h2">{listing.title}</CardTitle>
+            <CardDescription>
+              <ListingMeta listing={listing} dateVariant="full" />
+            </CardDescription>
+            <CardAction>
+              <CategoryBadge category={listing.category} />
+            </CardAction>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>{listing.description}</p>
+            <TagList tags={listing.tags} />
+          </CardContent>
+
+          {listing.status === "deactivated" && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gray-500/60">
+              <span className="font-semibold text-white p-4">
+                Diese Anzeige ist nicht mehr verfügbar.
+              </span>
+            </div>
+          )}
         </div>
-        <StatusBadge status={listing.status} />
-        <p>{listing.description}</p>
-        <ListingMeta listing={listing} dateVariant="full" />
-        <TagList tags={listing.tags} />
-        {listing.status === "deactivated" && (
-          <div className="absolute -inset-2 flex items-center justify-center bg-gray-500/60">
-            <span className="font-semibold text-white p-4">
-              Diese Anzeige ist nicht mehr verfügbar.
-            </span>
+
+        {isOwner && (
+          <CardFooter className="relative z-10 flex-col items-stretch">
+            <ListingActions
+              listing={listing}
+              categories={categories}
+              tags={tags}
+            />
+          </CardFooter>
+        )}
+
+        {chatStatus && (
+          <div className="mt-4">
+            <ListingChat
+              listingId={listing.id}
+              ownerName={ownerName}
+              status={chatStatus}
+            />
           </div>
         )}
-        {isOwner && (
-          <ListingActions
-            listing={listing}
-            categories={categories}
-            tags={tags}
-          />
+        {!currentUser && (
+          <p className="mt-3 ml-4 text-sm">
+            <Link href="/login">Anmelden</Link>, um {ownerName} zu schreiben.
+          </p>
         )}
-      </div>
-      {chatStatus && (
-        <div className="mt-4">
-          <ListingChat
-            listingId={listing.id}
-            ownerName={ownerName}
-            status={chatStatus}
-          />
-        </div>
-      )}
-      {!currentUser && (
-        <p className="mt-4 text-sm">
-          <Link href="/login">Anmelden</Link>, um {ownerName} zu schreiben.
-        </p>
-      )}
+      </Card>
     </>
   );
 }

@@ -17,6 +17,7 @@ import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { CategoriesService } from '../categories/category.service';
 import { TagsService } from '../tags/tags.service';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
+import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
@@ -26,6 +27,8 @@ export class ListingsService {
   constructor(
     @InjectRepository(Listing)
     private readonly listings: Repository<Listing>,
+    @InjectRepository(User)
+    private readonly users: Repository<User>,
     private readonly categoriesService: CategoriesService,
     private readonly tagsService: TagsService,
   ) {}
@@ -76,6 +79,51 @@ export class ListingsService {
 
     const [data, total] = await this.listings.findAndCount({
       where: whereFilter,
+      order: { createdAt: sort === 'oldest' ? 'ASC' : 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: {
+        owner: true,
+        category: true,
+        tags: true,
+      },
+    });
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async findAllByUser(
+    query: PaginationQueryDto,
+    userId: string,
+  ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
+    const { page, limit, type, sort } = query;
+
+    const userExists = await this.users.exists({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      throw new NotFoundException('User not found');
+    }
+
+    const visibleStatuses = [ListingStatus.ACTIVE, ListingStatus.RESERVED];
+
+    const baseFilter: FindOptionsWhere<Listing> = {
+      status: In(visibleStatuses),
+    };
+
+    if (type) baseFilter.type = type;
+
+    const [data, total] = await this.listings.findAndCount({
+      where: { owner: { id: userId } },
       order: { createdAt: sort === 'oldest' ? 'ASC' : 'DESC' },
       skip: (page - 1) * limit,
       take: limit,

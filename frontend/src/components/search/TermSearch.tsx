@@ -1,5 +1,9 @@
-import { Field, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
+import { SearchIcon } from "lucide-react";
 
 export default function TermSearch({
   defaultValue = "",
@@ -7,17 +11,15 @@ export default function TermSearch({
   defaultValue?: string;
 }) {
   return (
-    <Field>
-      <FieldLabel htmlFor="term" className="sr-only">
-        Suchbegriff
-      </FieldLabel>
-      <Input
-        id="term"
+    <InputGroup>
+      <InputGroupAddon>
+        <SearchIcon />
+      </InputGroupAddon>
+      <InputGroupInput
         name="term"
-        type="search"
         placeholder="Was suchst du?"
         defaultValue={defaultValue}
       />
-    </Field>
+    </InputGroup>
   );
 }

@@ -35,6 +35,31 @@ export async function getListings({
   return listingsData;
 }
 
+export async function getUserListings({
+  userId,
+  page = 1,
+  sort = "newest",
+}: {
+  userId: string;
+  page?: number;
+  sort?: SortOption;
+}): Promise<PaginatedListingsResponse | undefined> {
+  const response = await fetchAPI(
+    process.env.NEXT_PUBLIC_FOODSWAP_API_URL +
+      `/users/${userId}/listings?page=${page}&sort=${sort}`,
+  );
+  if (response.status === 404) {
+    return undefined;
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user listings: ${response.status}`);
+  }
+  const listingsData = await response.json();
+
+  return listingsData;
+}
+
 export async function createListing(
   data: NewListing,
 ): Promise<ListingResponse> {

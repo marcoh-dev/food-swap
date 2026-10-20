@@ -1,4 +1,5 @@
 import type { Category } from "@/lib/types/category.types";
+import { Badge } from "../ui/badge";
 
 export default function CategoryBadge({
   category,
@@ -8,8 +9,8 @@ export default function CategoryBadge({
   if (!category) return null;
 
   return (
-    <span className="rounded-full bg-gray-300 dark:bg-gray-700 px-2.5 py-0.5 text-xs">
+    <Badge className="rounded-full mt-1 px-2.5 py-0.5 text-xs max-w-full truncate">
       {category.name}
-    </span>
+    </Badge>
   );
 }

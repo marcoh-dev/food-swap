@@ -3,33 +3,42 @@ import type { ListingStatus, StatusAction } from "../types/listing.types";
 export const statusActions: Partial<Record<ListingStatus, StatusAction[]>> = {
   active: [
     {
-      label: "Reservieren",
+      label: "Reserviert",
       targetStatus: "reserved",
-      className: "bg-amber-200 text-amber-900",
     },
     {
-      label: "Deaktivieren",
+      label: "Deaktiviert",
       targetStatus: "deactivated",
-      className: "bg-red-200 text-red-900",
     },
   ],
   reserved: [
     {
-      label: "Freigeben",
+      label: "Aktiviert",
       targetStatus: "active",
-      className: "bg-green-200 text-green-900",
     },
     {
-      label: "Deaktivieren",
+      label: "Deaktiviert",
       targetStatus: "deactivated",
-      className: "bg-red-200 text-red-900",
     },
   ],
   deactivated: [
     {
-      label: "Reaktivieren",
+      label: "Aktiviert",
       targetStatus: "active",
-      className: "bg-green-200 text-green-900",
     },
   ],
 };
+
+export const statusLabels: Record<ListingStatus, string> = {
+  pending: "Ausstehend",
+  active: "Aktiviert",
+  reserved: "Reserviert",
+  deactivated: "Deaktiviert",
+};
+
+export const statusOrder: ListingStatus[] = [
+  "pending",
+  "active",
+  "reserved",
+  "deactivated",
+];
