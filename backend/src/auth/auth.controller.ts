@@ -4,13 +4,11 @@ import {
   Get,
   Post,
   Request,
-  SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dtos/createUser.dto';
-import { UserResponseDto } from '../users/dtos/userResponse.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from './dtos/login.dto';
@@ -25,9 +23,9 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  @SerializeOptions({ type: UserResponseDto })
-  register(@Body() userPayload: CreateUserDto) {
-    return this.usersService.createUser(userPayload);
+  async register(@Body() userPayload: CreateUserDto) {
+    const user = await this.usersService.createUser(userPayload);
+    return this.authService.login(user);
   }
 
   @Public()

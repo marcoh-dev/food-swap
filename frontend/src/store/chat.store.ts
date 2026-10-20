@@ -20,7 +20,9 @@ async function call<T>(action: Promise<ActionResult<T>>): Promise<T> {
 }
 
 export function errorMessage(error: unknown): string {
-	return error instanceof Error ? error.message : "Etwas ist schiefgelaufen. Versuche es nochmal.";
+	return error instanceof Error
+		? error.message
+		: "Etwas ist schiefgelaufen. Versuche es nochmal.";
 }
 
 function mergeMessages(current: ChatMessage[], incoming: ChatMessage[]): ChatMessage[] {

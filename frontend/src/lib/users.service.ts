@@ -1,5 +1,4 @@
 import { fetchAPI } from "./fetchAPI";
-import type { PaginatedListingsResponse, SortOption } from "./types/listing.types";
 import type { User } from "./types/user.types";
 
 export async function getUserById(id: string): Promise<User | null> {

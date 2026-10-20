@@ -2,27 +2,26 @@ import { fetchAPI } from "./fetchAPI";
 import type { PaginatedListingsResponse } from "./types/listing.types";
 
 export async function getSearchResults({
-  term,
-  location,
-  sort,
+	term,
+	location,
+	sort,
 }: {
-  term?: string;
-  location?: string;
-  sort?: string;
+	term?: string;
+	location?: string;
+	sort?: string;
 }): Promise<PaginatedListingsResponse | null> {
-  const searchParams = new URLSearchParams();
+	const searchParams = new URLSearchParams();
 
-  if (term) searchParams.set("term", term);
-  if (location) searchParams.set("location", location);
-  if (sort) searchParams.set("sort", sort);
+	if (term) searchParams.set("term", term);
+	if (location) searchParams.set("location", location);
+	if (sort) searchParams.set("sort", sort);
 
-  const response = await fetchAPI(
-    process.env.NEXT_PUBLIC_FOODSWAP_API_URL +
-      `/listings?${searchParams.toString()}`,
-    { cache: "no-store" },
-  );
+	const response = await fetchAPI(
+		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings?${searchParams.toString()}`,
+		{ cache: "no-store" },
+	);
 
-  if (!response.ok) return null;
+	if (!response.ok) return null;
 
-  return response.json();
+	return response.json();
 }

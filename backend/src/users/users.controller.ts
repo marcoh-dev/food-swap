@@ -19,7 +19,6 @@ import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateUserDto } from './dtos/updateUser.dto';
 import { ListingsService } from '../listings/listings.service';
 import { PaginatedListingsResponseDto } from '../listings/dtos/paginatedListingsResponse.dto';
-import { ListingsQueryDto } from '../listings/dtos/listingsQuery.dto';
 import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 
 @Controller('users')
