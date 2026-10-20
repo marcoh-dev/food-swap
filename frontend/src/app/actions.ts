@@ -5,7 +5,7 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import type { ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
+import type { FormState, ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
 import {
 	createListing,
 	deleteListing,
@@ -23,6 +23,7 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
+import { isEndDateInRange, parseEndDate } from "@/utils/date";
 
 function getRedirectTarget(formData: FormData): string {
 	const target = formData.get("redirect");
@@ -145,7 +146,7 @@ export async function searchListingAction(formData: FormData) {
 	redirect(`/s?${searchParams.toString()}`);
 }
 
-function readListing(formData: FormData): NewListing {
+function readListing(formData: FormData, endDate: Date): NewListing {
 	return {
 		title: formData.get("title") as string,
 		description: formData.get("description") as string,
@@ -154,12 +155,27 @@ function readListing(formData: FormData): NewListing {
 		type: formData.get("type") as ListingType,
 		categoryId: (formData.get("categoryId") as string) || null,
 		tagIds: formData.getAll("tagIds") as string[],
+		endDate: endDate.toISOString(),
 	};
 }
 
-export async function createListingAction(formData: FormData) {
+export async function createListingAction(_prevState: FormState, formData: FormData) {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
+
+	const parsed = parseEndDate(formData.get("endDate"));
+	if (
+		parsed.status === "invalid" ||
+		(parsed.status === "valid" && !isEndDateInRange(parsed.date))
+	)
+		return {
+			error: "Das Datum muss mindestens einen Tag und maximal 6 Monate in der Zukunft liegen.",
+		};
+
+
+const endDate = "valid" ? parsed.date : /* valid ? parsed.date : Default */;
+
+const listing = await createListing(readListing(formData, endDate));
 
 	const listing = await createListing(readListing(formData));
 

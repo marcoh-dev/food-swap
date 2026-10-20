@@ -1,4 +1,5 @@
 import { endDateRules } from "@/lib/constants/listing.constants";
+import type { ParsedEndDate } from "@/lib/types/listing.types";
 
 export function getCurrentIsoDate(): string {
 	return new Date().toISOString();
@@ -84,4 +85,22 @@ export function getMaxEndDate(now: Date = new Date()): Date {
 	const date = getStartOfDay(now);
 	date.setMonth(date.getMonth() + endDateRules.maxMonths);
 	return date;
+}
+
+export function parseEndDate(value: FormDataEntryValue | null): ParsedEndDate {
+	if (typeof value !== "string" || value === "") return { status: "empty" };
+
+	const [year, month, day] = value.split("-").map(Number);
+	const date = new Date(year, month - 1, day);
+
+	const isValid =
+		date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day;
+
+	if (!isValid) return { status: "invalid" };
+
+	return { status: "valid", date };
+}
+
+export function isEndDateInRange(date: Date, now: Date = new Date()): boolean {
+	return date >= getMinEndDate(now) && date <= getMaxEndDate(now);
 }

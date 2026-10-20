@@ -26,6 +26,7 @@ export type NewListing = {
 	type: ListingType;
 	categoryId?: string | null;
 	tagIds?: string[];
+	endDate: string;
 };
 
 export type PaginatedListingsResponse = {
@@ -43,3 +44,8 @@ export type StatusAction = {
 	label: string;
 	targetStatus: ListingStatus;
 };
+
+export type ParsedEndDate =
+	{ status: "empty" } | { status: "invalid" } | { status: "valid"; date: Date };
+
+export type FormState = { error?: string };
