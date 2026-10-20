@@ -6,26 +6,30 @@ import { toast } from "sonner";
 import { toastMessages } from "@/lib/constants/toast.constants";
 
 export default function Toast() {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
+	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	const router = useRouter();
 
-  const toastKey = searchParams.get("toast");
+	const toastKey = searchParams.get("toast");
 
-  useEffect(() => {
-    if (!toastKey) {
-      return;
-    }
+	useEffect(() => {
+		if (!toastKey) {
+			return;
+		}
 
-    const entry = toastMessages[toastKey];
+		const entry = toastMessages[toastKey];
 
-    if (!entry) {
-      return;
-    }
+		if (!entry) {
+			return;
+		}
 
-    toast[entry.type](entry.message, { id: toastKey });
-    router.replace(pathname);
-  }, [toastKey, pathname, router]);
+		toast[entry.type](entry.message, { id: toastKey });
 
-  return null;
+		const remainingParams = new URLSearchParams(searchParams.toString());
+		remainingParams.delete("toast");
+		const query = remainingParams.toString();
+		router.replace(query ? `${pathname}?${query}` : pathname);
+	}, [toastKey, pathname, router, searchParams]);
+
+	return null;
 }

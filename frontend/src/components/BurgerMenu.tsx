@@ -1,6 +1,7 @@
 import Link from "next/link";
 import * as SheetParts from "@/components/ui/sheet";
 import { UserLogout } from "@/components/user/UserLogout";
+import { AuthLink } from "@/components/user/AuthLink";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,69 +36,57 @@ export default async function BurgerMenu() {
 								</SheetParts.SheetClose>
 							</li>
 
-							{isLoggedIn && (
-								<>
-									<li>
-										<SheetParts.SheetClose asChild>
-											<Link href="/listings/new" className="no-underline">
-												Neues Angebot
-											</Link>
-										</SheetParts.SheetClose>
-									</li>
-									<li>
-										<SheetParts.SheetClose asChild>
-											<Link
-												href={`/users/${currentUser?.id}/listings`}
-												className="no-underline"
-											>
-												Meine Angebote
-											</Link>
-										</SheetParts.SheetClose>
-									</li>
-									<li>
-										<SheetParts.SheetClose asChild>
-											<Link href="/chats" className="no-underline">
-												Meine Chats
-											</Link>
-										</SheetParts.SheetClose>
-									</li>
-								</>
-							)}
+							<li>
+								<SheetParts.SheetClose asChild>
+									<Link href="/listings/new" className="no-underline">
+										Neues Angebot
+									</Link>
+								</SheetParts.SheetClose>
+							</li>
+							<li>
+								<SheetParts.SheetClose asChild>
+									<Link href="/me/listings" className="no-underline">
+										Meine Angebote
+									</Link>
+								</SheetParts.SheetClose>
+							</li>
+							<li>
+								<SheetParts.SheetClose asChild>
+									<Link href="/chats" className="no-underline">
+										Meine Chats
+									</Link>
+								</SheetParts.SheetClose>
+							</li>
 						</ul>
 
 						<ModeToggle />
 
 						<ul className="flex flex-col gap-2">
+							<li>
+								<SheetParts.SheetClose asChild>
+									<Link href="/me" className="no-underline">
+										Mein Profil
+									</Link>
+								</SheetParts.SheetClose>
+							</li>
 							{isLoggedIn ? (
-								<>
-									<li>
-										<SheetParts.SheetClose asChild>
-											<Link
-												href={`/users/${currentUser?.id}`}
-												className="no-underline"
-											>
-												Mein Profil
-											</Link>
-										</SheetParts.SheetClose>
-									</li>
-									<li>
-										<UserLogout />
-									</li>
-								</>
+								<li>
+									<UserLogout />
+								</li>
 							) : (
 								<>
 									<li>
 										<SheetParts.SheetClose asChild>
-											<Link href="/login" className="no-underline">
+											<AuthLink href="/login" className="no-underline">
 												Anmelden
-											</Link>
+											</AuthLink>
 										</SheetParts.SheetClose>
 									</li>
 									<li>
 										<SheetParts.SheetClose asChild>
-											<Link href="/registration" className="no-underline">
+											<AuthLink href="/registration" className="no-underline">
 												Registrieren
-											</Link>
+											</AuthLink>
 										</SheetParts.SheetClose>
 									</li>
 								</>
