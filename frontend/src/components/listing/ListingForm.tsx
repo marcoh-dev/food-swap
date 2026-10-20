@@ -106,6 +106,10 @@ export default function ListingForm({
 						</Field>
 					</RadioGroup>
 				</FieldSet>
+				<Field>
+					<FieldLabel htmlFor="expiry-date">Verfügbar bis</FieldLabel>
+					<Input id="expiry-date" name="expiry-date" />
+				</Field>
 			</FieldGroup>
 			<Button type="submit" className="mt-6">
 				{submitLabel}
