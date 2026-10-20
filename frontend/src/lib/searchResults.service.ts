@@ -5,16 +5,22 @@ export async function getSearchResults({
 	term,
 	location,
 	sort,
+	category,
+	tags,
 }: {
 	term?: string;
 	location?: string;
 	sort?: string;
+	category?: string;
+	tags?: string;
 }): Promise<PaginatedListingsResponse | null> {
 	const searchParams = new URLSearchParams();
 
 	if (term) searchParams.set("term", term);
 	if (location) searchParams.set("location", location);
 	if (sort) searchParams.set("sort", sort);
+	if (category) searchParams.set("category", category);
+	if (tags) searchParams.set("tags", tags);
 
 	const response = await fetchAPI(
 		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings?${searchParams.toString()}`,

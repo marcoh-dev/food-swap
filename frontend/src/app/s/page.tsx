@@ -35,7 +35,7 @@ export default async function SearchResults({ searchParams }: PageProps) {
 	return (
 		<>
 			<SearchBar defaultTerm={term} defaultLocation={location} />
-			<div className="flex w-full justify-end mb-2">
+			<div className="flex w-full items-start justify-between mb-2">
 				<ListingFilters categories={categories} tags={allTags} />
 				{total > 1 && <SortingMenu sort={sort} />}
 			</div>
