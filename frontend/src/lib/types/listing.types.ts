@@ -45,10 +45,10 @@ export type StatusAction = {
 };
 
 export type GetListingsOptions = {
-  page?: number;
-  sort?: SortOption;
-  term?: string;
-  location?: string;
-  category?: string;
-  tags?: string;
+	page?: number;
+	sort?: SortOption;
+	term?: string;
+	location?: string;
+	category?: string;
+	tags?: string;
 };
