@@ -56,7 +56,10 @@ export class ListingsService {
 
     const [data, total] = await this.listings.findAndCount({
       where: whereFilter,
-      order: { createdAt: sort === 'oldest' ? 'ASC' : 'DESC' },
+      order:
+        sort === 'endingSoon'
+          ? { endDate: 'ASC', createdAt: 'DESC' }
+          : { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
       relations: {
@@ -101,7 +104,10 @@ export class ListingsService {
 
     const [data, total] = await this.listings.findAndCount({
       where: { owner: { id: userId } },
-      order: { createdAt: sort === 'oldest' ? 'ASC' : 'DESC' },
+      order:
+        sort === 'endingSoon'
+          ? { endDate: 'ASC', createdAt: 'DESC' }
+          : { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
       relations: {

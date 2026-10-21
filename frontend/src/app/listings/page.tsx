@@ -12,7 +12,7 @@ import ListingMeta from "@/components/listing/ListingMeta";
 export default async function ListingsPage({ searchParams }: PageProps<"/listings">) {
 	const params = await searchParams;
 	const page = Number(params.page) || 1;
-	const sort: SortOption = params.sort === "oldest" ? "oldest" : "newest";
+	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
 	const listingsData = await getListings({ page, sort });
 
 	return (
@@ -44,7 +44,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 												className="h-full w-full object-cover"
 											/>
 											<div className="absolute top-2 left-2">
-												<StatusBadge status={listing.status} />
+												<StatusBadge listing={listing} />
 											</div>
 										</div>
 										<CardHeader>

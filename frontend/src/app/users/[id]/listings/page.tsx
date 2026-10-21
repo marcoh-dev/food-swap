@@ -4,13 +4,14 @@ import StatusBadge from "@/components/listing/StatusBadge";
 import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { getUserListings } from "@/lib/listings.service";
-import type { ListingResponse, SortOption } from "@/lib/types/listing.types";
+import type { SortOption } from "@/lib/types/listing.types";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/users.service";
 import { Badge } from "@/components/ui/badge";
+import { isExpired } from "@/utils/date";
 
 export default async function UserListingsPage({
 	params,
@@ -20,7 +21,7 @@ export default async function UserListingsPage({
 	const query = await searchParams;
 
 	const page = Number(query.page) || 1;
-	const sort: SortOption = query.sort === "oldest" ? "oldest" : "newest";
+	const sort: SortOption = query.sort === "endingSoon" ? "endingSoon" : "newest";
 
 	const currentUser = await getCurrentUser();
 	const isOwner = currentUser?.id === userId;
@@ -29,10 +30,6 @@ export default async function UserListingsPage({
 
 	if (!listingsData) {
 		notFound();
-	}
-
-	function isExpired(isoDate: string, now: Date = new Date()): boolean {
-		return new Date(isoDate) < now;
 	}
 
 	return (
@@ -72,7 +69,7 @@ export default async function UserListingsPage({
 														Abgelaufen
 													</Badge>
 												) : (
-													<StatusBadge status={listing.status} />
+													<StatusBadge listing={listing} />
 												)}
 											</div>
 										</div>

@@ -93,11 +93,11 @@ export default function ListingForm({
 					</Select>
 				</Field>
 				<FieldSet>
-					<FieldLegend>Tags</FieldLegend>
+					<FieldLegend variant="label">Tags</FieldLegend>
 					<TagSelect tags={tags} defaultValue={defaultValues?.tagIds} />
 				</FieldSet>
 				<FieldSet>
-					<FieldLegend>Art</FieldLegend>
+					<FieldLegend variant="label">Art</FieldLegend>
 					<RadioGroup name="type" defaultValue={defaultValues?.type} required>
 						<Field orientation="horizontal">
 							<RadioGroupItem value="swap" id="type-swap" />

@@ -11,7 +11,7 @@ type PageProps = {
 
 export default async function SearchResults({ searchParams }: PageProps) {
 	const { term, location, sort: sortParam } = await searchParams;
-	const sort: SortOption = sortParam === "oldest" ? "oldest" : "newest";
+	const sort: SortOption = sortParam === "endingSoon" ? "endingSoon" : "newest";
 	const searchResults = await getSearchResults({ term, location, sort });
 
 	const listings = searchResults?.data ?? [];

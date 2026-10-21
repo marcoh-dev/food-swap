@@ -24,13 +24,7 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
-import {
-	formatIsoDate,
-	getDefaultEndDate,
-	getEndOfDay,
-	parseEndDate,
-	validateEndDate,
-} from "@/utils/date";
+import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
 
 function getRedirectTarget(formData: FormData): string {
 	const target = formData.get("redirect");
@@ -173,16 +167,13 @@ export async function createListingAction(
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	const error = validateEndDate(formData);
-	if (error) return { error };
+	const result = validateEndDate(formData.get("endDate"));
+	if (!result.ok) return { error: result.error };
 
-	const parsed = parseEndDate(formData.get("endDate"));
-
-	const endDate = parsed.status === "valid" ? parsed.date : getDefaultEndDate();
+	const endDate = result.date ?? getDefaultEndDate();
 
 	const listing = await createListing(readListing(formData, endDate));
 
-	console.log(readListing(formData, endDate));
 	revalidatePath("/listings");
 	redirect(`/listings/${listing.id}?toast=listing-created`);
 }
@@ -194,7 +185,6 @@ export async function updateListingAction(id: string, formData: FormData) {
 	const existing = await getListingById(id);
 
 	if (!existing) notFound();
-	console.log("submitted:", formData.get("endDate"), "saved:", existing.endDate);
 
 	const submittedEndDate = formData.get("endDate");
 	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));
@@ -202,17 +192,16 @@ export async function updateListingAction(id: string, formData: FormData) {
 	let endDate: Date | undefined;
 
 	if (!isEndDateUnchanged) {
-		const error = validateEndDate(formData);
-		if (error) return { error };
+		const result = validateEndDate(submittedEndDate);
+		if (!result.ok) return { error: result.error };
 
-		const parsed = parseEndDate(submittedEndDate);
-		endDate = parsed.status === "valid" ? parsed.date : undefined;
+		endDate = result.date;
 	}
 
 	try {
 		await updateListing(id, readListing(formData, endDate));
 	} catch (error) {
-		console.log("date error", error);
+		console.log(error);
 		return {
 			error: "Das Angebot konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
 		};

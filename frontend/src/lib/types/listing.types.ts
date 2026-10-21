@@ -37,7 +37,7 @@ export type PaginatedListingsResponse = {
 
 export type ListingType = "swap" | "giveaway";
 
-export type SortOption = "newest" | "oldest";
+export type SortOption = "newest" | "endingSoon";
 
 export type ListingStatus = "pending" | "active" | "reserved" | "deactivated";
 
@@ -48,5 +48,7 @@ export type StatusAction = {
 
 export type ParsedEndDate =
 	{ status: "empty" } | { status: "invalid" } | { status: "valid"; date: Date };
+
+export type EndDateResult = { ok: true; date: Date | undefined } | { ok: false; error: string };
 
 export type FormState = { error?: string };

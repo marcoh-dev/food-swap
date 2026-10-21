@@ -1,5 +1,5 @@
 import { endDateRules } from "@/lib/constants/listing.constants";
-import type { ParsedEndDate } from "@/lib/types/listing.types";
+import type { EndDateResult, ParsedEndDate } from "@/lib/types/listing.types";
 
 export function getCurrentIsoDate(): string {
 	return new Date().toISOString();
@@ -119,16 +119,26 @@ export function isEndDateInRange(date: Date, now: Date = new Date()): boolean {
 	return date >= getMinEndDate(now) && date <= getMaxEndDate(now);
 }
 
-export function validateEndDate(formData: FormData): string | null {
-	const parsed = parseEndDate(formData.get("endDate"));
+function getEndDateErrorMessage(): string {
+	const { minDays, maxMonths } = endDateRules;
+	const dayLabel = minDays === 1 ? "Tag" : "Tage";
 
-	if (
-		parsed.status === "invalid" ||
-		(parsed.status === "valid" && !isEndDateInRange(parsed.date))
-	) {
-		return "Das Datum muss mindestens 1 Tag und maximal 6 Monate in der Zukunft liegen.";
+	return `Das Datum muss mindestens ${minDays} ${dayLabel} und maximal ${maxMonths} Monate in der Zukunft liegen.`;
+}
+
+export function validateEndDate(
+	value: FormDataEntryValue | null,
+	now: Date = new Date(),
+): EndDateResult {
+	const parsed = parseEndDate(value);
+
+	if (parsed.status === "empty") return { ok: true, date: undefined };
+
+	if (parsed.status === "invalid" || !isEndDateInRange(parsed.date, now)) {
+		return { ok: false, error: getEndDateErrorMessage() };
 	}
-	return null;
+
+	return { ok: true, date: parsed.date };
 }
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -147,4 +157,8 @@ export function getEndDateLabel(daysLeft: number, endDate: string): string {
 	if (daysLeft <= endDateRules.soonDays) return `Noch ${daysLeft} Tage`;
 
 	return `Bis ${formatDate(endDate)}`;
+}
+
+export function isExpired(isoDate: string, now: Date = new Date()): boolean {
+	return getDaysUntil(isoDate, now) < 0;
 }

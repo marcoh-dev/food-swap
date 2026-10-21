@@ -1,5 +1,5 @@
 import { fetchAPI } from "./fetchAPI";
-import type { PaginatedListingsResponse } from "./types/listing.types";
+import type { PaginatedListingsResponse, SortOption } from "./types/listing.types";
 
 export async function getSearchResults({
 	term,
@@ -8,7 +8,7 @@ export async function getSearchResults({
 }: {
 	term?: string;
 	location?: string;
-	sort?: string;
+	sort?: SortOption;
 }): Promise<PaginatedListingsResponse | null> {
 	const searchParams = new URLSearchParams();
 
