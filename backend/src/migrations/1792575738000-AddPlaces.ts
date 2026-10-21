@@ -16,9 +16,6 @@ export class AddPlaces1792575738000 implements MigrationInterface {
       `CREATE TABLE "places" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "country_code" character(2) NOT NULL, "postal_code" character varying(10), "name" character varying NOT NULL, "city" character varying NOT NULL, "county" character varying NOT NULL, "state" character varying NOT NULL, "location" geography(Point,4326) NOT NULL, "size" integer NOT NULL, CONSTRAINT "PK_places_id" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE INDEX "IDX_places_name_trgm" ON "places" USING GIN ("name" gin_trgm_ops)`,
-    );
-    await queryRunner.query(
       `CREATE INDEX "IDX_places_postal_code" ON "places" ("postal_code" varchar_pattern_ops)`,
     );
     await queryRunner.query(
@@ -71,7 +68,6 @@ export class AddPlaces1792575738000 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP INDEX "public"."IDX_places_location"`);
     await queryRunner.query(`DROP INDEX "public"."IDX_places_postal_code"`);
-    await queryRunner.query(`DROP INDEX "public"."IDX_places_name_trgm"`);
     await queryRunner.query(`DROP TABLE "places"`);
   }
 }

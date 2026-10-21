@@ -1,0 +1,23 @@
+info:
+  name: Search Places
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseURL}}/places"
+  params:
+    - name: q
+      value: hmaburg
+      type: query
+    - name: q
+      value: "223"
+      type: query
+      disabled: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
