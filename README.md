@@ -119,6 +119,11 @@ CI runs install, lint, format check and build on every pull request to `main`.
 - `GET /database/connection`
 - `GET /database/tables`
 
+## Deployment
+
+- **Frontend:** Vercel deploys `main` automatically.
+- **Backend:** Render deploys `main` automatically with Root Directory `backend`, Build Command `npm install; npm run build` and Start Command `npm run migration:run:prod && npm run start:prod`. Pending migrations run on every deploy. If one fails, the app does not start and Render keeps the previous version running.
+
 ## Data sources
 
 Place data (cities, districts and postal codes) © [GeoNames](https://www.geonames.org/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The data was filtered and extended with city entries.
