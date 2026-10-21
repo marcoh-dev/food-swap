@@ -22,6 +22,8 @@ import {
 	startChat,
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
+import { searchPlaces } from "@/lib/places.service";
+import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 
 function getRedirectTarget(formData: FormData): string {
@@ -147,6 +149,14 @@ export async function searchListingAction(formData: FormData) {
 	if (tags) searchParams.set("tags", tags);
 
 	redirect(`/listings?${searchParams.toString()}`);
+}
+
+export async function searchPlacesAction(query: string): Promise<ActionResult<Place[]>> {
+	try {
+		return { data: await searchPlaces(query) };
+	} catch {
+		return { error: "Orte konnten nicht geladen werden." };
+	}
 }
 
 function readListing(formData: FormData): NewListing {
