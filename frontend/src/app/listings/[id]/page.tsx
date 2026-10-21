@@ -1,3 +1,5 @@
+import { getPlaceById } from "@/lib/places.service";
+import { parseRadius } from "@/lib/constants/listing.constants";
 import { getListingById } from "@/lib/listings.service";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -40,7 +42,8 @@ export default async function ListingDetailPage({
 	searchParams,
 }: PageProps<"/listings/[id]">) {
 	const { id } = await params;
-	const { term, location } = await searchParams;
+	const { term, place, radius } = await searchParams;
+	const selectedPlace = typeof place === "string" ? await getPlaceById(place) : null;
 	const listing = await getListingById(id);
 	const categories = await getCategories();
 	const tags = await getTags();
@@ -62,7 +65,10 @@ export default async function ListingDetailPage({
 		<>
 			<SearchBar
 				defaultTerm={typeof term === "string" ? term : undefined}
-				defaultLocation={typeof location === "string" ? location : undefined}
+				defaultPlace={selectedPlace}
+				defaultRadius={
+					selectedPlace && typeof radius === "string" ? parseRadius(radius) : undefined
+				}
 			/>
 			<Card className="mx-auto w-full max-w-2xl overflow-hidden pt-0">
 				<div className="relative flex flex-col gap-4 pb-3">

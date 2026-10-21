@@ -140,13 +140,15 @@ export async function isAuthenticated(): Promise<boolean> {
 
 export async function searchListingAction(formData: FormData) {
 	const term = formData.get("term") as string;
-	const location = formData.get("location") as string;
+	const place = formData.get("place") as string;
+	const radius = formData.get("radius") as string;
 	const category = formData.get("category") as string;
 	const tags = formData.get("tags") as string;
 
 	const searchParams = new URLSearchParams();
 	if (term) searchParams.set("term", term);
-	if (location) searchParams.set("location", location);
+	if (place) searchParams.set("place", place);
+	if (place && radius) searchParams.set("radius", radius);
 	if (category) searchParams.set("category", category);
 	if (tags) searchParams.set("tags", tags);
 

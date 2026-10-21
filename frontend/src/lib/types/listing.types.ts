@@ -59,7 +59,8 @@ export type GetListingsOptions = {
 	page?: number;
 	sort?: SortOption;
 	term?: string;
-	location?: string;
+	place?: string;
+	radius?: number;
 	category?: string;
 	tags?: string;
 };

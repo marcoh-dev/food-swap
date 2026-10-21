@@ -20,3 +20,17 @@ export async function searchPlaces(query: string, withPostalCode = false): Promi
 
 	return response.json();
 }
+
+export async function getPlaceById(id: string): Promise<Place | null> {
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_FOODSWAP_API_URL}/places/${encodeURIComponent(id)}`,
+		{
+			cache: "force-cache",
+			headers: { "X-Places-Cache-Version": PLACES_CACHE_VERSION },
+		},
+	);
+
+	if (!response.ok) return null;
+
+	return response.json();
+}
