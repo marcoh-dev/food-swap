@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Place } from './entities/place.entity';
 
 const SUGGESTION_LIMIT = 10;
-const MIN_TYPO_LENGTH = 3;
+const MIN_TYPO_LENGTH = 4;
 const MAX_TYPO_LENGTH = 8;
 const ANY_CHARACTER = '\u0000';
 
