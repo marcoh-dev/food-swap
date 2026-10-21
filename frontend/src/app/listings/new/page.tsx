@@ -19,7 +19,7 @@ export default async function NewListingPage() {
 
 	return (
 		<>
-			<h2>Erstelle ein neues Angebot</h2>
+			<h1>Erstelle ein neues Angebot</h1>
 			<CreateListingForm categories={categories} tags={tags} />
 		</>
 	);

@@ -1,5 +1,4 @@
 export const pageTitles = {
-	home: "Startseite",
 	listings: "Alle Angebote",
 	newListing: "Neues Angebot",
 	login: "Anmelden",
@@ -7,4 +6,6 @@ export const pageTitles = {
 	myProfile: "Mein Profil",
 	myChats: "Meine Chats",
 	myListings: "Meine Angebote",
+	about: "Über uns",
+	listingNotFound: "Angebot nicht gefunden",
 } as const;
