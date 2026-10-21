@@ -10,7 +10,7 @@ import { InputGroup, InputGroupAddon } from "../ui/input-group";
 import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover";
 
 const MIN_QUERY_LENGTH = 2;
-const DEBOUNCE_MS = 250;
+const DEBOUNCE_MS = 150;
 
 function placeLabel(place: Place) {
 	return place.postalCode ? `${place.postalCode} ${place.name}` : place.name;

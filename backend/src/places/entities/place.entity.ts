@@ -2,6 +2,9 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import type { Point } from 'typeorm';
 
 @Entity('places')
+@Index('IDX_places_name_trgm', { synchronize: false })
+@Index('IDX_places_alt_name_trgm', { synchronize: false })
+@Index('IDX_places_district_trgm', { synchronize: false })
 @Index('IDX_places_postal_code', { synchronize: false })
 @Index('IDX_places_location', { synchronize: false })
 export class Place {
