@@ -17,12 +17,7 @@ export default function ListingMeta({
 	const daysLeft = getDaysUntil(listing.endDate);
 
 	return (
-		<p
-			className={cn(
-				"flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500",
-				className,
-			)}
-		>
+		<p className={cn("flex flex-wrap items-center gap-x-3 gap-y-1 text-sm", className)}>
 			<span className="inline-flex items-center gap-1">
 				<MapPinIcon className="size-4" aria-hidden="true" />
 				{listing.location}

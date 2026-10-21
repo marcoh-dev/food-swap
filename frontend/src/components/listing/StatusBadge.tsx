@@ -9,5 +9,5 @@ export default function StatusBadge({
 }) {
 	if (listing.status !== "reserved" || isExpired(listing.endDate)) return null;
 
-	return <Badge>Reserviert</Badge>;
+	return <Badge variant="status">Reserviert</Badge>;
 }

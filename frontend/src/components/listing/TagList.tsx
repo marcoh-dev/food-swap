@@ -1,4 +1,5 @@
 import type { Tag } from "@/lib/types/tag.types";
+import { Badge } from "../ui/badge";
 
 type Props = {
 	tags: Tag[];
@@ -12,16 +13,20 @@ export default function TagList({ tags, max }: Props) {
 	const hidden = tags.length - visible.length;
 
 	return (
-		<ul className="flex flex-wrap gap-1.5">
+		<ul className="flex flex-wrap gap-1.5" aria-label="Tags">
 			{visible.map((tag) => (
-				<li
-					key={tag.id}
-					className="rounded-full border border-gray-400 dark:border-gray-500 px-2 py-0.5 text-xs text-gray-700 dark:text-gray-300"
-				>
-					{tag.name}
+				<li key={tag.id}>
+					<Badge variant="tag" className="rounded-full">
+						{tag.name}
+					</Badge>
 				</li>
 			))}
-			{hidden > 0 && <li className="px-1 py-0.5 text-xs text-gray-500">+{hidden}</li>}
+			{hidden > 0 && (
+				<li className="px-1 py-0.5 text-xs text-muted-foreground">
+					<span aria-hidden="true">+{hidden}</span>
+					<span className="sr-only">{hidden} weitere Tags</span>
+				</li>
+			)}
 		</ul>
 	);
 }

@@ -52,3 +52,12 @@ export type ParsedEndDate =
 export type EndDateResult = { ok: true; date: Date | undefined } | { ok: false; error: string };
 
 export type FormState = { error?: string };
+
+export type GetListingsOptions = {
+	page?: number;
+	sort?: SortOption;
+	term?: string;
+	location?: string;
+	category?: string;
+	tags?: string;
+};

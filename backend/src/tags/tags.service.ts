@@ -22,4 +22,11 @@ export class TagsService {
     }
     return tags;
   }
+
+  async findBySlugs(slugs: string[]): Promise<Tag[]> {
+    if (slugs.length === 0) {
+      return [];
+    }
+    return this.tags.findBy({ slug: In(slugs) });
+  }
 }
