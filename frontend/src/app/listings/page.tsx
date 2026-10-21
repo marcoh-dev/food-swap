@@ -23,7 +23,7 @@ function getParam(value: string | string[] | undefined): string | undefined {
 export default async function ListingsPage({ searchParams }: PageProps<"/listings">) {
 	const params = await searchParams;
 	const page = Number(params.page) || 1;
-	const sort: SortOption = params.sort === "oldest" ? "oldest" : "newest";
+	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
 	const term = getParam(params.term);
 	const location = getParam(params.location);
 	const category = getParam(params.category);
@@ -86,7 +86,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 											className="h-full w-full object-cover"
 										/>
 										<div className="absolute top-2 left-2">
-											<StatusBadge status={listing.status} />
+											<StatusBadge listing={listing} />
 										</div>
 									</div>
 									<CardHeader>

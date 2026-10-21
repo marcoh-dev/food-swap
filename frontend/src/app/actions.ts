@@ -1,14 +1,15 @@
 "use server";
 
-import { redirect, unauthorized } from "next/navigation";
+import { notFound, redirect, unauthorized } from "next/navigation";
 import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import type { ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
+import type { FormState, ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
 import {
 	createListing,
 	deleteListing,
+	getListingById,
 	updateListing,
 	updateListingStatus,
 } from "@/lib/listings.service";
@@ -23,6 +24,7 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
+import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
 
 function getRedirectTarget(formData: FormData): string {
 	const target = formData.get("redirect");
@@ -149,7 +151,7 @@ export async function searchListingAction(formData: FormData) {
 	redirect(`/listings?${searchParams.toString()}`);
 }
 
-function readListing(formData: FormData): NewListing {
+function readListing(formData: FormData, endDate?: Date): NewListing {
 	return {
 		title: formData.get("title") as string,
 		description: formData.get("description") as string,
@@ -158,14 +160,23 @@ function readListing(formData: FormData): NewListing {
 		type: formData.get("type") as ListingType,
 		categoryId: (formData.get("categoryId") as string) || null,
 		tagIds: formData.getAll("tagIds") as string[],
+		endDate: endDate ? getEndOfDay(endDate).toISOString() : undefined,
 	};
 }
 
-export async function createListingAction(formData: FormData) {
+export async function createListingAction(
+	_prevState: FormState,
+	formData: FormData,
+): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	const listing = await createListing(readListing(formData));
+	const result = validateEndDate(formData.get("endDate"));
+	if (!result.ok) return { error: result.error };
+
+	const endDate = result.date ?? getDefaultEndDate();
+
+	const listing = await createListing(readListing(formData, endDate));
 
 	revalidatePath("/listings");
 	redirect(`/listings/${listing.id}?toast=listing-created`);
@@ -175,10 +186,35 @@ export async function updateListingAction(id: string, formData: FormData) {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	await updateListing(id, readListing(formData));
+	const existing = await getListingById(id);
+
+	if (!existing) notFound();
+
+	const submittedEndDate = formData.get("endDate");
+	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));
+
+	let endDate: Date | undefined;
+
+	if (!isEndDateUnchanged) {
+		const result = validateEndDate(submittedEndDate);
+		if (!result.ok) return { error: result.error };
+
+		endDate = result.date;
+	}
+
+	try {
+		await updateListing(id, readListing(formData, endDate));
+	} catch (error) {
+		console.log(error);
+		return {
+			error: "Das Angebot konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
+		};
+	}
 
 	revalidatePath("/listings");
 	revalidatePath(`/listings/${id}`);
+
+	return {};
 }
 
 export async function deleteListingAction(id: string) {

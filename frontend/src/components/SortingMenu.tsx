@@ -30,7 +30,7 @@ export function SortingMenu({ sort }: { sort: SortOption }) {
 			<div>
 				<DropdownMenuTrigger asChild>
 					<Button variant="outline">
-						{sort === "newest" ? "Neueste zuerst" : "Älteste zuerst"}{" "}
+						{sort === "newest" ? "Neueste zuerst" : "Endet bald"}
 						<ArrowDownUp size={16} strokeWidth={1} />
 					</Button>
 				</DropdownMenuTrigger>
@@ -39,7 +39,7 @@ export function SortingMenu({ sort }: { sort: SortOption }) {
 				<DropdownMenuGroup>
 					<DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
 						<DropdownMenuRadioItem value="newest">Neueste</DropdownMenuRadioItem>
-						<DropdownMenuRadioItem value="oldest">Älteste</DropdownMenuRadioItem>
+						<DropdownMenuRadioItem value="endingSoon">Endet bald</DropdownMenuRadioItem>
 					</DropdownMenuRadioGroup>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
