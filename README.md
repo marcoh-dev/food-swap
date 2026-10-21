@@ -24,7 +24,7 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 
 - Node.js 24 (see `.nvmrc`, run `fnm use` or `nvm use`)
 - npm
-- A PostgreSQL database (local, e.g. in Docker, or the live database)
+- Docker (for the local database)
 
 ### Setup
 
@@ -36,21 +36,22 @@ cd food-swap
 npm install
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
+docker compose up -d
 npm run migration:run -w backend
 npm run dev
 ```
 
-The frontend runs on http://localhost:5173, the backend on http://localhost:3000.
+The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d` starts a local PostgreSQL with PostGIS on port 5432 (`docker compose down` stops it, the data is kept).
 
 ### Environment variables
 
 **`backend/.env`**
 
-| Variable       | Local                                               | Live                                                                |
-| -------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL` | `postgresql://USER:PASSWORD@localhost:5432/DB_NAME` | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
-| `JWT_SECRET`   | any string                                          | long random string, never the local one                             |
-| `PORT`         | `3000`                                              | set by the hosting provider                                         |
+| Variable       | Local                                                    | Live                                                                |
+| -------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap` | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
+| `JWT_SECRET`   | any string                                               | long random string, never the local one                             |
+| `PORT`         | `3000`                                                   | set by the hosting provider                                         |
 
 **`frontend/.env`**
 
