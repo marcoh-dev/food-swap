@@ -55,10 +55,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					<header className="flex flex-row justify-between items-center p-[1em] h-22.5 sticky top-0 z-50 bg-background/85 backdrop-blur-md text-foreground border-b">
 						<div className="flex flex-row gap-5">
 							<div>
-								<Link href="/">
+								<Link href="/" aria-label="Home">
 									<Image
 										src="/logo.png"
-										alt="FoodSwap Startseite"
+										alt="FoodSwap Logo"
 										width="50"
 										height="50"
 									/>

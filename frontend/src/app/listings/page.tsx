@@ -69,7 +69,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						: "Keine Angebote gefunden. Versuche, deine Suche anzupassen."}
 				</p>
 			) : (
-				<ul className="grid gap-3 sm:gap-8 md:gap-12">
+				<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
 					{listings.map((listing) => (
 						<li key={listing.id}>
 							<Link
