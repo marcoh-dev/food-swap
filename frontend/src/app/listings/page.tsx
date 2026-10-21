@@ -23,11 +23,7 @@ function getParam(value: string | string[] | undefined): string | undefined {
 export default async function ListingsPage({ searchParams }: PageProps<"/listings">) {
 	const params = await searchParams;
 	const page = Number(params.page) || 1;
-<<<<<<< HEAD
 	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
-	const listingsData = await getListings({ page, sort });
-=======
-	const sort: SortOption = params.sort === "oldest" ? "oldest" : "newest";
 	const term = getParam(params.term);
 	const location = getParam(params.location);
 	const category = getParam(params.category);
@@ -43,7 +39,6 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	const total = listingsData?.meta.total ?? 0;
 	const isSearching = Boolean(term || location);
 	const hasFilters = Boolean(category || tags);
->>>>>>> main
 
 	return (
 		<>
@@ -74,31 +69,6 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						: "Keine Angebote gefunden. Versuche, deine Suche anzupassen."}
 				</p>
 			) : (
-<<<<<<< HEAD
-				<>
-					<div className="flex w-full justify-end mb-2">
-						<SortingMenu sort={sort} />
-					</div>
-					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
-						{listingsData?.data.map((listing) => (
-							<li key={listing.id}>
-								<Link
-									href={`/listings/${listing.id}`}
-									className="block h-full no-underline"
-								>
-									<Card className="h-full overflow-hidden pt-0">
-										<div className="relative aspect-[16/9] w-full overflow-hidden">
-											<Image
-												src={listing.image ?? "/placeholder.png"}
-												alt={listing.title}
-												width={250}
-												height={200}
-												className="h-full w-full object-cover"
-											/>
-											<div className="absolute top-2 left-2">
-												<StatusBadge listing={listing} />
-											</div>
-=======
 				<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
 					{listings.map((listing) => (
 						<li key={listing.id}>
@@ -116,8 +86,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 											className="h-full w-full object-cover"
 										/>
 										<div className="absolute top-2 left-2">
-											<StatusBadge status={listing.status} />
->>>>>>> main
+											<StatusBadge listing={listing} />
 										</div>
 									</div>
 									<CardHeader>

@@ -29,7 +29,7 @@ export default function EndDatePicker({ defaultValue }: Props) {
 	}
 	const label = date
 		? formatDate(date.toISOString())
-		: `Standard: ${formatDate(getDefaultEndDate().toISOString())}`;
+		: formatDate(getDefaultEndDate().toISOString());
 
 	return (
 		<>
