@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MessagesSquareIcon } from "lucide-react";
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { useChatStore } from "@/store/chat.store";
 
 import { ChatConversation } from "./ChatConversation";

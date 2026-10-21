@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import BurgerMenu from "@/components/BurgerMenu";
 import { cookies } from "next/headers";

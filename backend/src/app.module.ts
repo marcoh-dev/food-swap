@@ -17,6 +17,8 @@ import { Category } from './categories/entities/category.entity';
 import { Tag } from './tags/entities/tag.entity';
 import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
+import { Place } from './places/entities/place.entity';
+import { PlacesModule } from './places/places.module';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { TagsModule } from './tags/tags.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DATABASE_URL'),
-        entities: [User, Listing, Chat, Message, Category, Tag],
+        entities: [User, Listing, Chat, Message, Category, Tag, Place],
         synchronize: false,
         logging: false,
         enableWAL: true,
@@ -41,6 +43,7 @@ import { TagsModule } from './tags/tags.module';
     ChatsModule,
     CategoriesModule,
     TagsModule,
+    PlacesModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
