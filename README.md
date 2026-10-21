@@ -92,6 +92,8 @@ rm -r DE.zip geonames
 
 Then create a new migration that empties `places` and loads the file again. The `AddPlaces` migration only loads it once.
 
+Place suggestions are cached by the frontend server without expiry. Whenever the place data or the search in `backend/src/places/places.service.ts` changes, bump `PLACES_CACHE_VERSION` in `frontend/src/lib/places.service.ts`, otherwise users keep getting the old suggestions.
+
 ## Commands
 
 | Command                                                          | What it does                                           |
