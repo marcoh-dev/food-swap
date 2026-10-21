@@ -87,6 +87,16 @@ export default async function BurgerMenu() {
 								</>
 							)}
 						</ul>
+
+						<ul className="flex flex-col gap-2">
+							<li>
+								<SheetParts.SheetClose asChild>
+									<Link href="/about" className="no-underline">
+										Über uns
+									</Link>
+								</SheetParts.SheetClose>
+							</li>
+						</ul>
 					</nav>
 				</SheetParts.SheetContent>
 			</SheetParts.Sheet>

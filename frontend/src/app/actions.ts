@@ -23,6 +23,8 @@ import {
 	startChat,
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
+import { searchPlaces } from "@/lib/places.service";
+import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
 
@@ -151,6 +153,14 @@ export async function searchListingAction(formData: FormData) {
 	redirect(`/listings?${searchParams.toString()}`);
 }
 
+export async function searchPlacesAction(query: string): Promise<ActionResult<Place[]>> {
+	try {
+		return { data: await searchPlaces(query) };
+	} catch {
+		return { error: "Orte konnten nicht geladen werden." };
+	}
+}
+
 function readListing(formData: FormData, endDate?: Date): NewListing {
 	return {
 		title: formData.get("title") as string,
@@ -205,7 +215,7 @@ export async function updateListingAction(id: string, formData: FormData) {
 	try {
 		await updateListing(id, readListing(formData, endDate));
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		return {
 			error: "Das Angebot konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
 		};

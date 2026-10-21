@@ -1,6 +1,6 @@
 import { GiftIcon, MapPinIcon, RepeatIcon, TimerIcon } from "lucide-react";
 import type { ListingResponse } from "@/lib/types/listing.types";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import ListingDate from "./ListingDate";
 import { getDaysUntil, getEndDateLabel } from "@/utils/date";
 
