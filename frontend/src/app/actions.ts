@@ -215,7 +215,7 @@ export async function updateListingAction(id: string, formData: FormData) {
 	try {
 		await updateListing(id, readListing(formData, endDate));
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		return {
 			error: "Das Angebot konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
 		};
