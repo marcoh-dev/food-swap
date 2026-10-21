@@ -22,7 +22,7 @@ export default function SearchBar({
 
 			<FieldGroup className="gap-2 sm:flex-row sm:items-center">
 				<TermSearch defaultValue={defaultTerm} />
-				<LocationSearch defaultValue={defaultLocation} />
+				<LocationSearch key={defaultLocation} defaultValue={defaultLocation} />
 				<Button type="submit" className="sm:w-auto">
 					Suchen
 				</Button>

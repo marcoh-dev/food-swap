@@ -22,6 +22,7 @@ function placeRegion(place: Place) {
 
 export default function LocationSearch({ defaultValue = "" }: { defaultValue?: string }) {
 	const anchorRef = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 	const [query, setQuery] = useState(defaultValue);
 	const [isOpen, setIsOpen] = useState(false);
 	const [result, setResult] = useState<{ query: string; places: Place[] }>({
@@ -33,6 +34,7 @@ export default function LocationSearch({ defaultValue = "" }: { defaultValue?: s
 	const canSearch = trimmedQuery.length >= MIN_QUERY_LENGTH;
 	const isLoaded = result.query === trimmedQuery;
 	const showList = isOpen && canSearch && (isLoaded || result.places.length > 0);
+	const firstSuggestion = isLoaded ? result.places[0] : undefined;
 
 	useEffect(() => {
 		if (!isOpen || !canSearch) return;
@@ -48,6 +50,19 @@ export default function LocationSearch({ defaultValue = "" }: { defaultValue?: s
 			clearTimeout(timeout);
 		};
 	}, [isOpen, canSearch, trimmedQuery]);
+
+	useEffect(() => {
+		const form = inputRef.current?.form;
+		if (!form || !firstSuggestion) return;
+
+		const suggestedName = firstSuggestion.name;
+		function applyFirstSuggestion(event: FormDataEvent) {
+			event.formData.set("location", suggestedName);
+		}
+
+		form.addEventListener("formdata", applyFirstSuggestion);
+		return () => form.removeEventListener("formdata", applyFirstSuggestion);
+	}, [firstSuggestion]);
 
 	function selectPlace(place: Place) {
 		setQuery(place.name);
@@ -73,6 +88,7 @@ export default function LocationSearch({ defaultValue = "" }: { defaultValue?: s
 								<MapPinIcon />
 							</InputGroupAddon>
 							<CommandPrimitive.Input
+								ref={inputRef}
 								name="location"
 								placeholder="Ort oder PLZ"
 								value={query}
@@ -100,7 +116,7 @@ export default function LocationSearch({ defaultValue = "" }: { defaultValue?: s
 					}}
 				>
 					<CommandList>
-						<CommandEmpty>Kein Ort gefunden</CommandEmpty>
+						<CommandEmpty>Keinen Ort gefunden</CommandEmpty>
 						{result.places.map((place) => (
 							<CommandItem
 								key={place.id}

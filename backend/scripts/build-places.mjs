@@ -49,9 +49,51 @@ function cityOf(row) {
   return row.name;
 }
 
+const BIG_CITY_SIZE = 10;
+
+const localRows = rows.map((row) => ({ ...row, city: cityOf(row) }));
+
+const citySizes = new Map();
+for (const row of localRows) {
+  const key = `${countyKey(row)}\t${row.city}`;
+  const entry = citySizes.get(key) ?? { ...row, count: 0 };
+  entry.count += 1;
+  citySizes.set(key, entry);
+}
+
+const bigCities = new Map();
+for (const entry of citySizes.values()) {
+  const key = `${entry.countryCode}\t${entry.city}`;
+  if (
+    entry.count >= BIG_CITY_SIZE &&
+    entry.count > (bigCities.get(key)?.count ?? 0)
+  ) {
+    bigCities.set(key, entry);
+  }
+}
+
+function withBorderCity(row) {
+  if (row.city !== row.name) return row;
+  const parts = row.name.split(' ');
+  for (let length = parts.length - 1; length > 0; length--) {
+    const bigCity = bigCities.get(
+      `${row.countryCode}\t${parts.slice(0, length).join(' ')}`,
+    );
+    if (bigCity && !parts[length].startsWith('(')) {
+      return {
+        ...row,
+        city: bigCity.city,
+        county: bigCity.county,
+        state: bigCity.state,
+      };
+    }
+  }
+  return row;
+}
+
 const cities = new Map();
-const rowsWithCity = rows.map((row) => {
-  const city = cityOf(row);
+const rowsWithCity = localRows.map(withBorderCity).map((row) => {
+  const city = row.city;
   const key = `${countyKey(row)}\t${city}`;
   const entry = cities.get(key) ?? {
     countryCode: row.countryCode,
