@@ -15,6 +15,15 @@ http:
       type: query
       disabled: true
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const place = res.body.find((entry) => entry.postalCode);
+        if (place) {
+          bru.setVar("placeId", place.id);
+        }
+
 settings:
   encodeUrl: true
   timeout: 0

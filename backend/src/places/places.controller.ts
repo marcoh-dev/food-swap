@@ -1,4 +1,11 @@
-import { Controller, Get, Query, SerializeOptions } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  SerializeOptions,
+} from '@nestjs/common';
 import { Public } from '../common/decorators/public.decorator';
 import { PlacesService } from './places.service';
 import { PlacesQueryDto } from './dtos/placesQuery.dto';
@@ -13,5 +20,12 @@ export class PlacesController {
   @SerializeOptions({ type: PlaceResponseDto })
   search(@Query() { q }: PlacesQueryDto) {
     return this.placesService.search(q);
+  }
+
+  @Public()
+  @Get(':id')
+  @SerializeOptions({ type: PlaceResponseDto })
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.placesService.findOne(id);
   }
 }

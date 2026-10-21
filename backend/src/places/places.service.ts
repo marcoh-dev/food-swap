@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Place } from './entities/place.entity';
 
 const SUGGESTION_LIMIT = 10;
@@ -94,5 +94,17 @@ export class PlacesService {
       SUGGESTION_LIMIT,
       typoPrefixPattern(query),
     ]);
+  }
+
+  async findOne(id: string): Promise<Place> {
+    const place = await this.places.findOneBy({ id });
+    if (!place) {
+      throw new NotFoundException(`Place with ID ${id} not found.`);
+    }
+    return place;
+  }
+
+  existsWithPostalCode(id: string): Promise<boolean> {
+    return this.places.exists({ where: { id, postalCode: Not(IsNull()) } });
   }
 }

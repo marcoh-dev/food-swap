@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -11,6 +12,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Tag } from '../../tags/entities/tag.entity';
 import { Category } from '../../categories/entities/category.entity';
+import { Place } from '../../places/entities/place.entity';
 
 export enum ListingType {
   SWAP = 'swap',
@@ -38,8 +40,16 @@ export class Listing {
   @Column({ type: 'varchar', length: 500, nullable: true })
   image!: string | null;
 
-  @Column()
-  location!: string;
+  @Index('IDX_listings_place_id')
+  @Column({ name: 'place_id' })
+  placeId!: string;
+
+  @ManyToOne(() => Place, { nullable: false, onDelete: 'RESTRICT' })
+  @JoinColumn({
+    name: 'place_id',
+    foreignKeyConstraintName: 'FK_listings_place_id',
+  })
+  place!: Place;
 
   @Column({
     type: 'enum',

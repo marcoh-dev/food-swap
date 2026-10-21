@@ -5,16 +5,13 @@ import { Command as CommandPrimitive } from "cmdk";
 import { MapPinIcon } from "lucide-react";
 import { searchPlacesAction } from "@/app/actions";
 import type { Place } from "@/lib/types/place.types";
+import { formatPlace } from "@/utils/place";
 import { Command, CommandEmpty, CommandItem, CommandList } from "../ui/command";
 import { InputGroup, InputGroupAddon } from "../ui/input-group";
 import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover";
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_MS = 150;
-
-function placeLabel(place: Place) {
-	return place.postalCode ? `${place.postalCode} ${place.name}` : place.name;
-}
 
 function placeRegion(place: Place) {
 	return place.county.startsWith(place.state) ? place.county : `${place.county}, ${place.state}`;
@@ -124,7 +121,7 @@ export default function LocationSearch({ defaultValue = "" }: { defaultValue?: s
 								onSelect={() => selectPlace(place)}
 							>
 								<div className="flex flex-col">
-									<span>{placeLabel(place)}</span>
+									<span>{formatPlace(place)}</span>
 									<span className="text-muted-foreground">
 										{placeRegion(place)}
 									</span>

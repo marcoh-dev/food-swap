@@ -19,6 +19,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ListingStatusMenu from "./ListingStatusMenu";
+import { formatPlace } from "@/utils/place";
 
 export default function ListingActions({
 	listing,
@@ -74,6 +75,7 @@ export default function ListingActions({
 					tags={tags}
 					defaultValues={{
 						...listing,
+						location: formatPlace(listing.place),
 						categoryId: listing.category?.id ?? null,
 						tagIds: listing.tags.map((tag) => tag.id),
 					}}

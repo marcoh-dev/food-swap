@@ -1,4 +1,5 @@
 import type { Category } from "./category.types";
+import type { Place } from "./place.types";
 import type { PaginationMetaResponse } from "./common.types";
 import type { Tag } from "./tag.types";
 import type { User } from "./user.types";
@@ -8,7 +9,7 @@ export type ListingResponse = {
 	title: string;
 	description: string;
 	image?: string;
-	location: string;
+	place: Place;
 	type: ListingType;
 	status: ListingStatus;
 	owner: User;

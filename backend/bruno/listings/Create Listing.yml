@@ -13,7 +13,7 @@ http:
           "title": "5kg Tomaten",
           "description":
             "frisch aus privatem Anbau",
-         "location": "Hamburg",
+         "placeId": "{{placeId}}",
          "type":"swap"
         }
   auth: inherit
