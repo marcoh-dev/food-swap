@@ -12,7 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationMetaResponseDto } from '../common/dtos/paginationMetaResponse.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
-import { FindOptionsWhere, ILike, In, MoreThan } from 'typeorm';
+import { FindOptionsWhere, ILike, In, MoreThan, Raw } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { CategoriesService } from '../categories/category.service';
 import { TagsService } from '../tags/tags.service';
@@ -38,7 +38,8 @@ export class ListingsService {
   async findAll(
     query: ListingsQueryDto,
   ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
-    const { page, limit, type, sort, term, location, category, tags } = query;
+    const { page, limit, type, sort, term, place, radius, category, tags } =
+      query;
     const visibleStatuses = [ListingStatus.ACTIVE, ListingStatus.RESERVED];
 
     const baseFilter: FindOptionsWhere<Listing> = {
@@ -47,7 +48,7 @@ export class ListingsService {
     };
 
     if (type) baseFilter.type = type;
-    if (location) baseFilter.place = { name: ILike(`%${location}%`) };
+    if (place) baseFilter.placeId = await this.placeFilter(place, radius);
 
     if (category) {
       const foundCategory = await this.categoriesService.findBySlug(category);
@@ -105,6 +106,30 @@ export class ListingsService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  private async placeFilter(placeId: string, radiusKm?: number) {
+    const place = await this.placesService.findOne(placeId);
+    const area =
+      place.postalCode === null
+        ? `"city" = :city AND "county" = :county`
+        : `"postal_code" = :postalCode`;
+    const nearby = radiusKm
+      ? `OR ST_DWithin("location", (SELECT "location" FROM "places" WHERE "id" = :placeId), :radiusMeters)`
+      : '';
+
+    return Raw(
+      (alias) =>
+        `${alias} IN (SELECT "id" FROM "places" WHERE "country_code" = :countryCode AND ((${area}) ${nearby}))`,
+      {
+        placeId: place.id,
+        countryCode: place.countryCode,
+        city: place.city,
+        county: place.county,
+        postalCode: place.postalCode,
+        radiusMeters: (radiusKm ?? 0) * 1000,
+      },
+    );
   }
 
   async findAllByUser(

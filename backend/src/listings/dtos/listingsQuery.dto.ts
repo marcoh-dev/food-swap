@@ -1,7 +1,9 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 import { PaginationQueryDto } from '../../common/dtos/paginationQuery.dto';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { toSlugArray } from '../../common/utils/trim-string';
+
+export const RADIUS_OPTIONS_KM = [5, 10, 20, 50];
 
 export class ListingsQueryDto extends PaginationQueryDto {
   @IsOptional()
@@ -10,9 +12,13 @@ export class ListingsQueryDto extends PaginationQueryDto {
   term?: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  location?: string;
+  @IsUUID()
+  place?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsIn(RADIUS_OPTIONS_KM)
+  radius?: number;
 
   @IsOptional()
   @IsString()
