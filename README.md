@@ -61,6 +61,21 @@ The frontend runs on http://localhost:5173, the backend on http://localhost:3000
 
 Never commit `.env` files, only `.env.example`. When you add a variable, add it to `.env.example` and to the hosting dashboards too.
 
+### Using live data locally (optional)
+
+Copies the live database (schema and data) into your local Docker database. The dump contains real user data: never commit or share it.
+
+```bash
+docker compose down -v
+docker compose up -d
+docker compose exec -T db pg_dump "<LIVE_DATABASE_URL>" --no-owner --no-privileges -Fc > live.dump
+docker compose exec -T db pg_restore -U postgres -d foodswap --no-owner --no-privileges < live.dump
+npm run migration:run -w backend
+rm live.dump
+```
+
+Use the live `DATABASE_URL` without `uselibpqcompat=true` (only Node understands it), e.g. `...?sslmode=require`. `docker compose down -v` deletes your local database.
+
 ## Commands
 
 | Command                                                          | What it does                                           |
