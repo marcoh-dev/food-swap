@@ -1,4 +1,6 @@
 import SearchBar from "@/components/search/SearchBar";
+import { pageTitles } from "@/lib/constants/titles.constants";
+import type { Metadata } from "next";
 
 export default function Home() {
 	return (
