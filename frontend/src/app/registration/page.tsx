@@ -1,4 +1,8 @@
 import { UserRegistration } from "@/components/user/UserRegistration";
+import { pageTitles } from "@/lib/constants/titles.constants";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: pageTitles.register };
 
 export default async function Registration({ searchParams }: PageProps<"/registration">) {
 	const { redirect } = await searchParams;

@@ -12,6 +12,10 @@ import TagList from "@/components/listing/TagList";
 import ListingMeta from "@/components/listing/ListingMeta";
 import ListingFilters from "@/components/listing/ListingFilter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Metadata } from "next";
+import { pageTitles } from "@/lib/constants/titles.constants";
+
+export const metadata: Metadata = { title: pageTitles.listings };
 
 function getParam(value: string | string[] | undefined): string | undefined {
 	if (typeof value === "string" && value !== "") {

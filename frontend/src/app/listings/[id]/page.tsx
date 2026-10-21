@@ -23,6 +23,17 @@ import {
 	CardContent,
 	CardFooter,
 } from "@/components/ui/card";
+import { pageTitles } from "@/lib/constants/titles.constants";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: PageProps<"/listings/[id]">): Promise<Metadata> {
+	const { id } = await params;
+	const listing = await getListingById(id);
+
+	return {
+		title: listing ? listing.title : pageTitles.listingNotFound,
+	};
+}
 
 export default async function ListingDetailPage({
 	params,

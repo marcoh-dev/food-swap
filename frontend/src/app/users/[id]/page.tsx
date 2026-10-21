@@ -1,8 +1,12 @@
 import { UserDelete } from "@/components/user/UserDelete";
 import { UserUpdate } from "@/components/user/UserUpdate";
+import { pageTitles } from "@/lib/constants/titles.constants";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
 import { formatDate } from "@/utils/date";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = { title: pageTitles.myProfile };
 
 export default async function UserPage({ params }: PageProps<"/users/[id]">) {
 	const { id } = await params;

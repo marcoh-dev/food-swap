@@ -12,6 +12,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getCurrentUser } from "@/lib/users.service";
 import { Badge } from "@/components/ui/badge";
 import { isExpired } from "@/utils/date";
+import type { Metadata } from "next";
+import { pageTitles } from "@/lib/constants/titles.constants";
+
+export const metadata: Metadata = { title: pageTitles.myListings };
 
 export default async function UserListingsPage({
 	params,
