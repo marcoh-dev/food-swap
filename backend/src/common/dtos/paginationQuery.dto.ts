@@ -21,6 +21,6 @@ export class PaginationQueryDto {
   type?: ListingType;
 
   @IsOptional()
-  @IsIn(['newest', 'oldest'])
-  sort?: 'newest' | 'oldest';
+  @IsIn(['newest', 'endingSoon'])
+  sort?: 'newest' | 'endingSoon';
 }

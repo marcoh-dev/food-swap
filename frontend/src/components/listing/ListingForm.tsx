@@ -8,13 +8,15 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import TagSelect from "./TagSelect";
+import EndDatePicker from "./EndDatePicker";
 
 type Props = {
-	action: (formData: FormData) => Promise<void>;
+	action: (formData: FormData) => void | Promise<void>;
 	categories: Category[];
 	tags: Tag[];
 	defaultValues?: NewListing;
 	submitLabel?: string;
+	error?: string;
 };
 
 export default function ListingForm({
@@ -23,6 +25,7 @@ export default function ListingForm({
 	tags,
 	defaultValues,
 	submitLabel = "Erstellen",
+	error,
 }: Props) {
 	return (
 		<form className="my-4" action={action}>
@@ -90,11 +93,11 @@ export default function ListingForm({
 					</Select>
 				</Field>
 				<FieldSet>
-					<FieldLegend>Tags</FieldLegend>
+					<FieldLegend variant="label">Tags</FieldLegend>
 					<TagSelect tags={tags} defaultValue={defaultValues?.tagIds} />
 				</FieldSet>
 				<FieldSet>
-					<FieldLegend>Art</FieldLegend>
+					<FieldLegend variant="label">Art</FieldLegend>
 					<RadioGroup name="type" defaultValue={defaultValues?.type} required>
 						<Field orientation="horizontal">
 							<RadioGroupItem value="swap" id="type-swap" />
@@ -106,7 +109,16 @@ export default function ListingForm({
 						</Field>
 					</RadioGroup>
 				</FieldSet>
+				<Field>
+					<FieldLabel>Verfügbar bis</FieldLabel>
+					<EndDatePicker defaultValue={defaultValues?.endDate} />
+				</Field>
 			</FieldGroup>
+			{error && (
+				<p role="alert" className="mt-4 text-sm text-destructive">
+					{error}
+				</p>
+			)}
 			<Button type="submit" className="mt-6">
 				{submitLabel}
 			</Button>

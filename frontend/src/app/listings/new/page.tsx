@@ -1,5 +1,5 @@
-import { createListingAction, isAuthenticated } from "@/app/actions";
-import ListingForm from "@/components/listing/ListingForm";
+import { isAuthenticated } from "@/app/actions";
+import CreateListingForm from "@/components/listing/CreateListingForm";
 import { getCategories } from "@/lib/categories.service";
 import { getTags } from "@/lib/tags.service";
 import { redirect } from "next/navigation";
@@ -11,9 +11,5 @@ export default async function NewListingPage() {
 	if (!isLoggedIn) {
 		redirect("/login?redirect=/listings/new");
 	}
-	return (
-		<>
-			<ListingForm action={createListingAction} categories={categories} tags={tags} />
-		</>
-	);
+	return <CreateListingForm categories={categories} tags={tags} />;
 }

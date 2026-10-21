@@ -64,7 +64,7 @@ export default async function ListingDetailPage({
 							className="object-cover"
 						/>
 						<div className="absolute top-2 left-2">
-							<StatusBadge status={listing.status} />
+							<StatusBadge listing={listing} />
 						</div>
 					</div>
 					<CardHeader>
