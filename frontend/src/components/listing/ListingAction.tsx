@@ -68,11 +68,6 @@ export default function ListingActions({
 	if (isEditing) {
 		return (
 			<div>
-				{errorMessage && (
-					<p role="alert" className="text-destructive">
-						{errorMessage}
-					</p>
-				)}
 				<ListingForm
 					action={handleUpdate}
 					categories={categories}
@@ -83,7 +78,9 @@ export default function ListingActions({
 						tagIds: listing.tags.map((tag) => tag.id),
 					}}
 					submitLabel="Speichern"
+					error={errorMessage ?? undefined}
 				/>
+
 				<Button
 					type="button"
 					variant="ghost"

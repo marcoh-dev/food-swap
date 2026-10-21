@@ -15,13 +15,6 @@ export default function CreateListingForm({ categories, tags }: Props) {
 	const [state, formAction] = useActionState(createListingAction, {});
 
 	return (
-		<>
-			{state.error && (
-				<p role="alert" className="text-destructive">
-					{state.error}
-				</p>
-			)}
-			<ListingForm action={formAction} categories={categories} tags={tags} />
-		</>
+		<ListingForm action={formAction} error={state.error} categories={categories} tags={tags} />
 	);
 }

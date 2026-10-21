@@ -12,7 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationMetaResponseDto } from '../common/dtos/paginationMetaResponse.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
-import { FindOptionsWhere, ILike, In } from 'typeorm';
+import { FindOptionsWhere, ILike, In, MoreThan } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { CategoriesService } from '../categories/category.service';
 import { TagsService } from '../tags/tags.service';
@@ -41,6 +41,7 @@ export class ListingsService {
 
     const baseFilter: FindOptionsWhere<Listing> = {
       status: In(visibleStatuses),
+      endDate: MoreThan(new Date()),
     };
 
     if (type) baseFilter.type = type;

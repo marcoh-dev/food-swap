@@ -4,11 +4,13 @@ import StatusBadge from "@/components/listing/StatusBadge";
 import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/SortingMenu";
 import { getUserListings } from "@/lib/listings.service";
-import type { SortOption } from "@/lib/types/listing.types";
+import type { ListingResponse, SortOption } from "@/lib/types/listing.types";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/users.service";
+import { Badge } from "@/components/ui/badge";
 
 export default async function UserListingsPage({
 	params,
@@ -20,10 +22,17 @@ export default async function UserListingsPage({
 	const page = Number(query.page) || 1;
 	const sort: SortOption = query.sort === "oldest" ? "oldest" : "newest";
 
+	const currentUser = await getCurrentUser();
+	const isOwner = currentUser?.id === userId;
+
 	const listingsData = await getUserListings({ userId, page, sort });
 
 	if (!listingsData) {
 		notFound();
+	}
+
+	function isExpired(isoDate: string, now: Date = new Date()): boolean {
+		return new Date(isoDate) < now;
 	}
 
 	return (
@@ -54,8 +63,17 @@ export default async function UserListingsPage({
 												height={200}
 												className="h-full w-full object-cover"
 											/>
-											<div className="absolute top-2 left-2">
-												<StatusBadge status={listing.status} />
+											<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
+												{isOwner && isExpired(listing.endDate) ? (
+													<Badge
+														variant="destructive"
+														className="bg-destructive text-white"
+													>
+														Abgelaufen
+													</Badge>
+												) : (
+													<StatusBadge status={listing.status} />
+												)}
 											</div>
 										</div>
 										<CardHeader>

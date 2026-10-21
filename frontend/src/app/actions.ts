@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect, unauthorized } from "next/navigation";
+import { notFound, redirect, unauthorized } from "next/navigation";
 import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
@@ -9,6 +9,7 @@ import type { FormState, ListingStatus, ListingType, NewListing } from "@/lib/ty
 import {
 	createListing,
 	deleteListing,
+	getListingById,
 	updateListing,
 	updateListingStatus,
 } from "@/lib/listings.service";
@@ -23,7 +24,13 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
-import { getDefaultEndDate, isEndDateInRange, parseEndDate, validateEndDate } from "@/utils/date";
+import {
+	formatIsoDate,
+	getDefaultEndDate,
+	getEndOfDay,
+	parseEndDate,
+	validateEndDate,
+} from "@/utils/date";
 
 function getRedirectTarget(formData: FormData): string {
 	const target = formData.get("redirect");
@@ -155,7 +162,7 @@ function readListing(formData: FormData, endDate?: Date): NewListing {
 		type: formData.get("type") as ListingType,
 		categoryId: (formData.get("categoryId") as string) || null,
 		tagIds: formData.getAll("tagIds") as string[],
-		endDate: endDate?.toISOString(),
+		endDate: endDate ? getEndOfDay(endDate).toISOString() : undefined,
 	};
 }
 
@@ -184,17 +191,36 @@ export async function updateListingAction(id: string, formData: FormData) {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	const error = validateEndDate(formData);
-	if (error) return { error };
+	const existing = await getListingById(id);
 
-	const parsed = parseEndDate(formData.get("endDate"));
+	if (!existing) notFound();
+	console.log("submitted:", formData.get("endDate"), "saved:", existing.endDate);
 
-	const endDate = parsed.status === "valid" ? parsed.date : undefined;
+	const submittedEndDate = formData.get("endDate");
+	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));
 
-	await updateListing(id, readListing(formData, endDate));
+	let endDate: Date | undefined;
+
+	if (!isEndDateUnchanged) {
+		const error = validateEndDate(formData);
+		if (error) return { error };
+
+		const parsed = parseEndDate(submittedEndDate);
+		endDate = parsed.status === "valid" ? parsed.date : undefined;
+	}
+
+	try {
+		await updateListing(id, readListing(formData, endDate));
+	} catch (error) {
+		console.log("date error", error);
+		return {
+			error: "Das Angebot konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
+		};
+	}
 
 	revalidatePath("/listings");
 	revalidatePath(`/listings/${id}`);
+
 	return {};
 }
 

@@ -2,7 +2,7 @@ import { GiftIcon, MapPinIcon, RepeatIcon, TimerIcon } from "lucide-react";
 import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "@/lib/utils";
 import ListingDate from "./ListingDate";
-import { formatDate } from "@/utils/date";
+import { getDaysUntil, getEndDateLabel } from "@/utils/date";
 
 export default function ListingMeta({
 	listing,
@@ -14,6 +14,7 @@ export default function ListingMeta({
 	className?: string;
 }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;
+	const daysLeft = getDaysUntil(listing.endDate);
 
 	return (
 		<p
@@ -30,11 +31,12 @@ export default function ListingMeta({
 				<TypeIcon className="size-4" aria-hidden="true" />
 				{listing.type === "swap" ? "Tauschen" : "Verschenken"}
 			</span>
+
+			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
 			<span className="inline-flex items-center gap-1">
 				<TimerIcon className="size-4" aria-hidden="true" />
-				Bis {formatDate(listing.endDate)}
+				{getEndDateLabel(daysLeft, listing.endDate)}
 			</span>
-			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
 		</p>
 	);
 }

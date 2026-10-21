@@ -16,6 +16,7 @@ type Props = {
 	tags: Tag[];
 	defaultValues?: NewListing;
 	submitLabel?: string;
+	error?: string;
 };
 
 export default function ListingForm({
@@ -24,6 +25,7 @@ export default function ListingForm({
 	tags,
 	defaultValues,
 	submitLabel = "Erstellen",
+	error,
 }: Props) {
 	return (
 		<form className="my-4" action={action}>
@@ -112,6 +114,11 @@ export default function ListingForm({
 					<EndDatePicker defaultValue={defaultValues?.endDate} />
 				</Field>
 			</FieldGroup>
+			{error && (
+				<p role="alert" className="mt-4 text-sm text-destructive">
+					{error}
+				</p>
+			)}
 			<Button type="submit" className="mt-6">
 				{submitLabel}
 			</Button>

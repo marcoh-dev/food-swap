@@ -77,6 +77,12 @@ function getStartOfDay(now: Date): Date {
 	return date;
 }
 
+export function getEndOfDay(date: Date): Date {
+	const result = new Date(date);
+	result.setHours(23, 59, 59, 999);
+	return result;
+}
+
 export function getDefaultEndDate(now: Date = new Date()): Date {
 	const date = getStartOfDay(now);
 	date.setDate(date.getDate() + endDateRules.defaultDays);
@@ -120,7 +126,25 @@ export function validateEndDate(formData: FormData): string | null {
 		parsed.status === "invalid" ||
 		(parsed.status === "valid" && !isEndDateInRange(parsed.date))
 	) {
-		return "Das Datum muss mindestens einen Tag und maximal 6 Monate in der Zukunft liegen.";
+		return "Das Datum muss mindestens 1 Tag und maximal 6 Monate in der Zukunft liegen.";
 	}
 	return null;
+}
+
+const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+
+export function getDaysUntil(isoDate: string, now: Date = new Date()): number {
+	const endDay = getStartOfDay(new Date(isoDate));
+	const today = getStartOfDay(now);
+
+	return Math.round((endDay.getTime() - today.getTime()) / MILLISECONDS_PER_DAY);
+}
+
+export function getEndDateLabel(daysLeft: number, endDate: string): string {
+	if (daysLeft < 0) return "Abgelaufen";
+	if (daysLeft === 0) return "Läuft heute ab";
+	if (daysLeft === 1) return "Noch 1 Tag";
+	if (daysLeft <= endDateRules.soonDays) return `Noch ${daysLeft} Tage`;
+
+	return `Bis ${formatDate(endDate)}`;
 }

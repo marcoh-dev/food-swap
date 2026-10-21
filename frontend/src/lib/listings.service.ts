@@ -75,10 +75,7 @@ export async function getListingById(id: string): Promise<ListingResponse | unde
 	return response.json();
 }
 
-export async function updateListing(
-	id: string,
-	data: NewListing,
-): Promise<ListingResponse | undefined> {
+export async function updateListing(id: string, data: NewListing): Promise<ListingResponse> {
 	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings/${id}`, {
 		method: "PATCH",
 		headers: {
@@ -86,14 +83,21 @@ export async function updateListing(
 		},
 		body: JSON.stringify(data),
 	});
-	const listingData = await response.json();
-	return listingData;
+
+	if (!response.ok) {
+		const body = await response.text();
+		throw new Error(`updateListing failed: ${response.status} ${body}`);
+	}
+	return response.json();
 }
 
 export async function deleteListing(id: string): Promise<void> {
-	await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings/${id}`, {
+	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings/${id}`, {
 		method: "DELETE",
 	});
+	if (!response.ok) {
+		throw new Error(`deleteListing failed: ${response.status}`);
+	}
 }
 
 export async function updateListingStatus(
