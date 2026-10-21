@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ChatListItem } from "@/lib/types/chat.types";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { formatShortDate } from "@/utils/date";
 
 type ChatListProps = {
