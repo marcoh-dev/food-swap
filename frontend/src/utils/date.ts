@@ -150,13 +150,18 @@ export function getDaysUntil(isoDate: string, now: Date = new Date()): number {
 	return Math.round((endDay.getTime() - today.getTime()) / MILLISECONDS_PER_DAY);
 }
 
-export function getEndDateLabel(daysLeft: number, endDate: string): string {
+export function getEndDateLabel(
+	daysLeft: number,
+	endDate: string,
+	variant: "relative" | "full" = "full",
+): string {
 	if (daysLeft < 0) return "Abgelaufen";
 	if (daysLeft === 0) return "Läuft heute ab";
 	if (daysLeft === 1) return "Noch 1 Tag";
 	if (daysLeft <= endDateRules.soonDays) return `Noch ${daysLeft} Tage`;
 
-	return `Bis ${formatDate(endDate)}`;
+	const label = variant === "full" ? formatDate(endDate) : formatListingDate(endDate);
+	return `Bis ${label}`;
 }
 
 export function isExpired(isoDate: string, now: Date = new Date()): boolean {

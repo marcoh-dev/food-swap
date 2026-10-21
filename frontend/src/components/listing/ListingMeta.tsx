@@ -30,7 +30,7 @@ export default function ListingMeta({
 			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
 			<span className="inline-flex items-center gap-1">
 				<TimerIcon className="size-4" aria-hidden="true" />
-				{getEndDateLabel(daysLeft, listing.endDate)}
+				{getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
 			</span>
 		</p>
 	);
