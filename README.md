@@ -76,6 +76,19 @@ rm live.dump
 
 Use the live `DATABASE_URL` without `uselibpqcompat=true` (only Node understands it), e.g. `...?sslmode=require`. `docker compose down -v` deletes your local database.
 
+### Updating place data
+
+Places (cities, districts and postal codes) come from [GeoNames](https://download.geonames.org/export/zip/) (CC BY 4.0) and are stored in `backend/data/places-de.tsv`. To update them:
+
+```bash
+curl -sSfLO https://download.geonames.org/export/zip/DE.zip
+unzip DE.zip -d geonames
+npm run places:build -w backend -- geonames/DE.txt
+rm -r DE.zip geonames
+```
+
+Then create a new migration that empties `places` and loads the file again. The `AddPlaces` migration only loads it once.
+
 ## Commands
 
 | Command                                                          | What it does                                           |
