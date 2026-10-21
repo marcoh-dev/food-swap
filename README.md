@@ -15,8 +15,11 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 
 ## Tech Stack
 
-- **Frontend:** Next.js
-- **Backend:** NestJS
+- **Frontend:** Next.js, React, Tailwind CSS, shadcn/ui, Zustand
+- **Backend:** NestJS, TypeORM, Passport (JWT)
+- **Database:** PostgreSQL with PostGIS and `pg_trgm`
+- **Realtime:** Socket.IO (chat)
+- **Hosting:** Vercel (frontend), Render (backend and database)
 
 ## Getting Started
 
@@ -97,7 +100,9 @@ Then create a new migration that empties `places` and loads the file again. The 
 | `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`) |
 | `npm run build`                                                  | builds both projects                                   |
 | `npm run lint`                                                   | lints both projects                                    |
+| `npm run lint:fix -w backend`                                    | lints the backend and fixes what can be fixed          |
 | `npm run format`                                                 | formats both projects with Prettier                    |
+| `npm run format:check -w frontend`                               | checks the frontend formatting without changing files  |
 | `npm install -w frontend <package>`                              | adds a package to one project                          |
 | `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                |
 | `npm run migration:run -w backend`                               | applies pending migrations                             |
@@ -105,10 +110,18 @@ Then create a new migration that empties `places` and loads the file again. The 
 
 CI runs install, lint, format check and build on every pull request to `main`.
 
+### API requests with Bruno
+
+`backend/bruno` is a [Bruno](https://www.usebruno.com/) collection with requests for every endpoint. Open the folder in Bruno and pick an environment (`local` or `live-server`). Run `auth/Login` (or `auth/Register`) first: it stores the token that the other requests use.
+
 ### Test endpoints
 
 - `GET /database/connection`
 - `GET /database/tables`
+
+## Data sources
+
+Place data (cities, districts and postal codes) © [GeoNames](https://www.geonames.org/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The data was filtered and extended with city entries.
 
 ## Team
 
