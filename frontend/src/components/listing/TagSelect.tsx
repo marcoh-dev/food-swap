@@ -26,7 +26,7 @@ export default function TagSelect({ tags, defaultValue = [] }: Props) {
 					<ToggleGroupItem
 						key={tag.id}
 						value={tag.id}
-						className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+						className="data-[state=on]:bg-category data-[state=on]:text-category-foreground"
 					>
 						{tag.name}
 					</ToggleGroupItem>

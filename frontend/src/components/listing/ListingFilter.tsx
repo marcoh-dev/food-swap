@@ -106,6 +106,7 @@ export default function ListingFilters({ categories, tags }: Props) {
 									id={checkboxId}
 									checked={selectedTags.includes(tag.slug)}
 									onCheckedChange={() => handleTagToggle(tag.slug)}
+									className="data-checked:bg-category data-checked:text-category-foreground data-checked:border-category-foreground dark:data-checked:bg-category dark:data-checked:text-category-foreground dark:data-checked:border-category-foreground"
 								/>
 								<Label htmlFor={checkboxId} className="font-normal">
 									{tag.name}

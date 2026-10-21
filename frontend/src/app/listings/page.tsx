@@ -63,13 +63,13 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 			)}
 
 			{listings.length === 0 ? (
-				<p className="py-12 text-center text-gray-500">
+				<p className="py-12 text-center">
 					{hasFilters
 						? "Keine Angebote passen zu deinen Filtern."
 						: "Keine Angebote gefunden. Versuche, deine Suche anzupassen."}
 				</p>
 			) : (
-				<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
+				<ul className="grid gap-3 sm:gap-8 md:gap-12">
 					{listings.map((listing) => (
 						<li key={listing.id}>
 							<Link

@@ -29,7 +29,7 @@ export function SortingMenu({ sort }: { sort: SortOption }) {
 		<DropdownMenu>
 			<div>
 				<DropdownMenuTrigger asChild>
-					<Button variant="default">
+					<Button variant="outline">
 						{sort === "newest" ? "Neueste zuerst" : "Älteste zuerst"}{" "}
 						<ArrowDownUp size={16} strokeWidth={1} />
 					</Button>
