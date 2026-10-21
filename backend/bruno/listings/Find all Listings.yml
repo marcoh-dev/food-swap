@@ -8,7 +8,7 @@ http:
   url: "{{baseURL}}/listings"
   params:
     - name: sort
-      value: oldest
+      value: endingSoon
       type: query
       disabled: true
     - name: sort
