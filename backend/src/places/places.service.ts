@@ -17,24 +17,29 @@ const POSTAL_CODE_QUERY = `
   ORDER BY "postal_code", ("name" <> "city") DESC, "name"
   LIMIT $2`;
 
+const ALT_NAME = `lower(replace(replace(replace(replace("name", 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'), 'ß', 'ss'))`;
+const DISTRICT = `(CASE WHEN "name" <> "city" THEN substr("name", length("city") + 2) END)`;
+
 const NAME_QUERY = `
-  WITH "candidates" AS (
-    SELECT *,
-      lower(replace(replace(replace(replace("name", 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'), 'ß', 'ss')) AS "altName",
-      CASE WHEN "name" <> "city" THEN substr("name", length("city") + 2) END AS "district"
+  WITH "matches" AS (
+    SELECT *, ${ALT_NAME} AS "altName", ${DISTRICT} AS "district"
     FROM "places"
-    WHERE "postal_code" IS NULL OR "name" <> "city"
+    WHERE ("postal_code" IS NULL OR "name" <> "city")
+      AND (
+        "name" ILIKE $1 || '%' OR ${ALT_NAME} LIKE lower($1) || '%' OR ${DISTRICT} ILIKE $1 || '%'
+        OR ($3::text IS NOT NULL AND ("name" ~* $3 OR ${ALT_NAME} ~ $3 OR ${DISTRICT} ~* $3))
+        OR "name" % $1 OR ${ALT_NAME} % lower($1) OR ${DISTRICT} % $1
+      )
   ),
   "scored" AS (
     SELECT *,
       ("name" ILIKE $1 || '%' OR "altName" LIKE lower($1) || '%' OR coalesce("district" ILIKE $1 || '%', false)) AS "isPrefix",
       ($3::text IS NOT NULL AND ("name" ~* $3 OR "altName" ~ $3 OR coalesce("district" ~* $3, false))) AS "isTypoPrefix",
       greatest(similarity("name", $1), similarity("altName", lower($1)), coalesce(similarity("district", $1), 0)) AS "score"
-    FROM "candidates"
+    FROM "matches"
   )
   SELECT ${RESPONSE_COLUMNS}
   FROM "scored"
-  WHERE "isPrefix" OR "isTypoPrefix" OR "score" > 0.3
   ORDER BY "isPrefix" DESC, "isTypoPrefix" DESC,
     CASE WHEN "isPrefix" OR "isTypoPrefix" THEN "postal_code" IS NULL END DESC NULLS LAST,
     CASE WHEN "isPrefix" OR "isTypoPrefix" THEN "size" END DESC NULLS LAST,
