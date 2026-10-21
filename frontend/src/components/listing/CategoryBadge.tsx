@@ -5,7 +5,7 @@ export default function CategoryBadge({ category }: { category: Category | null 
 	if (!category) return null;
 
 	return (
-		<Badge className="rounded-full mt-1 px-2.5 py-0.5 text-xs max-w-full truncate">
+		<Badge className="rounded-full truncate" variant="category">
 			{category.name}
 		</Badge>
 	);

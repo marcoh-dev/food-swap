@@ -15,13 +15,8 @@ export default async function BurgerMenu() {
 		<div>
 			<SheetParts.Sheet>
 				<SheetParts.SheetTrigger asChild>
-					<Button
-						type="button"
-						variant="ghost"
-						className="size-14"
-						aria-label="Menü öffnen"
-					>
-						<Menu size={30} />
+					<Button type="button" variant="ghost" aria-label="Menü öffnen">
+						<Menu className="size-9" />
 					</Button>
 				</SheetParts.SheetTrigger>
 

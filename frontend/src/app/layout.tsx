@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 			className={cn(jetbrainsMono.variable, geistSans.variable, geistMono.variable)}
 			suppressHydrationWarning
 		>
-			<body className="text-body font-mono">
+			<body className="text-body">
 				<ChatSocketConnector token={token} userId={currentUser?.id ?? null} />
 				<ThemeProvider
 					attribute="class"
@@ -52,23 +52,21 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<header className="flex flex-row justify-between items-center p-[1em] h-22.5 bg-red-200 dark:bg-red-800">
+					<header className="flex flex-row justify-between items-center p-[1em] h-22.5 sticky top-0 z-50 bg-background/85 backdrop-blur-md text-foreground border-b">
 						<div className="flex flex-row gap-5">
 							<div>
-								<Link href="/">
+								<Link href="/" aria-label="Home">
 									<Image
 										src="/logo.png"
-										alt="food swap logo"
+										alt="FoodSwap Logo"
 										width="50"
 										height="50"
 									/>
 								</Link>
 							</div>
-							<h1 className="text-h1">
-								<Link href="/" className="no-underline">
-									FoodSwap
-								</Link>
-							</h1>
+							<Link href="/" className="text-h1 no-underline">
+								FoodSwap
+							</Link>
 						</div>
 						<BurgerMenu />
 					</header>

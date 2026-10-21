@@ -32,6 +32,8 @@ export default function PinInput({ id, name, autoComplete = "off", placeholder }
 				autoComplete={autoComplete}
 				placeholder={placeholder}
 				required
+				autoCapitalize="off"
+				autoCorrect="off"
 			/>
 			<InputGroupAddon align="inline-end">
 				<InputGroupButton
