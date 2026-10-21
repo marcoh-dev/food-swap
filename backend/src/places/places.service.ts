@@ -24,7 +24,7 @@ const NAME_QUERY = `
   WITH "matches" AS (
     SELECT *, ${ALT_NAME} AS "altName", ${DISTRICT} AS "district"
     FROM "places"
-    WHERE ("postal_code" IS NULL OR "name" <> "city")
+    WHERE (CASE WHEN $4::boolean THEN "postal_code" IS NOT NULL ELSE ("postal_code" IS NULL OR "name" <> "city") END)
       AND (
         "name" ILIKE $1 || '%' OR ${ALT_NAME} LIKE lower($1) || '%' OR ${DISTRICT} ILIKE $1 || '%'
         OR ($3::text IS NOT NULL AND ("name" ~* $3 OR ${ALT_NAME} ~ $3 OR ${DISTRICT} ~* $3))
@@ -41,7 +41,7 @@ const NAME_QUERY = `
   SELECT ${RESPONSE_COLUMNS}
   FROM "scored"
   ORDER BY "isPrefix" DESC, "isTypoPrefix" DESC,
-    CASE WHEN "isPrefix" OR "isTypoPrefix" THEN "postal_code" IS NULL END DESC NULLS LAST,
+    CASE WHEN "isPrefix" OR "isTypoPrefix" THEN ("postal_code" IS NULL OR "name" = "city") END DESC NULLS LAST,
     CASE WHEN "isPrefix" OR "isTypoPrefix" THEN "size" END DESC NULLS LAST,
     "score" DESC, "size" DESC, "postal_code" NULLS FIRST, "name"
   LIMIT $2`;
@@ -85,7 +85,7 @@ export class PlacesService {
     private readonly places: Repository<Place>,
   ) {}
 
-  search(query: string): Promise<Place[]> {
+  search(query: string, withPostalCode: boolean): Promise<Place[]> {
     if (/^\d+$/.test(query)) {
       return this.places.query(POSTAL_CODE_QUERY, [query, SUGGESTION_LIMIT]);
     }
@@ -93,6 +93,7 @@ export class PlacesService {
       query,
       SUGGESTION_LIMIT,
       typoPrefixPattern(query),
+      withPostalCode,
     ]);
   }
 

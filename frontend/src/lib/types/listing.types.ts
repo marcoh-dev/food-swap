@@ -24,7 +24,8 @@ export type NewListing = {
 	title: string;
 	description: string;
 	image?: string;
-	location: string;
+	placeId: string;
+	place?: Place;
 	type: ListingType;
 	categoryId?: string | null;
 	tagIds?: string[];

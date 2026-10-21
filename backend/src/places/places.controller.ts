@@ -18,8 +18,8 @@ export class PlacesController {
   @Public()
   @Get()
   @SerializeOptions({ type: PlaceResponseDto })
-  search(@Query() { q }: PlacesQueryDto) {
-    return this.placesService.search(q);
+  search(@Query() { q, withPostalCode }: PlacesQueryDto) {
+    return this.placesService.search(q, withPostalCode ?? false);
   }
 
   @Public()

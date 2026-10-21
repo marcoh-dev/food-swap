@@ -153,20 +153,25 @@ export async function searchListingAction(formData: FormData) {
 	redirect(`/listings?${searchParams.toString()}`);
 }
 
-export async function searchPlacesAction(query: string): Promise<ActionResult<Place[]>> {
+export async function searchPlacesAction(
+	query: string,
+	withPostalCode = false,
+): Promise<ActionResult<Place[]>> {
 	try {
-		return { data: await searchPlaces(query) };
+		return { data: await searchPlaces(query, withPostalCode) };
 	} catch {
 		return { error: "Orte konnten nicht geladen werden." };
 	}
 }
+
+const MISSING_PLACE_ERROR = "Bitte wähle einen Ort aus der Liste aus.";
 
 function readListing(formData: FormData, endDate?: Date): NewListing {
 	return {
 		title: formData.get("title") as string,
 		description: formData.get("description") as string,
 		image: formData.get("image") as string,
-		location: formData.get("location") as string,
+		placeId: formData.get("placeId") as string,
 		type: formData.get("type") as ListingType,
 		categoryId: (formData.get("categoryId") as string) || null,
 		tagIds: formData.getAll("tagIds") as string[],
@@ -180,6 +185,8 @@ export async function createListingAction(
 ): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
+
+	if (!formData.get("placeId")) return { error: MISSING_PLACE_ERROR };
 
 	const result = validateEndDate(formData.get("endDate"));
 	if (!result.ok) return { error: result.error };
@@ -199,6 +206,8 @@ export async function updateListingAction(id: string, formData: FormData) {
 	const existing = await getListingById(id);
 
 	if (!existing) notFound();
+
+	if (!formData.get("placeId")) return { error: MISSING_PLACE_ERROR };
 
 	const submittedEndDate = formData.get("endDate");
 	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));
