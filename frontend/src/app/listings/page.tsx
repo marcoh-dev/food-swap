@@ -63,7 +63,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 			)}
 
 			{listings.length === 0 ? (
-				<p className="py-12 text-center text-gray-500">
+				<p className="py-12 text-center">
 					{hasFilters
 						? "Keine Angebote passen zu deinen Filtern."
 						: "Keine Angebote gefunden. Versuche, deine Suche anzupassen."}

@@ -4,5 +4,5 @@ import { Badge } from "../ui/badge";
 export default function StatusBadge({ status }: { status: ListingStatus }) {
 	if (status !== "reserved") return null;
 
-	return <Badge>Reserviert</Badge>;
+	return <Badge variant="status">Reserviert</Badge>;
 }

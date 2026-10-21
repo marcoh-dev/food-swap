@@ -23,6 +23,8 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 							required
 							autoComplete="username"
 							autoFocus
+							autoCapitalize="off"
+							autoCorrect="off"
 						/>
 					</Field>
 					<Field>
