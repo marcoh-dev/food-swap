@@ -10,10 +10,17 @@ export const metadata: Metadata = { title: pageTitles.newListing };
 
 export default async function NewListingPage() {
 	const isLoggedIn = await isAuthenticated();
-	const categories = await getCategories();
-	const tags = await getTags();
 	if (!isLoggedIn) {
 		redirect("/login?redirect=/listings/new");
 	}
-	return <CreateListingForm categories={categories} tags={tags} />;
+
+	const categories = await getCategories();
+	const tags = await getTags();
+
+	return (
+		<>
+			<h2>Erstelle ein neues Angebot</h2>
+			<CreateListingForm categories={categories} tags={tags} />
+		</>
+	);
 }
