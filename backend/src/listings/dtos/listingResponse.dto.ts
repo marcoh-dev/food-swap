@@ -23,6 +23,9 @@ export class ListingResponseDto {
   place!: PlaceResponseDto;
 
   @Expose()
+  distance?: number;
+
+  @Expose()
   type!: ListingType;
 
   @Expose()

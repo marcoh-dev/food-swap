@@ -10,6 +10,7 @@ export type ListingResponse = {
 	description: string;
 	image?: string;
 	place: Place;
+	distance?: number;
 	type: ListingType;
 	status: ListingStatus;
 	owner: User;
@@ -39,7 +40,7 @@ export type PaginatedListingsResponse = {
 
 export type ListingType = "swap" | "giveaway";
 
-export type SortOption = "newest" | "endingSoon";
+export type SortOption = "newest" | "endingSoon" | "nearest";
 
 export type ListingStatus = "pending" | "active" | "reserved" | "deactivated";
 

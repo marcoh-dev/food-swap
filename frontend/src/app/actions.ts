@@ -161,6 +161,7 @@ export async function searchListingAction(formData: FormData) {
 	const radius = formData.get("radius") as string;
 	const category = formData.get("category") as string;
 	const tags = formData.get("tags") as string;
+	const sort = formData.get("sort") as string;
 
 	const searchParams = new URLSearchParams();
 	if (term) searchParams.set("term", term);
@@ -168,6 +169,9 @@ export async function searchListingAction(formData: FormData) {
 	if (place && radius) searchParams.set("radius", radius);
 	if (category) searchParams.set("category", category);
 	if (tags) searchParams.set("tags", tags);
+	if (sort && sort !== "newest" && (sort !== "nearest" || place)) {
+		searchParams.set("sort", sort);
+	}
 
 	redirect(`/listings?${searchParams.toString()}`);
 }
