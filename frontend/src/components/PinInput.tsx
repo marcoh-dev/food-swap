@@ -9,14 +9,12 @@ import {
 	InputGroupInput,
 } from "@/components/ui/input-group";
 
-type Props = {
+type Props = React.ComponentProps<typeof InputGroupInput> & {
 	id: string;
 	name: string;
-	autoComplete?: string;
-	placeholder?: string;
 };
 
-export default function PinInput({ id, name, autoComplete = "off", placeholder }: Props) {
+export default function PinInput({ id, name, autoComplete = "off", ...props }: Props) {
 	const [isVisible, setIsVisible] = useState(false);
 
 	function handleToggleVisibility() {
@@ -28,12 +26,11 @@ export default function PinInput({ id, name, autoComplete = "off", placeholder }
 			<InputGroupInput
 				id={id}
 				name={name}
-				type={isVisible ? "text" : "password"}
 				autoComplete={autoComplete}
-				placeholder={placeholder}
-				required
 				autoCapitalize="off"
 				autoCorrect="off"
+				{...props}
+				type={isVisible ? "text" : "password"}
 			/>
 			<InputGroupAddon align="inline-end">
 				<InputGroupButton

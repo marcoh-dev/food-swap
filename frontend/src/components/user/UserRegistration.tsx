@@ -34,6 +34,7 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 							name="password"
 							autoComplete="new-password"
 							placeholder="********"
+							required
 						/>
 					</Field>
 				</FieldGroup>

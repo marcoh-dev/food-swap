@@ -36,6 +36,7 @@ export function UserLogin({ redirectTo }: { redirectTo?: string }) {
 							name="password"
 							autoComplete="current-password"
 							placeholder="********"
+							required
 						/>
 					</Field>
 				</FieldGroup>
