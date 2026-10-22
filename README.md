@@ -96,22 +96,36 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 
 ## Commands
 
-| Command                                                          | What it does                                                |
-| ---------------------------------------------------------------- | ----------------------------------------------------------- |
-| `npm run dev`                                                    | starts backend and frontend                                 |
-| `npm run sync`                                                   | updates `main`, dependencies, local database and migrations |
-| `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`)      |
-| `npm run build`                                                  | builds both projects                                        |
-| `npm run lint`                                                   | lints both projects                                         |
-| `npm run lint:fix -w backend`                                    | lints the backend and fixes what can be fixed               |
-| `npm run format`                                                 | formats both projects with Prettier                         |
-| `npm run format:check -w frontend`                               | checks the frontend formatting without changing files       |
-| `npm install -w frontend <package>`                              | adds a package to one project                               |
-| `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                     |
-| `npm run migration:run -w backend`                               | applies pending migrations                                  |
-| `npm run migration:revert -w backend`                            | reverts the last migration                                  |
+| Command                                                          | What it does                                                                      |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `npm run dev`                                                    | starts backend and frontend                                                       |
+| `npm run sync`                                                   | updates `main`, dependencies, local database and migrations                       |
+| `npm run sync:branch`                                            | merges `main` into the current branch (without committing) and updates everything |
+| `npm run check`                                                  | runs the same checks as CI (lint, format check, build)                            |
+| `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`)                            |
+| `npm run build`                                                  | builds both projects                                                              |
+| `npm run lint`                                                   | lints both projects                                                               |
+| `npm run lint:fix -w backend`                                    | lints the backend and fixes what can be fixed                                     |
+| `npm run format`                                                 | formats both projects with Prettier                                               |
+| `npm run format:check -w frontend`                               | checks the frontend formatting without changing files                             |
+| `npm install -w frontend <package>`                              | adds a package to one project                                                     |
+| `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                                           |
+| `npm run migration:run -w backend`                               | applies pending migrations                                                        |
+| `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
 
 `npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
+
+### Updating a feature branch
+
+Before opening a pull request, bring the latest `main` into your branch and check that everything still works:
+
+```bash
+npm run sync:branch
+npm run check
+git commit
+```
+
+`npm run sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `npm install` (not `npm ci`) if `package.json` or `package-lock.json` were affected, then `docker compose up -d --wait`, `npm run migration:run -w backend` and `npm run check` before committing.
 
 CI runs install, lint, format check and build on every pull request to `main`.
 
