@@ -6,6 +6,7 @@ import { MapPinIcon } from "lucide-react";
 import { searchPlacesAction } from "@/app/actions";
 import type { Place } from "@/lib/types/place.types";
 import { formatPlace } from "@/utils/place";
+import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 import { Command, CommandEmpty, CommandItem, CommandList } from "../ui/command";
 import { InputGroup, InputGroupAddon } from "../ui/input-group";
 import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover";
@@ -21,6 +22,8 @@ type Props = {
 	placeholder?: string;
 	withPostalCode?: boolean;
 	useFirstSuggestion?: boolean;
+	required?: boolean;
+	requireSelection?: boolean;
 	onPlaceChange?: (place: Place | null) => void;
 };
 
@@ -36,6 +39,8 @@ export default function PlaceCombobox({
 	placeholder = "Ort oder PLZ",
 	withPostalCode = false,
 	useFirstSuggestion = false,
+	required = false,
+	requireSelection = false,
 	onPlaceChange,
 }: Props) {
 	const anchorRef = useRef<HTMLDivElement>(null);
@@ -53,6 +58,12 @@ export default function PlaceCombobox({
 	const isLoaded = result.query === trimmedQuery;
 	const showList = isOpen && canSearch && (isLoaded || result.places.length > 0);
 	const firstSuggestion = useFirstSuggestion && isLoaded ? result.places[0] : undefined;
+	const isMissingSelection =
+		!selectedPlace && (required || (requireSelection && trimmedQuery !== ""));
+
+	useEffect(() => {
+		inputRef.current?.setCustomValidity(isMissingSelection ? MISSING_PLACE_MESSAGE : "");
+	}, [isMissingSelection]);
 
 	useEffect(() => {
 		if (!isOpen || !canSearch) return;

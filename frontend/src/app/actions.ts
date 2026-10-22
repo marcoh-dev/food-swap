@@ -24,6 +24,7 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 import { searchPlaces } from "@/lib/places.service";
+import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
@@ -97,11 +98,12 @@ export async function loginAction(formData: FormData) {
 
 export async function updateUserAction(formData: FormData) {
 	const name = formData.get("name") as string;
+	const placeId = (formData.get("placeId") as string) || null;
 
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	await updateUser(currentUser.id, { name });
+	await updateUser(currentUser.id, { name, placeId });
 
 	redirect(`/users/${currentUser.id}`);
 }
@@ -166,8 +168,6 @@ export async function searchPlacesAction(
 	}
 }
 
-const MISSING_PLACE_ERROR = "Bitte wähle einen Ort aus der Liste aus.";
-
 function readListing(formData: FormData, endDate?: Date): NewListing {
 	return {
 		title: formData.get("title") as string,
@@ -188,7 +188,7 @@ export async function createListingAction(
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	if (!formData.get("placeId")) return { error: MISSING_PLACE_ERROR };
+	if (!formData.get("placeId")) return { error: MISSING_PLACE_MESSAGE };
 
 	const result = validateEndDate(formData.get("endDate"));
 	if (!result.ok) return { error: result.error };
@@ -209,7 +209,7 @@ export async function updateListingAction(id: string, formData: FormData) {
 
 	if (!existing) notFound();
 
-	if (!formData.get("placeId")) return { error: MISSING_PLACE_ERROR };
+	if (!formData.get("placeId")) return { error: MISSING_PLACE_MESSAGE };
 
 	const submittedEndDate = formData.get("endDate");
 	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));

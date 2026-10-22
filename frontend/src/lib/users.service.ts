@@ -17,7 +17,10 @@ export async function getCurrentUser(): Promise<User | null> {
 	return response.json();
 }
 
-export async function updateUser(id: string, data: { name: string }): Promise<User | null> {
+export async function updateUser(
+	id: string,
+	data: { name: string; placeId: string | null },
+): Promise<User | null> {
 	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/users/${id}`, {
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },

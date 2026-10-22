@@ -71,6 +71,7 @@ export default function ListingForm({
 						defaultPlace={defaultValues?.place}
 						placeholder="PLZ oder Ort"
 						withPostalCode
+						required
 					/>
 				</Field>
 				<Field>
