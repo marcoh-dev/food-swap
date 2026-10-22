@@ -28,7 +28,12 @@ import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
 import { z } from "zod";
-import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
+import {
+	loginSchema,
+	registrationSchema,
+	type LoginValues,
+	type RegistrationValues,
+} from "@/lib/schemas/user.schemas";
 
 function getRedirectTarget(target: unknown): string {
 	if (
@@ -43,13 +48,6 @@ function getRedirectTarget(target: unknown): string {
 	return target;
 }
 
-function authErrorPath(page: string, toastKey: string, redirectTo: string) {
-	const searchParams = new URLSearchParams({ toast: toastKey });
-	if (redirectTo !== "/") searchParams.set("redirect", redirectTo);
-
-	return `${page}?${searchParams.toString()}`;
-}
-
 async function setAuthCookie(token: string) {
 	const cookieStore = await cookies();
 
@@ -62,21 +60,28 @@ async function setAuthCookie(token: string) {
 	});
 }
 
-export async function registerAction(formData: FormData) {
-	const username = formData.get("username") as string;
-	const password = formData.get("password") as string;
-	const redirectTo = getRedirectTarget(formData.get("redirect"));
+export async function registerAction(
+	values: RegistrationValues,
+	redirectTo?: string,
+): Promise<FormState> {
+	const result = registrationSchema.safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const authData = await registerUser({ username, password });
+	const authData = await registerUser(result.data);
+
+	if (authData.statusCode === 409) {
+		return { fieldErrors: { username: ["Dieser Benutzername ist bereits vergeben."] } };
+	}
 
 	if (!authData.access_token) {
-		redirect(authErrorPath("/registration", "register-error", redirectTo));
+		return { error: "Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben." };
 	}
 
 	await setAuthCookie(authData.access_token);
 
-	const separator = redirectTo.includes("?") ? "&" : "?";
-	redirect(`${redirectTo}${separator}toast=registered`);
+	const target = getRedirectTarget(redirectTo);
+	const separator = target.includes("?") ? "&" : "?";
+	redirect(`${target}${separator}toast=registered`);
 }
 
 export async function loginAction(values: LoginValues, redirectTo?: string): Promise<FormState> {

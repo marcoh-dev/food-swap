@@ -5,10 +5,6 @@ export const toastMessages: Record<string, { type: ToastType; message: string }>
 		type: "success",
 		message: "Registrierung erfolgreich! Willkommen bei FoodSwap.",
 	},
-	"register-error": {
-		type: "error",
-		message: "Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.",
-	},
 	"user-delete-error": {
 		type: "error",
 		message: "Dein Account konnte nicht gelöscht werden.",
