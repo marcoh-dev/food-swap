@@ -10,7 +10,9 @@
 		"format": "npm run format --workspaces",
 		"lint": "npm run lint --workspaces",
 		"build": "npm run build --workspaces",
-		"sync": "git switch main && git pull && npm ci && docker compose up -d --wait && npm run migration:run -w backend"
+		"sync": "git switch main && git pull && npm ci && docker compose up -d --wait && npm run migration:run -w backend",
+		"sync:branch": "git fetch origin && git merge --no-commit origin/main && npm ci && docker compose up -d --wait && npm run migration:run -w backend",
+		"check": "npm run lint && npm run format:check -w frontend && npm run build"
 	},
 	"devDependencies": {
 		"concurrently": "^9.2.5"
