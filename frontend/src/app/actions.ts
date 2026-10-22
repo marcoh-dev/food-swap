@@ -23,7 +23,7 @@ import {
 	startChat,
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
-import { searchPlaces } from "@/lib/places.service";
+import { findNearestPlace, searchPlaces } from "@/lib/places.service";
 import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
@@ -165,6 +165,17 @@ export async function searchPlacesAction(
 		return { data: await searchPlaces(query, withPostalCode) };
 	} catch {
 		return { error: "Orte konnten nicht geladen werden." };
+	}
+}
+
+export async function findNearestPlaceAction(
+	lat: number,
+	lng: number,
+): Promise<ActionResult<Place>> {
+	try {
+		return { data: await findNearestPlace(lat, lng) };
+	} catch {
+		return { error: "Standort konnte nicht ermittelt werden." };
 	}
 }
 
