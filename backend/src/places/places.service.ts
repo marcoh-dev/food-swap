@@ -20,6 +20,13 @@ const POSTAL_CODE_QUERY = `
 const ALT_NAME = `lower(replace(replace(replace(replace("name", 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'), 'ß', 'ss'))`;
 const DISTRICT = `(CASE WHEN "name" <> "city" THEN substr("name", length("city") + 2) END)`;
 
+const NEAREST_QUERY = `
+  SELECT ${RESPONSE_COLUMNS}
+  FROM "places"
+  WHERE "postal_code" IS NOT NULL
+  ORDER BY "location" <-> ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography
+  LIMIT 1`;
+
 const NAME_QUERY = `
   WITH "matches" AS (
     SELECT *, ${ALT_NAME} AS "altName", ${DISTRICT} AS "district"
@@ -101,6 +108,14 @@ export class PlacesService {
     const place = await this.places.findOneBy({ slug });
     if (!place) {
       throw new NotFoundException(`Place "${slug}" not found.`);
+    }
+    return place;
+  }
+
+  async findNearest(lat: number, lng: number): Promise<Place> {
+    const [place] = await this.places.query<Place[]>(NEAREST_QUERY, [lat, lng]);
+    if (!place) {
+      throw new NotFoundException('No place found near this location.');
     }
     return place;
   }
