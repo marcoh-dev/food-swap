@@ -39,12 +39,12 @@ cd food-swap
 npm install
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
-docker compose up -d
+docker compose up -d --wait
 npm run migration:run -w backend
 npm run dev
 ```
 
-The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d` starts a local PostgreSQL with PostGIS on port 5432 (`docker compose down` stops it, the data is kept).
+The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d --wait` starts a local PostgreSQL with PostGIS on port 5432 and waits until it is ready (`docker compose down` stops it, the data is kept).
 
 ### Environment variables
 
@@ -70,7 +70,7 @@ Copies the live database (schema and data) into your local Docker database. The 
 
 ```bash
 docker compose down -v
-docker compose up -d
+docker compose up -d --wait
 docker compose exec -T db pg_dump "<LIVE_DATABASE_URL>" --no-owner --no-privileges -Fc > live.dump
 docker compose exec -T db pg_restore -U postgres -d foodswap --no-owner --no-privileges < live.dump
 npm run migration:run -w backend
@@ -96,19 +96,22 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 
 ## Commands
 
-| Command                                                          | What it does                                           |
-| ---------------------------------------------------------------- | ------------------------------------------------------ |
-| `npm run dev`                                                    | starts backend and frontend                            |
-| `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`) |
-| `npm run build`                                                  | builds both projects                                   |
-| `npm run lint`                                                   | lints both projects                                    |
-| `npm run lint:fix -w backend`                                    | lints the backend and fixes what can be fixed          |
-| `npm run format`                                                 | formats both projects with Prettier                    |
-| `npm run format:check -w frontend`                               | checks the frontend formatting without changing files  |
-| `npm install -w frontend <package>`                              | adds a package to one project                          |
-| `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                |
-| `npm run migration:run -w backend`                               | applies pending migrations                             |
-| `npm run migration:revert -w backend`                            | reverts the last migration                             |
+| Command                                                          | What it does                                                |
+| ---------------------------------------------------------------- | ----------------------------------------------------------- |
+| `npm run dev`                                                    | starts backend and frontend                                 |
+| `npm run sync`                                                   | updates `main`, dependencies, local database and migrations |
+| `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`)      |
+| `npm run build`                                                  | builds both projects                                        |
+| `npm run lint`                                                   | lints both projects                                         |
+| `npm run lint:fix -w backend`                                    | lints the backend and fixes what can be fixed               |
+| `npm run format`                                                 | formats both projects with Prettier                         |
+| `npm run format:check -w frontend`                               | checks the frontend formatting without changing files       |
+| `npm install -w frontend <package>`                              | adds a package to one project                               |
+| `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                     |
+| `npm run migration:run -w backend`                               | applies pending migrations                                  |
+| `npm run migration:revert -w backend`                            | reverts the last migration                                  |
+
+`npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
 
 CI runs install, lint, format check and build on every pull request to `main`.
 
