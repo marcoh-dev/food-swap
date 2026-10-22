@@ -7,6 +7,8 @@ import { updateListingAction, deleteListingAction, updateListingStatusAction } f
 import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 import type { Category } from "@/lib/types/category.types";
 import type { Tag } from "@/lib/types/tag.types";
+import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
+import { formatIsoDate } from "@/utils/date";
 import { Button } from "@/components/ui/button";
 import {
 	AlertDialog,
@@ -33,16 +35,14 @@ export default function ListingActions({
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-	async function handleUpdate(formData: FormData) {
-		const result = await updateListingAction(listing.id, formData);
+	async function handleUpdate(values: ListingFormValues) {
+		const result = await updateListingAction(listing.id, values);
 
-		if (result.error) {
-			setErrorMessage(result.error);
-			return;
+		if (!result.error && !result.fieldErrors) {
+			setIsEditing(false);
 		}
 
-		setErrorMessage(null);
-		setIsEditing(false);
+		return result;
 	}
 
 	function handleDelete() {
@@ -73,13 +73,17 @@ export default function ListingActions({
 					categories={categories}
 					tags={tags}
 					defaultValues={{
-						...listing,
+						title: listing.title,
+						description: listing.description,
+						image: listing.image ?? "",
 						placeId: listing.place.id,
-						categoryId: listing.category?.id ?? null,
+						categoryId: listing.category?.id ?? "",
+						type: listing.type,
 						tagIds: listing.tags.map((tag) => tag.id),
+						endDate: formatIsoDate(new Date(listing.endDate)),
 					}}
+					defaultPlace={listing.place}
 					submitLabel="Speichern"
-					error={errorMessage ?? undefined}
 				/>
 
 				<Button
