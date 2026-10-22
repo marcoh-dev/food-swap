@@ -9,9 +9,10 @@ type AuthLinkProps = Omit<React.ComponentProps<typeof Link>, "href"> & {
 	href: "/login" | "/registration";
 };
 
-export function AuthLink({ href, ...props }: AuthLinkProps) {
+export function AuthLink({ href, className, ...props }: AuthLinkProps) {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const isActive = pathname === href;
 
 	let redirectTo: string | null;
 	if (AUTH_PAGES.includes(pathname)) {
@@ -28,5 +29,12 @@ export function AuthLink({ href, ...props }: AuthLinkProps) {
 			? `${href}?redirect=${encodeURIComponent(redirectTo)}`
 			: href;
 
-	return <Link href={target} {...props} />;
+	return (
+		<Link
+			href={target}
+			aria-current={isActive ? "page" : undefined}
+			className={`${isActive ? "font-bold underline" : "no-underline"} ${className ?? ""}`}
+			{...props}
+		/>
+	);
 }
