@@ -1,4 +1,5 @@
 import { isAuthenticated } from "@/app/actions";
+import { getCurrentUser } from "@/lib/users.service";
 import CreateListingForm from "@/components/listing/CreateListingForm";
 import { getCategories } from "@/lib/categories.service";
 import { pageTitles } from "@/lib/constants/titles.constants";
@@ -14,13 +15,20 @@ export default async function NewListingPage() {
 		redirect("/login?redirect=/listings/new");
 	}
 
-	const categories = await getCategories();
-	const tags = await getTags();
+	const [categories, tags, currentUser] = await Promise.all([
+		getCategories(),
+		getTags(),
+		getCurrentUser(),
+	]);
 
 	return (
 		<>
 			<h1>Erstelle ein neues Angebot</h1>
-			<CreateListingForm categories={categories} tags={tags} />
+			<CreateListingForm
+				categories={categories}
+				tags={tags}
+				defaultPlace={currentUser?.place}
+			/>
 		</>
 	);
 }
