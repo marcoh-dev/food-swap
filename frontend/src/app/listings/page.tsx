@@ -69,7 +69,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					{total} {total === 1 ? "Ergebnis" : "Ergebnisse"}
 					{term && ` für "${term}"`}
 					{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
-					{radius && ` (+${radius} km)`}
+					{radius && ` (+${radius}\u00a0km)`}
 				</p>
 			)}
 
