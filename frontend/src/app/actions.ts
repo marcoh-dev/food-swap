@@ -5,7 +5,7 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import type { ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
+import type { ListingResponse, ListingStatus, NewListing } from "@/lib/types/listing.types";
 import {
 	createListing,
 	deleteListing,
@@ -26,7 +26,7 @@ import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { searchPlaces } from "@/lib/places.service";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
-import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
+import { formatIsoDate, getDefaultEndDate, getEndOfDay, parseEndDate } from "@/utils/date";
 import { z } from "zod";
 import {
 	loginSchema,
@@ -36,6 +36,7 @@ import {
 	type ProfileValues,
 	type RegistrationValues,
 } from "@/lib/schemas/user.schemas";
+import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 
 function getRedirectTarget(target: unknown): string {
 	if (
@@ -175,38 +176,52 @@ export async function searchPlacesAction(query: string): Promise<ActionResult<Pl
 	}
 }
 
-function readListing(formData: FormData, endDate?: Date): NewListing {
+function toEndDate(value: string): Date | undefined {
+	const parsed = parseEndDate(value);
+	return parsed.status === "valid" ? parsed.date : undefined;
+}
+
+function toNewListing(values: ListingFormValues, endDate?: Date): NewListing {
 	return {
-		title: formData.get("title") as string,
-		description: formData.get("description") as string,
-		image: formData.get("image") as string,
-		location: formData.get("location") as string,
-		type: formData.get("type") as ListingType,
-		categoryId: (formData.get("categoryId") as string) || null,
-		tagIds: formData.getAll("tagIds") as string[],
+		title: values.title,
+		description: values.description,
+		image: values.image,
+		location: values.location,
+		type: values.type,
+		categoryId: values.categoryId || null,
+		tagIds: values.tagIds,
 		endDate: endDate ? getEndOfDay(endDate).toISOString() : undefined,
 	};
 }
 
-export async function createListingAction(
-	_prevState: FormState,
-	formData: FormData,
-): Promise<FormState> {
+export async function createListingAction(values: ListingFormValues): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	const result = validateEndDate(formData.get("endDate"));
-	if (!result.ok) return { error: result.error };
+	const result = createListingSchema().safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const endDate = result.date ?? getDefaultEndDate();
+	const endDate = toEndDate(result.data.endDate) ?? getDefaultEndDate();
 
-	const listing = await createListing(readListing(formData, endDate));
+	let listing: ListingResponse;
+
+	try {
+		listing = await createListing(toNewListing(result.data, endDate));
+	} catch (error) {
+		console.error(error);
+		return {
+			error: "Das Angebot konnte nicht erstellt werden. Bitte versuche es später noch mal.",
+		};
+	}
 
 	revalidatePath("/listings");
 	redirect(`/listings/${listing.id}?toast=listing-created`);
 }
 
-export async function updateListingAction(id: string, formData: FormData) {
+export async function updateListingAction(
+	id: string,
+	values: ListingFormValues,
+): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
@@ -214,20 +229,16 @@ export async function updateListingAction(id: string, formData: FormData) {
 
 	if (!existing) notFound();
 
-	const submittedEndDate = formData.get("endDate");
-	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));
+	const originalEndDate = formatIsoDate(new Date(existing.endDate));
 
-	let endDate: Date | undefined;
+	const result = createListingSchema(originalEndDate).safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	if (!isEndDateUnchanged) {
-		const result = validateEndDate(submittedEndDate);
-		if (!result.ok) return { error: result.error };
-
-		endDate = result.date;
-	}
+	const isEndDateUnchanged = result.data.endDate === originalEndDate;
+	const endDate = isEndDateUnchanged ? undefined : toEndDate(result.data.endDate);
 
 	try {
-		await updateListing(id, readListing(formData, endDate));
+		await updateListing(id, toNewListing(result.data, endDate));
 	} catch (error) {
 		console.error(error);
 		return {

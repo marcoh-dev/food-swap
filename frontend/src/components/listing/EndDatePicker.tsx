@@ -11,20 +11,25 @@ import {
 	getDefaultEndDate,
 	formatDate,
 	formatIsoDate,
+	parseEndDate,
 } from "@/utils/date";
 
 type Props = {
-	defaultValue?: string;
+	value: string;
+	onChange: (value: string) => void;
+	ref?: React.Ref<HTMLButtonElement>;
+	"aria-invalid"?: boolean;
+	"aria-describedby"?: string;
 };
 
-export default function EndDatePicker({ defaultValue }: Props) {
-	const [date, setDate] = useState<Date | undefined>(
-		defaultValue ? new Date(defaultValue) : undefined,
-	);
-
+export default function EndDatePicker({ value, onChange, ref, ...ariaProps }: Props) {
 	const [isOpen, setIsOpen] = useState(false);
+
+	const parsedDate = parseEndDate(value);
+	const date = parsedDate.status === "valid" ? parsedDate.date : undefined;
+
 	function handleSelect(selectedDate: Date | undefined) {
-		setDate(selectedDate);
+		onChange(selectedDate ? formatIsoDate(selectedDate) : "");
 		setIsOpen(false);
 	}
 	const label = date
@@ -32,23 +37,26 @@ export default function EndDatePicker({ defaultValue }: Props) {
 		: formatDate(getDefaultEndDate().toISOString());
 
 	return (
-		<>
-			<Popover open={isOpen} onOpenChange={setIsOpen}>
-				<PopoverTrigger asChild>
-					<Button type="button" variant="outline" className="w-full justify-start">
-						<CalendarIcon className="size-4" aria-hidden="true" /> {label}
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className="w-auto p-0">
-					<Calendar
-						mode="single"
-						selected={date}
-						onSelect={handleSelect}
-						disabled={{ before: getMinEndDate(), after: getMaxEndDate() }}
-					/>
-				</PopoverContent>
-			</Popover>
-			<input type="hidden" name="endDate" value={date ? formatIsoDate(date) : ""} />
-		</>
+		<Popover open={isOpen} onOpenChange={setIsOpen}>
+			<PopoverTrigger asChild>
+				<Button
+					ref={ref}
+					type="button"
+					variant="outline"
+					className="w-full justify-start"
+					{...ariaProps}
+				>
+					<CalendarIcon className="size-4" aria-hidden="true" /> {label}
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className="w-auto p-0">
+				<Calendar
+					mode="single"
+					selected={date}
+					onSelect={handleSelect}
+					disabled={{ before: getMinEndDate(), after: getMaxEndDate() }}
+				/>
+			</PopoverContent>
+		</Popover>
 	);
 }
