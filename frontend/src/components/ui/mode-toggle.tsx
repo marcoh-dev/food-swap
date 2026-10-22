@@ -5,20 +5,21 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ModeToggle() {
-	const { theme, setTheme } = useTheme();
+	const { resolvedTheme, setTheme } = useTheme();
 
 	function handleToggle() {
-		setTheme(theme === "dark" ? "light" : "dark");
+		setTheme(resolvedTheme === "dark" ? "light" : "dark");
 	}
 
 	return (
 		<Button
 			type="button"
-			variant="outline"
-			size="icon"
+			variant="ghost"
 			onClick={handleToggle}
-			aria-label="Design hell/dunkel wechseln"
+			className="h-auto w-full justify-between px-0 pr-[18px] text-body! font-normal"
 		>
+			<span className="dark:hidden">Dunkles Design</span>
+			<span className="hidden dark:inline">Helles Design</span>
 			<Moon className="h-[1.2rem] w-[1.2rem] dark:hidden" />
 			<Sun className="hidden h-[1.2rem] w-[1.2rem] dark:block" />
 		</Button>

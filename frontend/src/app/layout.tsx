@@ -30,11 +30,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: {
-		template: "%s | Food Swap 🍅",
-		default: "Food Swap 🍅",
-	},
-	description: "Tausche oder verschenke Lebensmittel in deiner Nähe.",
+	title: "Food Swap 🍅",
+	description: "Lebensmittel Tauschbörse",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

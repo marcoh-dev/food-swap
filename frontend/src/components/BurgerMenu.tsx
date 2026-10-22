@@ -21,7 +21,7 @@ export default async function BurgerMenu() {
 				</SheetParts.SheetTrigger>
 
 				<SheetParts.SheetContent className="w-full">
-					<nav className="flex flex-col gap-8 p-4 pt-14">
+					<nav className="flex flex-1 flex-col gap-8 p-4 pt-14">
 						<ul className="flex flex-col gap-2">
 							<li>
 								<SheetParts.SheetClose asChild>
@@ -54,8 +54,6 @@ export default async function BurgerMenu() {
 								</SheetParts.SheetClose>
 							</li>
 						</ul>
-
-						<ModeToggle />
 
 						<ul className="flex flex-col gap-2">
 							<li>
@@ -97,6 +95,9 @@ export default async function BurgerMenu() {
 								</SheetParts.SheetClose>
 							</li>
 						</ul>
+						<div className="mt-auto border-t pt-4">
+							<ModeToggle />
+						</div>
 					</nav>
 				</SheetParts.SheetContent>
 			</SheetParts.Sheet>
