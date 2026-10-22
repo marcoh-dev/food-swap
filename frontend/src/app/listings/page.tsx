@@ -15,6 +15,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
+import { parseRadius } from "@/lib/constants/listing.constants";
+import { getPlaceBySlug } from "@/lib/places.service";
+import { formatPlace } from "@/utils/place";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -30,26 +33,29 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	const page = Number(params.page) || 1;
 	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
 	const term = getParam(params.term);
-	const location = getParam(params.location);
+	const placeSlug = getParam(params.place);
+	const selectedPlace = placeSlug ? await getPlaceBySlug(placeSlug) : null;
+	const radius = selectedPlace ? parseRadius(getParam(params.radius)) : undefined;
 	const category = getParam(params.category);
 	const tags = getParam(params.tags);
 
 	const [listingsData, categories, allTags] = await Promise.all([
-		getListings({ page, sort, term, location, category, tags }),
+		getListings({ page, sort, term, place: selectedPlace?.slug, radius, category, tags }),
 		getCategories(),
 		getTags(),
 	]);
 
 	const listings = listingsData?.data ?? [];
 	const total = listingsData?.meta.total ?? 0;
-	const isSearching = Boolean(term || location);
+	const isSearching = Boolean(term || selectedPlace);
 	const hasFilters = Boolean(category || tags);
 
 	return (
 		<>
 			<SearchBar
 				defaultTerm={term}
-				defaultLocation={location}
+				defaultPlace={selectedPlace}
+				defaultRadius={radius}
 				category={category}
 				tags={tags}
 			/>
@@ -63,7 +69,8 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				<p className="mb-3">
 					{total} {total === 1 ? "Ergebnis" : "Ergebnisse"}
 					{term && ` für "${term}"`}
-					{location && ` in "${location}"`}
+					{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
+					{radius && ` (+${radius}\u00a0km)`}
 				</p>
 			)}
 
@@ -123,7 +130,14 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					<ListingsPagination
 						page={listingsData?.meta.page ?? 1}
 						totalPages={listingsData?.meta.totalPages ?? 1}
-						searchParams={{ term, location, category, tags, sort }}
+						searchParams={{
+							term,
+							place: selectedPlace?.slug,
+							radius: radius ? String(radius) : undefined,
+							category,
+							tags,
+							sort,
+						}}
 					/>
 				</>
 			)}

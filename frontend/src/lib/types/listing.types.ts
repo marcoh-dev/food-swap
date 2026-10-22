@@ -1,4 +1,5 @@
 import type { Category } from "./category.types";
+import type { Place } from "./place.types";
 import type { PaginationMetaResponse } from "./common.types";
 import type { Tag } from "./tag.types";
 import type { User } from "./user.types";
@@ -8,7 +9,7 @@ export type ListingResponse = {
 	title: string;
 	description: string;
 	image?: string;
-	location: string;
+	place: Place;
 	type: ListingType;
 	status: ListingStatus;
 	owner: User;
@@ -23,7 +24,8 @@ export type NewListing = {
 	title: string;
 	description: string;
 	image?: string;
-	location: string;
+	placeId: string;
+	place?: Place;
 	type: ListingType;
 	categoryId?: string | null;
 	tagIds?: string[];
@@ -57,7 +59,8 @@ export type GetListingsOptions = {
 	page?: number;
 	sort?: SortOption;
 	term?: string;
-	location?: string;
+	place?: string;
+	radius?: number;
 	category?: string;
 	tags?: string;
 };

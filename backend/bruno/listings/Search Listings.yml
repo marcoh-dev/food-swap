@@ -5,13 +5,16 @@ info:
 
 http:
   method: GET
-  url: "{{baseURL}}/listings?term=to&location=ha"
+  url: "{{baseURL}}/listings?term=to&place={{placeSlug}}&radius=20"
   params:
     - name: term
       value: to
       type: query
-    - name: location
-      value: ha
+    - name: place
+      value: "{{placeSlug}}"
+      type: query
+    - name: radius
+      value: "20"
       type: query
   auth: inherit
 

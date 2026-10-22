@@ -74,6 +74,7 @@ export default function ListingActions({
 					tags={tags}
 					defaultValues={{
 						...listing,
+						placeId: listing.place.id,
 						categoryId: listing.category?.id ?? null,
 						tagIds: listing.tags.map((tag) => tag.id),
 					}}

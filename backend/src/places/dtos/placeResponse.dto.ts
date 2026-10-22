@@ -14,6 +14,9 @@ export class PlaceResponseDto {
   name!: string;
 
   @Expose()
+  slug!: string;
+
+  @Expose()
   city!: string;
 
   @Expose()

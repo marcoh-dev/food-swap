@@ -32,11 +32,8 @@ export class CreateListingDto {
   @Transform(trimString)
   image?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(200)
-  @Transform(trimString)
-  location!: string;
+  @IsUUID()
+  placeId!: string;
 
   @IsEnum(ListingType)
   type!: ListingType;

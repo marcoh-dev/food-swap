@@ -9,6 +9,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from ".
 import { Textarea } from "../ui/textarea";
 import TagSelect from "./TagSelect";
 import EndDatePicker from "./EndDatePicker";
+import PlaceCombobox from "../places/PlaceCombobox";
 
 type Props = {
 	action: (formData: FormData) => void | Promise<void>;
@@ -64,13 +65,12 @@ export default function ListingForm({
 				</Field>
 				<Field>
 					<FieldLabel htmlFor="location">Ort</FieldLabel>
-					<Input
+					<PlaceCombobox
 						id="location"
-						name="location"
-						type="text"
-						placeholder="Hamburg"
-						defaultValue={defaultValues?.location}
-						required
+						name="placeId"
+						defaultPlace={defaultValues?.place}
+						placeholder="PLZ oder Ort"
+						withPostalCode
 					/>
 				</Field>
 				<Field>

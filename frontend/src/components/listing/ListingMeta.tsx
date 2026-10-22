@@ -3,13 +3,14 @@ import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "cn";
 import ListingDate from "./ListingDate";
 import { getDaysUntil, getEndDateLabel } from "@/utils/date";
+import { formatPlace } from "@/utils/place";
 
 export default function ListingMeta({
 	listing,
 	dateVariant,
 	className,
 }: {
-	listing: Pick<ListingResponse, "location" | "type" | "createdAt" | "endDate">;
+	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate">;
 	dateVariant?: "relative" | "full";
 	className?: string;
 }) {
@@ -20,7 +21,7 @@ export default function ListingMeta({
 		<p className={cn("flex flex-wrap items-center gap-x-3 gap-y-1 text-sm", className)}>
 			<span className="inline-flex items-center gap-1">
 				<MapPinIcon className="size-4" aria-hidden="true" />
-				{listing.location}
+				{formatPlace(listing.place)}
 			</span>
 			<span className="inline-flex items-center gap-1">
 				<TypeIcon className="size-4" aria-hidden="true" />

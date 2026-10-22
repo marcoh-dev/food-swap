@@ -20,6 +20,10 @@ export class Place {
   @Column()
   name!: string;
 
+  @Index('IDX_places_slug', { unique: true })
+  @Column()
+  slug!: string;
+
   @Column()
   city!: string;
 
