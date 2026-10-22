@@ -76,12 +76,13 @@ export default function ListingActions({
 						title: listing.title,
 						description: listing.description,
 						image: listing.image ?? "",
-						location: listing.location,
+						placeId: listing.place.id,
 						categoryId: listing.category?.id ?? "",
 						type: listing.type,
 						tagIds: listing.tags.map((tag) => tag.id),
 						endDate: formatIsoDate(new Date(listing.endDate)),
 					}}
+					defaultPlace={listing.place}
 					submitLabel="Speichern"
 				/>
 

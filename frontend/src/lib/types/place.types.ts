@@ -3,6 +3,7 @@ export type Place = {
 	countryCode: string;
 	postalCode: string | null;
 	name: string;
+	slug: string;
 	city: string;
 	county: string;
 	state: string;

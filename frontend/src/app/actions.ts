@@ -155,22 +155,27 @@ export async function isAuthenticated(): Promise<boolean> {
 
 export async function searchListingAction(formData: FormData) {
 	const term = formData.get("term") as string;
-	const location = formData.get("location") as string;
+	const place = formData.get("place") as string;
+	const radius = formData.get("radius") as string;
 	const category = formData.get("category") as string;
 	const tags = formData.get("tags") as string;
 
 	const searchParams = new URLSearchParams();
 	if (term) searchParams.set("term", term);
-	if (location) searchParams.set("location", location);
+	if (place) searchParams.set("place", place);
+	if (place && radius) searchParams.set("radius", radius);
 	if (category) searchParams.set("category", category);
 	if (tags) searchParams.set("tags", tags);
 
 	redirect(`/listings?${searchParams.toString()}`);
 }
 
-export async function searchPlacesAction(query: string): Promise<ActionResult<Place[]>> {
+export async function searchPlacesAction(
+	query: string,
+	withPostalCode = false,
+): Promise<ActionResult<Place[]>> {
 	try {
-		return { data: await searchPlaces(query) };
+		return { data: await searchPlaces(query, withPostalCode) };
 	} catch {
 		return { error: "Orte konnten nicht geladen werden." };
 	}
@@ -186,7 +191,7 @@ function toNewListing(values: ListingFormValues, endDate?: Date): NewListing {
 		title: values.title,
 		description: values.description,
 		image: values.image,
-		location: values.location,
+		placeId: values.placeId,
 		type: values.type,
 		categoryId: values.categoryId || null,
 		tagIds: values.tagIds,

@@ -24,11 +24,7 @@ export function createListingSchema(originalEndDate?: string) {
 			.trim()
 			.max(500, "Die URL darf höchstens 500 Zeichen lang sein.")
 			.refine(isEmptyOrImageUrl, "Bitte gib eine gültige URL ein."),
-		location: z
-			.string()
-			.trim()
-			.min(1, "Bitte gib einen Ort ein.")
-			.max(200, "Der Ort darf höchstens 200 Zeichen lang sein."),
+		placeId: z.string().min(1, "Bitte wähle einen Ort aus der Liste aus."),
 		categoryId: z.string().min(1, "Bitte wähle eine Kategorie."),
 		type: z.enum(["swap", "giveaway"], "Bitte wähle eine Art."),
 		tagIds: z.array(z.string()),

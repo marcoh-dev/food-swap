@@ -14,6 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { isExpired } from "@/utils/date";
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
+import ListingsPagination from "@/components/listing/ListingsPagination";
+import { redirect } from "next/navigation";
+import { parsePage } from "@/utils/pagination";
 
 export const metadata: Metadata = { title: pageTitles.myListings };
 
@@ -24,7 +27,7 @@ export default async function UserListingsPage({
 	const { id: userId } = await params;
 	const query = await searchParams;
 
-	const page = Number(query.page) || 1;
+	const page = parsePage(query.page);
 	const sort: SortOption = query.sort === "endingSoon" ? "endingSoon" : "newest";
 
 	const currentUser = await getCurrentUser();
@@ -34,6 +37,11 @@ export default async function UserListingsPage({
 
 	if (!listingsData) {
 		notFound();
+	}
+
+	const { totalPages } = listingsData.meta;
+	if (totalPages > 0 && page > totalPages) {
+		redirect(`/users/${userId}/listings?page=${totalPages}&sort=${sort}`);
 	}
 
 	return (
@@ -98,6 +106,11 @@ export default async function UserListingsPage({
 							</li>
 						))}
 					</ul>
+					<ListingsPagination
+						page={listingsData.meta.page}
+						totalPages={totalPages}
+						searchParams={{ sort }}
+					/>
 				</>
 			)}
 		</>

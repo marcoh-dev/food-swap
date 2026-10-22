@@ -12,12 +12,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationMetaResponseDto } from '../common/dtos/paginationMetaResponse.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
-import { FindOptionsWhere, ILike, In, MoreThan } from 'typeorm';
+import { FindOptionsWhere, ILike, In, MoreThan, Raw } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { CategoriesService } from '../categories/category.service';
 import { TagsService } from '../tags/tags.service';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
 import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
+import { PlacesService } from '../places/places.service';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
@@ -31,12 +32,14 @@ export class ListingsService {
     private readonly users: Repository<User>,
     private readonly categoriesService: CategoriesService,
     private readonly tagsService: TagsService,
+    private readonly placesService: PlacesService,
   ) {}
 
   async findAll(
     query: ListingsQueryDto,
   ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
-    const { page, limit, type, sort, term, location, category, tags } = query;
+    const { page, limit, type, sort, term, place, radius, category, tags } =
+      query;
     const visibleStatuses = [ListingStatus.ACTIVE, ListingStatus.RESERVED];
 
     const baseFilter: FindOptionsWhere<Listing> = {
@@ -45,7 +48,7 @@ export class ListingsService {
     };
 
     if (type) baseFilter.type = type;
-    if (location) baseFilter.location = ILike(`%${location}%`);
+    if (place) baseFilter.placeId = await this.placeFilter(place, radius);
 
     if (category) {
       const foundCategory = await this.categoriesService.findBySlug(category);
@@ -90,6 +93,7 @@ export class ListingsService {
         owner: true,
         category: true,
         tags: true,
+        place: true,
       },
     });
 
@@ -102,6 +106,30 @@ export class ListingsService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  private async placeFilter(placeSlug: string, radiusKm?: number) {
+    const place = await this.placesService.findBySlug(placeSlug);
+    const area =
+      place.postalCode === null
+        ? `"city" = :city AND "county" = :county`
+        : `"postal_code" = :postalCode`;
+    const nearby = radiusKm
+      ? `UNION SELECT "id" FROM "places" WHERE "country_code" = :countryCode AND ST_DWithin("location", (SELECT "location" FROM "places" WHERE "id" = :placeId), :radiusMeters)`
+      : '';
+
+    return Raw(
+      (alias) =>
+        `${alias} IN (SELECT "id" FROM "places" WHERE "country_code" = :countryCode AND ${area} ${nearby})`,
+      {
+        placeId: place.id,
+        countryCode: place.countryCode,
+        city: place.city,
+        county: place.county,
+        postalCode: place.postalCode,
+        radiusMeters: (radiusKm ?? 0) * 1000,
+      },
+    );
   }
 
   async findAllByUser(
@@ -138,6 +166,7 @@ export class ListingsService {
         owner: true,
         category: true,
         tags: true,
+        place: true,
       },
     });
 
@@ -159,6 +188,7 @@ export class ListingsService {
         owner: true,
         category: true,
         tags: true,
+        place: true,
       },
     });
     if (!listing) {
@@ -179,6 +209,15 @@ export class ListingsService {
       !(await this.categoriesService.exists(listingPayload.categoryId))
     ) {
       throw new BadRequestException('Category does not exist.');
+    }
+
+    if (
+      listingPayload.placeId &&
+      !(await this.placesService.existsWithPostalCode(listingPayload.placeId))
+    ) {
+      throw new BadRequestException(
+        'Place does not exist or has no postal code.',
+      );
     }
 
     if (endDate.getTime() < createdAt.getTime()) {
@@ -242,6 +281,15 @@ export class ListingsService {
       !(await this.categoriesService.exists(listingPayload.categoryId))
     ) {
       throw new BadRequestException('Category does not exist.');
+    }
+
+    if (
+      listingPayload.placeId &&
+      !(await this.placesService.existsWithPostalCode(listingPayload.placeId))
+    ) {
+      throw new BadRequestException(
+        'Place does not exist or has no postal code.',
+      );
     }
 
     const tags = listingPayload.tagIds

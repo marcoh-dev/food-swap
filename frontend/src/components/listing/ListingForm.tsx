@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { Category } from "@/lib/types/category.types";
 import type { FormState } from "@/lib/types/common.types";
+import type { Place } from "@/lib/types/place.types";
 import type { Tag } from "@/lib/types/tag.types";
 import { applyServerErrors } from "@/utils/form";
 import { Field, FieldLabel, FieldGroup, FieldSet, FieldLegend, FieldError } from "../ui/field";
@@ -15,12 +16,14 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from ".
 import { Textarea } from "../ui/textarea";
 import TagSelect from "./TagSelect";
 import EndDatePicker from "./EndDatePicker";
+import PlaceCombobox from "../places/PlaceCombobox";
 
 type Props = {
 	action: (values: ListingFormValues) => Promise<FormState>;
 	categories: Category[];
 	tags: Tag[];
 	defaultValues?: ListingFormValues;
+	defaultPlace?: Place;
 	submitLabel?: string;
 };
 
@@ -28,7 +31,7 @@ const emptyValues = {
 	title: "",
 	description: "",
 	image: "",
-	location: "",
+	placeId: "",
 	categoryId: "",
 	tagIds: [],
 	endDate: "",
@@ -39,6 +42,7 @@ export default function ListingForm({
 	categories,
 	tags,
 	defaultValues,
+	defaultPlace,
 	submitLabel = "Erstellen",
 }: Props) {
 	const form = useForm<ListingFormValues>({
@@ -115,21 +119,20 @@ export default function ListingForm({
 					)}
 				/>
 				<Controller
-					name="location"
+					name="placeId"
 					control={form.control}
 					render={({ field, fieldState }) => (
 						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="location">Ort</FieldLabel>
-							<Input
-								{...field}
-								id="location"
-								type="text"
-								placeholder="Hamburg"
-								required
-								aria-invalid={fieldState.invalid}
-								aria-describedby={fieldState.invalid ? "location-error" : undefined}
+							<FieldLabel htmlFor="placeId">Ort</FieldLabel>
+							<PlaceCombobox
+								id="placeId"
+								name={field.name}
+								defaultPlace={defaultPlace}
+								placeholder="PLZ oder Ort"
+								withPostalCode
+								onPlaceChange={(place) => field.onChange(place?.id ?? "")}
 							/>
-							<FieldError id="location-error" errors={[fieldState.error]} />
+							<FieldError id="placeId-error" errors={[fieldState.error]} />
 						</Field>
 					)}
 				/>
