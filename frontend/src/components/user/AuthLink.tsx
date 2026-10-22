@@ -33,7 +33,7 @@ export function AuthLink({ href, className, ...props }: AuthLinkProps) {
 		<Link
 			href={target}
 			aria-current={isActive ? "page" : undefined}
-			className={`${isActive ? "font-bold underline" : "no-underline"} ${className ?? ""}`}
+			className={`${isActive ? "no-underline before:mr-2 before:content-['🍅']" : "no-underline"} ${className ?? ""}`}
 			{...props}
 		/>
 	);

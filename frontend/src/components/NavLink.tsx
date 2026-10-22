@@ -14,7 +14,7 @@ export default function NavLink({ href, activeHref, className, ...props }: NavLi
 		<Link
 			href={href}
 			aria-current={isActive ? "page" : undefined}
-			className={`${isActive ? "font-bold underline" : "no-underline"} ${className ?? ""}`}
+			className={`${isActive ? "no-underline before:mr-2 before:content-['🍅']" : "no-underline"} ${className ?? ""}`}
 			{...props}
 		/>
 	);
