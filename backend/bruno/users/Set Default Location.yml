@@ -1,0 +1,22 @@
+info:
+  name: Set Default Location
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseURL}}/users/{{userId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "placeId": "{{placeId}}"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -38,10 +38,4 @@ export class CreateUserDto {
   @MaxLength(100)
   @Transform(trimString)
   name?: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  @Transform(trimString)
-  location?: string | null;
 }

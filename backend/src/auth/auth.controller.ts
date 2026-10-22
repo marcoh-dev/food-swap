@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Request,
+  SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -12,6 +13,7 @@ import { CreateUserDto } from '../users/dtos/createUser.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from './dtos/login.dto';
+import { CurrentUserResponseDto } from '../users/dtos/currentUserResponse.dto';
 import type { AuthenticatedRequest } from './login.types';
 
 @Controller('auth')
@@ -36,7 +38,8 @@ export class AuthController {
   }
 
   @Get('me')
+  @SerializeOptions({ type: CurrentUserResponseDto })
   getMe(@Request() req: AuthenticatedRequest) {
-    return req.user;
+    return this.usersService.findCurrent(req.user.id);
   }
 }

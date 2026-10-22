@@ -23,7 +23,7 @@ type Props = {
 	categories: Category[];
 	tags: Tag[];
 	defaultValues?: ListingFormValues;
-	defaultPlace?: Place;
+	defaultPlace?: Place | null;
 	submitLabel?: string;
 };
 

@@ -8,11 +8,19 @@ import { applyServerErrors } from "@/utils/form";
 import { FieldGroup, Field, FieldLabel, FieldDescription, FieldError } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import PlaceCombobox from "../places/PlaceCombobox";
+import type { Place } from "@/lib/types/place.types";
 
-export function UserUpdate({ currentName }: { currentName?: string }) {
+export function UserUpdate({
+	currentName,
+	currentPlace,
+}: {
+	currentName?: string;
+	currentPlace?: Place | null;
+}) {
 	const form = useForm<ProfileValues>({
 		resolver: zodResolver(profileSchema),
-		defaultValues: { name: currentName ?? "" },
+		defaultValues: { name: currentName ?? "", placeId: currentPlace?.id ?? "" },
 		mode: "onSubmit",
 		reValidateMode: "onChange",
 	});
@@ -43,6 +51,28 @@ export function UserUpdate({ currentName }: { currentName?: string }) {
 									aria-describedby={fieldState.invalid ? "name-error" : undefined}
 								/>
 								<FieldError id="name-error" errors={[fieldState.error]} />
+							</Field>
+						)}
+					/>
+					<Controller
+						name="placeId"
+						control={form.control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor="placeId">Ort</FieldLabel>
+								<FieldDescription>
+									Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich
+									sichtbar.
+								</FieldDescription>
+								<PlaceCombobox
+									id="placeId"
+									name={field.name}
+									defaultPlace={currentPlace}
+									placeholder="PLZ oder Ort"
+									withPostalCode
+									onPlaceChange={(place) => field.onChange(place?.id ?? "")}
+								/>
+								<FieldError id="placeId-error" errors={[fieldState.error]} />
 							</Field>
 						)}
 					/>

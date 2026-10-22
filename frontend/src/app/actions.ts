@@ -23,7 +23,7 @@ import {
 	startChat,
 } from "@/lib/chats.service";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
-import { searchPlaces } from "@/lib/places.service";
+import { findNearestPlace, searchPlaces } from "@/lib/places.service";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import { formatIsoDate, getDefaultEndDate, getEndOfDay, parseEndDate } from "@/utils/date";
@@ -106,11 +106,13 @@ export async function updateUserAction(values: ProfileValues): Promise<FormState
 	const result = profileSchema.safeParse(values);
 	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
+	const { name, placeId } = result.data;
+
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
 	try {
-		await updateUser(currentUser.id, result.data);
+		await updateUser(currentUser.id, { name, placeId: placeId || null });
 	} catch (error) {
 		console.error(error);
 		return {
@@ -178,6 +180,17 @@ export async function searchPlacesAction(
 		return { data: await searchPlaces(query, withPostalCode) };
 	} catch {
 		return { error: "Orte konnten nicht geladen werden." };
+	}
+}
+
+export async function findNearestPlaceAction(
+	lat: number,
+	lng: number,
+): Promise<ActionResult<Place>> {
+	try {
+		return { data: await findNearestPlace(lat, lng) };
+	} catch {
+		return { error: "Standort konnte nicht ermittelt werden." };
 	}
 }
 

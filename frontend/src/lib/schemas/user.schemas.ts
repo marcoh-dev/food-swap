@@ -28,6 +28,7 @@ export const profileSchema = z.object({
 		.trim()
 		.min(1, "Bitte gib einen Profilnamen ein.")
 		.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein."),
+	placeId: z.string(),
 });
 
 export type LoginValues = z.infer<typeof loginSchema>;

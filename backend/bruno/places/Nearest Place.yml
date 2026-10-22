@@ -1,0 +1,31 @@
+info:
+  name: Nearest Place
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/places/nearest"
+  body:
+    type: json
+    data: |-
+      {
+        "lat": 53.596,
+        "lng": 10.012
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200) {
+          bru.setVar("placeId", res.body.id);
+          bru.setVar("placeSlug", res.body.slug);
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
