@@ -9,10 +9,6 @@ export const toastMessages: Record<string, { type: ToastType; message: string }>
 		type: "error",
 		message: "Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.",
 	},
-	"login-error": {
-		type: "error",
-		message: "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch.",
-	},
 	"user-delete-error": {
 		type: "error",
 		message: "Dein Account konnte nicht gelöscht werden.",

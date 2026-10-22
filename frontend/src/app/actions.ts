@@ -27,10 +27,10 @@ import { searchPlaces } from "@/lib/places.service";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
+import { z } from "zod";
+import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 
-function getRedirectTarget(formData: FormData): string {
-	const target = formData.get("redirect");
-
+function getRedirectTarget(target: unknown): string {
 	if (
 		typeof target !== "string" ||
 		!target.startsWith("/") ||
@@ -65,7 +65,7 @@ async function setAuthCookie(token: string) {
 export async function registerAction(formData: FormData) {
 	const username = formData.get("username") as string;
 	const password = formData.get("password") as string;
-	const redirectTo = getRedirectTarget(formData);
+	const redirectTo = getRedirectTarget(formData.get("redirect"));
 
 	const authData = await registerUser({ username, password });
 
@@ -79,20 +79,19 @@ export async function registerAction(formData: FormData) {
 	redirect(`${redirectTo}${separator}toast=registered`);
 }
 
-export async function loginAction(formData: FormData) {
-	const username = formData.get("username") as string;
-	const password = formData.get("password") as string;
-	const redirectTo = getRedirectTarget(formData);
+export async function loginAction(values: LoginValues, redirectTo?: string): Promise<FormState> {
+	const result = loginSchema.safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const authData = await loginUser({ username, password });
+	const authData = await loginUser(result.data);
 
 	if (!authData.access_token) {
-		redirect(authErrorPath("/login", "login-error", redirectTo));
+		return { error: "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch." };
 	}
 
 	await setAuthCookie(authData.access_token);
 
-	redirect(redirectTo);
+	redirect(getRedirectTarget(redirectTo));
 }
 
 export async function updateUserAction(formData: FormData) {
