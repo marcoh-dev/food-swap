@@ -14,6 +14,7 @@ import ListingFilters from "@/components/listing/ListingFilter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
+import ListingsPagination from "@/components/listing/ListingsPagination";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -73,48 +74,58 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						: "Keine Angebote gefunden. Versuche, deine Suche anzupassen."}
 				</p>
 			) : (
-				<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
-					{listings.map((listing) => (
-						<li key={listing.id}>
-							<Link
-								href={`/listings/${listing.id}`}
-								className="block h-full no-underline"
-							>
-								<Card className="h-full overflow-hidden pt-0">
-									<div className="relative aspect-[16/9] w-full overflow-hidden">
-										<Image
-											src={listing.image ?? "/placeholder.png"}
-											alt={listing.title}
-											width={250}
-											height={200}
-											className="h-full w-full object-cover"
-										/>
-										<div className="absolute top-2 left-2">
-											<StatusBadge listing={listing} />
-										</div>
-									</div>
-									<CardHeader>
-										<CardTitle className="text-h2">{listing.title}</CardTitle>
-										<CardDescription>
-											<ListingMeta
-												listing={listing}
-												dateVariant="relative"
-												className="text-xs"
+				<>
+					{" "}
+					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
+						{listings.map((listing) => (
+							<li key={listing.id}>
+								<Link
+									href={`/listings/${listing.id}`}
+									className="block h-full no-underline"
+								>
+									<Card className="h-full overflow-hidden pt-0">
+										<div className="relative aspect-[16/9] w-full overflow-hidden">
+											<Image
+												src={listing.image ?? "/placeholder.png"}
+												alt={listing.title}
+												width={250}
+												height={200}
+												className="h-full w-full object-cover"
 											/>
-										</CardDescription>
-										<div className="flex flex-wrap items-center gap-1.5 justify-self-start">
-											<CategoryBadge category={listing.category} />
-											<TagList tags={listing.tags} max={2} />
+											<div className="absolute top-2 left-2">
+												<StatusBadge listing={listing} />
+											</div>
 										</div>
-									</CardHeader>
-									<CardContent>
-										<p className="text-xs">{listing.description}</p>
-									</CardContent>
-								</Card>
-							</Link>
-						</li>
-					))}
-				</ul>
+										<CardHeader>
+											<CardTitle className="text-h2">
+												{listing.title}
+											</CardTitle>
+											<CardDescription>
+												<ListingMeta
+													listing={listing}
+													dateVariant="relative"
+													className="text-xs"
+												/>
+											</CardDescription>
+											<div className="flex flex-wrap items-center gap-1.5 justify-self-start">
+												<CategoryBadge category={listing.category} />
+												<TagList tags={listing.tags} max={2} />
+											</div>
+										</CardHeader>
+										<CardContent>
+											<p className="text-xs">{listing.description}</p>
+										</CardContent>
+									</Card>
+								</Link>
+							</li>
+						))}
+					</ul>
+					<ListingsPagination
+						page={listingsData?.meta.page ?? 1}
+						totalPages={listingsData?.meta.totalPages ?? 1}
+						searchParams={{ term, location, category, tags, sort }}
+					/>
+				</>
 			)}
 		</>
 	);

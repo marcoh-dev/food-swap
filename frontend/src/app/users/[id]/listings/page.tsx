@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { isExpired } from "@/utils/date";
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
+import ListingsPagination from "@/components/listing/ListingsPagination";
 
 export const metadata: Metadata = { title: pageTitles.myListings };
 
@@ -98,6 +99,11 @@ export default async function UserListingsPage({
 							</li>
 						))}
 					</ul>
+					<ListingsPagination
+						page={listingsData.meta.page}
+						totalPages={listingsData.meta.totalPages}
+						searchParams={{ sort }}
+					/>
 				</>
 			)}
 		</>
