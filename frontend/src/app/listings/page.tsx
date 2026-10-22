@@ -18,6 +18,8 @@ import ListingsPagination from "@/components/listing/ListingsPagination";
 import { parseRadius } from "@/lib/constants/listing.constants";
 import { getPlaceBySlug } from "@/lib/places.service";
 import { formatPlace } from "@/utils/place";
+import { redirect } from "next/navigation";
+import { parsePage } from "@/utils/pagination";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -30,7 +32,7 @@ function getParam(value: string | string[] | undefined): string | undefined {
 
 export default async function ListingsPage({ searchParams }: PageProps<"/listings">) {
 	const params = await searchParams;
-	const page = Number(params.page) || 1;
+	const page = parsePage(params.page);
 	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
 	const term = getParam(params.term);
 	const placeSlug = getParam(params.place);
@@ -44,6 +46,16 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 		getCategories(),
 		getTags(),
 	]);
+
+	const totalPages = listingsData?.meta.totalPages ?? 0;
+	if (totalPages > 0 && page > totalPages) {
+		const query = new URLSearchParams();
+		for (const [key, value] of Object.entries(params)) {
+			if (typeof value === "string") query.set(key, value);
+		}
+		query.set("page", String(totalPages));
+		redirect(`/listings?${query.toString()}`);
+	}
 
 	const listings = listingsData?.data ?? [];
 	const total = listingsData?.meta.total ?? 0;
@@ -82,7 +94,6 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				</p>
 			) : (
 				<>
-					{" "}
 					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
 						{listings.map((listing) => (
 							<li key={listing.id}>
@@ -129,7 +140,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					</ul>
 					<ListingsPagination
 						page={listingsData?.meta.page ?? 1}
-						totalPages={listingsData?.meta.totalPages ?? 1}
+						totalPages={totalPages}
 						searchParams={{
 							term,
 							place: selectedPlace?.slug,
