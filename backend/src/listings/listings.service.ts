@@ -115,12 +115,12 @@ export class ListingsService {
         ? `"city" = :city AND "county" = :county`
         : `"postal_code" = :postalCode`;
     const nearby = radiusKm
-      ? `OR ST_DWithin("location", (SELECT "location" FROM "places" WHERE "id" = :placeId), :radiusMeters)`
+      ? `UNION SELECT "id" FROM "places" WHERE "country_code" = :countryCode AND ST_DWithin("location", (SELECT "location" FROM "places" WHERE "id" = :placeId), :radiusMeters)`
       : '';
 
     return Raw(
       (alias) =>
-        `${alias} IN (SELECT "id" FROM "places" WHERE "country_code" = :countryCode AND ((${area}) ${nearby}))`,
+        `${alias} IN (SELECT "id" FROM "places" WHERE "country_code" = :countryCode AND ${area} ${nearby})`,
       {
         placeId: place.id,
         countryCode: place.countryCode,
