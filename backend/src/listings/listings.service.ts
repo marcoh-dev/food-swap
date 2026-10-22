@@ -23,6 +23,13 @@ import { Place } from '../places/entities/place.entity';
 
 type ListingWithDistance = Listing & { distance?: number };
 
+const LISTING_RELATIONS = {
+  owner: true,
+  category: true,
+  tags: true,
+  place: true,
+};
+
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
 
@@ -89,21 +96,19 @@ export class ListingsService {
         ]
       : [baseFilter];
 
-    const [data, total] = await this.listings.findAndCount({
-      where: whereFilter,
-      order:
-        sort === 'endingSoon'
-          ? { endDate: 'ASC', createdAt: 'DESC' }
-          : { createdAt: 'DESC' },
-      skip: (page - 1) * limit,
-      take: limit,
-      relations: {
-        owner: true,
-        category: true,
-        tags: true,
-        place: true,
-      },
-    });
+    const [data, total] =
+      sort === 'nearest' && selectedPlace
+        ? await this.findNearestPage(whereFilter, selectedPlace, page, limit)
+        : await this.listings.findAndCount({
+            where: whereFilter,
+            order:
+              sort === 'endingSoon'
+                ? { endDate: 'ASC', createdAt: 'DESC' }
+                : { createdAt: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit,
+            relations: LISTING_RELATIONS,
+          });
 
     return {
       data: selectedPlace ? await this.withDistance(data, selectedPlace) : data,
@@ -114,6 +119,43 @@ export class ListingsService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  private async findNearestPage(
+    where: FindOptionsWhere<Listing>[],
+    from: Place,
+    page: number,
+    limit: number,
+  ): Promise<[Listing[], number]> {
+    const query = this.listings
+      .createQueryBuilder('listing')
+      .innerJoin('listing.place', 'place')
+      .select('listing.id', 'id')
+      .addSelect(
+        `ST_Distance("place"."location", (SELECT "location" FROM "places" WHERE "id" = :fromPlaceId))`,
+        'distance',
+      )
+      .where(where)
+      .setParameter('fromPlaceId', from.id)
+      .orderBy('distance', 'ASC')
+      .addOrderBy('listing.createdAt', 'DESC')
+      .offset((page - 1) * limit)
+      .limit(limit);
+
+    const [rows, total] = await Promise.all([
+      query.getRawMany<{ id: string }>(),
+      query.getCount(),
+    ]);
+    const ids = rows.map((row) => row.id);
+    const listings = await this.listings.find({
+      where: { id: In(ids) },
+      relations: LISTING_RELATIONS,
+    });
+    const listingsById = new Map(
+      listings.map((listing) => [listing.id, listing]),
+    );
+
+    return [ids.flatMap((id) => listingsById.get(id) ?? []), total];
   }
 
   private async withDistance(
