@@ -26,7 +26,7 @@ export default function SearchBar({
 			<FieldGroup className="gap-2 sm:flex-row sm:items-start">
 				<TermSearch defaultValue={defaultTerm} />
 				<LocationRadiusSearch
-					key={`${defaultPlace?.id ?? ""}-${defaultRadius ?? ""}`}
+					key={`${defaultPlace?.slug ?? ""}-${defaultRadius ?? ""}`}
 					defaultPlace={defaultPlace}
 					defaultRadius={defaultRadius}
 				/>

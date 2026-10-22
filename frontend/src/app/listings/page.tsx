@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { parseRadius } from "@/lib/constants/listing.constants";
-import { getPlaceById } from "@/lib/places.service";
+import { getPlaceBySlug } from "@/lib/places.service";
 import { formatPlace } from "@/utils/place";
 
 export const metadata: Metadata = { title: pageTitles.listings };
@@ -32,14 +32,14 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	const page = Number(params.page) || 1;
 	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
 	const term = getParam(params.term);
-	const placeId = getParam(params.place);
-	const selectedPlace = placeId ? await getPlaceById(placeId) : null;
+	const placeSlug = getParam(params.place);
+	const selectedPlace = placeSlug ? await getPlaceBySlug(placeSlug) : null;
 	const radius = selectedPlace ? parseRadius(getParam(params.radius)) : undefined;
 	const category = getParam(params.category);
 	const tags = getParam(params.tags);
 
 	const [listingsData, categories, allTags] = await Promise.all([
-		getListings({ page, sort, term, place: selectedPlace?.id, radius, category, tags }),
+		getListings({ page, sort, term, place: selectedPlace?.slug, radius, category, tags }),
 		getCategories(),
 		getTags(),
 	]);

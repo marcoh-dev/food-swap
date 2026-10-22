@@ -108,8 +108,8 @@ export class ListingsService {
     };
   }
 
-  private async placeFilter(placeId: string, radiusKm?: number) {
-    const place = await this.placesService.findOne(placeId);
+  private async placeFilter(placeSlug: string, radiusKm?: number) {
+    const place = await this.placesService.findBySlug(placeSlug);
     const area =
       place.postalCode === null
         ? `"city" = :city AND "county" = :county`

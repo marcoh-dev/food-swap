@@ -23,6 +23,9 @@ runtime:
         if (place) {
           bru.setVar("placeId", place.id);
         }
+        if (res.body[0]) {
+          bru.setVar("placeSlug", res.body[0].slug);
+        }
 
 settings:
   encodeUrl: true

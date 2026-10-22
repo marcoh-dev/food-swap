@@ -8,7 +8,7 @@ const MIN_TYPO_LENGTH = 4;
 const MAX_TYPO_LENGTH = 8;
 const ANY_CHARACTER = '\u0000';
 
-const RESPONSE_COLUMNS = `"id", "country_code" AS "countryCode", "postal_code" AS "postalCode", "name", "city", "county", "state"`;
+const RESPONSE_COLUMNS = `"id", "country_code" AS "countryCode", "postal_code" AS "postalCode", "name", "slug", "city", "county", "state"`;
 
 const POSTAL_CODE_QUERY = `
   SELECT ${RESPONSE_COLUMNS}
@@ -97,10 +97,10 @@ export class PlacesService {
     ]);
   }
 
-  async findOne(id: string): Promise<Place> {
-    const place = await this.places.findOneBy({ id });
+  async findBySlug(slug: string): Promise<Place> {
+    const place = await this.places.findOneBy({ slug });
     if (!place) {
-      throw new NotFoundException(`Place with ID ${id} not found.`);
+      throw new NotFoundException(`Place "${slug}" not found.`);
     }
     return place;
   }

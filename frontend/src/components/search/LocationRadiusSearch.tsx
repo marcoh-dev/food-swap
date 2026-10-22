@@ -29,6 +29,7 @@ export default function LocationRadiusSearch({
 		<div className="flex w-full flex-col gap-2">
 			<PlaceCombobox
 				name="place"
+				valueKey="slug"
 				defaultPlace={defaultPlace}
 				useFirstSuggestion
 				onPlaceChange={setPlace}

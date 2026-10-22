@@ -1,4 +1,10 @@
-import { IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsIn,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 import { PaginationQueryDto } from '../../common/dtos/paginationQuery.dto';
 import { Transform, Type } from 'class-transformer';
 import { toSlugArray } from '../../common/utils/trim-string';
@@ -12,7 +18,9 @@ export class ListingsQueryDto extends PaginationQueryDto {
   term?: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsString()
+  @MaxLength(200)
+  @Matches(/^[a-z0-9-]+$/)
   place?: string;
 
   @IsOptional()

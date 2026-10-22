@@ -1,4 +1,4 @@
-import { getPlaceById } from "@/lib/places.service";
+import { getPlaceBySlug } from "@/lib/places.service";
 import { parseRadius } from "@/lib/constants/listing.constants";
 import { getListingById } from "@/lib/listings.service";
 import { notFound } from "next/navigation";
@@ -43,7 +43,7 @@ export default async function ListingDetailPage({
 }: PageProps<"/listings/[id]">) {
 	const { id } = await params;
 	const { term, place, radius } = await searchParams;
-	const selectedPlace = typeof place === "string" ? await getPlaceById(place) : null;
+	const selectedPlace = typeof place === "string" ? await getPlaceBySlug(place) : null;
 	const listing = await getListingById(id);
 	const categories = await getCategories();
 	const tags = await getTags();

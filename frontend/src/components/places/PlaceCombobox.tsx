@@ -16,6 +16,7 @@ const DEBOUNCE_MS = 150;
 type Props = {
 	id?: string;
 	name: string;
+	valueKey?: "id" | "slug";
 	defaultPlace?: Place | null;
 	placeholder?: string;
 	withPostalCode?: boolean;
@@ -30,6 +31,7 @@ function placeRegion(place: Place) {
 export default function PlaceCombobox({
 	id,
 	name,
+	valueKey = "id",
 	defaultPlace = null,
 	placeholder = "Ort oder PLZ",
 	withPostalCode = false,
@@ -71,14 +73,14 @@ export default function PlaceCombobox({
 		const form = inputRef.current?.form;
 		if (!form || !firstSuggestion) return;
 
-		const suggestedId = firstSuggestion.id;
+		const suggestedValue = firstSuggestion[valueKey];
 		function applyFirstSuggestion(event: FormDataEvent) {
-			event.formData.set(name, suggestedId);
+			event.formData.set(name, suggestedValue);
 		}
 
 		form.addEventListener("formdata", applyFirstSuggestion);
 		return () => form.removeEventListener("formdata", applyFirstSuggestion);
-	}, [firstSuggestion, name]);
+	}, [firstSuggestion, name, valueKey]);
 
 	function changePlace(place: Place | null) {
 		setSelectedPlace(place);
@@ -102,7 +104,7 @@ export default function PlaceCombobox({
 
 	return (
 		<Command shouldFilter={false} className="overflow-visible bg-transparent">
-			<input type="hidden" name={name} value={selectedPlace?.id ?? ""} />
+			<input type="hidden" name={name} value={selectedPlace?.[valueKey] ?? ""} />
 			<Popover open={showList}>
 				<PopoverAnchor asChild>
 					<div ref={anchorRef}>

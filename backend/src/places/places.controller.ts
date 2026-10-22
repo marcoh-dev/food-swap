@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseUUIDPipe,
   Query,
   SerializeOptions,
 } from '@nestjs/common';
@@ -23,9 +22,9 @@ export class PlacesController {
   }
 
   @Public()
-  @Get(':id')
+  @Get(':slug')
   @SerializeOptions({ type: PlaceResponseDto })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.placesService.findOne(id);
+  findBySlug(@Param('slug') slug: string) {
+    return this.placesService.findBySlug(slug);
   }
 }

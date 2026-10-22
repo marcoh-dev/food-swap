@@ -5,13 +5,13 @@ info:
 
 http:
   method: GET
-  url: "{{baseURL}}/listings?term=to&place={{placeId}}&radius=20"
+  url: "{{baseURL}}/listings?term=to&place={{placeSlug}}&radius=20"
   params:
     - name: term
       value: to
       type: query
     - name: place
-      value: "{{placeId}}"
+      value: "{{placeSlug}}"
       type: query
     - name: radius
       value: "20"
