@@ -12,13 +12,31 @@ import {
 import type { SortOption } from "@/lib/types/listing.types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowDownUp } from "lucide-react";
+import { useSearchPlace } from "./search/SearchPlaceContext";
 
-export function SortingMenu({ sort }: { sort: SortOption }) {
+const SORT_LABELS: Record<SortOption, string> = {
+	newest: "Neueste zuerst",
+	endingSoon: "Endet bald",
+	nearest: "Entfernung",
+};
+
+export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFormId?: string }) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const searchPlace = useSearchPlace();
 
 	function handleSortChange(value: string) {
+		const searchForm = searchFormId ? document.getElementById(searchFormId) : null;
+		if (searchForm instanceof HTMLFormElement) {
+			const sortInput = searchForm.elements.namedItem("sort");
+			if (sortInput instanceof HTMLInputElement) {
+				sortInput.value = value;
+				searchForm.requestSubmit();
+				return;
+			}
+		}
+
 		const params = new URLSearchParams(searchParams.toString());
 		params.set("sort", value);
 		params.delete("page");
@@ -30,16 +48,21 @@ export function SortingMenu({ sort }: { sort: SortOption }) {
 			<div>
 				<DropdownMenuTrigger asChild>
 					<Button variant="outline">
-						{sort === "newest" ? "Neueste zuerst" : "Endet bald"}
+						{SORT_LABELS[sort]}
 						<ArrowDownUp size={16} strokeWidth={1} />
 					</Button>
 				</DropdownMenuTrigger>
 			</div>
-			<DropdownMenuContent className="w-32">
+			<DropdownMenuContent className="w-40">
 				<DropdownMenuGroup>
 					<DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
 						<DropdownMenuRadioItem value="newest">Neueste</DropdownMenuRadioItem>
 						<DropdownMenuRadioItem value="endingSoon">Endet bald</DropdownMenuRadioItem>
+						{searchFormId && (
+							<DropdownMenuRadioItem value="nearest" disabled={!searchPlace?.place}>
+								Entfernung
+							</DropdownMenuRadioItem>
+						)}
 					</DropdownMenuRadioGroup>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>

@@ -1,6 +1,8 @@
 import { searchListingAction } from "@/app/actions";
 import LocationRadiusSearch from "./LocationRadiusSearch";
 import type { Place } from "@/lib/types/place.types";
+import type { SortOption } from "@/lib/types/listing.types";
+import { SEARCH_FORM_ID } from "@/lib/constants/listing.constants";
 import TermSearch from "./TermSearch";
 import { FieldGroup } from "../ui/field";
 import { Button } from "../ui/button";
@@ -11,17 +13,20 @@ export default function SearchBar({
 	defaultRadius,
 	category,
 	tags,
+	sort,
 }: {
 	defaultTerm?: string;
 	defaultPlace?: Place | null;
 	defaultRadius?: number;
 	category?: string;
 	tags?: string;
+	sort?: SortOption;
 }) {
 	return (
-		<form role="search" className="pb-6" action={searchListingAction}>
+		<form id={SEARCH_FORM_ID} role="search" className="pb-6" action={searchListingAction}>
 			{category && <input type="hidden" name="category" value={category} />}
 			{tags && <input type="hidden" name="tags" value={tags} />}
+			<input key={sort} type="hidden" name="sort" defaultValue={sort ?? "newest"} />
 
 			<FieldGroup className="gap-2 sm:flex-row sm:items-start">
 				<TermSearch defaultValue={defaultTerm} />

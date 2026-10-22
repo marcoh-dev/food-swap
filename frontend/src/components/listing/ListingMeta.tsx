@@ -1,16 +1,16 @@
-import { GiftIcon, MapPinIcon, RepeatIcon, TimerIcon } from "lucide-react";
+import { GiftIcon, MapPinIcon, NavigationIcon, RepeatIcon, TimerIcon } from "lucide-react";
 import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "cn";
 import ListingDate from "./ListingDate";
 import { getDaysUntil, getEndDateLabel } from "@/utils/date";
-import { formatPlace } from "@/utils/place";
+import { formatDistance, formatPlace } from "@/utils/place";
 
 export default function ListingMeta({
 	listing,
 	dateVariant,
 	className,
 }: {
-	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate">;
+	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate" | "distance">;
 	dateVariant?: "relative" | "full";
 	className?: string;
 }) {
@@ -23,6 +23,12 @@ export default function ListingMeta({
 				<MapPinIcon className="size-4" aria-hidden="true" />
 				{formatPlace(listing.place)}
 			</span>
+			{listing.distance !== undefined && (
+				<span className="inline-flex items-center gap-1">
+					<NavigationIcon className="size-4" aria-hidden="true" />
+					{formatDistance(listing.distance)}
+				</span>
+			)}
 			<span className="inline-flex items-center gap-1">
 				<TypeIcon className="size-4" aria-hidden="true" />
 				{listing.type === "swap" ? "Tauschen" : "Verschenken"}
