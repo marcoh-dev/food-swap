@@ -8,6 +8,14 @@ http:
   url: "{{baseURL}}/auth/me"
   auth: inherit
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200) {
+          bru.setVar("userId", res.body.id);
+        }
+
 settings:
   encodeUrl: true
   timeout: 0

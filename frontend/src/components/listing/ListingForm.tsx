@@ -1,6 +1,7 @@
 import type { Category } from "@/lib/types/category.types";
 import type { NewListing } from "@/lib/types/listing.types";
 import type { Tag } from "@/lib/types/tag.types";
+import type { Place } from "@/lib/types/place.types";
 import { Field, FieldLabel, FieldGroup, FieldSet, FieldLegend } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -16,6 +17,7 @@ type Props = {
 	categories: Category[];
 	tags: Tag[];
 	defaultValues?: NewListing;
+	defaultPlace?: Place | null;
 	submitLabel?: string;
 	error?: string;
 };
@@ -25,6 +27,7 @@ export default function ListingForm({
 	categories,
 	tags,
 	defaultValues,
+	defaultPlace,
 	submitLabel = "Erstellen",
 	error,
 }: Props) {
@@ -68,9 +71,10 @@ export default function ListingForm({
 					<PlaceCombobox
 						id="location"
 						name="placeId"
-						defaultPlace={defaultValues?.place}
+						defaultPlace={defaultValues?.place ?? defaultPlace}
 						placeholder="PLZ oder Ort"
 						withPostalCode
+						required
 					/>
 				</Field>
 				<Field>

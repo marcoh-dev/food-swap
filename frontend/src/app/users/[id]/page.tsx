@@ -24,7 +24,10 @@ export default async function UserPage({ params }: PageProps<"/users/[id]">) {
 			<p>Registriert seit: {formatDate(user.createdAt)}</p>
 			{isOwner && (
 				<>
-					<UserUpdate currentName={user.name ?? undefined} />
+					<UserUpdate
+						currentName={user.name ?? undefined}
+						currentPlace={currentUser.place}
+					/>
 					<UserDelete />
 				</>
 			)}

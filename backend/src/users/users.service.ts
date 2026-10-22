@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -10,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dtos/createUser.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dtos/updateUser.dto';
+import { PlacesService } from '../places/places.service';
 
 const SALT_ROUNDS = 12;
 
@@ -18,6 +20,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
+    private readonly placesService: PlacesService,
   ) {}
 
   async findById(id: string): Promise<User | null> {
@@ -29,6 +32,17 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     const user = await this.users.findOne({
       where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+    return user;
+  }
+
+  async findCurrent(id: string): Promise<User> {
+    const user = await this.users.findOne({
+      where: { id },
+      relations: { place: true },
     });
     if (!user) {
       throw new NotFoundException(`User not found.`);
@@ -69,6 +83,15 @@ export class UsersService {
     if (user.id !== currentUser.id) {
       throw new ForbiddenException(
         `You are not allowed to modify this profile.`,
+      );
+    }
+
+    if (
+      userPayload.placeId &&
+      !(await this.placesService.existsWithPostalCode(userPayload.placeId))
+    ) {
+      throw new BadRequestException(
+        'Place does not exist or has no postal code.',
       );
     }
 

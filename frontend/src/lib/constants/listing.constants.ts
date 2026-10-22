@@ -46,3 +46,5 @@ export function parseRadius(value: string | undefined): number | undefined {
 	const radius = Number(value);
 	return RADIUS_OPTIONS_KM.includes(radius) ? radius : undefined;
 }
+
+export const MISSING_PLACE_MESSAGE = "Bitte wähle einen Ort aus der Liste aus.";
