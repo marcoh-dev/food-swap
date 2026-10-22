@@ -7,6 +7,7 @@ import type { Point } from 'typeorm';
 @Index('IDX_places_district_trgm', { synchronize: false })
 @Index('IDX_places_postal_code', { synchronize: false })
 @Index('IDX_places_location', { synchronize: false })
+@Index('IDX_places_area', ['countryCode', 'city', 'county'])
 export class Place {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_places_id' })
   id!: string;
