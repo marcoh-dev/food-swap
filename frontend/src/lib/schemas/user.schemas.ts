@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
@@ -22,14 +23,20 @@ export const registrationSchema = z.object({
 		.regex(/[^A-Za-z0-9]/, "Das Passwort muss mindestens ein Sonderzeichen enthalten."),
 });
 
-export const profileSchema = z.object({
-	name: z
-		.string()
-		.trim()
-		.min(1, "Bitte gib einen Profilnamen ein.")
-		.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein."),
-	placeId: z.string(),
-});
+export const profileSchema = z
+	.object({
+		name: z
+			.string()
+			.trim()
+			.min(1, "Bitte gib einen Profilnamen ein.")
+			.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein."),
+		placeId: z.string(),
+		placeQuery: z.string(),
+	})
+	.refine((values) => values.placeId !== "" || values.placeQuery.trim() === "", {
+		error: MISSING_PLACE_MESSAGE,
+		path: ["placeId"],
+	});
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegistrationValues = z.infer<typeof registrationSchema>;

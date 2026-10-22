@@ -123,13 +123,16 @@ export default function ListingForm({
 					control={form.control}
 					render={({ field, fieldState }) => (
 						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="placeId">Ort</FieldLabel>
+							<FieldLabel>Ort</FieldLabel>
 							<PlaceCombobox
-								id="placeId"
+								ref={field.ref}
 								name={field.name}
+								label="Ort"
 								defaultPlace={defaultPlace}
 								placeholder="PLZ oder Ort"
 								withPostalCode
+								aria-invalid={fieldState.invalid}
+								aria-describedby={fieldState.invalid ? "placeId-error" : undefined}
 								onPlaceChange={(place) => field.onChange(place?.id ?? "")}
 							/>
 							<FieldError id="placeId-error" errors={[fieldState.error]} />

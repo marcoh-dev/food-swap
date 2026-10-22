@@ -10,6 +10,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import PlaceCombobox from "../places/PlaceCombobox";
 import type { Place } from "@/lib/types/place.types";
+import { formatPlace } from "@/utils/place";
 
 export function UserUpdate({
 	currentName,
@@ -20,10 +21,19 @@ export function UserUpdate({
 }) {
 	const form = useForm<ProfileValues>({
 		resolver: zodResolver(profileSchema),
-		defaultValues: { name: currentName ?? "", placeId: currentPlace?.id ?? "" },
+		defaultValues: {
+			name: currentName ?? "",
+			placeId: currentPlace?.id ?? "",
+			placeQuery: currentPlace ? formatPlace(currentPlace) : "",
+		},
 		mode: "onSubmit",
 		reValidateMode: "onChange",
 	});
+
+	function handlePlaceQueryChange(query: string) {
+		form.setValue("placeQuery", query);
+		if (form.formState.isSubmitted) form.trigger("placeId");
+	}
 
 	async function handleSubmit(values: ProfileValues) {
 		const result = await updateUserAction(values);
@@ -59,18 +69,24 @@ export function UserUpdate({
 						control={form.control}
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor="placeId">Ort</FieldLabel>
+								<FieldLabel>Ort</FieldLabel>
 								<FieldDescription>
 									Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich
 									sichtbar.
 								</FieldDescription>
 								<PlaceCombobox
-									id="placeId"
+									ref={field.ref}
 									name={field.name}
+									label="Ort"
 									defaultPlace={currentPlace}
 									placeholder="PLZ oder Ort"
 									withPostalCode
+									aria-invalid={fieldState.invalid}
+									aria-describedby={
+										fieldState.invalid ? "placeId-error" : undefined
+									}
 									onPlaceChange={(place) => field.onChange(place?.id ?? "")}
+									onQueryChange={handlePlaceQueryChange}
 								/>
 								<FieldError id="placeId-error" errors={[fieldState.error]} />
 							</Field>
