@@ -6,12 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { CategoriesModule } from '../categories/categories.module';
 import { TagsModule } from '../tags/tags.module';
+import { PlacesModule } from '../places/places.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Listing, User]),
     CategoriesModule,
     TagsModule,
+    PlacesModule,
   ],
   controllers: [ListingsController],
   providers: [ListingsService],

@@ -12,7 +12,8 @@ export async function getListings({
 	page = 1,
 	sort = "newest",
 	term,
-	location,
+	place,
+	radius,
 	category,
 	tags,
 }: GetListingsOptions): Promise<PaginatedListingsResponse | null> {
@@ -21,7 +22,8 @@ export async function getListings({
 	query.set("sort", sort);
 
 	if (term) query.set("term", term);
-	if (location) query.set("location", location);
+	if (place) query.set("place", place);
+	if (place && radius) query.set("radius", String(radius));
 	if (category) query.set("category", category);
 	if (tags) query.set("tags", tags);
 
