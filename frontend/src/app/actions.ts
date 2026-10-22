@@ -30,8 +30,10 @@ import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "
 import { z } from "zod";
 import {
 	loginSchema,
+	profileSchema,
 	registrationSchema,
 	type LoginValues,
+	type ProfileValues,
 	type RegistrationValues,
 } from "@/lib/schemas/user.schemas";
 
@@ -99,13 +101,21 @@ export async function loginAction(values: LoginValues, redirectTo?: string): Pro
 	redirect(getRedirectTarget(redirectTo));
 }
 
-export async function updateUserAction(formData: FormData) {
-	const name = formData.get("name") as string;
+export async function updateUserAction(values: ProfileValues): Promise<FormState> {
+	const result = profileSchema.safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	await updateUser(currentUser.id, { name });
+	try {
+		await updateUser(currentUser.id, result.data);
+	} catch (error) {
+		console.error(error);
+		return {
+			error: "Dein Profil konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
+		};
+	}
 
 	redirect(`/users/${currentUser.id}`);
 }
