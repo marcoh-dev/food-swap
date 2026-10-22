@@ -19,7 +19,7 @@ export default function SearchBar({
 	tags?: string;
 }) {
 	return (
-		<form role="search" className="pb-6" action={searchListingAction}>
+		<form role="search" className="pb-2" action={searchListingAction}>
 			{category && <input type="hidden" name="category" value={category} />}
 			{tags && <input type="hidden" name="tags" value={tags} />}
 

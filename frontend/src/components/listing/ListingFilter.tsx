@@ -75,12 +75,14 @@ export default function ListingFilters({ categories, tags }: Props) {
 	return (
 		<div className="flex flex-col gap-4 my-4">
 			<div className="grid gap-1.5">
-				<Label htmlFor="category-filter">Kategorie</Label>
+				<Label htmlFor="category-filter" className="sr-only">
+					Kategorie
+				</Label>
 				<Select
 					value={selectedCategory || ALL_CATEGORIES}
 					onValueChange={handleCategoryChange}
 				>
-					<SelectTrigger id="category-filter" className="w-full max-w-56">
+					<SelectTrigger id="category-filter" className="w-full max-w-40">
 						<SelectValue placeholder="Kategorie wählen" />
 					</SelectTrigger>
 					<SelectContent>
@@ -95,7 +97,7 @@ export default function ListingFilters({ categories, tags }: Props) {
 			</div>
 
 			<fieldset className="grid gap-2">
-				<legend className="mb-2 text-sm font-medium">Tags</legend>
+				<legend className="sr-only">Tags</legend>
 				<div className="flex flex-wrap gap-x-4 gap-y-2">
 					{tags.map((tag) => {
 						const checkboxId = `tag-filter-${tag.slug}`;

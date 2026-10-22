@@ -72,9 +72,11 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				tags={tags}
 			/>
 
-			<div className="flex w-full items-start justify-between gap-4 mb-2">
+			<div className="flex w-full flex-col items-start mb-2">
 				<ListingFilters categories={categories} tags={allTags} />
-				<SortingMenu sort={sort} />
+				<div className="self-end">
+					<SortingMenu sort={sort} />
+				</div>
 			</div>
 
 			{isSearching && total > 0 && (

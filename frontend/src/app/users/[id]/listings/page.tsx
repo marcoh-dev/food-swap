@@ -53,7 +53,7 @@ export default async function UserListingsPage({
 				</p>
 			) : (
 				<>
-					<div className="flex w-full justify-end mb-2">
+					<div className="flex w-full justify-end mb-2 mt-3">
 						<SortingMenu sort={sort} />
 					</div>
 					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
