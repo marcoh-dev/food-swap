@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import type { Metadata } from "next";
+import ListingImagePlaceholder from "@/components/ListingImagePlaceholder";
 
 export async function generateMetadata({ params }: PageProps<"/listings/[id]">): Promise<Metadata> {
 	const { id } = await params;
@@ -73,13 +74,18 @@ export default async function ListingDetailPage({
 			<Card className="mx-auto w-full max-w-2xl overflow-hidden pt-0">
 				<div className="relative flex flex-col gap-4 pb-3">
 					<div className="relative h-64 w-full sm:h-80 md:h-96">
-						<Image
-							src={listing.image ?? "/placeholder.png"}
-							alt={listing.title}
-							fill
-							sizes="(max-width: 768px) 100vw, 672px"
-							className="object-cover"
-						/>
+						{listing.image ? (
+							<Image
+								src={listing.image}
+								alt={listing.title}
+								fill
+								sizes="(max-width: 768px) 100vw, 672px"
+								className="object-cover"
+							/>
+						) : (
+							<ListingImagePlaceholder />
+						)}
+
 						<div className="absolute top-2 left-2">
 							<StatusBadge listing={listing} />
 						</div>

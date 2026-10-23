@@ -31,8 +31,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: {
-		template: "%s | Food Swap 🍅",
-		default: "Food Swap 🍅",
+		template: "%s | FoodSwap",
+		default: "FoodSwap",
 	},
 	description: "Tausche oder verschenke Lebensmittel in deiner Nähe.",
 };
@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 							<div>
 								<Link href="/" aria-label="Home">
 									<Image
-										src="/logo.png"
+										src="/icon.svg"
 										alt="FoodSwap Logo"
 										width="50"
 										height="50"

@@ -21,6 +21,7 @@ import { getPlaceBySlug } from "@/lib/places.service";
 import { formatPlace } from "@/utils/place";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
+import ListingImagePlaceholder from "@/components/ListingImagePlaceholder";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -114,13 +115,17 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 								>
 									<Card className="h-full overflow-hidden pt-0">
 										<div className="relative aspect-[16/9] w-full overflow-hidden">
-											<Image
-												src={listing.image ?? "/placeholder.png"}
-												alt={listing.title}
-												width={250}
-												height={200}
-												className="h-full w-full object-cover"
-											/>
+											{listing.image ? (
+												<Image
+													src={listing.image}
+													alt={listing.title}
+													width={250}
+													height={200}
+													className="h-full w-full object-cover"
+												/>
+											) : (
+												<ListingImagePlaceholder />
+											)}
 											<div className="absolute top-2 left-2">
 												<StatusBadge listing={listing} />
 											</div>

@@ -17,6 +17,7 @@ import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
+import ListingImagePlaceholder from "@/components/ListingImagePlaceholder";
 
 export const metadata: Metadata = { title: pageTitles.myListings };
 
@@ -65,13 +66,17 @@ export default async function UserListingsPage({
 								>
 									<Card className="h-full overflow-hidden pt-0">
 										<div className="relative aspect-[16/9] w-full overflow-hidden">
-											<Image
-												src={listing.image ?? "/placeholder.png"}
-												alt={listing.title}
-												width={250}
-												height={200}
-												className="h-full w-full object-cover"
-											/>
+											{listing.image ? (
+												<Image
+													src={listing.image ?? "/placeholder.png"}
+													alt={listing.title}
+													width={250}
+													height={200}
+													className="h-full w-full object-cover"
+												/>
+											) : (
+												<ListingImagePlaceholder />
+											)}
 											<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
 												{isOwner && isExpired(listing.endDate) ? (
 													<Badge
