@@ -12,7 +12,7 @@ import {
 import type { SortOption } from "@/lib/types/listing.types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowDownUp } from "lucide-react";
-import { useSearchPlace } from "./search/SearchPlaceContext";
+import { useSearchPlace } from "../search/SearchPlaceContext";
 
 const SORT_LABELS: Record<SortOption, string> = {
 	newest: "Neueste zuerst",

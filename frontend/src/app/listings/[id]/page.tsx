@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/card";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import type { Metadata } from "next";
-import ListingImagePlaceholder from "@/components/ListingImagePlaceholder";
+import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
 
 export async function generateMetadata({ params }: PageProps<"/listings/[id]">): Promise<Metadata> {
 	const { id } = await params;

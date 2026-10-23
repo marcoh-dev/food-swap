@@ -4,7 +4,7 @@ import { getTags } from "@/lib/tags.service";
 import Link from "next/link";
 import Image from "next/image";
 import SearchBar from "@/components/search/SearchBar";
-import { SortingMenu } from "@/components/SortingMenu";
+import { SortingMenu } from "@/components/listing/SortingMenu";
 import type { SortOption } from "@/lib/types/listing.types";
 import CategoryBadge from "@/components/listing/CategoryBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
@@ -21,7 +21,7 @@ import { getPlaceBySlug } from "@/lib/places.service";
 import { formatPlace } from "@/utils/place";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
-import ListingImagePlaceholder from "@/components/ListingImagePlaceholder";
+import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 

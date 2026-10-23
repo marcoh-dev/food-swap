@@ -1,7 +1,7 @@
 import * as SheetParts from "@/components/ui/sheet";
 import { UserLogout } from "@/components/user/UserLogout";
 import { AuthLink } from "@/components/user/AuthLink";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import { ModeToggle } from "@/components/menu/ModeToggle";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/users.service";

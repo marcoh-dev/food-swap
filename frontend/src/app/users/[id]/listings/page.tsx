@@ -2,7 +2,7 @@ import CategoryBadge from "@/components/listing/CategoryBadge";
 import ListingMeta from "@/components/listing/ListingMeta";
 import StatusBadge from "@/components/listing/StatusBadge";
 import SearchBar from "@/components/search/SearchBar";
-import { SortingMenu } from "@/components/SortingMenu";
+import { SortingMenu } from "@/components/listing/SortingMenu";
 import { getUserListings } from "@/lib/listings.service";
 import type { SortOption } from "@/lib/types/listing.types";
 import Image from "next/image";
@@ -17,7 +17,7 @@ import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
-import ListingImagePlaceholder from "@/components/ListingImagePlaceholder";
+import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
 
 export const metadata: Metadata = { title: pageTitles.myListings };
 

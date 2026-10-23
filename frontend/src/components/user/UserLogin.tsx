@@ -9,7 +9,7 @@ import { applyServerErrors } from "@/utils/form";
 import { FieldGroup, Field, FieldLabel, FieldError } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import PinInput from "../PinInput";
+import PinInput from "./PinInput";
 
 export function UserLogin({ redirectTo }: { redirectTo?: string }) {
 	const form = useForm<LoginValues>({
