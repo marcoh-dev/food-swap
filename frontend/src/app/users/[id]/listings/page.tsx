@@ -18,6 +18,7 @@ import ListingsPagination from "@/components/listing/ListingsPagination";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
 import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
+import ExpiredBadge from "@/components/listing/ExpiredBadge";
 
 export const metadata: Metadata = { title: pageTitles.myListings };
 
@@ -78,16 +79,8 @@ export default async function UserListingsPage({
 												<ListingImagePlaceholder />
 											)}
 											<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
-												{isOwner && isExpired(listing.endDate) ? (
-													<Badge
-														variant="destructive"
-														className="bg-destructive text-white"
-													>
-														Abgelaufen
-													</Badge>
-												) : (
-													<StatusBadge listing={listing} />
-												)}
+												{isOwner && <ExpiredBadge listing={listing} />}
+												<StatusBadge listing={listing} />
 											</div>
 										</div>
 										<CardHeader>

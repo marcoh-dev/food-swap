@@ -16,6 +16,7 @@ import ListingMeta from "@/components/listing/ListingMeta";
 import { ListingChat } from "@/components/chat/ListingChat";
 import { getListingChatStatus } from "@/lib/chats.service";
 import type { ListingChatStatus } from "@/lib/types/chat.types";
+
 import {
 	Card,
 	CardHeader,
@@ -28,6 +29,8 @@ import {
 import { pageTitles } from "@/lib/constants/titles.constants";
 import type { Metadata } from "next";
 import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
+import { isExpired } from "@/utils/date";
+import ExpiredBadge from "@/components/listing/ExpiredBadge";
 
 export async function generateMetadata({ params }: PageProps<"/listings/[id]">): Promise<Metadata> {
 	const { id } = await params;
@@ -53,6 +56,8 @@ export default async function ListingDetailPage({
 	if (!listing) notFound();
 
 	const isOwner = currentUser?.id === listing.owner.id;
+	const isListingExpired = isExpired(listing.endDate);
+	const isUnavailable = listing.status === "deactivated" || isListingExpired;
 	const ownerName = listing.owner.name ?? listing.owner.username;
 	const chatStatus: ListingChatStatus | null =
 		currentUser && !isOwner
@@ -85,10 +90,17 @@ export default async function ListingDetailPage({
 						) : (
 							<ListingImagePlaceholder />
 						)}
-
-						<div className="absolute top-2 left-2">
+						<div className="absolute top-2 left-2 z-20 flex flex-col items-start gap-1">
+							<ExpiredBadge listing={listing} />
 							<StatusBadge listing={listing} />
 						</div>
+						{isUnavailable && (
+							<div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+								<span className="p-4 font-semibold text-white">
+									Diese Anzeige ist nicht mehr verfügbar.
+								</span>
+							</div>
+						)}
 					</div>
 					<CardHeader>
 						<CardTitle className="text-h2">{listing.title}</CardTitle>
@@ -103,18 +115,13 @@ export default async function ListingDetailPage({
 						<p>{listing.description}</p>
 						<TagList tags={listing.tags} />
 					</CardContent>
-
-					{listing.status === "deactivated" && (
-						<div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gray-500/60">
-							<span className="font-semibold text-white p-4">
-								Diese Anzeige ist nicht mehr verfügbar.
-							</span>
-						</div>
+					{isUnavailable && (
+						<div className="pointer-events-none absolute inset-0 z-10 bg-gray-500/60" />
 					)}
 				</div>
 
 				{isOwner && (
-					<CardFooter className="relative z-10 flex-col items-stretch">
+					<CardFooter className="relative z-20 flex-col items-stretch">
 						<ListingActions listing={listing} categories={categories} tags={tags} />
 					</CardFooter>
 				)}
