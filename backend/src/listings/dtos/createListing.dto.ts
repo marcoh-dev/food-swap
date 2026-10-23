@@ -1,13 +1,13 @@
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   ArrayUnique,
   IsArray,
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
   MaxLength,
 } from 'class-validator';
 import { ListingType } from '../entities/listing.entity';
@@ -48,8 +48,11 @@ export class CreateListingDto {
   @IsUUID('all', { each: true })
   tagIds?: string[];
 
+  // The last day of the listing ("YYYY-MM-DD"), it ends at 23:59 Berlin time.
   @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  endDate?: Date;
+  @IsString()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'endDate must be a date in the format YYYY-MM-DD',
+  })
+  endDate?: string;
 }

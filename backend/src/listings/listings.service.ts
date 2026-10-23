@@ -20,6 +20,12 @@ import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
 import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 import { PlacesService } from '../places/places.service';
 import { Place } from '../places/entities/place.entity';
+import {
+  berlinDay,
+  endOfDay,
+  isCalendarDay,
+  shiftDay,
+} from '../common/utils/berlin-date';
 
 type ListingWithDistance = Listing & { distance?: number };
 
@@ -30,8 +36,7 @@ const LISTING_RELATIONS = {
   place: true,
 };
 
-const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
-const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
+const END_DATE_RULES = { defaultDays: 28, minDays: 1, maxMonths: 6 };
 
 @Injectable()
 export class ListingsService {
@@ -268,9 +273,12 @@ export class ListingsService {
 
   async create(listingPayload: CreateListingDto, currentUser: User) {
     const createdAt = new Date();
-    const endDate =
+    const today = berlinDay(createdAt);
+    const endDate = this.toEndDate(
       listingPayload.endDate ??
-      new Date(createdAt.getTime() + FOUR_WEEKS_IN_MS);
+        shiftDay(today, { days: END_DATE_RULES.defaultDays }),
+      today,
+    );
 
     if (
       listingPayload.categoryId &&
@@ -288,19 +296,13 @@ export class ListingsService {
       );
     }
 
-    if (endDate.getTime() < createdAt.getTime()) {
-      throw new ConflictException('Listing end cannot be in the past.');
-    }
-
-    if (endDate.getTime() < createdAt.getTime() + ONE_DAY_IN_MS) {
-      throw new ConflictException('Listing has to last at least one day.');
-    }
     const tags = listingPayload.tagIds
       ? await this.tagsService.findByIdsOrFail(listingPayload.tagIds)
       : undefined;
 
+    const { endDate: _endDate, ...listingData } = listingPayload;
     const newListing = this.listings.create({
-      ...listingPayload,
+      ...listingData,
       createdAt,
       owner: currentUser,
       endDate,
@@ -330,19 +332,9 @@ export class ListingsService {
       );
     }
 
-    const { endDate } = listingPayload;
-
-    if (endDate) {
-      const now = new Date();
-
-      if (endDate.getTime() < now.getTime()) {
-        throw new ConflictException('Listing end cannot be in the past.');
-      }
-
-      if (endDate.getTime() < now.getTime() + ONE_DAY_IN_MS) {
-        throw new ConflictException('Listing has to last at least one day.');
-      }
-    }
+    const endDate = listingPayload.endDate
+      ? this.toEndDate(listingPayload.endDate, berlinDay(new Date()))
+      : undefined;
 
     if (
       listingPayload.categoryId &&
@@ -364,9 +356,14 @@ export class ListingsService {
       ? await this.tagsService.findByIdsOrFail(listingPayload.tagIds)
       : undefined;
 
-    const { tagIds: _tagIds, ...listingData } = listingPayload;
+    const {
+      tagIds: _tagIds,
+      endDate: _endDate,
+      ...listingData
+    } = listingPayload;
 
     Object.assign(listing, listingData);
+    if (endDate) listing.endDate = endDate;
     if (tags) listing.tags = tags;
 
     await this.listings.save(listing);
@@ -456,5 +453,25 @@ export class ListingsService {
       .getRawMany<{ id: string }>();
 
     return rows.map((row) => row.id);
+  }
+
+  // Listings end at 23:59 Berlin time on their last day, which has to be
+  // between tomorrow and the maximum duration.
+  private toEndDate(day: string, today: string): Date {
+    if (!isCalendarDay(day)) {
+      throw new BadRequestException('endDate is not a valid date.');
+    }
+
+    if (day < shiftDay(today, { days: END_DATE_RULES.minDays })) {
+      throw new ConflictException('Listing has to last at least one day.');
+    }
+
+    if (day > shiftDay(today, { months: END_DATE_RULES.maxMonths })) {
+      throw new ConflictException(
+        `Listing cannot last longer than ${END_DATE_RULES.maxMonths} months.`,
+      );
+    }
+
+    return endOfDay(day);
   }
 }
