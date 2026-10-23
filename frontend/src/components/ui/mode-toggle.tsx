@@ -1,10 +1,12 @@
 // components/ui/mode-toggle.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Moon, Sun, SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+const emptySubscribe = () => () => {};
 
 const themeOptions = [
 	{ value: "system", label: "Systemeinstellung", icon: SunMoon },
@@ -14,10 +16,13 @@ const themeOptions = [
 
 export function ModeToggle() {
 	const { theme, setTheme } = useTheme();
-	const [mounted, setMounted] = useState(false);
 
-	// theme ist erst im Browser bekannt -> verhindert Hydration-Mismatch
-	useEffect(() => setMounted(true), []);
+	// theme ist erst im Browser bekannt → verhindert Hydration-Mismatch
+	const mounted = useSyncExternalStore(
+		emptySubscribe,
+		() => true,
+		() => false,
+	);
 
 	return (
 		<div className="flex items-center justify-between">
