@@ -167,6 +167,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-29 10:15',
     end: '2026-11-15',
     status: 'active',
+    image: pexelsImage(5519121),
   },
   {
     key: 'jana-11',
@@ -181,6 +182,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-07 21:00',
     end: '2027-01-15',
     status: 'reserved',
+    image: pexelsImage(1051849),
   },
   {
     key: 'jana-12',
@@ -311,6 +313,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-27 11:00',
     end: 'today',
     status: 'reserved',
+    image: pexelsImage(4110456),
   },
 
   // Ole, Himmelpforten and the Altes Land
@@ -416,6 +419,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-29 12:00',
     end: '2026-11-10',
     status: 'active',
+    image: pexelsImage(9944541),
   },
   {
     key: 'ole-08',
@@ -475,6 +479,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-27 15:00',
     end: '2026-12-31',
     status: 'active',
+    image: pexelsImage(9545792),
   },
   {
     key: 'ole-12',
@@ -501,6 +506,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-28 10:10',
     end: 'today',
     status: 'active',
+    image: pexelsImage(3904510),
   },
   {
     key: 'ole-14',
@@ -590,6 +596,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-12 18:30',
     end: '+28',
     status: 'active',
+    image: pexelsImage(4198043),
   },
   {
     key: 'mehmet-02',
@@ -873,6 +880,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-04 18:00',
     end: '+28',
     status: 'active',
+    image: pexelsImage(4750381),
   },
   {
     key: 'lotte-02',
@@ -902,6 +910,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-14 20:00',
     end: '2027-03-01',
     status: 'active',
+    image: pexelsImage(35428719),
   },
   {
     key: 'lotte-04',
@@ -916,6 +925,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-06 11:00',
     end: '+28',
     status: 'active',
+    image: pexelsImage(7801106),
   },
   {
     key: 'lotte-05',
@@ -943,6 +953,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-02 21:00',
     end: '2026-12-31',
     status: 'active',
+    image: pexelsImage(15209691),
   },
   {
     key: 'lotte-07',
@@ -1000,6 +1011,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-15 16:00',
     end: '+3',
     status: 'active',
+    image: pexelsImage(4114141),
   },
   {
     key: 'lotte-11',
@@ -1282,6 +1294,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-14 18:00',
     end: '+28',
     status: 'active',
+    image: pexelsImage(4750381),
   },
   {
     key: 'fabian-09',
@@ -1833,6 +1846,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-06 15:00',
     end: '+2',
     status: 'active',
+    image: pexelsImage(9588901),
   },
   {
     key: 'gerda-10',
@@ -2023,6 +2037,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-18 17:00',
     end: '+28',
     status: 'active',
+    image: pexelsImage(17617620),
   },
   {
     key: 'heinz-02',
@@ -2162,6 +2177,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-26 18:00',
     end: '+5',
     status: 'active',
+    image: pexelsImage(6099159),
   },
   {
     key: 'heinz-12',
@@ -2270,6 +2286,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-14 15:00',
     end: '+28',
     status: 'active',
+    image: pexelsImage(11170935),
   },
   {
     key: 'heinz-20',
@@ -2563,6 +2580,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-28 16:00',
     end: '2026-11-30',
     status: 'active',
+    image: pexelsImage(20371247),
   },
   {
     key: 'sepp-03',
@@ -2724,6 +2742,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-21 17:00',
     end: '+28',
     status: 'active',
+    image: pexelsImage(34447116),
   },
   {
     key: 'sepp-15',
@@ -2831,5 +2850,6 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-29 11:00',
     end: '2026-11-20',
     status: 'active',
+    image: pexelsImage(22156650),
   },
 ];
