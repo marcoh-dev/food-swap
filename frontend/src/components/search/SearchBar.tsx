@@ -23,11 +23,7 @@ export default function SearchBar({
 	sort?: SortOption;
 }) {
 	return (
-<<<<<<< HEAD
-		<form role="search" className="pb-2" action={searchListingAction}>
-=======
-		<form id={SEARCH_FORM_ID} role="search" className="pb-6" action={searchListingAction}>
->>>>>>> main
+		<form id={SEARCH_FORM_ID} role="search" className="pb-2" action={searchListingAction}>
 			{category && <input type="hidden" name="category" value={category} />}
 			{tags && <input type="hidden" name="tags" value={tags} />}
 			<input key={sort} type="hidden" name="sort" defaultValue={sort ?? "newest"} />
