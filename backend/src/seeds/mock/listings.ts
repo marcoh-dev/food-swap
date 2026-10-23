@@ -551,6 +551,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-05 13:00',
     end: '2027-02-28',
     status: 'active',
+    image: pexelsImage(5425020),
   },
   {
     key: 'ole-17',
@@ -611,6 +612,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-07 20:00',
     end: '2027-03-01',
     status: 'active',
+    image: pexelsImage(8108152),
   },
   {
     key: 'mehmet-03',
@@ -722,6 +724,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-26 17:00',
     end: '+3',
     status: 'active',
+    image: pexelsImage(16790663),
   },
   {
     key: 'mehmet-11',
@@ -765,6 +768,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-31 19:00',
     end: '2027-02-27',
     status: 'active',
+    image: pexelsImage(19156005),
   },
   {
     key: 'mehmet-14',
@@ -864,6 +868,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-12 18:00',
     end: '+21',
     status: 'active',
+    image: pexelsImage(5447088),
   },
 
   // Lotte, Berlin-Pankow, with her parents' garden in Kotzen
@@ -939,6 +944,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-09 18:30',
     end: '+3',
     status: 'deactivated',
+    image: pexelsImage(2682661),
   },
   {
     key: 'lotte-06',
@@ -1136,6 +1142,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-30 16:30',
     end: '+5',
     status: 'active',
+    image: pexelsImage(5004698),
   },
   {
     key: 'lotte-20',
@@ -1179,6 +1186,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-17 18:30',
     end: '2027-02-17',
     status: 'active',
+    image: pexelsImage(12269553),
   },
 
   // Fabian, Freiburg-Wiehre and his uncle's vineyard in Pfaffenweiler
@@ -1210,6 +1218,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-08 20:00',
     end: '2027-03-01',
     status: 'active',
+    image: pexelsImage(33984941),
   },
   {
     key: 'fabian-03',
@@ -1365,6 +1374,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-25 18:00',
     end: '+2',
     status: 'active',
+    image: pexelsImage(7004842),
   },
   {
     key: 'fabian-14',
@@ -1577,6 +1587,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-03 17:00',
     end: '+5',
     status: 'deactivated',
+    image: pexelsImage(131054),
   },
   {
     key: 'ines-09',
@@ -1762,6 +1773,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-02 09:00',
     end: '+5',
     status: 'deactivated',
+    image: pexelsImage(15305308),
   },
   {
     key: 'gerda-04',
@@ -1995,6 +2007,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-23 11:00',
     end: '2026-11-20',
     status: 'active',
+    image: pexelsImage(144206),
   },
   {
     key: 'gerda-21',
@@ -2110,6 +2123,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-08-14 09:00',
     end: '+5',
     status: 'active',
+    image: pexelsImage(4113898),
   },
   {
     key: 'heinz-07',
@@ -2414,6 +2428,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-04 19:00',
     end: '2027-03-01',
     status: 'active',
+    image: pexelsImage(5502852),
   },
   {
     key: 'kim-09',
@@ -2524,6 +2539,7 @@ export const mockListings: MockListing[] = [
     createdAt: '2026-09-14 12:00',
     end: '2027-03-14',
     status: 'active',
+    image: pexelsImage(6316673),
   },
   {
     key: 'kim-17',
