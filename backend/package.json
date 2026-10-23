@@ -29,7 +29,9 @@
     "migration:revert": "npm run typeorm migration:revert",
     "migration:show": "npm run typeorm migration:show",
     "migration:run:prod": "typeorm migration:run -d dist/data-source.js",
-    "places:build": "node scripts/build-places.mjs"
+    "places:build": "node scripts/build-places.mjs",
+    "seed:mock": "ts-node src/seeds/mock/seed.ts",
+    "seed:mock:remove": "ts-node src/seeds/mock/seed.ts --remove"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
