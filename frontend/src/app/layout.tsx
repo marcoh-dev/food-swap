@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-     title: {
+	title: {
 		template: "%s | Food Swap 🍅",
 		default: "Food Swap 🍅",
 	},
