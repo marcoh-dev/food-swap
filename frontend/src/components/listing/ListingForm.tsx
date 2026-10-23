@@ -105,7 +105,7 @@ export default function ListingForm({
 					control={form.control}
 					render={({ field, fieldState }) => (
 						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel htmlFor="image">Bild(URL)</FieldLabel>
+							<FieldLabel htmlFor="image">Bild (URL)</FieldLabel>
 							<Input
 								{...field}
 								id="image"

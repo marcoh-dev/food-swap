@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: pageTitles.about };
 export default function About() {
 	return (
 		<>
-			<h2>We are Food Swap</h2>
+			<h2>Wir sind FoodSwap.</h2>
 
 			<section className="mt-8">
 				<h3 className="mb-2 font-medium">Datenquellen</h3>

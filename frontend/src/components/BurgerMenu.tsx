@@ -1,4 +1,3 @@
-import Link from "next/link";
 import * as SheetParts from "@/components/ui/sheet";
 import { UserLogout } from "@/components/user/UserLogout";
 import { AuthLink } from "@/components/user/AuthLink";
@@ -6,6 +5,7 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/users.service";
+import NavLink from "./NavLink";
 
 export default async function BurgerMenu() {
 	const currentUser = await getCurrentUser();
@@ -21,47 +21,51 @@ export default async function BurgerMenu() {
 				</SheetParts.SheetTrigger>
 
 				<SheetParts.SheetContent className="w-full">
-					<nav className="flex flex-col gap-8 p-4 pt-14">
+					<nav className="flex flex-1 flex-col gap-8 p-4 pt-14">
 						<ul className="flex flex-col gap-2">
 							<li>
 								<SheetParts.SheetClose asChild>
-									<Link href="/listings/" className="no-underline">
-										Alle Angebote
-									</Link>
+									<NavLink href="/listings">Alle Angebote</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 
 							<li>
 								<SheetParts.SheetClose asChild>
-									<Link href="/listings/new" className="no-underline">
-										Neues Angebot
-									</Link>
+									<NavLink href="/listings/new">Neues Angebot</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 							<li>
 								<SheetParts.SheetClose asChild>
-									<Link href="/me/listings" className="no-underline">
+									<NavLink
+										href="/me/listings"
+										activeHref={
+											currentUser
+												? `/users/${currentUser.id}/listings`
+												: undefined
+										}
+									>
 										Meine Angebote
-									</Link>
+									</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 							<li>
 								<SheetParts.SheetClose asChild>
-									<Link href="/chats" className="no-underline">
-										Meine Chats
-									</Link>
+									<NavLink href="/chats">Meine Chats</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 						</ul>
 
-						<ModeToggle />
-
 						<ul className="flex flex-col gap-2">
 							<li>
 								<SheetParts.SheetClose asChild>
-									<Link href="/me" className="no-underline">
+									<NavLink
+										href="/me"
+										activeHref={
+											currentUser ? `/users/${currentUser.id}` : undefined
+										}
+									>
 										Mein Profil
-									</Link>
+									</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 							{isLoggedIn ? (
@@ -72,16 +76,12 @@ export default async function BurgerMenu() {
 								<>
 									<li>
 										<SheetParts.SheetClose asChild>
-											<AuthLink href="/login" className="no-underline">
-												Anmelden
-											</AuthLink>
+											<AuthLink href="/login">Anmelden</AuthLink>
 										</SheetParts.SheetClose>
 									</li>
 									<li>
 										<SheetParts.SheetClose asChild>
-											<AuthLink href="/registration" className="no-underline">
-												Registrieren
-											</AuthLink>
+											<AuthLink href="/registration">Registrieren</AuthLink>
 										</SheetParts.SheetClose>
 									</li>
 								</>
@@ -91,12 +91,13 @@ export default async function BurgerMenu() {
 						<ul className="flex flex-col gap-2">
 							<li>
 								<SheetParts.SheetClose asChild>
-									<Link href="/about" className="no-underline">
-										Über uns
-									</Link>
+									<NavLink href="/about">Über uns</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 						</ul>
+						<div className="mt-auto border-t pt-4">
+							<ModeToggle />
+						</div>
 					</nav>
 				</SheetParts.SheetContent>
 			</SheetParts.Sheet>
