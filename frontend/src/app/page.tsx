@@ -6,7 +6,7 @@ export default function Home() {
 			<SearchBar />
 			<main className="mt-4">
 				<h2 className="text-h2">Willkommen bei FoodSwap!</h2>
-				<p>Teile, was du hast, und finde, was du brauchst.</p>
+				<p>Teile, was du hast.<br>Finde, was du brauchst.</p>
 			</main>
 		</>
 	);
