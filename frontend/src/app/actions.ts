@@ -26,7 +26,7 @@ import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
-import { formatIsoDate, getDefaultEndDate, getEndOfDay, parseEndDate } from "@/utils/date";
+import { getBerlinDay } from "@/utils/date";
 import { z } from "zod";
 import {
 	loginSchema,
@@ -198,12 +198,9 @@ export async function findNearestPlaceAction(
 	}
 }
 
-function toEndDate(value: string): Date | undefined {
-	const parsed = parseEndDate(value);
-	return parsed.status === "valid" ? parsed.date : undefined;
-}
-
-function toNewListing(values: ListingFormValues, endDate?: Date): NewListing {
+// The backend ends the listing at 23:59 Berlin time on that day and uses its
+// default duration when no day is sent.
+function toNewListing(values: ListingFormValues, endDate?: string): NewListing {
 	return {
 		title: values.title,
 		description: values.description,
@@ -212,7 +209,7 @@ function toNewListing(values: ListingFormValues, endDate?: Date): NewListing {
 		type: values.type,
 		categoryId: values.categoryId || null,
 		tagIds: values.tagIds,
-		endDate: endDate ? getEndOfDay(endDate).toISOString() : undefined,
+		endDate: endDate || undefined,
 	};
 }
 
@@ -223,12 +220,10 @@ export async function createListingAction(values: ListingFormValues): Promise<Fo
 	const result = createListingSchema().safeParse(values);
 	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const endDate = toEndDate(result.data.endDate) ?? getDefaultEndDate();
-
 	let listing: ListingResponse;
 
 	try {
-		listing = await createListing(toNewListing(result.data, endDate));
+		listing = await createListing(toNewListing(result.data, result.data.endDate));
 	} catch (error) {
 		console.error(error);
 		return {
@@ -251,13 +246,13 @@ export async function updateListingAction(
 
 	if (!existing) notFound();
 
-	const originalEndDate = formatIsoDate(new Date(existing.endDate));
+	const originalEndDate = getBerlinDay(new Date(existing.endDate));
 
 	const result = createListingSchema(originalEndDate).safeParse(values);
 	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
 	const isEndDateUnchanged = result.data.endDate === originalEndDate;
-	const endDate = isEndDateUnchanged ? undefined : toEndDate(result.data.endDate);
+	const endDate = isEndDateUnchanged ? undefined : result.data.endDate;
 
 	try {
 		await updateListing(id, toNewListing(result.data, endDate));

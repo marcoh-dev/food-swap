@@ -8,7 +8,7 @@ import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 import type { Category } from "@/lib/types/category.types";
 import type { Tag } from "@/lib/types/tag.types";
 import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
-import { formatIsoDate } from "@/utils/date";
+import { getBerlinDay } from "@/utils/date";
 import { Button } from "@/components/ui/button";
 import {
 	AlertDialog,
@@ -80,7 +80,7 @@ export default function ListingActions({
 						categoryId: listing.category?.id ?? "",
 						type: listing.type,
 						tagIds: listing.tags.map((tag) => tag.id),
-						endDate: formatIsoDate(new Date(listing.endDate)),
+						endDate: getBerlinDay(new Date(listing.endDate)),
 					}}
 					defaultPlace={listing.place}
 					submitLabel="Speichern"
