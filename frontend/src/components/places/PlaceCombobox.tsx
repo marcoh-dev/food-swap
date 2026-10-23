@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Command as CommandPrimitive } from "cmdk";
 import { LocateFixedIcon, MapPinIcon } from "lucide-react";
 import { findNearestPlaceAction, searchPlacesAction } from "@/app/actions";
@@ -26,6 +26,10 @@ function roundCoordinate(value: number) {
 type Props = {
 	id?: string;
 	name: string;
+	label?: string;
+	ref?: React.Ref<HTMLInputElement>;
+	"aria-invalid"?: boolean;
+	"aria-describedby"?: string;
 	valueKey?: "id" | "slug";
 	defaultPlace?: Place | null;
 	placeholder?: string;
@@ -34,6 +38,7 @@ type Props = {
 	required?: boolean;
 	requireSelection?: boolean;
 	onPlaceChange?: (place: Place | null) => void;
+	onQueryChange?: (query: string) => void;
 };
 
 function placeRegion(place: Place) {
@@ -43,6 +48,10 @@ function placeRegion(place: Place) {
 export default function PlaceCombobox({
 	id,
 	name,
+	label,
+	ref,
+	"aria-invalid": ariaInvalid,
+	"aria-describedby": ariaDescribedBy,
 	valueKey = "id",
 	defaultPlace = null,
 	placeholder = "Ort oder PLZ",
@@ -51,9 +60,11 @@ export default function PlaceCombobox({
 	required = false,
 	requireSelection = false,
 	onPlaceChange,
+	onQueryChange,
 }: Props) {
 	const anchorRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
+	useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 	const locationRequestRef = useRef<{ watchId: number; timeoutId: number } | null>(null);
 	const locationAttemptRef = useRef(0);
 	const [query, setQuery] = useState(defaultPlace ? formatPlace(defaultPlace) : "");
@@ -108,13 +119,18 @@ export default function PlaceCombobox({
 
 	useEffect(() => clearLocationRequest, []);
 
+	function changeQuery(value: string) {
+		setQuery(value);
+		onQueryChange?.(value);
+	}
+
 	function changePlace(place: Place | null) {
 		setSelectedPlace(place);
 		onPlaceChange?.(place);
 	}
 
 	function selectPlace(place: Place) {
-		setQuery(formatPlace(place));
+		changeQuery(formatPlace(place));
 		changePlace(place);
 		setLocationError(null);
 		setIsOpen(false);
@@ -185,7 +201,7 @@ export default function PlaceCombobox({
 	}
 
 	return (
-		<Command shouldFilter={false} className="overflow-visible bg-transparent">
+		<Command label={label} shouldFilter={false} className="overflow-visible bg-transparent">
 			<input type="hidden" name={name} value={selectedPlace?.[valueKey] ?? ""} />
 			<Popover open={showList}>
 				<PopoverAnchor asChild>
@@ -199,8 +215,10 @@ export default function PlaceCombobox({
 								id={id}
 								placeholder={placeholder}
 								value={query}
+								aria-invalid={ariaInvalid}
+								aria-describedby={ariaDescribedBy}
 								onValueChange={(value) => {
-									setQuery(value);
+									changeQuery(value);
 									setLocationError(null);
 									if (isLocating) cancelLocating();
 									if (selectedPlace) changePlace(null);

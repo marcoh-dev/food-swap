@@ -15,7 +15,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
-import { parseRadius } from "@/lib/constants/listing.constants";
+import { parseRadius, SEARCH_FORM_ID } from "@/lib/constants/listing.constants";
+import { SearchPlaceProvider } from "@/components/search/SearchPlaceContext";
 import { getPlaceBySlug } from "@/lib/places.service";
 import { formatPlace } from "@/utils/place";
 import { redirect } from "next/navigation";
@@ -33,10 +34,15 @@ function getParam(value: string | string[] | undefined): string | undefined {
 export default async function ListingsPage({ searchParams }: PageProps<"/listings">) {
 	const params = await searchParams;
 	const page = parsePage(params.page);
-	const sort: SortOption = params.sort === "endingSoon" ? "endingSoon" : "newest";
 	const term = getParam(params.term);
 	const placeSlug = getParam(params.place);
 	const selectedPlace = placeSlug ? await getPlaceBySlug(placeSlug) : null;
+	const sort: SortOption =
+		params.sort === "endingSoon"
+			? "endingSoon"
+			: params.sort === "nearest" && selectedPlace
+				? "nearest"
+				: "newest";
 	const radius = selectedPlace ? parseRadius(getParam(params.radius)) : undefined;
 	const category = getParam(params.category);
 	const tags = getParam(params.tags);
@@ -64,20 +70,30 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 
 	return (
 		<>
-			<SearchBar
-				defaultTerm={term}
-				defaultPlace={selectedPlace}
-				defaultRadius={radius}
-				category={category}
-				tags={tags}
-			/>
+			<SearchPlaceProvider key={selectedPlace?.slug ?? ""} initialPlace={selectedPlace}>
+				<SearchBar
+					defaultTerm={term}
+					defaultPlace={selectedPlace}
+					defaultRadius={radius}
+					category={category}
+					tags={tags}
+					sort={sort}
+				/>
 
+<<<<<<< HEAD
 			<div className="flex w-full flex-col items-start mb-2">
 				<ListingFilters categories={categories} tags={allTags} />
 				<div className="self-end">
 					<SortingMenu sort={sort} />
 				</div>
 			</div>
+=======
+				<div className="flex w-full items-start justify-between gap-4 mb-2">
+					<ListingFilters categories={categories} tags={allTags} />
+					<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
+				</div>
+			</SearchPlaceProvider>
+>>>>>>> main
 
 			{isSearching && total > 0 && (
 				<p className="mb-3">

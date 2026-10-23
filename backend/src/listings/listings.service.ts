@@ -19,6 +19,16 @@ import { TagsService } from '../tags/tags.service';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
 import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
 import { PlacesService } from '../places/places.service';
+import { Place } from '../places/entities/place.entity';
+
+type ListingWithDistance = Listing & { distance?: number };
+
+const LISTING_RELATIONS = {
+  owner: true,
+  category: true,
+  tags: true,
+  place: true,
+};
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const FOUR_WEEKS_IN_MS = 28 * 24 * 60 * 60 * 1000;
@@ -37,7 +47,7 @@ export class ListingsService {
 
   async findAll(
     query: ListingsQueryDto,
-  ): Promise<{ data: Listing[]; meta: PaginationMetaResponseDto }> {
+  ): Promise<{ data: ListingWithDistance[]; meta: PaginationMetaResponseDto }> {
     const { page, limit, type, sort, term, place, radius, category, tags } =
       query;
     const visibleStatuses = [ListingStatus.ACTIVE, ListingStatus.RESERVED];
@@ -48,7 +58,12 @@ export class ListingsService {
     };
 
     if (type) baseFilter.type = type;
-    if (place) baseFilter.placeId = await this.placeFilter(place, radius);
+    const selectedPlace = place
+      ? await this.placesService.findBySlug(place)
+      : null;
+    if (selectedPlace) {
+      baseFilter.placeId = this.placeFilter(selectedPlace, radius);
+    }
 
     if (category) {
       const foundCategory = await this.categoriesService.findBySlug(category);
@@ -81,24 +96,22 @@ export class ListingsService {
         ]
       : [baseFilter];
 
-    const [data, total] = await this.listings.findAndCount({
-      where: whereFilter,
-      order:
-        sort === 'endingSoon'
-          ? { endDate: 'ASC', createdAt: 'DESC' }
-          : { createdAt: 'DESC' },
-      skip: (page - 1) * limit,
-      take: limit,
-      relations: {
-        owner: true,
-        category: true,
-        tags: true,
-        place: true,
-      },
-    });
+    const [data, total] =
+      sort === 'nearest' && selectedPlace
+        ? await this.findNearestPage(whereFilter, selectedPlace, page, limit)
+        : await this.listings.findAndCount({
+            where: whereFilter,
+            order:
+              sort === 'endingSoon'
+                ? { endDate: 'ASC', createdAt: 'DESC' }
+                : { createdAt: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit,
+            relations: LISTING_RELATIONS,
+          });
 
     return {
-      data,
+      data: selectedPlace ? await this.withDistance(data, selectedPlace) : data,
       meta: {
         page,
         limit,
@@ -108,8 +121,63 @@ export class ListingsService {
     };
   }
 
-  private async placeFilter(placeSlug: string, radiusKm?: number) {
-    const place = await this.placesService.findBySlug(placeSlug);
+  private async findNearestPage(
+    where: FindOptionsWhere<Listing>[],
+    from: Place,
+    page: number,
+    limit: number,
+  ): Promise<[Listing[], number]> {
+    const query = this.listings
+      .createQueryBuilder('listing')
+      .innerJoin('listing.place', 'place')
+      .select('listing.id', 'id')
+      .addSelect(
+        `ST_Distance("place"."location", (SELECT "location" FROM "places" WHERE "id" = :fromPlaceId))`,
+        'distance',
+      )
+      .where(where)
+      .setParameter('fromPlaceId', from.id)
+      .orderBy('distance', 'ASC')
+      .addOrderBy('listing.createdAt', 'DESC')
+      .offset((page - 1) * limit)
+      .limit(limit);
+
+    const [rows, total] = await Promise.all([
+      query.getRawMany<{ id: string }>(),
+      query.getCount(),
+    ]);
+    const ids = rows.map((row) => row.id);
+    const listings = await this.listings.find({
+      where: { id: In(ids) },
+      relations: LISTING_RELATIONS,
+    });
+    const listingsById = new Map(
+      listings.map((listing) => [listing.id, listing]),
+    );
+
+    return [ids.flatMap((id) => listingsById.get(id) ?? []), total];
+  }
+
+  private async withDistance(
+    listings: Listing[],
+    from: Place,
+  ): Promise<ListingWithDistance[]> {
+    if (listings.length === 0) return listings;
+
+    const rows = await this.listings.query<{ id: string; distance: number }[]>(
+      `SELECT "listings"."id", ST_Distance("places"."location", (SELECT "location" FROM "places" WHERE "id" = $1)) / 1000 AS "distance"
+      FROM "listings" JOIN "places" ON "places"."id" = "listings"."place_id"
+      WHERE "listings"."id" = ANY($2::uuid[])`,
+      [from.id, listings.map((listing) => listing.id)],
+    );
+    const distances = new Map(rows.map((row) => [row.id, row.distance]));
+
+    return listings.map((listing) =>
+      Object.assign(listing, { distance: distances.get(listing.id) }),
+    );
+  }
+
+  private placeFilter(place: Place, radiusKm?: number) {
     const area =
       place.postalCode === null
         ? `"city" = :city AND "county" = :county`

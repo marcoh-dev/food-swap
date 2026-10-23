@@ -5,7 +5,7 @@ import { loginUser, registerUser } from "@/lib/auth.service";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
-import type { FormState, ListingStatus, ListingType, NewListing } from "@/lib/types/listing.types";
+import type { ListingResponse, ListingStatus, NewListing } from "@/lib/types/listing.types";
 import {
 	createListing,
 	deleteListing,
@@ -22,16 +22,23 @@ import {
 	replyToChat,
 	startChat,
 } from "@/lib/chats.service";
-import type { ActionResult } from "@/lib/types/common.types";
+import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
-import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 import type { Place } from "@/lib/types/place.types";
 import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
-import { formatIsoDate, getDefaultEndDate, getEndOfDay, validateEndDate } from "@/utils/date";
+import { formatIsoDate, getDefaultEndDate, getEndOfDay, parseEndDate } from "@/utils/date";
+import { z } from "zod";
+import {
+	loginSchema,
+	profileSchema,
+	registrationSchema,
+	type LoginValues,
+	type ProfileValues,
+	type RegistrationValues,
+} from "@/lib/schemas/user.schemas";
+import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 
-function getRedirectTarget(formData: FormData): string {
-	const target = formData.get("redirect");
-
+function getRedirectTarget(target: unknown): string {
 	if (
 		typeof target !== "string" ||
 		!target.startsWith("/") ||
@@ -42,13 +49,6 @@ function getRedirectTarget(formData: FormData): string {
 	}
 
 	return target;
-}
-
-function authErrorPath(page: string, toastKey: string, redirectTo: string) {
-	const searchParams = new URLSearchParams({ toast: toastKey });
-	if (redirectTo !== "/") searchParams.set("redirect", redirectTo);
-
-	return `${page}?${searchParams.toString()}`;
 }
 
 async function setAuthCookie(token: string) {
@@ -63,47 +63,62 @@ async function setAuthCookie(token: string) {
 	});
 }
 
-export async function registerAction(formData: FormData) {
-	const username = formData.get("username") as string;
-	const password = formData.get("password") as string;
-	const redirectTo = getRedirectTarget(formData);
+export async function registerAction(
+	values: RegistrationValues,
+	redirectTo?: string,
+): Promise<FormState> {
+	const result = registrationSchema.safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const authData = await registerUser({ username, password });
+	const authData = await registerUser(result.data);
+
+	if (authData.statusCode === 409) {
+		return { fieldErrors: { username: ["Dieser Benutzername ist bereits vergeben."] } };
+	}
 
 	if (!authData.access_token) {
-		redirect(authErrorPath("/registration", "register-error", redirectTo));
+		return { error: "Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben." };
 	}
 
 	await setAuthCookie(authData.access_token);
 
-	const separator = redirectTo.includes("?") ? "&" : "?";
-	redirect(`${redirectTo}${separator}toast=registered`);
+	const target = getRedirectTarget(redirectTo);
+	const separator = target.includes("?") ? "&" : "?";
+	redirect(`${target}${separator}toast=registered`);
 }
 
-export async function loginAction(formData: FormData) {
-	const username = formData.get("username") as string;
-	const password = formData.get("password") as string;
-	const redirectTo = getRedirectTarget(formData);
+export async function loginAction(values: LoginValues, redirectTo?: string): Promise<FormState> {
+	const result = loginSchema.safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const authData = await loginUser({ username, password });
+	const authData = await loginUser(result.data);
 
 	if (!authData.access_token) {
-		redirect(authErrorPath("/login", "login-error", redirectTo));
+		return { error: "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch." };
 	}
 
 	await setAuthCookie(authData.access_token);
 
-	redirect(redirectTo);
+	redirect(getRedirectTarget(redirectTo));
 }
 
-export async function updateUserAction(formData: FormData) {
-	const name = formData.get("name") as string;
-	const placeId = (formData.get("placeId") as string) || null;
+export async function updateUserAction(values: ProfileValues): Promise<FormState> {
+	const result = profileSchema.safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
+
+	const { name, placeId } = result.data;
 
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	await updateUser(currentUser.id, { name, placeId });
+	try {
+		await updateUser(currentUser.id, { name, placeId: placeId || null });
+	} catch (error) {
+		console.error(error);
+		return {
+			error: "Dein Profil konnte nicht gespeichert werden. Bitte versuche es später noch mal.",
+		};
+	}
 
 	redirect(`/users/${currentUser.id}`);
 }
@@ -146,6 +161,7 @@ export async function searchListingAction(formData: FormData) {
 	const radius = formData.get("radius") as string;
 	const category = formData.get("category") as string;
 	const tags = formData.get("tags") as string;
+	const sort = formData.get("sort") as string;
 
 	const searchParams = new URLSearchParams();
 	if (term) searchParams.set("term", term);
@@ -153,6 +169,9 @@ export async function searchListingAction(formData: FormData) {
 	if (place && radius) searchParams.set("radius", radius);
 	if (category) searchParams.set("category", category);
 	if (tags) searchParams.set("tags", tags);
+	if (sort && sort !== "newest" && (sort !== "nearest" || place)) {
+		searchParams.set("sort", sort);
+	}
 
 	redirect(`/listings?${searchParams.toString()}`);
 }
@@ -179,40 +198,52 @@ export async function findNearestPlaceAction(
 	}
 }
 
-function readListing(formData: FormData, endDate?: Date): NewListing {
+function toEndDate(value: string): Date | undefined {
+	const parsed = parseEndDate(value);
+	return parsed.status === "valid" ? parsed.date : undefined;
+}
+
+function toNewListing(values: ListingFormValues, endDate?: Date): NewListing {
 	return {
-		title: formData.get("title") as string,
-		description: formData.get("description") as string,
-		image: formData.get("image") as string,
-		placeId: formData.get("placeId") as string,
-		type: formData.get("type") as ListingType,
-		categoryId: (formData.get("categoryId") as string) || null,
-		tagIds: formData.getAll("tagIds") as string[],
+		title: values.title,
+		description: values.description,
+		image: values.image,
+		placeId: values.placeId,
+		type: values.type,
+		categoryId: values.categoryId || null,
+		tagIds: values.tagIds,
 		endDate: endDate ? getEndOfDay(endDate).toISOString() : undefined,
 	};
 }
 
-export async function createListingAction(
-	_prevState: FormState,
-	formData: FormData,
-): Promise<FormState> {
+export async function createListingAction(values: ListingFormValues): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
-	if (!formData.get("placeId")) return { error: MISSING_PLACE_MESSAGE };
+	const result = createListingSchema().safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	const result = validateEndDate(formData.get("endDate"));
-	if (!result.ok) return { error: result.error };
+	const endDate = toEndDate(result.data.endDate) ?? getDefaultEndDate();
 
-	const endDate = result.date ?? getDefaultEndDate();
+	let listing: ListingResponse;
 
-	const listing = await createListing(readListing(formData, endDate));
+	try {
+		listing = await createListing(toNewListing(result.data, endDate));
+	} catch (error) {
+		console.error(error);
+		return {
+			error: "Das Angebot konnte nicht erstellt werden. Bitte versuche es später noch mal.",
+		};
+	}
 
 	revalidatePath("/listings");
 	redirect(`/listings/${listing.id}?toast=listing-created`);
 }
 
-export async function updateListingAction(id: string, formData: FormData) {
+export async function updateListingAction(
+	id: string,
+	values: ListingFormValues,
+): Promise<FormState> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
 
@@ -220,22 +251,16 @@ export async function updateListingAction(id: string, formData: FormData) {
 
 	if (!existing) notFound();
 
-	if (!formData.get("placeId")) return { error: MISSING_PLACE_MESSAGE };
+	const originalEndDate = formatIsoDate(new Date(existing.endDate));
 
-	const submittedEndDate = formData.get("endDate");
-	const isEndDateUnchanged = submittedEndDate === formatIsoDate(new Date(existing.endDate));
+	const result = createListingSchema(originalEndDate).safeParse(values);
+	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
-	let endDate: Date | undefined;
-
-	if (!isEndDateUnchanged) {
-		const result = validateEndDate(submittedEndDate);
-		if (!result.ok) return { error: result.error };
-
-		endDate = result.date;
-	}
+	const isEndDateUnchanged = result.data.endDate === originalEndDate;
+	const endDate = isEndDateUnchanged ? undefined : toEndDate(result.data.endDate);
 
 	try {
-		await updateListing(id, readListing(formData, endDate));
+		await updateListing(id, toNewListing(result.data, endDate));
 	} catch (error) {
 		console.error(error);
 		return {

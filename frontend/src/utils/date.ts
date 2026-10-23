@@ -134,6 +134,10 @@ export function validateEndDate(
 
 	if (parsed.status === "empty") return { ok: true, date: undefined };
 
+	if (parsed.status === "valid" && parsed.date < getStartOfDay(now)) {
+		return { ok: false, error: "Das Enddatum muss in der Zukunft liegen." };
+	}
+
 	if (parsed.status === "invalid" || !isEndDateInRange(parsed.date, now)) {
 		return { ok: false, error: getEndDateErrorMessage() };
 	}

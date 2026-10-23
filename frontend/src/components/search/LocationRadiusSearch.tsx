@@ -6,6 +6,7 @@ import type { Place } from "@/lib/types/place.types";
 import { RADIUS_OPTIONS_KM } from "@/lib/constants/listing.constants";
 import PlaceCombobox from "../places/PlaceCombobox";
 import { Slider } from "../ui/slider";
+import { useSearchPlace } from "./SearchPlaceContext";
 
 const RADIUS_STEPS = [undefined, ...RADIUS_OPTIONS_KM];
 
@@ -21,6 +22,7 @@ export default function LocationRadiusSearch({
 	defaultRadius?: number;
 }) {
 	const [place, setPlace] = useState<Place | null>(defaultPlace);
+	const searchPlace = useSearchPlace();
 	const [stepIndex, setStepIndex] = useState(Math.max(RADIUS_STEPS.indexOf(defaultRadius), 0));
 
 	const radius = RADIUS_STEPS[stepIndex];
@@ -32,7 +34,10 @@ export default function LocationRadiusSearch({
 				valueKey="slug"
 				defaultPlace={defaultPlace}
 				useFirstSuggestion
-				onPlaceChange={setPlace}
+				onPlaceChange={(newPlace) => {
+					setPlace(newPlace);
+					searchPlace?.setPlace(newPlace);
+				}}
 			/>
 			<input type="hidden" name="radius" value={place && radius ? radius : ""} />
 			<div className="flex items-center gap-3">

@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseURL}}/listings?term=to&place={{placeSlug}}&radius=20"
+  url: "{{baseURL}}/listings?term=to&place={{placeSlug}}&radius=20&sort=nearest"
   params:
     - name: term
       value: to
@@ -15,6 +15,9 @@ http:
       type: query
     - name: radius
       value: "20"
+      type: query
+    - name: sort
+      value: nearest
       type: query
   auth: inherit
 
