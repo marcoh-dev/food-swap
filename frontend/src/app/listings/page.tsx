@@ -80,20 +80,13 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					sort={sort}
 				/>
 
-<<<<<<< HEAD
-			<div className="flex w-full flex-col items-start mb-2">
-				<ListingFilters categories={categories} tags={allTags} />
-				<div className="self-end">
-					<SortingMenu sort={sort} />
-				</div>
-			</div>
-=======
-				<div className="flex w-full items-start justify-between gap-4 mb-2">
+				<div className="flex w-full flex-col items-start mb-2">
 					<ListingFilters categories={categories} tags={allTags} />
-					<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
+					<div className="self-end">
+						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
+					</div>
 				</div>
 			</SearchPlaceProvider>
->>>>>>> main
 
 			{isSearching && total > 0 && (
 				<p className="mb-3">
