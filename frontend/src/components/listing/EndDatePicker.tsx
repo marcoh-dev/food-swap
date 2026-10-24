@@ -6,12 +6,13 @@ import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import {
-	getMinEndDate,
-	getMaxEndDate,
-	getDefaultEndDate,
-	formatDate,
+	getMinEndDay,
+	getMaxEndDay,
+	getDefaultEndDay,
+	formatDay,
 	formatIsoDate,
 	parseEndDate,
+	toLocalDate,
 } from "@/utils/date";
 
 type Props = {
@@ -32,9 +33,9 @@ export default function EndDatePicker({ value, onChange, ref, ...ariaProps }: Pr
 		onChange(selectedDate ? formatIsoDate(selectedDate) : "");
 		setIsOpen(false);
 	}
-	const label = date
-		? formatDate(date.toISOString())
-		: formatDate(getDefaultEndDate().toISOString());
+	const label = formatDay(date ? value : getDefaultEndDay());
+	const minDate = toLocalDate(getMinEndDay());
+	const maxDate = toLocalDate(getMaxEndDay());
 
 	return (
 		<Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -54,7 +55,7 @@ export default function EndDatePicker({ value, onChange, ref, ...ariaProps }: Pr
 					mode="single"
 					selected={date}
 					onSelect={handleSelect}
-					disabled={{ before: getMinEndDate(), after: getMaxEndDate() }}
+					disabled={{ before: minDate, after: maxDate }}
 				/>
 			</PopoverContent>
 		</Popover>

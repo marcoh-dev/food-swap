@@ -2,6 +2,12 @@ import { createHash } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { EntityManager } from 'typeorm';
 import { AppDataSource } from '../../data-source';
+import {
+  berlinDay,
+  berlinTime,
+  endOfDay,
+  shiftDay,
+} from '../../common/utils/berlin-date';
 import { mockChats } from './chats';
 import { MockListing, mockListings } from './listings';
 import { MOCK_USERNAME_PREFIX, mockUsers } from './users';
@@ -10,7 +16,6 @@ import { MOCK_USERNAME_PREFIX, mockUsers } from './users';
 // Every row gets a fixed id derived from its key, so running the seed twice
 // updates the existing rows and the removal only touches seeded rows.
 
-const TIME_ZONE = 'Europe/Berlin';
 const SALT_ROUNDS = 12;
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const MAX_END_MONTHS = 6;
@@ -25,63 +30,6 @@ function mockId(kind: string, key: string): string {
   const variant = ((parseInt(hex[16], 16) & 0x3) | 0x8).toString(16);
 
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
-}
-
-function timeZoneOffset(date: Date): number {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: TIME_ZONE,
-    hourCycle: 'h23',
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-  }).formatToParts(date);
-  const part = (type: string) =>
-    Number(parts.find((entry) => entry.type === type)?.value);
-  const asUtc = Date.UTC(
-    part('year'),
-    part('month') - 1,
-    part('day'),
-    part('hour'),
-    part('minute'),
-    part('second'),
-  );
-
-  return asUtc - Math.floor(date.getTime() / 1000) * 1000;
-}
-
-// Parses "YYYY-MM-DD HH:mm[:ss.SSS]" as Berlin local time.
-function berlinTime(local: string): Date {
-  const match =
-    /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2})\.(\d{3}))?$/.exec(
-      local,
-    );
-  if (!match) throw new Error(`Invalid date "${local}"`);
-
-  const [, year, month, day, hour, minute, second = '0', ms = '0'] = match;
-  const guess = Date.UTC(+year, +month - 1, +day, +hour, +minute, +second, +ms);
-  const offset = timeZoneOffset(
-    new Date(guess - timeZoneOffset(new Date(guess))),
-  );
-
-  return new Date(guess - offset);
-}
-
-function berlinDay(date: Date): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE }).format(date);
-}
-
-function shiftDay(day: string, { days = 0, months = 0 }): string {
-  const [year, month, date] = day.split('-').map(Number);
-  const shifted = new Date(Date.UTC(year, month - 1 + months, date + days));
-
-  return shifted.toISOString().slice(0, 10);
-}
-
-function endOfDay(day: string): Date {
-  return berlinTime(`${day} 23:59:59.999`);
 }
 
 function endDay(listing: MockListing, now: Date): string {
