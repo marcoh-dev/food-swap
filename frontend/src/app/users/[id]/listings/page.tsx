@@ -10,8 +10,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/users.service";
-import { Badge } from "@/components/ui/badge";
-import { isExpired } from "@/utils/date";
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
