@@ -44,7 +44,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html
 			lang="en"
-			className={cn(jetbrainsMono.variable, geistSans.variable, geistMono.variable)}
+			className={cn(
+				"scroll-pt-header",
+				jetbrainsMono.variable,
+				geistSans.variable,
+				geistMono.variable,
+			)}
 			suppressHydrationWarning
 		>
 			<body className="text-body">
@@ -55,7 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<header className="flex flex-row justify-between items-center p-[1em] h-22.5 sticky top-0 z-50 bg-background/85 backdrop-blur-md text-foreground border-b">
+					<header className="flex flex-row justify-between items-center p-[1em] h-header sticky top-0 z-50 bg-background/85 backdrop-blur-md text-foreground border-b">
 						<div className="flex flex-row gap-5">
 							<div>
 								<Link href="/" aria-label="Home">

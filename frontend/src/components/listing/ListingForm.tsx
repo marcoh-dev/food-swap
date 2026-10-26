@@ -27,6 +27,7 @@ type Props = {
 	defaultPlace?: Place | null;
 	submitLabel?: string;
 	autoFocus?: boolean;
+	heading?: string;
 };
 
 const emptyValues = {
@@ -47,6 +48,7 @@ export default function ListingForm({
 	defaultPlace,
 	submitLabel = "Erstellen",
 	autoFocus,
+	heading,
 }: Props) {
 	const formRef = useRef<HTMLFormElement>(null);
 
@@ -60,7 +62,7 @@ export default function ListingForm({
 	useEffect(() => {
 		if (!autoFocus) return;
 		formRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
-		(document.getElementById("title") as HTMLInputElement | null)?.focus({
+		(document.getElementById("listing-form-heading") as HTMLHeadingElement | null)?.focus({
 			preventScroll: true,
 		});
 	}, [autoFocus, form]);
@@ -72,11 +74,17 @@ export default function ListingForm({
 
 	return (
 		<form
-			className="my-4 scroll-mt-28"
+			className="my-4"
 			noValidate
 			onSubmit={form.handleSubmit(handleSubmit)}
 			ref={formRef}
+			aria-labelledby={heading ? "listing-form-heading" : undefined}
 		>
+			{heading && (
+				<h3 id="listing-form-heading" tabIndex={-1} className="text-h3 mb-4 outline-none">
+					{heading}
+				</h3>
+			)}
 			<FieldGroup>
 				<Controller
 					name="title"
@@ -246,9 +254,7 @@ export default function ListingForm({
 					)}
 				/>
 			</FieldGroup>
-
 			<FieldError className="mt-4" errors={[form.formState.errors.root]} />
-
 			<Button type="submit" className="mt-6" disabled={form.formState.isSubmitting}>
 				{submitLabel}
 			</Button>

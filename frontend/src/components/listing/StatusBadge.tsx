@@ -1,13 +1,15 @@
-import type { ListingResponse } from "@/lib/types/listing.types";
+import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 import { Badge } from "../ui/badge";
-import { isExpired } from "@/utils/date";
+import { statusLabels } from "@/lib/constants/listing.constants";
+
+const badgeStatuses: ListingStatus[] = ["reserved", "deactivated"];
 
 export default function StatusBadge({
 	listing,
 }: {
 	listing: Pick<ListingResponse, "status" | "endDate">;
 }) {
-	if (listing.status !== "reserved" || isExpired(listing.endDate)) return null;
+	if (!badgeStatuses.includes(listing.status)) return null;
 
-	return <Badge variant="status">Reserviert</Badge>;
+	return <Badge variant="status">{statusLabels[listing.status]}</Badge>;
 }
