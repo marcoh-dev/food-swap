@@ -32,6 +32,7 @@ import { getCategories } from "@/lib/categories.service";
 import { getTags } from "@/lib/tags.service";
 import { formatPlace } from "@/utils/place";
 import { ChevronDown } from "lucide-react";
+import { FieldDescription } from "@/components/ui/field";
 
 export const metadata: Metadata = { title: pageTitles.myProfile };
 
@@ -65,10 +66,18 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 	return (
 		<>
 			<h2 className="text-h2">{user.name ?? user.username}</h2>
+			{!user.name && <FieldDescription>Kein Profilname vergeben.</FieldDescription>}
 			{isOwner && (
 				<>
 					<p>Benutzername: {user.username}</p>
-					{currentUser.place && <p>Ort: {formatPlace(currentUser.place)}</p>}
+					<p>
+						Ort:{" "}
+						{currentUser.place ? (
+							formatPlace(currentUser.place)
+						) : (
+							<span className="text-muted-foreground">Kein Ort gewählt.</span>
+						)}
+					</p>
 				</>
 			)}
 			<p>Registriert seit: {formatDate(user.createdAt)}</p>

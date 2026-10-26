@@ -76,9 +76,9 @@ export default async function ListingDetailPage({
 					selectedPlace && typeof radius === "string" ? parseRadius(radius) : undefined
 				}
 			/>
-			<Card className="mx-auto w-full max-w-2xl overflow-hidden pt-0">
+			<Card className="mx-auto w-full max-w-2xl overflow-hidden mt-6 pt-0">
 				<div className="relative flex flex-col gap-4 pb-3">
-					<div id="listing-image" className="relative h-64 w-full sm:h-80 md:h-96">
+					<div className="relative h-64 w-full sm:h-80 md:h-96">
 						{listing.image ? (
 							<Image
 								src={listing.image}
