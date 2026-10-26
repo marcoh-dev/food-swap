@@ -150,6 +150,7 @@ CI runs install, lint, format check and build on every pull request to `main`.
 
 - **Frontend:** Vercel deploys `main` automatically.
 - **Backend:** Render deploys `main` automatically with Root Directory `backend`, Build Command `npm install; npm run build` and Start Command `npm run migration:run:prod && npm run start:prod`. Pending migrations run on every deploy. If one fails, the app does not start and Render keeps the previous version running.
+- **Listing cleanup:** listings are deleted on the 29th day after their end day. The backend does this on startup, daily at 03:00 (only while it is awake) and when `POST /listings/cleanup` is called. On the Render free plan the backend sleeps, so the `Listing cleanup` GitHub workflow (`.github/workflows/cleanup.yml`) calls that endpoint every night at 01:17 UTC, which also wakes it up. It needs the repository variable `BACKEND_URL` (live backend URL, without a trailing slash) and the repository secret `CLEANUP_SECRET` (the same value as on Render). Start it by hand under Actions → Listing cleanup → Run workflow; the log shows how many listings were deleted. GitHub pauses scheduled workflows after 60 days without repository activity; the cleanup on startup still runs then.
 
 ## Data sources
 
