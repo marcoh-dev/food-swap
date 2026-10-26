@@ -107,6 +107,10 @@ export default async function ListingDetailPage({
 						<CardDescription>
 							<ListingMeta listing={listing} dateVariant="full" />
 						</CardDescription>
+						<p className="text-sm">
+							Angeboten von{" "}
+							<Link href={`/users/${listing.owner.id}`}>{ownerName}</Link>
+						</p>
 						<CardAction>
 							<CategoryBadge category={listing.category} />
 						</CardAction>
@@ -135,6 +139,7 @@ export default async function ListingDetailPage({
 					<div className="mt-4">
 						<ListingChat
 							listingId={listing.id}
+							ownerId={listing.owner.id}
 							ownerName={ownerName}
 							status={chatStatus}
 						/>
