@@ -38,8 +38,8 @@ git clone <repository-url>
 cd food-swap
 npm install
 cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
 cp backend/bruno/.env.example backend/bruno/.env
+cp frontend/.env.example frontend/.env
 docker compose up -d --wait
 npm run migration:run -w backend
 npm run dev
@@ -54,10 +54,24 @@ The frontend runs on http://localhost:5173, the backend on http://localhost:3000
 | Variable            | Local                                                         | Live                                                                |
 | ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `DATABASE_URL`      | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
-| `JWT_SECRET`        | any string                                                    | long random string, never the local one                             |
-| `PORT`              | `3000`                                                        | set by the hosting provider                                         |
 | `TEST_DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                            |
+| `PORT`              | `3000`                                                        | set by the hosting provider                                         |
+| `JWT_SECRET`        | any string                                                    | long random string, never the local one                             |
 | `CLEANUP_SECRET`    | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret  |
+| `SEED_PASSWORD`     | password of the local mock users, e.g. `'Local-Mock-1!'`      | not used, the live mock password goes into `backend/.env.live`      |
+
+**`backend/.env.live`** (only read by commands with `live` in their name)
+
+| Variable        | Value                                                               |
+| --------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL`  | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
+| `SEED_PASSWORD` | the stored live mock password                                       |
+
+**`backend/bruno/.env`**
+
+| Variable         | Value                               |
+| ---------------- | ----------------------------------- |
+| `CLEANUP_SECRET` | the same value as in `backend/.env` |
 
 **`frontend/.env`**
 
@@ -99,13 +113,25 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 
 ### Mock data
 
-`npm run seed:mock -w backend` adds 10 mock users (usernames start with `mock_`), their listings and chats to the database in `DATABASE_URL`. `SEED_PASSWORD` sets the password of all mock users (8–64 characters with an uppercase and a lowercase letter, a number and a special character). Running it again updates the mock data instead of duplicating it, and brings back mock listings the cleanup deleted. `npm run seed:mock:remove -w backend` removes all mock users with their listings and chats.
+The seed adds 10 mock users (usernames start with `mock_`) with their listings and chats. All mock users get the password from `SEED_PASSWORD`: 8–64 characters with an uppercase and a lowercase letter, a number and a special character. Running the seed again updates the mock data instead of duplicating it and brings back listings the cleanup deleted.
+
+**Local database** (uses `SEED_PASSWORD` from `backend/.env`):
 
 ```bash
-SEED_PASSWORD='<password>' npm run seed:mock -w backend
+npm run seed:mock -w backend
 ```
 
-For the live database, set `DATABASE_URL` to the live URL in front of the command and use the stored live mock password, otherwise the mock users' logins change. Put values with `&`, `?`, `!` or `$` in single quotes.
+`npm run seed:mock:remove -w backend` removes the mock users with their listings and chats again.
+
+**Live database** (uses `backend/.env.live`): copy `backend/.env.live.example` to `backend/.env.live` once and fill in the live `DATABASE_URL` and the stored live mock password. A different password changes the mock users' logins. Then run:
+
+```bash
+npm run seed:mock:live -w backend
+```
+
+Only commands with `live` in their name read `backend/.env.live`, so `backend/.env` always stays local.
+
+Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell and in `.env` files.
 
 ## Commands
 
@@ -126,7 +152,8 @@ For the live database, set `DATABASE_URL` to the live URL in front of the comman
 | `npm run migration:run -w backend`                               | applies pending migrations                                                        |
 | `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
 | `npm run test:e2e -w backend`                                    | runs the backend e2e tests against the test database                              |
-| `SEED_PASSWORD='<password>' npm run seed:mock -w backend`        | adds or updates the mock data                                                     |
+| `npm run seed:mock -w backend`                                   | adds or updates the mock data                                                     |
+| `npm run seed:mock:live -w backend`                              | adds or updates the mock data in the live database (`backend/.env.live`)          |
 | `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
 
 `npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.

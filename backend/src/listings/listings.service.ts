@@ -34,6 +34,8 @@ import {
 
 type ListingWithDistance = Listing & { distance?: number };
 
+type CleanupTrigger = 'startup' | 'daily' | 'endpoint';
+
 const LISTING_RELATIONS = {
   owner: true,
   category: true,
@@ -456,22 +458,26 @@ export class ListingsService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap(): Promise<void> {
+    await this.runCleanup('startup');
+  }
+
+  @Cron('0 3 * * *', { timeZone: TIME_ZONE })
+  async deleteExpiredDaily(): Promise<void> {
+    await this.runCleanup('daily');
+  }
+
+  private async runCleanup(trigger: CleanupTrigger): Promise<void> {
     try {
-      await this.deleteExpired(new Date());
+      await this.deleteExpired(new Date(), trigger);
     } catch (error) {
       this.logger.error(
-        'Deleting expired listings on startup failed.',
+        `ListingCleanup (${trigger}): Deleting expired listings failed.`,
         error instanceof Error ? error.stack : error,
       );
     }
   }
 
-  @Cron('0 3 * * *', { timeZone: TIME_ZONE })
-  async deleteExpiredDaily(): Promise<void> {
-    await this.deleteExpired(new Date());
-  }
-
-  async deleteExpired(now: Date): Promise<number> {
+  async deleteExpired(now: Date, trigger: CleanupTrigger): Promise<number> {
     const firstKeptDay = shiftDay(berlinDay(now), {
       days: -END_DATE_RULES.deleteAfterDays,
     });
@@ -480,7 +486,9 @@ export class ListingsService implements OnApplicationBootstrap {
     });
     const deleted = result.affected ?? 0;
 
-    this.logger.log(`Deleted ${deleted} expired listings.`);
+    this.logger.log(
+      `ListingCleanup (${trigger}): Deleted ${deleted} expired listings.`,
+    );
     return deleted;
   }
 
