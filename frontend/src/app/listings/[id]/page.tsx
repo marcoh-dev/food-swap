@@ -46,7 +46,7 @@ export default async function ListingDetailPage({
 	searchParams,
 }: PageProps<"/listings/[id]">) {
 	const { id } = await params;
-	const { term, place, radius } = await searchParams;
+	const { term, place, radius, edit } = await searchParams;
 	const selectedPlace = typeof place === "string" ? await getPlaceBySlug(place) : null;
 	const listing = await getListingById(id);
 	const categories = await getCategories();
@@ -76,7 +76,7 @@ export default async function ListingDetailPage({
 					selectedPlace && typeof radius === "string" ? parseRadius(radius) : undefined
 				}
 			/>
-			<Card className="mx-auto w-full max-w-2xl overflow-hidden pt-0">
+			<Card className="mx-auto w-full max-w-2xl overflow-hidden mt-6 pt-0">
 				<div className="relative flex flex-col gap-4 pb-3">
 					<div className="relative h-64 w-full sm:h-80 md:h-96">
 						{listing.image ? (
@@ -111,6 +111,10 @@ export default async function ListingDetailPage({
 								showDeletionDate={isOwner}
 							/>
 						</CardDescription>
+						<p className="text-sm">
+							Angeboten von{" "}
+							<Link href={`/users/${listing.owner.id}`}>{ownerName}</Link>
+						</p>
 						<CardAction>
 							<CategoryBadge category={listing.category} />
 						</CardAction>
@@ -126,7 +130,12 @@ export default async function ListingDetailPage({
 
 				{isOwner && (
 					<CardFooter className="relative z-20 flex-col items-stretch">
-						<ListingActions listing={listing} categories={categories} tags={tags} />
+						<ListingActions
+							listing={listing}
+							categories={categories}
+							tags={tags}
+							initialEditing={edit === "true"}
+						/>
 					</CardFooter>
 				)}
 
@@ -134,6 +143,7 @@ export default async function ListingDetailPage({
 					<div className="mt-4">
 						<ListingChat
 							listingId={listing.id}
+							ownerId={listing.owner.id}
 							ownerName={ownerName}
 							status={chatStatus}
 						/>

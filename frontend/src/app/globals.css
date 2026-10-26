@@ -56,6 +56,8 @@
 	--text-body-s: 12px;
 	--text-body-s--line-height: 14px;
 	--text-body-s--letter-spacing: 0.02em;
+
+	--spacing-header: 5.625rem;
 }
 
 :root {

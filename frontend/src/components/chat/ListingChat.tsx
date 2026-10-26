@@ -11,17 +11,24 @@ import { ChatForm } from "./ChatForm";
 
 type ListingChatProps = {
 	listingId: string;
+	ownerId: string;
 	ownerName: string;
 	status: ListingChatStatus;
 };
 
-export function ListingChat({ listingId, ownerName, status }: ListingChatProps) {
+export function ListingChat({ listingId, ownerId, ownerName, status }: ListingChatProps) {
 	const startChat = useChatStore((state) => state.startChat);
 	const [sent, setSent] = useState(false);
 
+	const title = (
+		<>
+			Nachricht an <Link href={`/users/${ownerId}`}>{ownerName}</Link>
+		</>
+	);
+
 	if (sent) {
 		return (
-			<ListingChatCard title={`Nachricht an ${ownerName}`}>
+			<ListingChatCard title={title}>
 				Nachricht gesendet. Alle deine Chats findest du{" "}
 				<Link href="/chats" className="underline">
 					hier
@@ -33,7 +40,7 @@ export function ListingChat({ listingId, ownerName, status }: ListingChatProps) 
 
 	if (status.chatId && !status.hidden) {
 		return (
-			<ListingChatCard title={`Nachricht an ${ownerName}`}>
+			<ListingChatCard title={title}>
 				Du hast {ownerName} bereits geschrieben.{" "}
 				<Link href={`/chats?chat=${status.chatId}`} className="underline">
 					Zum Chat
@@ -44,7 +51,7 @@ export function ListingChat({ listingId, ownerName, status }: ListingChatProps) 
 
 	return (
 		<ListingChatCard
-			title={`Nachricht an ${ownerName}`}
+			title={title}
 			form={
 				<ChatForm
 					onSend={async (content) => {
@@ -67,7 +74,7 @@ function ListingChatCard({
 	children,
 	form,
 }: {
-	title: string;
+	title: React.ReactNode;
 	children: React.ReactNode;
 	form?: React.ReactNode;
 }) {

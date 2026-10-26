@@ -21,28 +21,46 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ListingStatusMenu from "./ListingStatusMenu";
+import Link from "next/link";
 
 export default function ListingActions({
 	listing,
 	categories,
 	tags,
+	isEditingInList = false,
+	initialEditing = false,
 }: {
 	listing: ListingResponse;
 	categories: Category[];
 	tags: Tag[];
+	isEditingInList?: boolean;
+	initialEditing?: boolean;
 }) {
-	const [isEditing, setIsEditing] = useState(false);
+	const [isEditing, setIsEditing] = useState(initialEditing);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+	function scrollToImage() {
+		document
+			.getElementById("listing-image")
+			?.scrollIntoView({ block: "start", behavior: "smooth" });
+	}
 
 	async function handleUpdate(values: ListingFormValues) {
 		const result = await updateListingAction(listing.id, values);
 
 		if (!result.error && !result.fieldErrors) {
 			setIsEditing(false);
+			scrollToImage();
 		}
 
 		return result;
+	}
+
+	function handleCancel() {
+		setErrorMessage(null);
+		setIsEditing(false);
+		scrollToImage();
 	}
 
 	function handleDelete() {
@@ -58,11 +76,6 @@ export default function ListingActions({
 		}
 
 		setErrorMessage(null);
-	}
-
-	function handleCancel() {
-		setErrorMessage(null);
-		setIsEditing(false);
 	}
 
 	if (isEditing) {
@@ -84,6 +97,8 @@ export default function ListingActions({
 					}}
 					defaultPlace={listing.place}
 					submitLabel="Speichern"
+					heading="Anzeige bearbeiten"
+					autoFocus
 				/>
 
 				<Button
@@ -101,10 +116,20 @@ export default function ListingActions({
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex gap-2">
-				<Button variant="secondary" onClick={() => setIsEditing(true)}>
-					<PencilIcon className="size-4" aria-hidden="true" />
-					Bearbeiten
-				</Button>
+				{isEditingInList ? (
+					<Button variant="secondary" asChild>
+						<Link href={`/listings/${listing.id}?edit=true`}>
+							<PencilIcon className="size-4" aria-hidden="true" />
+							<span className="sr-only md:not-sr-only">Bearbeiten</span>
+						</Link>
+					</Button>
+				) : (
+					<Button variant="secondary" onClick={() => setIsEditing(true)}>
+						<PencilIcon className="size-4" aria-hidden="true" />
+						Bearbeiten
+					</Button>
+				)}
+
 				<ListingStatusMenu
 					status={listing.status}
 					onStatusChange={handleStatusChange}

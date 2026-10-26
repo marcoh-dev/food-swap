@@ -41,8 +41,8 @@ export function UserUpdate({
 	}
 
 	return (
-		<section className="mt-8">
-			<form className="my-4" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
+		<section className="mt-2">
+			<form className="my-1" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
 				<FieldGroup>
 					<Controller
 						name="name"
