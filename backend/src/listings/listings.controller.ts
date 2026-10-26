@@ -12,6 +12,7 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { ListingsService } from './listings.service';
 import { CreateListingDto } from './dtos/createListing.dto';
@@ -22,6 +23,7 @@ import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateListingDto } from './dtos/updateListing.dto';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
+import { CleanupSecretGuard } from './cleanupSecret.guard';
 
 @Controller('listings')
 export class ListingsController {
@@ -39,6 +41,14 @@ export class ListingsController {
   @SerializeOptions({ type: ListingResponseDto })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.listingsService.findOne(id);
+  }
+
+  @Public()
+  @UseGuards(CleanupSecretGuard)
+  @Post('cleanup')
+  @HttpCode(HttpStatus.OK)
+  async cleanup() {
+    return { deleted: await this.listingsService.deleteExpired(new Date()) };
   }
 
   @Post()

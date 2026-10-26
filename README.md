@@ -39,6 +39,7 @@ cd food-swap
 npm install
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
+cp backend/bruno/.env.example backend/bruno/.env
 docker compose up -d --wait
 npm run migration:run -w backend
 npm run dev
@@ -56,6 +57,7 @@ The frontend runs on http://localhost:5173, the backend on http://localhost:3000
 | `JWT_SECRET`        | any string                                                    | long random string, never the local one                             |
 | `PORT`              | `3000`                                                        | set by the hosting provider                                         |
 | `TEST_DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                            |
+| `CLEANUP_SECRET`    | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret  |
 
 **`frontend/.env`**
 
@@ -137,7 +139,7 @@ CI runs install, lint, format check and build on every pull request to `main`.
 
 ### API requests with Bruno
 
-`backend/bruno` is a [Bruno](https://www.usebruno.com/) collection with requests for every endpoint. Open the folder in Bruno and pick an environment (`local` or `live-server`). Run `auth/Login` (or `auth/Register`) first: it stores the token that the other requests use.
+`backend/bruno` is a [Bruno](https://www.usebruno.com/) collection with requests for every endpoint. Open the folder in Bruno and pick an environment (`local` or `live-server`). Run `auth/Login` (or `auth/Register`) first: it stores the token that the other requests use. `listings/Clean up Listings` uses `CLEANUP_SECRET` from `backend/bruno/.env` instead, which has to match the one in `backend/.env`.
 
 ### Test endpoints
 

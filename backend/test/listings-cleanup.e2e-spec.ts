@@ -1,5 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import request from 'supertest';
+import { App } from 'supertest/types';
 import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { ListingsService } from '../src/listings/listings.service';
@@ -22,10 +25,13 @@ const END_DAY = '2026-11-20';
 const END_DAY_PLUS_28 = '2026-12-18';
 const END_DAY_PLUS_29 = '2026-12-19';
 
+const CLEANUP_SECRET = 'test-cleanup-secret';
+
 const runAt = (day: string) => berlinTime(`${day} 03:00`);
+const overdueDay = () => shiftDay(berlinDay(new Date()), { days: -29 });
 
 describe('Deleting expired listings (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
   let dataSource: DataSource;
   let listingsService: ListingsService;
   let listings: Repository<Listing>;
@@ -54,6 +60,7 @@ describe('Deleting expired listings (e2e)', () => {
     listings.exists({ where: { id: listing.id } });
 
   beforeAll(async () => {
+    process.env.CLEANUP_SECRET = CLEANUP_SECRET;
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -165,8 +172,7 @@ describe('Deleting expired listings (e2e)', () => {
   });
 
   it('deletes overdue listings when the backend starts', async () => {
-    const today = berlinDay(new Date());
-    const listing = await createListing(shiftDay(today, { days: -29 }));
+    const listing = await createListing(overdueDay());
 
     await listingsService.onApplicationBootstrap();
 
@@ -188,5 +194,47 @@ describe('Deleting expired listings (e2e)', () => {
       'Deleting expired listings on startup failed.',
       expect.stringContaining('Database unavailable'),
     );
+  });
+
+  describe('POST /listings/cleanup', () => {
+    const cleanup = () =>
+      request(app.getHttpServer()).post('/listings/cleanup');
+
+    it('deletes overdue listings with the cleanup secret', async () => {
+      const listing = await createListing(overdueDay());
+
+      await cleanup()
+        .set('Authorization', `Bearer ${CLEANUP_SECRET}`)
+        .expect(200, { deleted: 1 });
+
+      expect(await exists(listing)).toBe(false);
+    });
+
+    it('rejects requests without the cleanup secret', async () => {
+      const listing = await createListing(overdueDay());
+
+      await cleanup().expect(401);
+
+      expect(await exists(listing)).toBe(true);
+    });
+
+    it('rejects requests with a wrong cleanup secret', async () => {
+      const listing = await createListing(overdueDay());
+
+      await cleanup().set('Authorization', 'Bearer wrong-secret').expect(401);
+
+      expect(await exists(listing)).toBe(true);
+    });
+
+    it('rejects all requests when no cleanup secret is configured', async () => {
+      jest.spyOn(app.get(ConfigService), 'get').mockReturnValue(undefined);
+      const listing = await createListing(overdueDay());
+
+      await cleanup()
+        .set('Authorization', `Bearer ${CLEANUP_SECRET}`)
+        .expect(401);
+
+      expect(await exists(listing)).toBe(true);
+    });
   });
 });
