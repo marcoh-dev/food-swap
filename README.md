@@ -105,7 +105,7 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 SEED_PASSWORD='<password>' npm run seed:mock -w backend
 ```
 
-For the live database, set `DATABASE_URL` to the live URL in front of the command and use the stored live mock password, otherwise the mock users' logins change. Put values with `&`, `?`, `!` or `$` in single quotes.
+For the live database, copy `backend/.env.live.example` to `backend/.env.live` and fill in the live `DATABASE_URL` and the stored live mock password (otherwise the mock users' logins change), then run `npm run seed:mock:live -w backend`. Only commands with `live` in their name read `.env.live`, so `backend/.env` always stays local. Put values with `&`, `?`, `!`, `#` or `$` in single quotes, in the shell and in `.env` files.
 
 ## Commands
 
@@ -127,6 +127,7 @@ For the live database, set `DATABASE_URL` to the live URL in front of the comman
 | `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
 | `npm run test:e2e -w backend`                                    | runs the backend e2e tests against the test database                              |
 | `SEED_PASSWORD='<password>' npm run seed:mock -w backend`        | adds or updates the mock data                                                     |
+| `npm run seed:mock:live -w backend`                              | adds or updates the mock data in the live database (`backend/.env.live`)          |
 | `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
 
 `npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
