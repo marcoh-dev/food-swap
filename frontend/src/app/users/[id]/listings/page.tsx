@@ -70,7 +70,7 @@ export default async function UserListingsPage({
 												alt={listing.title}
 												width={250}
 												height={200}
-												className="h-full w-full object-cover"
+												className="h-full w-full object-cover rounded-xl"
 											/>
 											<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
 												{isOwner && isExpired(listing.endDate) ? (

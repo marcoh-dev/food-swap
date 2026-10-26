@@ -119,7 +119,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 												alt={listing.title}
 												width={250}
 												height={200}
-												className="h-full w-full object-cover"
+												className="h-full w-full object-cover rounded-xl"
 											/>
 											<div className="absolute top-2 left-2">
 												<StatusBadge listing={listing} />

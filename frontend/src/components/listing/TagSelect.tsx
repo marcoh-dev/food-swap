@@ -7,9 +7,10 @@ type Props = {
 	tags: Tag[];
 	value: string[];
 	onChange: (tagIds: string[]) => void;
+	valueKey?: "id" | "slug";
 };
 
-export default function TagSelect({ tags, value, onChange }: Props) {
+export default function TagSelect({ tags, value, onChange, valueKey = "id" }: Props) {
 	return (
 		<ToggleGroup
 			type="multiple"
@@ -22,8 +23,8 @@ export default function TagSelect({ tags, value, onChange }: Props) {
 			{tags.map((tag) => (
 				<ToggleGroupItem
 					key={tag.id}
-					value={tag.id}
-					className="data-[state=on]:bg-category data-[state=on]:text-category-foreground"
+					value={tag[valueKey]}
+					className="dark:bg-input/30 data-[state=on]:bg-category data-[state=on]:text-category-foreground rounded-sm"
 				>
 					{tag.name}
 				</ToggleGroupItem>

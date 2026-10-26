@@ -12,7 +12,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
+import { FieldSet, FieldLegend } from "../ui/field";
+import TagSelect from "./TagSelect";
 
 const ALL_CATEGORIES = "all";
 type Props = {
@@ -50,16 +51,8 @@ export default function ListingFilters({ categories, tags }: Props) {
 		}
 	}
 
-	function handleTagToggle(slug: string) {
-		let newTags: string[];
-
-		if (selectedTags.includes(slug)) {
-			newTags = selectedTags.filter((tag) => tag !== slug);
-		} else {
-			newTags = [...selectedTags, slug];
-		}
-
-		updateUrl("tags", newTags.join(","));
+	function handleTagToggle(slugs: string[]) {
+		updateUrl("tags", slugs.join(","));
 	}
 
 	function handleReset() {
@@ -95,29 +88,17 @@ export default function ListingFilters({ categories, tags }: Props) {
 					</SelectContent>
 				</Select>
 			</div>
-
-			<fieldset className="grid gap-2">
-				<legend className="sr-only">Tags</legend>
-				<div className="flex flex-wrap gap-x-4 gap-y-2">
-					{tags.map((tag) => {
-						const checkboxId = `tag-filter-${tag.slug}`;
-
-						return (
-							<div key={tag.id} className="flex items-center gap-2">
-								<Checkbox
-									id={checkboxId}
-									checked={selectedTags.includes(tag.slug)}
-									onCheckedChange={() => handleTagToggle(tag.slug)}
-									className="data-checked:bg-category data-checked:text-category-foreground data-checked:border-category-foreground dark:data-checked:bg-category dark:data-checked:text-category-foreground dark:data-checked:border-category-foreground"
-								/>
-								<Label htmlFor={checkboxId} className="font-normal">
-									{tag.name}
-								</Label>
-							</div>
-						);
-					})}
-				</div>
-			</fieldset>
+			<FieldSet>
+				<FieldLegend variant="label" className="sr-only">
+					Tags
+				</FieldLegend>
+				<TagSelect
+					tags={tags}
+					value={selectedTags}
+					onChange={handleTagToggle}
+					valueKey="slug"
+				/>
+			</FieldSet>
 
 			{hasFilters && (
 				<Button
