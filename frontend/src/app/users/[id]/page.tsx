@@ -131,6 +131,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 												listing={listing}
 												categories={categories}
 												tags={tags}
+												isEditingList
 											/>
 										</CardFooter>
 									)}

@@ -46,7 +46,7 @@ export default async function ListingDetailPage({
 	searchParams,
 }: PageProps<"/listings/[id]">) {
 	const { id } = await params;
-	const { term, place, radius } = await searchParams;
+	const { term, place, radius, edit } = await searchParams;
 	const selectedPlace = typeof place === "string" ? await getPlaceBySlug(place) : null;
 	const listing = await getListingById(id);
 	const categories = await getCategories();
@@ -122,7 +122,12 @@ export default async function ListingDetailPage({
 
 				{isOwner && (
 					<CardFooter className="relative z-20 flex-col items-stretch">
-						<ListingActions listing={listing} categories={categories} tags={tags} />
+						<ListingActions
+							listing={listing}
+							categories={categories}
+							tags={tags}
+							initialEditing={edit === "true"}
+						/>
 					</CardFooter>
 				)}
 

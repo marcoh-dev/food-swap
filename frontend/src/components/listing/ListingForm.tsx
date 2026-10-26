@@ -1,6 +1,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
+import { useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { Category } from "@/lib/types/category.types";
@@ -25,6 +26,7 @@ type Props = {
 	defaultValues?: ListingFormValues;
 	defaultPlace?: Place | null;
 	submitLabel?: string;
+	autoFocus?: boolean;
 };
 
 const emptyValues = {
@@ -44,7 +46,10 @@ export default function ListingForm({
 	defaultValues,
 	defaultPlace,
 	submitLabel = "Erstellen",
+	autoFocus,
 }: Props) {
+	const formRef = useRef<HTMLFormElement>(null);
+
 	const form = useForm<ListingFormValues>({
 		resolver: zodResolver(createListingSchema(defaultValues?.endDate)),
 		defaultValues: defaultValues ?? emptyValues,
@@ -52,13 +57,26 @@ export default function ListingForm({
 		reValidateMode: "onChange",
 	});
 
+	useEffect(() => {
+		if (!autoFocus) return;
+		formRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+		(document.getElementById("title") as HTMLInputElement | null)?.focus({
+			preventScroll: true,
+		});
+	}, [autoFocus, form]);
+
 	async function handleSubmit(values: ListingFormValues) {
 		const result = await action(values);
 		applyServerErrors(form.setError, result);
 	}
 
 	return (
-		<form className="my-4" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
+		<form
+			className="my-4 scroll-mt-28"
+			noValidate
+			onSubmit={form.handleSubmit(handleSubmit)}
+			ref={formRef}
+		>
 			<FieldGroup>
 				<Controller
 					name="title"
