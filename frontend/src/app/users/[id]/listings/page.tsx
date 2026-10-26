@@ -90,6 +90,7 @@ export default async function UserListingsPage({
 												<ListingMeta
 													listing={listing}
 													dateVariant="relative"
+													showDeletionDate={isOwner}
 													className="text-xs"
 												/>
 											</CardDescription>
