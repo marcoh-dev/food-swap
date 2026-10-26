@@ -50,11 +50,12 @@ The frontend runs on http://localhost:5173, the backend on http://localhost:3000
 
 **`backend/.env`**
 
-| Variable       | Local                                                    | Live                                                                |
-| -------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap` | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
-| `JWT_SECRET`   | any string                                               | long random string, never the local one                             |
-| `PORT`         | `3000`                                                   | set by the hosting provider                                         |
+| Variable            | Local                                                         | Live                                                                |
+| ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL`      | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
+| `JWT_SECRET`        | any string                                                    | long random string, never the local one                             |
+| `PORT`              | `3000`                                                        | set by the hosting provider                                         |
+| `TEST_DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                            |
 
 **`frontend/.env`**
 
@@ -112,8 +113,13 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 | `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                                           |
 | `npm run migration:run -w backend`                               | applies pending migrations                                                        |
 | `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
+| `npm run test:e2e -w backend`                                    | runs the backend e2e tests against the test database                              |
 
 `npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
+
+### Tests
+
+`npm run test:e2e -w backend` runs the backend e2e tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
 
 ### Updating a feature branch
 
