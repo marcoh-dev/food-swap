@@ -454,11 +454,16 @@ export class ListingsService {
   }
 
   @Cron('0 3 * * *', { timeZone: TIME_ZONE })
-  async deleteExpired(): Promise<number> {
+  async deleteExpiredDaily(): Promise<void> {
+    await this.deleteExpired(new Date());
+  }
+
+  async deleteExpired(now: Date): Promise<number> {
     const result = await this.listings.delete({
       endDate: Raw(
-        (alias) => `${alias} < now() - make_interval(days => :days)`,
-        { days: END_DATE_RULES.deleteAfterDays },
+        (alias) =>
+          `${alias} < CAST(:now AS timestamptz) - make_interval(days => :days)`,
+        { now, days: END_DATE_RULES.deleteAfterDays },
       ),
     });
     const deleted = result.affected ?? 0;
