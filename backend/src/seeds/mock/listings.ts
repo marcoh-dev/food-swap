@@ -1,6 +1,8 @@
 // `createdAt` is Berlin local time. `end` is either a date (the listing ends
 // at 23:59 Berlin time that day), `+N` days after creation like the default
 // end date of the listing form, or `today` for the day the seed runs.
+// `today-N` stands for N days before the seed runs, in `createdAt` followed by
+// the time, so listings due for deletion stay due whenever the seed runs.
 export type MockListing = {
   key: string;
   owner: string;
@@ -320,6 +322,36 @@ export const mockListings: MockListing[] = [
     end: 'today',
     status: 'reserved',
     image: pexelsImage(4110456),
+  },
+  {
+    key: 'jana-21',
+    owner: 'jana',
+    place: '22769-hamburg',
+    title: 'Zucchini aus dem Kleingarten',
+    description:
+      'Drei mittelgroße Zucchini, frisch geerntet. Abholung am Kleingarten in Bahrenfeld, am liebsten am Wochenende.',
+    category: 'gemuese',
+    type: 'giveaway',
+    tags: ['vegan', 'glutenfrei', 'selbst-angebaut'],
+    createdAt: 'today-60 18:10',
+    end: 'today-29',
+    status: 'active',
+    image: pexelsImage(4750381),
+  },
+  {
+    key: 'jana-22',
+    owner: 'jana',
+    place: '22765-hamburg',
+    title: 'Hokkaido-Kürbis gegen Äpfel',
+    description:
+      'Ein Hokkaido, ca. 1,5 kg. Ich tausche ihn gerne gegen ein paar Äpfel für Apfelmus.',
+    category: 'gemuese',
+    type: 'swap',
+    tags: ['vegan', 'selbst-angebaut'],
+    createdAt: 'today-45 12:30',
+    end: 'today-29',
+    status: 'deactivated',
+    image: pexelsImage(5519121),
   },
 
   // Ole, Himmelpforten and the Altes Land
@@ -882,6 +914,36 @@ export const mockListings: MockListing[] = [
     end: '+21',
     status: 'active',
     image: pexelsImage(5447088),
+  },
+  {
+    key: 'mehmet-21',
+    owner: 'mehmet',
+    place: '12047-berlin',
+    title: 'Äpfel aus Brandenburg',
+    description:
+      'Eine Tüte Äpfel vom Ausflug ins Umland, ca. 2 kg. Ein paar haben Druckstellen, schmecken aber super.',
+    category: 'obst',
+    type: 'giveaway',
+    tags: ['vegan'],
+    createdAt: 'today-56 17:45',
+    end: 'today-28',
+    status: 'active',
+    image: pexelsImage(9545792),
+  },
+  {
+    key: 'mehmet-22',
+    owner: 'mehmet',
+    place: '12047-berlin',
+    title: 'Spaghettikürbis',
+    description:
+      'Ein Spaghettikürbis aus dem Gemeinschaftsgarten. Tausche gegen Zwiebeln oder Knoblauch.',
+    category: 'gemuese',
+    type: 'swap',
+    tags: ['vegan', 'glutenfrei', 'selbst-angebaut'],
+    createdAt: 'today-40 09:15',
+    end: 'today-28',
+    status: 'reserved',
+    image: pexelsImage(4110305),
   },
 
   // Lotte, Berlin-Pankow, with her parents' garden in Kotzen

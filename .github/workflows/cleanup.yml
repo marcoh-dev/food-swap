@@ -1,0 +1,30 @@
+name: Listing cleanup
+
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BACKEND_URL: ${{ vars.BACKEND_URL }}
+      CLEANUP_SECRET: ${{ secrets.CLEANUP_SECRET }}
+    steps:
+      - name: Check configuration
+        run: |
+          if [ -z "$BACKEND_URL" ] || [ -z "$CLEANUP_SECRET" ]; then
+            echo "::error::Set the BACKEND_URL variable and the CLEANUP_SECRET secret in the repository settings."
+            exit 1
+          fi
+
+      - name: Delete expired listings
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --max-time 120 --retry 5 --retry-delay 30 --retry-connrefused \
+            --request POST "$BACKEND_URL/listings/cleanup" \
+            --header "Authorization: Bearer $CLEANUP_SECRET"

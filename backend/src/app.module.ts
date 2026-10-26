@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -37,6 +38,7 @@ import { PlacesModule } from './places/places.module';
         statementCacheSize: 100,
       }),
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     ListingsModule,

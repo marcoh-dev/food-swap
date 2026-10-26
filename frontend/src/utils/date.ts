@@ -30,6 +30,11 @@ export function formatDay(day: string): string {
 	return `${date}.${month}.${year}`;
 }
 
+export function formatDayWithoutYear(day: string): string {
+	const [, month, date] = day.split("-");
+	return `${date}.${month}.`;
+}
+
 // The Berlin calendar day of a point in time as "YYYY-MM-DD".
 export function getBerlinDay(date: Date = new Date()): string {
 	return new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(date);
@@ -194,4 +199,14 @@ export function getEndDateLabel(
 
 export function isExpired(isoDate: string, now: Date = new Date()): boolean {
 	return getDaysUntil(isoDate, now) < 0;
+}
+
+export function getDeletionDay(endDate: string): string {
+	return shiftDay(getBerlinDay(new Date(endDate)), { days: endDateRules.deleteAfterDays + 1 });
+}
+
+export function getDeletionLabel(endDate: string, now: Date = new Date()): string | null {
+	if (!isExpired(endDate, now)) return null;
+
+	return `Wird am ${formatDayWithoutYear(getDeletionDay(endDate))} gelöscht`;
 }
