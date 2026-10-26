@@ -5,6 +5,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  OnApplicationBootstrap,
 } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { CreateListingDto } from './dtos/createListing.dto';
@@ -14,7 +15,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationMetaResponseDto } from '../common/dtos/paginationMetaResponse.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateListingDto } from './dtos/updateListing.dto';
-import { FindOptionsWhere, ILike, In, MoreThan, Raw } from 'typeorm';
+import { FindOptionsWhere, ILike, In, LessThan, MoreThan, Raw } from 'typeorm';
 import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { CategoriesService } from '../categories/category.service';
 import { TagsService } from '../tags/tags.service';
@@ -24,6 +25,7 @@ import { PlacesService } from '../places/places.service';
 import { Place } from '../places/entities/place.entity';
 import {
   berlinDay,
+  berlinTime,
   endOfDay,
   isCalendarDay,
   shiftDay,
@@ -47,7 +49,7 @@ const END_DATE_RULES = {
 };
 
 @Injectable()
-export class ListingsService {
+export class ListingsService implements OnApplicationBootstrap {
   private readonly logger = new Logger(ListingsService.name);
 
   constructor(
@@ -453,18 +455,28 @@ export class ListingsService {
     return result;
   }
 
+  async onApplicationBootstrap(): Promise<void> {
+    try {
+      await this.deleteExpired(new Date());
+    } catch (error) {
+      this.logger.error(
+        'Deleting expired listings on startup failed.',
+        error instanceof Error ? error.stack : error,
+      );
+    }
+  }
+
   @Cron('0 3 * * *', { timeZone: TIME_ZONE })
   async deleteExpiredDaily(): Promise<void> {
     await this.deleteExpired(new Date());
   }
 
   async deleteExpired(now: Date): Promise<number> {
+    const firstKeptDay = shiftDay(berlinDay(now), {
+      days: -END_DATE_RULES.deleteAfterDays,
+    });
     const result = await this.listings.delete({
-      endDate: Raw(
-        (alias) =>
-          `${alias} < CAST(:now AS timestamptz) - make_interval(days => :days)`,
-        { now, days: END_DATE_RULES.deleteAfterDays },
-      ),
+      endDate: LessThan(berlinTime(`${firstKeptDay} 00:00`)),
     });
     const deleted = result.affected ?? 0;
 

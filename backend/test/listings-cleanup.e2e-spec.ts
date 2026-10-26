@@ -11,7 +11,12 @@ import {
 import { User } from '../src/users/entities/user.entity';
 import { Place } from '../src/places/entities/place.entity';
 import { Chat } from '../src/chats/entities/chat.entity';
-import { berlinTime, endOfDay } from '../src/common/utils/berlin-date';
+import {
+  berlinDay,
+  berlinTime,
+  endOfDay,
+  shiftDay,
+} from '../src/common/utils/berlin-date';
 
 const END_DAY = '2026-11-20';
 const END_DAY_PLUS_28 = '2026-12-18';
@@ -97,6 +102,22 @@ describe('Deleting expired listings (e2e)', () => {
     expect(await exists(listing)).toBe(true);
   });
 
+  it('keeps a listing until end day + 29 after the change to winter time', async () => {
+    const listing = await createListing('2026-10-01');
+
+    await listingsService.deleteExpired(berlinTime('2026-10-29 23:30'));
+
+    expect(await exists(listing)).toBe(true);
+  });
+
+  it('deletes a listing early on end day + 29 after the change to summer time', async () => {
+    const listing = await createListing('2026-03-10');
+
+    await listingsService.deleteExpired(berlinTime('2026-04-08 00:30'));
+
+    expect(await exists(listing)).toBe(false);
+  });
+
   it('deletes a deactivated listing on end day + 29', async () => {
     const listing = await createListing(END_DAY, ListingStatus.DEACTIVATED);
 
@@ -141,5 +162,31 @@ describe('Deleting expired listings (e2e)', () => {
 
     expect(deleted).toBe(2);
     expect(log).toHaveBeenCalledWith('Deleted 2 expired listings.');
+  });
+
+  it('deletes overdue listings when the backend starts', async () => {
+    const today = berlinDay(new Date());
+    const listing = await createListing(shiftDay(today, { days: -29 }));
+
+    await listingsService.onApplicationBootstrap();
+
+    expect(await exists(listing)).toBe(false);
+  });
+
+  it('still starts the backend when the startup cleanup fails', async () => {
+    jest
+      .spyOn(listingsService, 'deleteExpired')
+      .mockRejectedValue(new Error('Database unavailable'));
+    const logError = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation(() => undefined);
+
+    await expect(listingsService.onApplicationBootstrap()).resolves.toBe(
+      undefined,
+    );
+    expect(logError).toHaveBeenCalledWith(
+      'Deleting expired listings on startup failed.',
+      expect.stringContaining('Database unavailable'),
+    );
   });
 });
