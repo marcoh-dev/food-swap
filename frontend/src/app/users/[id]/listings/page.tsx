@@ -67,7 +67,7 @@ export default async function UserListingsPage({
 										<div className="relative aspect-[16/9] w-full overflow-hidden">
 											{listing.image ? (
 												<Image
-													src={listing.image ?? "/placeholder.png"}
+													src={listing.image}
 													alt={listing.title}
 													width={250}
 													height={200}
@@ -76,6 +76,7 @@ export default async function UserListingsPage({
 											) : (
 												<ListingImagePlaceholder />
 											)}
+
 											<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
 												{isOwner && <ExpiredBadge listing={listing} />}
 												<StatusBadge listing={listing} />
