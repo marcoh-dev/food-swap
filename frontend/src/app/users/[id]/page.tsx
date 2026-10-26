@@ -8,7 +8,14 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+	Card,
+	CardHeader,
+	CardTitle,
+	CardDescription,
+	CardContent,
+	CardFooter,
+} from "@/components/ui/card";
 import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
 import ExpiredBadge from "@/components/listing/ExpiredBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
@@ -18,6 +25,9 @@ import ListingsPagination from "@/components/listing/ListingsPagination";
 import type { SortOption } from "@/lib/types/listing.types";
 import { getUserListings } from "@/lib/listings.service";
 import { parsePage } from "@/utils/pagination";
+import ListingActions from "@/components/listing/ListingAction";
+import { getCategories } from "@/lib/categories.service";
+import { getTags } from "@/lib/tags.service";
 
 export const metadata: Metadata = { title: pageTitles.myProfile };
 
@@ -28,11 +38,14 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 	const user = await getUserById(userId);
 	if (!user) notFound();
 
+	const currentUser = await getCurrentUser();
+	const isOwner = currentUser?.id === userId;
+
 	const page = parsePage(query.page);
 	const sort: SortOption = query.sort === "endingSoon" ? "endingSoon" : "newest";
 
-	const currentUser = await getCurrentUser();
-	const isOwner = currentUser?.id === userId;
+	const categories = await getCategories();
+	const tags = await getTags();
 
 	const listingsData = await getUserListings({ userId, page, sort });
 
@@ -72,11 +85,11 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
 						{listingsData.data.map((listing) => (
 							<li key={listing.id}>
-								<Link
-									href={`/listings/${listing.id}`}
-									className="block h-full no-underline"
-								>
-									<Card className="h-full overflow-hidden pt-0">
+								<Card className="h-full overflow-hidden pt-0">
+									<Link
+										href={`/listings/${listing.id}`}
+										className="block h-full no-underline"
+									>
 										<div className="relative aspect-[16/9] w-full overflow-hidden">
 											{listing.image ? (
 												<Image
@@ -111,8 +124,17 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 										<CardContent>
 											<p className="text-xs">{listing.description}</p>
 										</CardContent>
-									</Card>
-								</Link>
+									</Link>
+									{isOwner && (
+										<CardFooter className="relative z-20 flex-col items-stretch">
+											<ListingActions
+												listing={listing}
+												categories={categories}
+												tags={tags}
+											/>
+										</CardFooter>
+									)}
+								</Card>
 							</li>
 						))}
 					</ul>
