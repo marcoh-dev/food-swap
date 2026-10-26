@@ -19,6 +19,7 @@ const badgeVariants = cva(
 				tag: "bg-transparent text-foreground border-input",
 				category: "bg-category text-category-foreground",
 				status: "bg-primary text-primary-foreground rounded-full",
+				expired: "bg-muted text-muted-foreground border-border rounded-full",
 			},
 		},
 		defaultVariants: {

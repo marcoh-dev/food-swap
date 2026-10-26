@@ -2,7 +2,7 @@ import CategoryBadge from "@/components/listing/CategoryBadge";
 import ListingMeta from "@/components/listing/ListingMeta";
 import StatusBadge from "@/components/listing/StatusBadge";
 import SearchBar from "@/components/search/SearchBar";
-import { SortingMenu } from "@/components/SortingMenu";
+import { SortingMenu } from "@/components/listing/SortingMenu";
 import { getUserListings } from "@/lib/listings.service";
 import type { SortOption } from "@/lib/types/listing.types";
 import Image from "next/image";
@@ -10,13 +10,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/users.service";
-import { Badge } from "@/components/ui/badge";
-import { isExpired } from "@/utils/date";
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
+import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
+import ExpiredBadge from "@/components/listing/ExpiredBadge";
 
 export const metadata: Metadata = { title: pageTitles.myListings };
 
@@ -65,24 +65,21 @@ export default async function UserListingsPage({
 								>
 									<Card className="h-full overflow-hidden pt-0">
 										<div className="relative aspect-[16/9] w-full overflow-hidden">
-											<Image
-												src={listing.image ?? "/placeholder.png"}
-												alt={listing.title}
-												width={250}
-												height={200}
-												className="h-full w-full object-cover rounded-xl"
-											/>
+											{listing.image ? (
+												<Image
+													src={listing.image}
+													alt={listing.title}
+													width={250}
+													height={200}
+													className="h-full w-full object-cover"
+												/>
+											) : (
+												<ListingImagePlaceholder />
+											)}
+
 											<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
-												{isOwner && isExpired(listing.endDate) ? (
-													<Badge
-														variant="destructive"
-														className="bg-destructive text-white"
-													>
-														Abgelaufen
-													</Badge>
-												) : (
-													<StatusBadge listing={listing} />
-												)}
+												{isOwner && <ExpiredBadge listing={listing} />}
+												<StatusBadge listing={listing} />
 											</div>
 										</div>
 										<CardHeader>

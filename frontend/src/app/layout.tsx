@@ -5,13 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "cn";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import BurgerMenu from "@/components/BurgerMenu";
+import BurgerMenu from "@/components/menu/BurgerMenu";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
 import { getCurrentUser } from "@/lib/users.service";
 import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
 import { Toaster } from "@/components/ui/sonner";
-import Toast from "@/components/Toast";
+import Toast from "@/components/shared/Toast";
 import { Suspense } from "react";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -31,8 +31,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: {
-		template: "%s | Food Swap 🍅",
-		default: "Food Swap 🍅",
+		template: "%s | FoodSwap",
+		default: "FoodSwap",
 	},
 	description: "Tausche oder verschenke Lebensmittel in deiner Nähe.",
 };
@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 							<div>
 								<Link href="/" aria-label="Home">
 									<Image
-										src="/logo.png"
+										src="/icon.svg"
 										alt="FoodSwap Logo"
 										width="50"
 										height="50"
