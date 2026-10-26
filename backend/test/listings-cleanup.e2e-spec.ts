@@ -96,7 +96,7 @@ describe('Deleting expired listings (e2e)', () => {
   it('deletes a listing in the run on end day + 29', async () => {
     const listing = await createListing(END_DAY);
 
-    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29));
+    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29), 'daily');
 
     expect(await exists(listing)).toBe(false);
   });
@@ -104,7 +104,7 @@ describe('Deleting expired listings (e2e)', () => {
   it('keeps a listing in the run on end day + 28', async () => {
     const listing = await createListing(END_DAY);
 
-    await listingsService.deleteExpired(runAt(END_DAY_PLUS_28));
+    await listingsService.deleteExpired(runAt(END_DAY_PLUS_28), 'daily');
 
     expect(await exists(listing)).toBe(true);
   });
@@ -112,7 +112,10 @@ describe('Deleting expired listings (e2e)', () => {
   it('keeps a listing until end day + 29 after the change to winter time', async () => {
     const listing = await createListing('2026-10-01');
 
-    await listingsService.deleteExpired(berlinTime('2026-10-29 23:30'));
+    await listingsService.deleteExpired(
+      berlinTime('2026-10-29 23:30'),
+      'daily',
+    );
 
     expect(await exists(listing)).toBe(true);
   });
@@ -120,7 +123,10 @@ describe('Deleting expired listings (e2e)', () => {
   it('deletes a listing early on end day + 29 after the change to summer time', async () => {
     const listing = await createListing('2026-03-10');
 
-    await listingsService.deleteExpired(berlinTime('2026-04-08 00:30'));
+    await listingsService.deleteExpired(
+      berlinTime('2026-04-08 00:30'),
+      'daily',
+    );
 
     expect(await exists(listing)).toBe(false);
   });
@@ -128,7 +134,7 @@ describe('Deleting expired listings (e2e)', () => {
   it('deletes a deactivated listing on end day + 29', async () => {
     const listing = await createListing(END_DAY, ListingStatus.DEACTIVATED);
 
-    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29));
+    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29), 'daily');
 
     expect(await exists(listing)).toBe(false);
   });
@@ -137,7 +143,7 @@ describe('Deleting expired listings (e2e)', () => {
     const listing = await createListing(END_DAY);
     await listings.update(listing.id, { endDate: endOfDay('2026-12-31') });
 
-    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29));
+    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29), 'daily');
 
     expect(await exists(listing)).toBe(true);
   });
@@ -153,7 +159,7 @@ describe('Deleting expired listings (e2e)', () => {
       }),
     );
 
-    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29));
+    await listingsService.deleteExpired(runAt(END_DAY_PLUS_29), 'daily');
 
     const remainingChat = await chats.findOneByOrFail({ id: chat.id });
     expect(remainingChat.listingId).toBeNull();
@@ -165,10 +171,15 @@ describe('Deleting expired listings (e2e)', () => {
     await createListing(END_DAY);
     await createListing(END_DAY_PLUS_28);
 
-    const deleted = await listingsService.deleteExpired(runAt(END_DAY_PLUS_29));
+    const deleted = await listingsService.deleteExpired(
+      runAt(END_DAY_PLUS_29),
+      'daily',
+    );
 
     expect(deleted).toBe(2);
-    expect(log).toHaveBeenCalledWith('Deleted 2 expired listings.');
+    expect(log).toHaveBeenCalledWith(
+      'ListingCleanup (daily): Deleted 2 expired listings.',
+    );
   });
 
   it('deletes overdue listings when the backend starts', async () => {
@@ -191,7 +202,7 @@ describe('Deleting expired listings (e2e)', () => {
       undefined,
     );
     expect(logError).toHaveBeenCalledWith(
-      'Deleting expired listings on startup failed.',
+      'ListingCleanup (startup): Deleting expired listings failed.',
       expect.stringContaining('Database unavailable'),
     );
   });
@@ -201,6 +212,7 @@ describe('Deleting expired listings (e2e)', () => {
       request(app.getHttpServer()).post('/listings/cleanup');
 
     it('deletes overdue listings with the cleanup secret', async () => {
+      const log = jest.spyOn(Logger.prototype, 'log');
       const listing = await createListing(overdueDay());
 
       await cleanup()
@@ -208,6 +220,9 @@ describe('Deleting expired listings (e2e)', () => {
         .expect(200, { deleted: 1 });
 
       expect(await exists(listing)).toBe(false);
+      expect(log).toHaveBeenCalledWith(
+        'ListingCleanup (endpoint): Deleted 1 expired listings.',
+      );
     });
 
     it('rejects requests without the cleanup secret', async () => {

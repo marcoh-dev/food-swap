@@ -48,7 +48,11 @@ export class ListingsController {
   @Post('cleanup')
   @HttpCode(HttpStatus.OK)
   async cleanup() {
-    return { deleted: await this.listingsService.deleteExpired(new Date()) };
+    const deleted = await this.listingsService.deleteExpired(
+      new Date(),
+      'endpoint',
+    );
+    return { deleted };
   }
 
   @Post()
