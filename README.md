@@ -97,6 +97,16 @@ Then create a new migration that applies the changes to `places`. Listings refer
 
 Place suggestions are cached by the frontend server without expiry. Whenever the place data or the search in `backend/src/places/places.service.ts` changes, bump `PLACES_CACHE_VERSION` in `frontend/src/lib/places.service.ts`, otherwise users keep getting the old suggestions.
 
+### Mock data
+
+`npm run seed:mock -w backend` adds 10 mock users (usernames start with `mock_`), their listings and chats to the database in `DATABASE_URL`. `SEED_PASSWORD` sets the password of all mock users (8–64 characters with an uppercase and a lowercase letter, a number and a special character). Running it again updates the mock data instead of duplicating it, and brings back mock listings the cleanup deleted. `npm run seed:mock:remove -w backend` removes all mock users with their listings and chats.
+
+```bash
+SEED_PASSWORD='<password>' npm run seed:mock -w backend
+```
+
+For the live database, set `DATABASE_URL` to the live URL in front of the command and use the stored live mock password, otherwise the mock users' logins change. Put values with `&`, `?`, `!` or `$` in single quotes.
+
 ## Commands
 
 | Command                                                          | What it does                                                                      |
@@ -116,6 +126,8 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 | `npm run migration:run -w backend`                               | applies pending migrations                                                        |
 | `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
 | `npm run test:e2e -w backend`                                    | runs the backend e2e tests against the test database                              |
+| `SEED_PASSWORD='<password>' npm run seed:mock -w backend`        | adds or updates the mock data                                                     |
+| `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
 
 `npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
 
