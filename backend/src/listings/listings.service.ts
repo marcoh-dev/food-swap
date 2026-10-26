@@ -3,8 +3,10 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { CreateListingDto } from './dtos/createListing.dto';
 import { Repository } from 'typeorm';
 import { Listing, ListingStatus } from './entities/listing.entity';
@@ -25,6 +27,7 @@ import {
   endOfDay,
   isCalendarDay,
   shiftDay,
+  TIME_ZONE,
 } from '../common/utils/berlin-date';
 
 type ListingWithDistance = Listing & { distance?: number };
@@ -36,10 +39,17 @@ const LISTING_RELATIONS = {
   place: true,
 };
 
-const END_DATE_RULES = { defaultDays: 28, minDays: 1, maxMonths: 6 };
+const END_DATE_RULES = {
+  defaultDays: 28,
+  minDays: 1,
+  maxMonths: 6,
+  deleteAfterDays: 28,
+};
 
 @Injectable()
 export class ListingsService {
+  private readonly logger = new Logger(ListingsService.name);
+
   constructor(
     @InjectRepository(Listing)
     private readonly listings: Repository<Listing>,
@@ -442,6 +452,21 @@ export class ListingsService {
 
     return result;
   }
+
+  @Cron('0 3 * * *', { timeZone: TIME_ZONE })
+  async deleteExpired(): Promise<number> {
+    const result = await this.listings.delete({
+      endDate: Raw(
+        (alias) => `${alias} < now() - make_interval(days => :days)`,
+        { days: END_DATE_RULES.deleteAfterDays },
+      ),
+    });
+    const deleted = result.affected ?? 0;
+
+    this.logger.log(`Deleted ${deleted} expired listings.`);
+    return deleted;
+  }
+
   private async fingListingIdsWithAllTags(tagIds: string[]): Promise<string[]> {
     const rows = await this.listings
       .createQueryBuilder('listing')
