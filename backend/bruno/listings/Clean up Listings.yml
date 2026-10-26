@@ -1,0 +1,18 @@
+info:
+  name: Clean up Listings
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseURL}}/listings/cleanup"
+  auth:
+    type: bearer
+    token: "{{process.env.CLEANUP_SECRET}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

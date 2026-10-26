@@ -32,14 +32,26 @@ function mockId(kind: string, key: string): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
+// Replaces a leading `today` or `today-N` with the matching Berlin day.
+function resolveDay(value: string, now: Date): string {
+  const match = /^today(?:-(\d+))?/.exec(value);
+  if (!match) return value;
+
+  const day = shiftDay(berlinDay(now), { days: -Number(match[1] ?? 0) });
+  return day + value.slice(match[0].length);
+}
+
+function createdAtOf(listing: MockListing, now: Date): string {
+  return resolveDay(listing.createdAt, now);
+}
+
 function endDay(listing: MockListing, now: Date): string {
-  if (listing.end === 'today') return berlinDay(now);
   if (listing.end.startsWith('+')) {
-    return shiftDay(listing.createdAt.slice(0, 10), {
+    return shiftDay(createdAtOf(listing, now).slice(0, 10), {
       days: Number(listing.end.slice(1)),
     });
   }
-  return listing.end;
+  return resolveDay(listing.end, now);
 }
 
 function check(condition: boolean, message: string): void {
@@ -124,8 +136,8 @@ function validate(
   for (const listing of mockListings) {
     const where = `Listing ${listing.key}`;
     const owner = users.get(listing.owner);
-    const createdAt = berlinTime(listing.createdAt);
-    const createdDay = listing.createdAt.slice(0, 10);
+    const createdAt = berlinTime(createdAtOf(listing, now));
+    const createdDay = createdAtOf(listing, now).slice(0, 10);
     const lastDay = endDay(listing, now);
     const endDate = endOfDay(lastDay);
 
@@ -199,7 +211,7 @@ function validate(
     participants.add(`${chat.listing}:${chat.user}`);
     check(chat.messages.length > 0, `${where}: needs messages`);
 
-    let previous = berlinTime(listing!.createdAt);
+    let previous = berlinTime(createdAtOf(listing!, now));
     const listingEnd = endOfDay(endDay(listing!, now));
     for (const message of chat.messages) {
       const sentAt = berlinTime(message.at);
@@ -269,7 +281,7 @@ async function seed(): Promise<void> {
       ]),
     );
     for (const listing of mockListings) {
-      const createdAt = berlinTime(listing.createdAt);
+      const createdAt = berlinTime(createdAtOf(listing, now));
       const endDate = endOfDay(endDay(listing, now));
       // A status change happened a day after the listing went online.
       const updatedAt =

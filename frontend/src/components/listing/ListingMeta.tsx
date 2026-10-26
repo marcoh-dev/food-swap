@@ -1,21 +1,31 @@
-import { GiftIcon, MapPinIcon, NavigationIcon, RepeatIcon, TimerIcon } from "lucide-react";
+import {
+	GiftIcon,
+	MapPinIcon,
+	NavigationIcon,
+	RepeatIcon,
+	TimerIcon,
+	Trash2Icon,
+} from "lucide-react";
 import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "cn";
 import ListingDate from "./ListingDate";
-import { getDaysUntil, getEndDateLabel } from "@/utils/date";
+import { getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
 import { formatDistance, formatPlace } from "@/utils/place";
 
 export default function ListingMeta({
 	listing,
 	dateVariant,
+	showDeletionDate = false,
 	className,
 }: {
 	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate" | "distance">;
 	dateVariant?: "relative" | "full";
+	showDeletionDate?: boolean;
 	className?: string;
 }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;
 	const daysLeft = getDaysUntil(listing.endDate);
+	const deletionLabel = showDeletionDate ? getDeletionLabel(listing.endDate) : null;
 
 	return (
 		<p className={cn("flex flex-wrap items-center gap-x-3 gap-y-1 text-sm", className)}>
@@ -39,6 +49,12 @@ export default function ListingMeta({
 				<TimerIcon className="size-4" aria-hidden="true" />
 				{getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
 			</span>
+			{deletionLabel && (
+				<span className="inline-flex basis-full items-center gap-1">
+					<Trash2Icon className="size-4" aria-hidden="true" />
+					{deletionLabel}
+				</span>
+			)}
 		</p>
 	);
 }

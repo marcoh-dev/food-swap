@@ -38,7 +38,13 @@ export const statusLabels: Record<ListingStatus, string> = {
 
 export const statusOrder: ListingStatus[] = ["pending", "active", "reserved", "deactivated"];
 
-export const endDateRules = { defaultDays: 28, minDays: 1, maxMonths: 6, soonDays: 7 } as const;
+export const endDateRules = {
+	defaultDays: 28,
+	minDays: 1,
+	maxMonths: 6,
+	soonDays: 7,
+	deleteAfterDays: 28,
+} as const;
 
 export const RADIUS_OPTIONS_KM = [5, 10, 20, 50];
 

@@ -105,7 +105,11 @@ export default async function ListingDetailPage({
 					<CardHeader>
 						<CardTitle className="text-h2">{listing.title}</CardTitle>
 						<CardDescription>
-							<ListingMeta listing={listing} dateVariant="full" />
+							<ListingMeta
+								listing={listing}
+								dateVariant="full"
+								showDeletionDate={isOwner}
+							/>
 						</CardDescription>
 						<p className="text-sm">
 							Angeboten von{" "}
