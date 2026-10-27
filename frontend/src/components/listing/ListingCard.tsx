@@ -16,17 +16,39 @@ import {
 	CardFooter,
 } from "@/components/ui/card";
 import type { ListingResponse } from "@/lib/types/listing.types";
+import { cn } from "cn";
 
-type ListingCardProps = { listing: ListingResponse; showExpired?: boolean; actions?: ReactNode };
+type ListingCardProps = {
+	listing: ListingResponse;
+	variant?: "grid" | "list";
+	showExpired?: boolean;
+	actions?: ReactNode;
+};
 
-export default function ListingCard({ listing, showExpired = false, actions }: ListingCardProps) {
+export default function ListingCard({
+	listing,
+	variant = "grid",
+	showExpired = false,
+	actions,
+}: ListingCardProps) {
+	const isList = variant === "list";
 	return (
-		<Card className="h-full overflow-hidden pt-0">
+		<Card className={cn("h-full overflow-hidden", isList ? "py-0" : "pt-0")}>
 			<Link
 				href={`/listings/${listing.id}`}
-				className="flex flex-1 flex-col gap-(--card-spacing) no-underline"
+				className={cn(
+					"flex flex-1 no-underline",
+					isList ? "flex-row" : "flex-col gap-(--card-spacing)",
+				)}
 			>
-				<div className="relative aspect-square sm:aspect-[4/3] lg:aspect-video w-full overflow-hidden">
+				<div
+					className={cn(
+						"relative overflow-hidden",
+						isList
+							? "aspect-square w-28 shrink-0 sm:w-40"
+							: "aspect-square w-full sm:aspect-[4/3] lg:aspect-video",
+					)}
+				>
 					{listing.image ? (
 						<Image
 							src={listing.image}
@@ -43,19 +65,27 @@ export default function ListingCard({ listing, showExpired = false, actions }: L
 						<StatusBadge listing={listing} />
 					</div>
 				</div>
-				<CardHeader>
-					<CardTitle className="text-h2">{listing.title}</CardTitle>
-					<CardDescription>
-						<ListingMeta listing={listing} dateVariant="relative" className="text-xs" />
-					</CardDescription>
-					<div className="flex flex-wrap items-center gap-1.5 justify-self-start">
-						<CategoryBadge category={listing.category} />
-						<TagList tags={listing.tags} max={2} />
-					</div>
-				</CardHeader>
-				<CardContent>
-					<p className="text-xs">{listing.description}</p>
-				</CardContent>
+				<div className={cn("flex flex-col", isList && "min-w-0 flex-1 py-3")}>
+					<CardHeader>
+						<CardTitle className="text-h2">{listing.title}</CardTitle>
+						<CardDescription>
+							<ListingMeta
+								listing={listing}
+								dateVariant="relative"
+								className="text-xs"
+							/>
+						</CardDescription>
+						<div className="flex flex-wrap items-center gap-1.5 justify-self-start">
+							<CategoryBadge category={listing.category} />
+							<TagList tags={listing.tags} max={2} />
+						</div>
+					</CardHeader>
+					<CardContent>
+						<p className={cn("text-xs", isList && "line-clamp-2")}>
+							{listing.description}
+						</p>
+					</CardContent>
+				</div>
 			</Link>
 			{actions && (
 				<CardFooter className="relative z-20 flex-col items-stretch">{actions}</CardFooter>
