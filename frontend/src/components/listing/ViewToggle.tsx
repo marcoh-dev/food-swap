@@ -11,31 +11,23 @@ export default function ViewToggle({ view }: { view: View }) {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	function handleViewChange(value: View) {
+	const nextView: View = view === "grid" ? "list" : "grid";
+
+	function handleToggle() {
 		const params = new URLSearchParams(searchParams.toString());
-		params.set("view", value);
+		params.set("view", nextView);
 		router.push(`${pathname}?${params.toString()}`, { scroll: false });
 	}
 	return (
-		<div className="flex gap-1">
-			<Button
-				variant={view === "grid" ? "secondary" : "ghost"}
-				size="icon"
-				aria-label="Rasteransicht"
-				aria-pressed={view === "grid"}
-				onClick={() => handleViewChange("grid")}
-			>
-				<LayoutGrid />
-			</Button>
-			<Button
-				variant={view === "list" ? "secondary" : "ghost"}
-				size="icon"
-				aria-label="Listenansicht"
-				aria-pressed={view === "list"}
-				onClick={() => handleViewChange("list")}
-			>
-				<List />
-			</Button>
-		</div>
+		<Button
+			variant="outline"
+			size="icon"
+			aria-label={
+				nextView === "grid" ? "Zur Rasteransicht wechseln" : "Zur Listenansicht wechseln"
+			}
+			onClick={handleToggle}
+		>
+			{nextView === "grid" ? <LayoutGrid /> : <List />}
+		</Button>
 	);
 }
