@@ -26,14 +26,14 @@ export default function ListingCard({ listing, showExpired = false, actions }: L
 				href={`/listings/${listing.id}`}
 				className="flex flex-1 flex-col gap-(--card-spacing) no-underline"
 			>
-				<div className="relative aspect-[16/9] w-full overflow-hidden">
+				<div className="relative aspect-square sm:aspect-[4/3] lg:aspect-video w-full overflow-hidden">
 					{listing.image ? (
 						<Image
 							src={listing.image}
 							alt={listing.title}
-							width={250}
-							height={200}
-							className="h-full w-full object-cover"
+							fill
+							sizes="(min-width: 768px) 50vw, 50vw"
+							className="object-cover"
 						/>
 					) : (
 						<ListingImagePlaceholder />
