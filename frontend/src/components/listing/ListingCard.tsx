@@ -82,7 +82,7 @@ export default function ListingCard({
 						</CardDescription>
 						<div className="flex flex-wrap items-center gap-1.5 justify-self-start">
 							<CategoryBadge category={listing.category} />
-							<TagList tags={listing.tags} max={2} />
+							<TagList tags={listing.tags} max={2} mobileMax={1} />
 						</div>
 					</CardHeader>
 					<CardContent>
