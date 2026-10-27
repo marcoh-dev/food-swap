@@ -19,6 +19,7 @@ import { ChevronDown } from "lucide-react";
 import { FieldDescription } from "@/components/ui/field";
 import ListingCard from "@/components/listing/ListingCard";
 import ListingActions from "@/components/listing/ListingAction";
+import ViewMenu from "@/components/listing/ViewMenu";
 
 export const metadata: Metadata = { title: pageTitles.myProfile };
 
@@ -35,6 +36,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 	const page = parsePage(query.page);
 	const sort: SortOption = query.sort === "endingSoon" ? "endingSoon" : "newest";
 
+	const view = query.view === "list" ? "list" : "grid";
 	const categories = await getCategories();
 	const tags = await getTags();
 
@@ -46,7 +48,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 
 	const { totalPages } = listingsData.meta;
 	if (totalPages > 0 && page > totalPages) {
-		redirect(`/users/${userId}/listings?page=${totalPages}&sort=${sort}`);
+		redirect(`/users/${userId}?page=${totalPages}&sort=${sort}&view=${view}`);
 	}
 
 	return (
@@ -100,14 +102,22 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 					</p>
 				) : (
 					<>
-						<div className="flex w-full justify-end mb-2 mt-3">
+						<div className="flex justify-end items-center gap-2 mb-2">
+							<ViewMenu view={view} />
 							<SortingMenu sort={sort} />
 						</div>
-						<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
+						<ul
+							className={
+								view === "list"
+									? "grid auto-rows-fr gap-3"
+									: "grid grid-cols-2 gap-3 sm:gap-8 md:gap-12"
+							}
+						>
 							{listingsData.data.map((listing) => (
 								<li key={listing.id}>
 									<ListingCard
 										listing={listing}
+										variant={view}
 										showExpired={isOwner}
 										actions={
 											isOwner && (
@@ -126,7 +136,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 						<ListingsPagination
 							page={listingsData.meta.page}
 							totalPages={totalPages}
-							searchParams={{ sort }}
+							searchParams={{ sort, view }}
 						/>
 					</>
 				)}
