@@ -287,7 +287,11 @@ export class ChatsService {
         chat.deletedByUser = true;
       }
 
-      if (chat.deletedByOwner && chat.deletedByUser) {
+      // A deleted account (NULL) counts as having deleted the chat
+      const ownerGone = chat.deletedByOwner || chat.ownerId === null;
+      const userGone = chat.deletedByUser || chat.userId === null;
+
+      if (ownerGone && userGone) {
         await manager.delete(Chat, chat.id);
       } else {
         await manager.update(Chat, chat.id, {
