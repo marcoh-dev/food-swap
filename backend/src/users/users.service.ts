@@ -12,6 +12,7 @@ import { CreateUserDto } from './dtos/createUser.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dtos/updateUser.dto';
 import { PlacesService } from '../places/places.service';
+import { Chat } from '../chats/entities/chat.entity';
 
 const SALT_ROUNDS = 12;
 
@@ -121,7 +122,20 @@ export class UsersService {
       );
     }
 
-    const result = await this.users.delete(userId);
+    const result = await this.users.manager.transaction(async (manager) => {
+      const deleted = await manager.delete(User, userId);
+
+      // The user's side of their chats is now NULL → delete chats nobody is left in
+      await manager
+        .createQueryBuilder()
+        .delete()
+        .from(Chat)
+        .where('("ownerId" IS NULL OR "deletedByOwner")')
+        .andWhere('("userId" IS NULL OR "deletedByUser")')
+        .execute();
+
+      return deleted;
+    });
 
     if ((result.affected ?? 0) < 1) {
       throw new ConflictException(
