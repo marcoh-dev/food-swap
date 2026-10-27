@@ -8,6 +8,8 @@ import { getChatsAction } from "@/app/actions";
 import {
 	dismissPermissionPrompt,
 	notificationsEnabled,
+	PERMISSION_TOAST_ID,
+	setNotificationsTurnedOff,
 	shouldAskForPermission,
 } from "@/lib/notifications";
 import type { ChatListItem, ChatMessage } from "@/lib/types/chat.types";
@@ -21,13 +23,18 @@ export function ChatNotifications() {
 		if (!shouldAskForPermission()) return;
 
 		toast("Benachrichtigungen aktivieren?", {
-			id: "notification-permission",
+			id: PERMISSION_TOAST_ID,
 			description:
 				"Erfahre sofort, wenn dir jemand schreibt. Du kannst das jederzeit in deinem Profil ändern.",
 			duration: Infinity,
 			action: {
 				label: "Aktivieren",
-				onClick: () => void Notification.requestPermission(),
+				onClick: async () => {
+					const permission = await Notification.requestPermission();
+					if (permission === "granted") setNotificationsTurnedOff(false);
+					// Prompt closed without a choice → treat like "Später"
+					if (permission === "default") dismissPermissionPrompt();
+				},
 			},
 			cancel: {
 				label: "Später",

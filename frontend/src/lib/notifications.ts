@@ -1,6 +1,8 @@
 const PROMPT_DISMISSED_KEY = "foodswap:notification-prompt-dismissed";
 const TURNED_OFF_KEY = "foodswap:notifications-off";
 
+export const PERMISSION_TOAST_ID = "notification-permission";
+
 export function notificationsSupported(): boolean {
 	return typeof window !== "undefined" && "Notification" in window;
 }
