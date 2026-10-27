@@ -4,6 +4,8 @@ import {
 	deleteChatAction,
 	getChatAction,
 	getChatsAction,
+	getUnreadChatsCountAction,
+	markChatReadAction,
 	replyToChatAction,
 	startChatAction,
 } from "@/app/actions";
@@ -37,6 +39,7 @@ const initialState: ChatState = {
 	userId: null,
 	chats: null,
 	chatsError: null,
+	unreadCount: 0,
 	conversation: null,
 	conversationError: null,
 };
@@ -44,10 +47,25 @@ const initialState: ChatState = {
 export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 	let openChatId: string | null = null;
 
-	function receiveMessage(message: ChatMessage) {
-		const { conversation, chats } = get();
+	async function markRead(chatId: string) {
+		try {
+			await call(markChatReadAction(chatId));
+		} catch {
+			// Stays unread until the chat is opened again.
+		}
+	}
 
-		if (conversation?.id === message.chatId) {
+	function receiveMessage(message: ChatMessage) {
+		const { conversation, chats, userId } = get();
+		const isOpen = conversation?.id === message.chatId;
+		const fromOther = message.senderId !== userId;
+
+		if (fromOther) {
+			if (isOpen) void markRead(message.chatId);
+			else void get().loadUnreadCount();
+		}
+
+		if (isOpen) {
 			set({
 				conversation: {
 					...conversation,
@@ -67,7 +85,12 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 
 		set({
 			chats: [
-				{ ...chat, lastMessage: message.content, lastMessageAt: message.createdAt },
+				{
+					...chat,
+					lastMessage: message.content,
+					lastMessageAt: message.createdAt,
+					unread: fromOther && !isOpen,
+				},
 				...chats.filter((item) => item.id !== chat.id),
 			],
 		});
@@ -87,6 +110,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 	socket.on("connect", () => {
 		set({ connected: true });
 
+		void get().loadUnreadCount();
 		if (get().chats) void get().loadChats();
 		if (openChatId) void get().openChat(openChatId);
 	});
@@ -97,8 +121,19 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		receiveMessage(message);
 	});
 
+	socket.on("chatRead", ({ chatId }: { chatId: string }) => {
+		set((state) => ({
+			chats:
+				state.chats?.map((item) =>
+					item.id === chatId ? { ...item, unread: false } : item,
+				) ?? null,
+		}));
+		void get().loadUnreadCount();
+	});
+
 	socket.on("chatRemoved", ({ chatId }: { chatId: string }) => {
 		removeChat(chatId);
+		void get().loadUnreadCount();
 	});
 
 	return {
@@ -125,6 +160,14 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 			}
 		},
 
+		loadUnreadCount: async () => {
+			try {
+				set({ unreadCount: await call(getUnreadChatsCountAction()) });
+			} catch {
+				// Keeps the last known count; it refreshes on the next chat event.
+			}
+		},
+
 		openChat: async (chatId) => {
 			openChatId = chatId;
 
@@ -144,6 +187,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 							: chat,
 					conversationError: null,
 				});
+				void markRead(chatId);
 			} catch (error) {
 				if (openChatId !== chatId || get().conversation?.id === chatId) return;
 				set({ conversationError: errorMessage(error) });

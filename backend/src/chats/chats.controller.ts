@@ -24,6 +24,11 @@ export class ChatsController {
     return this.chatsService.findAll(req.user);
   }
 
+  @Get('unread-count')
+  countUnread(@Request() req: AuthenticatedRequest) {
+    return this.chatsService.countUnread(req.user);
+  }
+
   @Get('listing/:listingId')
   findForListing(
     @Request() req: AuthenticatedRequest,
@@ -38,6 +43,15 @@ export class ChatsController {
     @Param('id', ParseUUIDPipe) chatId: string,
   ) {
     return this.chatsService.findOne(chatId, req.user);
+  }
+
+  @Post(':id/read')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  markRead(
+    @Request() req: AuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) chatId: string,
+  ) {
+    return this.chatsService.markRead(chatId, req.user);
   }
 
   @Delete(':id')

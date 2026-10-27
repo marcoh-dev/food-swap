@@ -53,6 +53,12 @@ export class Chat {
   @Column({ type: 'timestamptz', default: () => 'now()' })
   lastMessageAt!: Date;
 
+  @Column({ type: 'timestamptz', nullable: true })
+  ownerLastReadAt!: Date | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  userLastReadAt!: Date | null;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
 

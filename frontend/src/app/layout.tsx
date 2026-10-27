@@ -10,6 +10,8 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
 import { getCurrentUser } from "@/lib/users.service";
 import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
+import { ChatNotifications } from "@/components/chat/ChatNotifications";
+import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
 import { Toaster } from "@/components/ui/sonner";
 import Toast from "@/components/shared/Toast";
 import { Suspense } from "react";
@@ -80,6 +82,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					</header>
 					<main className="p-[1em]">{children}</main>
 					<Toaster />
+					{currentUser && (
+						<>
+							<ChatNotifications />
+							<UnreadChatsTitle />
+						</>
+					)}
 					<Suspense>
 						<Toast />
 					</Suspense>

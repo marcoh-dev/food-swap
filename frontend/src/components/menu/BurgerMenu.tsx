@@ -5,6 +5,7 @@ import { ModeToggle } from "@/components/menu/ModeToggle";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/users.service";
+import { UnreadChatsBadge } from "@/components/chat/UnreadChatsBadge";
 import NavLink from "./NavLink";
 
 export default async function BurgerMenu() {
@@ -15,8 +16,10 @@ export default async function BurgerMenu() {
 		<div>
 			<SheetParts.Sheet>
 				<SheetParts.SheetTrigger asChild>
-					<Button type="button" variant="ghost" aria-label="Menü öffnen">
-						<Menu className="size-9" />
+					<Button type="button" variant="ghost" className="relative">
+						<Menu className="size-9" aria-hidden="true" />
+						<span className="sr-only">Menü öffnen</span>
+						<UnreadChatsBadge className="absolute -top-1 -right-1" />
 					</Button>
 				</SheetParts.SheetTrigger>
 
@@ -36,7 +39,10 @@ export default async function BurgerMenu() {
 							</li>
 							<li>
 								<SheetParts.SheetClose asChild>
-									<NavLink href="/chats">Meine Chats</NavLink>
+									<NavLink href="/chats">
+										Meine Chats{" "}
+										<UnreadChatsBadge className="ml-1 align-middle" />
+									</NavLink>
 								</SheetParts.SheetClose>
 							</li>
 						</ul>

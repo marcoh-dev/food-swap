@@ -16,4 +16,7 @@ export class ChatListItemDto {
   @Expose()
   @Type(() => Date)
   lastMessageAt!: Date;
+
+  @Expose()
+  unread!: boolean;
 }

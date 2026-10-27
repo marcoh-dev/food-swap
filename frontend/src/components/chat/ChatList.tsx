@@ -77,8 +77,20 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 						)}
 					>
 						<span className="flex items-baseline justify-between gap-2">
-							<span className="truncate font-medium">
-								{chat.otherName ?? "Gelöschtes Konto"}
+							<span
+								className={cn(
+									"flex min-w-0 items-center gap-1.5 font-medium",
+									chat.unread && "font-bold",
+								)}
+							>
+								{chat.unread && (
+									<span className="size-2 shrink-0 rounded-full bg-primary">
+										<span className="sr-only">Ungelesen:</span>
+									</span>
+								)}
+								<span className="truncate">
+									{chat.otherName ?? "Gelöschtes Konto"}
+								</span>
 							</span>
 							<span className="shrink-0 text-muted-foreground">
 								{formatShortDate(chat.lastMessageAt)}
@@ -87,7 +99,11 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 						<span className="truncate text-muted-foreground">
 							{chat.listingTitle ?? "Gelöschtes Angebot"}
 						</span>
-						{chat.lastMessage && <span className="truncate">{chat.lastMessage}</span>}
+						{chat.lastMessage && (
+							<span className={cn("truncate", chat.unread && "font-bold")}>
+								{chat.lastMessage}
+							</span>
+						)}
 					</button>
 				</li>
 			))}
