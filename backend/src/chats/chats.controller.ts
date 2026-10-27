@@ -24,6 +24,11 @@ export class ChatsController {
     return this.chatsService.findAll(req.user);
   }
 
+  @Get('unread-count')
+  countUnread(@Request() req: AuthenticatedRequest) {
+    return this.chatsService.countUnread(req.user);
+  }
+
   @Get('listing/:listingId')
   findForListing(
     @Request() req: AuthenticatedRequest,

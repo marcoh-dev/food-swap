@@ -16,6 +16,7 @@ import { Message } from './entities/message.entity';
 import { ChatDetailDto } from './dtos/chatDetail.dto';
 import { ChatsGateway } from './chats.gateway';
 import { ListingChatStatusDto } from './dtos/listingChatStatus.dto';
+import { UnreadChatsCountDto } from './dtos/unreadChatsCount.dto';
 
 type SavedMessage = {
   message: MessageResponseDto;
@@ -67,6 +68,14 @@ export class ChatsService {
     });
 
     return plainToInstance(ChatListItemDto, items);
+  }
+
+  async countUnread(currentUser: User): Promise<UnreadChatsCountDto> {
+    const chats = await this.findAll(currentUser);
+
+    return plainToInstance(UnreadChatsCountDto, {
+      count: chats.filter((chat) => chat.unread).length,
+    });
   }
 
   async findOne(chatId: string, currentUser: User): Promise<ChatDetailDto> {
