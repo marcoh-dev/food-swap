@@ -156,7 +156,9 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | `npm run seed:mock:live -w backend`                              | adds or updates the mock data in the live database (`backend/.env.live`)          |
 | `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
 
-`npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
+`npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`, only if `package-lock.json` changed since the last install), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
+
+If the dependencies were reinstalled and you use VS Code, run **Developer: Reload Window** (Cmd/Ctrl+Shift+P) afterwards. `npm ci` replaces `node_modules`, and the TypeScript and ESLint servers in VS Code keep using the old files until they restart.
 
 ### Tests
 
