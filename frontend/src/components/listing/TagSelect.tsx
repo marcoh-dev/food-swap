@@ -24,7 +24,7 @@ export default function TagSelect({ tags, value, onChange, valueKey = "id" }: Pr
 				<ToggleGroupItem
 					key={tag.id}
 					value={tag[valueKey]}
-					className="dark:bg-input/30 data-[state=on]:bg-category data-[state=on]:text-category-foreground rounded-sm"
+					className="dark:bg-input/30 data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground dark:data-[state=on]:bg-foreground data-[state=on]:hover:bg-foreground/90 data-[state=on]:hover:text-background rounded-sm"
 				>
 					{tag.name}
 				</ToggleGroupItem>
