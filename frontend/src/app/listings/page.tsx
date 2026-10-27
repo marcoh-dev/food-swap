@@ -108,7 +108,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					<ul
 						className={
 							view === "list"
-								? "flex flex-col gap-3"
+								? "grid auto-rows-fr gap-3"
 								: "grid grid-cols-2 gap-3 sm:gap-8 md:gap-12"
 						}
 					>

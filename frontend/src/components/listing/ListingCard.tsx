@@ -65,7 +65,7 @@ export default function ListingCard({
 						<StatusBadge listing={listing} />
 					</div>
 				</div>
-				<div className={cn("flex flex-col", isList && "min-w-0 flex-1 py-3")}>
+				<div className={cn("flex flex-col gap-3", isList && "min-w-0 flex-1 py-3")}>
 					<CardHeader>
 						<CardTitle
 							className="text-h2 line-clamp-2 wrap-break-word"
