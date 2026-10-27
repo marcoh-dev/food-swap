@@ -45,7 +45,7 @@ export default function ListingCard({
 					className={cn(
 						"relative overflow-hidden",
 						isList
-							? "aspect-square w-28 shrink-0 sm:w-40"
+							? "w-2/5 shrink-0 sm:w-40 md:aspect-4/3 md:w-72 lg:w-96"
 							: "aspect-square w-full sm:aspect-[4/3] lg:aspect-video",
 					)}
 				>
@@ -54,7 +54,11 @@ export default function ListingCard({
 							src={listing.image}
 							alt={listing.title}
 							fill
-							sizes={isList ? "160px" : "(min-width: 768px) 50vw, 100vw"}
+							sizes={
+								isList
+									? "(min-width: 1024px) 384px, (min-width: 768px) 288px, (min-width: 640px) 160px, 40vw"
+									: "(min-width: 768px) 50vw, 100vw"
+							}
 							className="object-cover"
 						/>
 					) : (
