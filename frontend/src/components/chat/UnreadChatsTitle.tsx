@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-
 import { useChatStore } from "@/store/chat.store";
-
 import { formatUnreadCount } from "./UnreadChatsBadge";
 
 const PREFIX = /^\(\d+\+?\) /;

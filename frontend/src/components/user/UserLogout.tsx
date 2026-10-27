@@ -1,7 +1,6 @@
 "use client";
 
 import { toast } from "sonner";
-
 import * as SheetParts from "@/components/ui/sheet";
 import { logoutAction } from "@/app/actions";
 import { PERMISSION_TOAST_ID } from "@/lib/notifications";
