@@ -5,6 +5,7 @@ import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholde
 import CategoryBadge from "@/components/listing/CategoryBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
 import ExpiredBadge from "@/components/listing/ExpiredBadge";
+import TypeBadge from "@/components/listing/TypeBadge";
 import TagList from "@/components/listing/TagList";
 import ListingMeta from "@/components/listing/ListingMeta";
 import {
@@ -68,6 +69,9 @@ export default function ListingCard({
 						{showExpired && <ExpiredBadge listing={listing} />}
 						<StatusBadge listing={listing} />
 					</div>
+					<div className="absolute top-2 right-2">
+						<TypeBadge listing={listing} />
+					</div>
 				</div>
 				<div className={cn("flex flex-col gap-3", isList && "min-w-0 flex-1 py-3")}>
 					<CardHeader>
@@ -81,7 +85,7 @@ export default function ListingCard({
 							<ListingMeta
 								listing={listing}
 								dateVariant="relative"
-								compactType
+								hideType
 								className="text-xs"
 							/>
 						</CardDescription>
