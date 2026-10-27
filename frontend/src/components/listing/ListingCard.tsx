@@ -44,7 +44,7 @@ export default function ListingCard({
 			>
 				<div
 					className={cn(
-						"relative overflow-hidden",
+						"@container relative overflow-hidden",
 						isList
 							? "w-2/5 shrink-0 sm:w-40 md:aspect-4/3 md:w-72 lg:w-96"
 							: "aspect-square w-full sm:aspect-[4/3] lg:aspect-video",
@@ -65,11 +65,11 @@ export default function ListingCard({
 					) : (
 						<ListingImagePlaceholder />
 					)}
-					<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
-						{showExpired && <ExpiredBadge listing={listing} />}
-						<StatusBadge listing={listing} />
-					</div>
-					<div className="absolute top-2 right-2">
+					<div className="absolute inset-x-2 top-2 flex items-start justify-between gap-1">
+						<div className="flex min-w-0 flex-col items-start gap-1">
+							{showExpired && <ExpiredBadge listing={listing} />}
+							<StatusBadge listing={listing} />
+						</div>
 						<TypeBadge listing={listing} />
 					</div>
 				</div>
@@ -91,7 +91,14 @@ export default function ListingCard({
 						</CardDescription>
 						<div className="mt-1 flex flex-wrap items-center gap-1.5 justify-self-start">
 							<CategoryBadge category={listing.category} />
-							<TagList tags={listing.tags} max={2} mobileMax={1} />
+							<TagList
+								tags={listing.tags}
+								max={
+									isList
+										? { base: 1, sm: 2, md: 3, lg: 5 }
+										: { base: 1, sm: 2, lg: 3 }
+								}
+							/>
 						</div>
 					</CardHeader>
 					<CardContent className="hidden sm:block">
