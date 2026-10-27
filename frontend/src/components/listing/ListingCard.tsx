@@ -94,7 +94,7 @@ export default function ListingCard({
 							<TagList tags={listing.tags} max={2} mobileMax={1} />
 						</div>
 					</CardHeader>
-					<CardContent>
+					<CardContent className="hidden sm:block">
 						<p
 							className={cn(
 								"text-xs wrap-break-word",
