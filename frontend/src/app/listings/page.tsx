@@ -16,7 +16,7 @@ import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
 
 import ListingCard from "@/components/listing/ListingCard";
-import ViewToggle from "@/components/listing/ViewToggle";
+import ViewMenu from "@/components/listing/ViewMenu";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -82,7 +82,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				<div className="flex w-full flex-col items-start mb-2">
 					<ListingFilters categories={categories} tags={allTags} />
 					<div className="self-end flex items-center gap-2">
-						<ViewToggle view={view} />
+						<ViewMenu view={view} />
 						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 					</div>
 				</div>
