@@ -3,7 +3,7 @@ import { UserDelete } from "@/components/user/UserDelete";
 import { UserUpdate } from "@/components/user/UserUpdate";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
-import { formatDate } from "@/utils/date";
+import { formatDate, isExpired } from "@/utils/date";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -119,6 +119,11 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 										listing={listing}
 										variant={view}
 										showExpired={isOwner}
+										unavailable={
+											isOwner &&
+											(listing.status === "deactivated" ||
+												isExpired(listing.endDate))
+										}
 										actions={
 											isOwner && (
 												<ListingActions

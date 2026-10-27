@@ -9,7 +9,7 @@ import {
 import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "cn";
 import ListingDate from "./ListingDate";
-import { getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
+import { formatDate, getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
 import { formatDistance, formatPlace } from "@/utils/place";
 
 export default function ListingMeta({
@@ -58,7 +58,9 @@ export default function ListingMeta({
 			{!hideEndDate && (
 				<span className="inline-flex items-center gap-1">
 					<TimerIcon className="size-4" aria-hidden="true" />
-					{getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
+					{dateVariant === "full"
+						? `Bis ${formatDate(listing.endDate)}`
+						: getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
 				</span>
 			)}
 			{deletionLabel && (

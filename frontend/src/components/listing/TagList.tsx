@@ -82,8 +82,10 @@ export default function TagList({ tags, max, scrollable = false }: Props) {
 					<li
 						key={tag.id}
 						className={
-							cn(scrollable && "shrink-0", visibilityClasses((bp) => i < limits[bp])) ||
-							undefined
+							cn(
+								scrollable && "shrink-0",
+								visibilityClasses((bp) => i < limits[bp]),
+							) || undefined
 						}
 					>
 						<Badge variant="tag" className="rounded-full">
