@@ -6,6 +6,7 @@ import CategoryBadge from "@/components/listing/CategoryBadge";
 import StatusBadge from "@/components/listing/StatusBadge";
 import ExpiredBadge from "@/components/listing/ExpiredBadge";
 import TypeBadge from "@/components/listing/TypeBadge";
+import EndDateBadge from "@/components/listing/EndDateBadge";
 import TagList from "@/components/listing/TagList";
 import ListingMeta from "@/components/listing/ListingMeta";
 import {
@@ -72,6 +73,9 @@ export default function ListingCard({
 						</div>
 						<TypeBadge listing={listing} />
 					</div>
+					<div className="absolute bottom-2 left-2">
+						<EndDateBadge listing={listing} />
+					</div>
 				</div>
 				<div className={cn("flex flex-col gap-3", isList && "min-w-0 flex-1 py-3")}>
 					<CardHeader>
@@ -86,6 +90,7 @@ export default function ListingCard({
 								listing={listing}
 								dateVariant="relative"
 								hideType
+								hideEndDate
 								className="text-xs"
 							/>
 						</CardDescription>

@@ -18,6 +18,7 @@ export default function ListingMeta({
 	showDeletionDate = false,
 	compactType = false,
 	hideType = false,
+	hideEndDate = false,
 	className,
 }: {
 	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate" | "distance">;
@@ -25,6 +26,7 @@ export default function ListingMeta({
 	showDeletionDate?: boolean;
 	compactType?: boolean;
 	hideType?: boolean;
+	hideEndDate?: boolean;
 	className?: string;
 }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;
@@ -53,10 +55,12 @@ export default function ListingMeta({
 			)}
 
 			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
-			<span className="inline-flex items-center gap-1">
-				<TimerIcon className="size-4" aria-hidden="true" />
-				{getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
-			</span>
+			{!hideEndDate && (
+				<span className="inline-flex items-center gap-1">
+					<TimerIcon className="size-4" aria-hidden="true" />
+					{getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
+				</span>
+			)}
 			{deletionLabel && (
 				<span className="inline-flex basis-full items-center gap-1">
 					<Trash2Icon className="size-4" aria-hidden="true" />
