@@ -247,6 +247,25 @@ export class ChatsService {
     return message;
   }
 
+  async markRead(chatId: string, currentUser: User): Promise<void> {
+    const { id: userId } = currentUser;
+    const chat = await this.chats.findOne({
+      where: { id: chatId },
+      select: { id: true, ownerId: true, userId: true },
+    });
+
+    if (!chat || (chat.ownerId !== userId && chat.userId !== userId)) {
+      throw new NotFoundException('Chat nicht gefunden');
+    }
+
+    await this.chats.update(chat.id, {
+      [chat.ownerId === userId ? 'ownerLastReadAt' : 'userLastReadAt']: () =>
+        'now()',
+    });
+
+    this.chatsGateway.notifyChatRead(userId, chatId);
+  }
+
   async remove(chatId: string, currentUser: User): Promise<void> {
     const { id: userId } = currentUser;
 

@@ -45,6 +45,15 @@ export class ChatsController {
     return this.chatsService.findOne(chatId, req.user);
   }
 
+  @Post(':id/read')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  markRead(
+    @Request() req: AuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) chatId: string,
+  ) {
+    return this.chatsService.markRead(chatId, req.user);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(

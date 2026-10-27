@@ -1,0 +1,20 @@
+info:
+  name: Mark Chat as Read
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseURL}}/chats/:id/read"
+  params:
+    - name: id
+      value: "{{chatId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

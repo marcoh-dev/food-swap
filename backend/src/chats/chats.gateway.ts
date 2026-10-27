@@ -41,6 +41,10 @@ export class ChatsGateway implements OnGatewayConnection {
     this.server.to(rooms).emit('newMessage', instanceToPlain(message));
   }
 
+  notifyChatRead(userId: string, chatId: string) {
+    this.server.to(this.userRoom(userId)).emit('chatRead', { chatId });
+  }
+
   notifyChatRemoved(userId: string, chatId: string) {
     this.server.to(this.userRoom(userId)).emit('chatRemoved', { chatId });
   }
