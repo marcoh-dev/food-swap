@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { getChatsAction } from "@/app/actions";
 import {
 	dismissPermissionPrompt,
-	notificationsSupported,
+	notificationsEnabled,
 	shouldAskForPermission,
 } from "@/lib/notifications";
 import type { ChatListItem, ChatMessage } from "@/lib/types/chat.types";
@@ -22,7 +22,8 @@ export function ChatNotifications() {
 
 		toast("Benachrichtigungen aktivieren?", {
 			id: "notification-permission",
-			description: "Erfahre sofort, wenn dir jemand schreibt.",
+			description:
+				"Erfahre sofort, wenn dir jemand schreibt. Du kannst das jederzeit in deinem Profil ändern.",
 			duration: Infinity,
 			action: {
 				label: "Aktivieren",
@@ -37,7 +38,7 @@ export function ChatNotifications() {
 
 	useEffect(() => {
 		async function notify(message: ChatMessage) {
-			if (!notificationsSupported() || Notification.permission !== "granted") return;
+			if (!notificationsEnabled()) return;
 
 			const { userId, conversation, chats } = useChatStore.getState();
 			if (message.senderId === userId) return;

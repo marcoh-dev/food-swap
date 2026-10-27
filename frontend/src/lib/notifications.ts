@@ -1,7 +1,33 @@
 const PROMPT_DISMISSED_KEY = "foodswap:notification-prompt-dismissed";
+const TURNED_OFF_KEY = "foodswap:notifications-off";
 
 export function notificationsSupported(): boolean {
 	return typeof window !== "undefined" && "Notification" in window;
+}
+
+export function notificationsTurnedOff(): boolean {
+	try {
+		return localStorage.getItem(TURNED_OFF_KEY) !== null;
+	} catch {
+		return false;
+	}
+}
+
+export function setNotificationsTurnedOff(off: boolean): void {
+	try {
+		if (off) localStorage.setItem(TURNED_OFF_KEY, "true");
+		else localStorage.removeItem(TURNED_OFF_KEY);
+	} catch {
+		// Without storage the setting falls back to the browser permission.
+	}
+}
+
+export function notificationsEnabled(): boolean {
+	return (
+		notificationsSupported() &&
+		Notification.permission === "granted" &&
+		!notificationsTurnedOff()
+	);
 }
 
 export function shouldAskForPermission(): boolean {

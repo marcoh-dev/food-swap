@@ -1,6 +1,7 @@
 import { SortingMenu } from "@/components/listing/SortingMenu";
 import { UserDelete } from "@/components/user/UserDelete";
 import { UserUpdate } from "@/components/user/UserUpdate";
+import { NotificationSetting } from "@/components/user/NotificationSetting";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
 import { formatDate } from "@/utils/date";
@@ -94,6 +95,10 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 							currentName={user.name ?? undefined}
 							currentPlace={currentUser.place}
 						/>
+
+						<div className="border-t pt-4">
+							<NotificationSetting />
+						</div>
 
 						<div className="flex items-center justify-between gap-4 border-t pt-4">
 							<p className="text-sm text-muted-foreground">FoodSwap verlassen?</p>
