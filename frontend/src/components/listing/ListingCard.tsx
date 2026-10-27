@@ -54,7 +54,7 @@ export default function ListingCard({
 							src={listing.image}
 							alt={listing.title}
 							fill
-							sizes="(min-width: 768px) 50vw, 50vw"
+							sizes={isList ? "160px" : "(min-width: 768px) 50vw, 100vw"}
 							className="object-cover"
 						/>
 					) : (
@@ -67,7 +67,12 @@ export default function ListingCard({
 				</div>
 				<div className={cn("flex flex-col", isList && "min-w-0 flex-1 py-3")}>
 					<CardHeader>
-						<CardTitle className="text-h2">{listing.title}</CardTitle>
+						<CardTitle
+							className="text-h2 line-clamp-2 wrap-break-word"
+							title={listing.title}
+						>
+							{listing.title}
+						</CardTitle>
 						<CardDescription>
 							<ListingMeta
 								listing={listing}
@@ -81,7 +86,12 @@ export default function ListingCard({
 						</div>
 					</CardHeader>
 					<CardContent>
-						<p className={cn("text-xs", isList && "line-clamp-2")}>
+						<p
+							className={cn(
+								"text-xs wrap-break-word",
+								isList ? "line-clamp-2" : "line-clamp-3",
+							)}
+						>
 							{listing.description}
 						</p>
 					</CardContent>
