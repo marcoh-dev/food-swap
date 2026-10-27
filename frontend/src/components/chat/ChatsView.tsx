@@ -32,7 +32,6 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 
 	return (
 		<div className="grid h-[calc(100dvh-5.625rem-2em)] overflow-hidden rounded-xl border md:grid-cols-[minmax(16rem,20rem)_1fr]">
-			{" "}
 			<aside
 				aria-label="Deine Chats"
 				className={cn(
