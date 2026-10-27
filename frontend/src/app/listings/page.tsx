@@ -16,6 +16,7 @@ import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
 
 import ListingCard from "@/components/listing/ListingCard";
+import ViewToggle from "@/components/listing/ViewToggle";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -38,6 +39,8 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 			: params.sort === "nearest" && selectedPlace
 				? "nearest"
 				: "newest";
+
+	const view = params.view === "list" ? "list" : "grid";
 	const radius = selectedPlace ? parseRadius(getParam(params.radius)) : undefined;
 	const category = getParam(params.category);
 	const tags = getParam(params.tags);
@@ -73,11 +76,13 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					category={category}
 					tags={tags}
 					sort={sort}
+					view={view}
 				/>
 
 				<div className="flex w-full flex-col items-start mb-2">
 					<ListingFilters categories={categories} tags={allTags} />
-					<div className="self-end">
+					<div className="self-end flex items-center gap-2">
+						<ViewToggle view={view} />
 						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 					</div>
 				</div>
@@ -100,10 +105,16 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				</p>
 			) : (
 				<>
-					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
+					<ul
+						className={
+							view === "list"
+								? "flex flex-col gap-3"
+								: "grid grid-cols-2 gap-3 sm:gap-8 md:gap-12"
+						}
+					>
 						{listings.map((listing) => (
 							<li key={listing.id}>
-								<ListingCard listing={listing} />
+								<ListingCard listing={listing} variant={view} />
 							</li>
 						))}
 					</ul>
@@ -117,6 +128,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 							category,
 							tags,
 							sort,
+							view,
 						}}
 					/>
 				</>
