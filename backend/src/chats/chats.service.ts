@@ -153,9 +153,15 @@ export class ChatsService {
               deletedByOwner: false,
               deletedByUser: false,
               lastMessageAt: () => 'now()',
+              userLastReadAt: () => 'now()',
             })
             .orUpdate(
-              ['deletedByOwner', 'deletedByUser', 'lastMessageAt'],
+              [
+                'deletedByOwner',
+                'deletedByUser',
+                'lastMessageAt',
+                'userLastReadAt',
+              ],
               ['listingId', 'ownerId', 'userId'],
             )
             .returning('id')
@@ -208,6 +214,8 @@ export class ChatsService {
             deletedByOwner: false,
             deletedByUser: false,
             lastMessageAt: () => 'now()',
+            [chat.ownerId === senderId ? 'ownerLastReadAt' : 'userLastReadAt']:
+              () => 'now()',
           });
 
           return {
