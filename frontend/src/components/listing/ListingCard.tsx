@@ -35,7 +35,7 @@ export default function ListingCard({
 }: ListingCardProps) {
 	const isList = variant === "list";
 	return (
-		<Card className={cn("h-full overflow-hidden", isList ? "py-0" : "pt-0")}>
+		<Card className={cn("h-full overflow-hidden", isList ? "gap-0 py-0" : "pt-0")}>
 			<Link
 				href={`/listings/${listing.id}`}
 				className={cn(
