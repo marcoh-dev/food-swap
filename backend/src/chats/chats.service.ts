@@ -53,13 +53,16 @@ export class ChatsService {
       .getMany();
 
     const items = chats.map((chat) => {
-      const other = chat.ownerId === userId ? chat.user : chat.owner;
+      const isOwner = chat.ownerId === userId;
+      const other = isOwner ? chat.user : chat.owner;
+      const lastReadAt = isOwner ? chat.ownerLastReadAt : chat.userLastReadAt;
       return {
         id: chat.id,
         listingTitle: chat.listing?.title ?? null,
         otherName: other ? (other.name ?? other.username) : null,
         lastMessage: chat.messages[0]?.content ?? null,
         lastMessageAt: chat.lastMessageAt,
+        unread: lastReadAt === null || chat.lastMessageAt > lastReadAt,
       };
     });
 
