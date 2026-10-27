@@ -36,20 +36,6 @@ export default async function BurgerMenu() {
 							</li>
 							<li>
 								<SheetParts.SheetClose asChild>
-									<NavLink
-										href="/me/listings"
-										activeHref={
-											currentUser
-												? `/users/${currentUser.id}/listings`
-												: undefined
-										}
-									>
-										Meine Angebote
-									</NavLink>
-								</SheetParts.SheetClose>
-							</li>
-							<li>
-								<SheetParts.SheetClose asChild>
 									<NavLink href="/chats">Meine Chats</NavLink>
 								</SheetParts.SheetClose>
 							</li>
