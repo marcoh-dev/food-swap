@@ -77,6 +77,7 @@ export default function ListingCard({
 							<ListingMeta
 								listing={listing}
 								dateVariant="relative"
+								compactType
 								className="text-xs"
 							/>
 						</CardDescription>

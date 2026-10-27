@@ -16,11 +16,13 @@ export default function ListingMeta({
 	listing,
 	dateVariant,
 	showDeletionDate = false,
+	compactType = false,
 	className,
 }: {
 	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate" | "distance">;
 	dateVariant?: "relative" | "full";
 	showDeletionDate?: boolean;
+	compactType?: boolean;
 	className?: string;
 }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;
@@ -41,7 +43,9 @@ export default function ListingMeta({
 			)}
 			<span className="inline-flex items-center gap-1">
 				<TypeIcon className="size-4" aria-hidden="true" />
-				{listing.type === "swap" ? "Tauschen" : "Verschenken"}
+				<span className={cn(compactType && "sr-only sm:not-sr-only")}>
+					{listing.type === "swap" ? "Tauschen" : "Verschenken"}
+				</span>
 			</span>
 
 			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
