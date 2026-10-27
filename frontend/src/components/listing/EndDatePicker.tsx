@@ -44,7 +44,7 @@ export default function EndDatePicker({ value, onChange, ref, ...ariaProps }: Pr
 					ref={ref}
 					type="button"
 					variant="outline"
-					className="w-full justify-start"
+					className="w-full justify-start rounded-sm"
 					{...ariaProps}
 				>
 					<CalendarIcon className="size-4" aria-hidden="true" /> {label}
