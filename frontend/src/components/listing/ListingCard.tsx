@@ -94,15 +94,12 @@ export default function ListingCard({
 								className="text-xs"
 							/>
 						</CardDescription>
-						<div className="mt-1 flex flex-wrap items-center gap-1.5 justify-self-start">
+						<div className="mt-1 flex min-w-0 flex-col items-start gap-1.5">
 							<CategoryBadge category={listing.category} />
 							<TagList
 								tags={listing.tags}
-								max={
-									isList
-										? { base: 1, sm: 2, md: 3, lg: 5 }
-										: { base: 1, sm: 2, lg: 3 }
-								}
+								max={isList ? { sm: 2, md: 3, lg: 5 } : { sm: 2, lg: 3 }}
+								scrollable
 							/>
 						</div>
 					</CardHeader>

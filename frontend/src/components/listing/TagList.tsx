@@ -27,10 +27,11 @@ type Props = {
 	tags: Tag[];
 	/** Max visible tags, either fixed or per breakpoint (mobile-first, values inherit upwards). */
 	max?: number | ResponsiveMax;
+	/** Below `sm`, render all tags in a single horizontally swipeable row instead of wrapping. */
+	scrollable?: boolean;
 };
 
-function resolveMax(max: Props["max"], total: number): Record<Breakpoint, number> {
-	const config: ResponsiveMax = typeof max === "number" ? { base: max } : (max ?? {});
+function resolveMax(config: ResponsiveMax, total: number): Record<Breakpoint, number> {
 	let current = total;
 	return Object.fromEntries(
 		BREAKPOINTS.map((bp) => {
@@ -52,21 +53,39 @@ function visibilityClasses(isVisible: (bp: Breakpoint) => boolean) {
 	);
 }
 
-export default function TagList({ tags, max }: Props) {
+export default function TagList({ tags, max, scrollable = false }: Props) {
 	if (tags.length === 0) return null;
 
-	const limits = resolveMax(max, tags.length);
+	// The swipeable row shows every tag on mobile, so a base limit would only hide some of them
+	const config: ResponsiveMax = typeof max === "number" ? { base: max } : (max ?? {});
+	const limits = resolveMax(
+		scrollable ? { ...config, base: undefined, sm: config.sm ?? config.base } : config,
+		tags.length,
+	);
 	const hiddenCounts = [...new Set(BREAKPOINTS.map((bp) => tags.length - limits[bp]))].filter(
 		(count) => count > 0,
 	);
 
 	return (
-		<ul className="flex flex-wrap gap-1.5" aria-label="Tags">
+		<ul
+			className={cn(
+				"flex flex-wrap gap-1.5",
+				scrollable &&
+					// contain-inline-size keeps the unwrapped row from widening its parents
+					"no-scrollbar w-full flex-nowrap overflow-x-auto overscroll-x-contain contain-inline-size sm:flex-wrap sm:overflow-visible",
+			)}
+			aria-label="Tags"
+		>
 			{tags.map((tag, i) => {
-				const className = visibilityClasses((bp) => i < limits[bp]);
 				if (BREAKPOINTS.every((bp) => i >= limits[bp])) return null;
 				return (
-					<li key={tag.id} className={className || undefined}>
+					<li
+						key={tag.id}
+						className={
+							cn(scrollable && "shrink-0", visibilityClasses((bp) => i < limits[bp])) ||
+							undefined
+						}
+					>
 						<Badge variant="tag" className="rounded-full">
 							{tag.name}
 						</Badge>
