@@ -4,7 +4,6 @@ import { Badge } from "../ui/badge";
 import { endDateRules } from "@/lib/constants/listing.constants";
 import { getDaysUntil, getEndDateLabel } from "@/utils/date";
 
-// Only shown while the listing ends soon; expired listings get the ExpiredBadge.
 export default function EndDateBadge({ listing }: { listing: Pick<ListingResponse, "endDate"> }) {
 	const daysLeft = getDaysUntil(listing.endDate);
 

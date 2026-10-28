@@ -25,9 +25,7 @@ type ResponsiveMax = Partial<Record<Breakpoint, number>>;
 
 type Props = {
 	tags: Tag[];
-	/** Max visible tags, either fixed or per breakpoint (mobile-first, values inherit upwards). */
 	max?: number | ResponsiveMax;
-	/** Below `sm`, render all tags in a single horizontally swipeable row instead of wrapping. */
 	scrollable?: boolean;
 };
 
@@ -56,7 +54,6 @@ function visibilityClasses(isVisible: (bp: Breakpoint) => boolean) {
 export default function TagList({ tags, max, scrollable = false }: Props) {
 	if (tags.length === 0) return null;
 
-	// The swipeable row shows every tag on mobile, so a base limit would only hide some of them
 	const config: ResponsiveMax = typeof max === "number" ? { base: max } : (max ?? {});
 	const limits = resolveMax(
 		scrollable ? { ...config, base: undefined, sm: config.sm ?? config.base } : config,

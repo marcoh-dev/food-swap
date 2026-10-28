@@ -25,9 +25,7 @@ type ListingCardProps = {
 	variant?: "grid" | "list" | "detail";
 	showExpired?: boolean;
 	showDeletionDate?: boolean;
-	/** Shows the end date in the meta line, in addition to the badge on the image. */
 	showEndDate?: boolean;
-	/** Greys out the card and marks the listing as no longer available. */
 	unavailable?: boolean;
 	actions?: ReactNode;
 	children?: ReactNode;
@@ -54,7 +52,6 @@ export default function ListingCard({
 	const body = (
 		<>
 			<div
-				// Scroll target for ListingActions after saving/cancelling an edit
 				id={isDetail ? "listing-image" : undefined}
 				className={cn(
 					"@container relative overflow-hidden",
@@ -154,7 +151,6 @@ export default function ListingCard({
 				<div
 					className={cn(
 						"pointer-events-none absolute z-10 bg-gray-500/60",
-						// Reach across the card gap up to the footer border / card edge
 						isList ? "inset-0" : "inset-x-0 top-0 -bottom-(--card-spacing)",
 					)}
 				/>
