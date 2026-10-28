@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import ListingStatusMenu from "./ListingStatusMenu";
 import Link from "next/link";
+import { cn } from "cn";
 
 export default function ListingActions({
 	listing,
@@ -29,12 +30,14 @@ export default function ListingActions({
 	tags,
 	isEditingInList = false,
 	initialEditing = false,
+	layout = "grid",
 }: {
 	listing: ListingResponse;
 	categories: Category[];
 	tags: Tag[];
 	isEditingInList?: boolean;
 	initialEditing?: boolean;
+	layout?: "list" | "grid";
 }) {
 	const [isEditing, setIsEditing] = useState(initialEditing);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -115,12 +118,16 @@ export default function ListingActions({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<div className="flex gap-2">
+			<div className={cn("flex gap-2", layout === "list" && "justify-end")}>
 				{isEditingInList ? (
 					<Button variant="secondary" asChild>
 						<Link href={`/listings/${listing.id}?edit=true`}>
 							<PencilIcon className="size-4" aria-hidden="true" />
-							<span className="sr-only md:not-sr-only">Bearbeiten</span>
+							<span
+								className={layout === "list" ? undefined : "sr-only md:not-sr-only"}
+							>
+								Bearbeiten
+							</span>
 						</Link>
 					</Button>
 				) : (
@@ -137,7 +144,11 @@ export default function ListingActions({
 				/>
 			</div>
 
-			{errorMessage && <p className="text-destructive">{errorMessage}</p>}
+			{errorMessage && (
+				<p className={cn("text-destructive", layout === "list" && "text-right")}>
+					{errorMessage}
+				</p>
+			)}
 
 			<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<AlertDialogContent>

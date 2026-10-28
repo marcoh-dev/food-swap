@@ -136,6 +136,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 													categories={categories}
 													tags={tags}
 													isEditingInList
+													layout={view}
 												/>
 											)
 										}
