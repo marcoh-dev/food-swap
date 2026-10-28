@@ -160,7 +160,9 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 
 If the dependencies were reinstalled and you use VS Code, run **Developer: Reload Window** (Cmd/Ctrl+Shift+P) afterwards. `npm ci` replaces `node_modules`, and the TypeScript and ESLint servers in VS Code keep using the old files until they restart.
 
-### Import style
+### Code style
+
+Both projects share one Prettier config (`.prettierrc` in the root): tabs, double quotes, 100 characters per line. In the frontend, `prettier-plugin-tailwindcss` also sorts the Tailwind classes in `className`, `cn()` and `cva()`.
 
 ESLint checks the imports in both projects (`import/order`, `import/no-duplicates`):
 
@@ -168,7 +170,7 @@ ESLint checks the imports in both projects (`import/order`, `import/no-duplicate
 - Sorted A–Z within each group and inside `{ … }`; two imports from the same file are merged.
 - Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
 
-`npm run lint:fix` fixes all of this. In VS Code, install the recommended ESLint extension: it shows wrong imports right away, and saving the file fixes them (`.vscode/settings.json`). This also applies to the shadcn files in `components/ui/`, so run `npm run lint:fix` after `npx shadcn add`.
+In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, and saving a file formats it and fixes the imports (`.vscode/settings.json`). From the terminal, `npm run lint:fix` and `npm run format` do the same. This also applies to the shadcn files in `components/ui/`, so run both after `npx shadcn add`.
 
 ### Tests
 
