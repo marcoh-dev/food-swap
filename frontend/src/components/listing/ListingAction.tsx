@@ -125,7 +125,11 @@ export default function ListingActions({
 						<Link href={`/listings/${listing.id}?edit=true`}>
 							<PencilIcon className="size-4" aria-hidden="true" />
 							<span
-								className={layout === "list" ? undefined : "sr-only md:not-sr-only"}
+								className={
+									layout === "list"
+										? "sr-only sm:not-sr-only"
+										: "sr-only md:not-sr-only"
+								}
 							>
 								Bearbeiten
 							</span>
