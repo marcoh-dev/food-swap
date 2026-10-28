@@ -19,7 +19,7 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 - **Backend:** NestJS, TypeORM, Passport (JWT)
 - **Database:** PostgreSQL with PostGIS and `pg_trgm`
 - **Realtime:** Socket.IO (chat)
-- **Hosting:** Vercel (frontend), Render (backend and database)
+- **Hosting:** Vercel (frontend), Render (backend), Neon (database)
 
 ## Getting Started
 
@@ -51,21 +51,21 @@ The frontend runs on http://localhost:5173, the backend on http://localhost:3000
 
 **`backend/.env`**
 
-| Variable            | Local                                                         | Live                                                                |
-| ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL`      | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
-| `TEST_DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                            |
-| `PORT`              | `3000`                                                        | set by the hosting provider                                         |
-| `JWT_SECRET`        | any string                                                    | long random string, never the local one                             |
-| `CLEANUP_SECRET`    | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret  |
-| `SEED_PASSWORD`     | password of the local mock users, e.g. `'Local-Mock-1!'`      | not used, the live mock password goes into `backend/.env.live`      |
+| Variable            | Local                                                         | Live                                                               |
+| ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `DATABASE_URL`      | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?sslmode=verify-full`                |
+| `TEST_DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                           |
+| `PORT`              | `3000`                                                        | set by the hosting provider                                        |
+| `JWT_SECRET`        | any string                                                    | long random string, never the local one                            |
+| `CLEANUP_SECRET`    | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret |
+| `SEED_PASSWORD`     | password of the local mock users, e.g. `'Local-Mock-1!'`      | not used, the live mock password goes into `backend/.env.live`     |
 
 **`backend/.env.live`** (only read by commands with `live` in their name)
 
-| Variable        | Value                                                               |
-| --------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL`  | live database URL, ending in `?uselibpqcompat=true&sslmode=require` |
-| `SEED_PASSWORD` | the stored live mock password                                       |
+| Variable        | Value                                               |
+| --------------- | --------------------------------------------------- |
+| `DATABASE_URL`  | live database URL, ending in `?sslmode=verify-full` |
+| `SEED_PASSWORD` | the stored live mock password                       |
 
 **`backend/bruno/.env`**
 
@@ -94,7 +94,7 @@ npm run migration:run -w backend
 rm live.dump
 ```
 
-Use the live `DATABASE_URL` without `uselibpqcompat=true` (only Node understands it), e.g. `...?sslmode=require`. `docker compose down -v` deletes your local database.
+Use the live `DATABASE_URL` ending in `?sslmode=require` instead of `?sslmode=verify-full` (`pg_dump` would need extra certificate settings for `verify-full`). `docker compose down -v` deletes your local database.
 
 ### Updating place data
 
@@ -191,6 +191,7 @@ CI runs install, lint, format check and build on every pull request to `main`.
 
 - **Frontend:** Vercel deploys `main` automatically.
 - **Backend:** Render deploys `main` automatically with Root Directory `backend`, Build Command `npm install; npm run build` and Start Command `npm run migration:run:prod && npm run start:prod`. Pending migrations run on every deploy. If one fails, the app does not start and Render keeps the previous version running.
+- **Database:** Neon (free plan, region Frankfurt, Postgres 18), using the direct connection string, not the `-pooler` one. It sleeps after 5 minutes without queries, so the first request after a quiet period takes up to a second longer. The free plan has 1 GB of storage and monthly limits for compute and network transfer; if one is reached, the database stops until the next month.
 - **Listing cleanup:** listings are deleted on the 29th day after their end day. The backend does this on startup, daily at 03:00 (only while it is awake) and when `POST /listings/cleanup` is called. On the Render free plan the backend sleeps, so the `Listing cleanup` GitHub workflow (`.github/workflows/cleanup.yml`) calls that endpoint every night at 01:17 UTC, which also wakes it up. It needs the repository variable `BACKEND_URL` (live backend URL, without a trailing slash) and the repository secret `CLEANUP_SECRET` (the same value as on Render). Start it by hand under Actions → Listing cleanup → Run workflow; the log shows how many listings were deleted. GitHub pauses scheduled workflows after 60 days without repository activity; the cleanup on startup still runs then.
 
 ## Data sources
