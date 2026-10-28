@@ -10,6 +10,7 @@
 		"build": "next build",
 		"start": "next start -p 5173",
 		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},
