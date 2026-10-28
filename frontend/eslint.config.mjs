@@ -20,6 +20,10 @@ export default defineConfig([
 				},
 			],
 			"import/no-duplicates": "error",
+			"no-restricted-imports": [
+				"error",
+				{ patterns: [{ regex: "^\\.\\./", message: 'Use "@/…" instead of "../".' }] },
+			],
 		},
 	},
 	globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),

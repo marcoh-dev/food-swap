@@ -4,5 +4,6 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": "explicit"
 	},
-	"eslint.workingDirectories": [{ "mode": "auto" }]
+	"eslint.workingDirectories": [{ "mode": "auto" }],
+	"typescript.preferences.importModuleSpecifier": "non-relative"
 }
