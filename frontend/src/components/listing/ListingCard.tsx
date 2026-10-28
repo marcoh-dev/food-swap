@@ -79,7 +79,7 @@ export default function ListingCard({
 					<ListingImagePlaceholder />
 				)}
 				{unavailable && (
-					<div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+					<div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-gray-500/60">
 						<span
 							className={cn(
 								"text-center font-semibold text-white",
@@ -148,14 +148,6 @@ export default function ListingCard({
 					{children}
 				</CardContent>
 			</div>
-			{unavailable && (
-				<div
-					className={cn(
-						"pointer-events-none absolute z-10 bg-gray-500/60",
-						isList ? "inset-0" : "inset-x-0 top-0 -bottom-(--card-spacing)",
-					)}
-				/>
-			)}
 		</>
 	);
 
