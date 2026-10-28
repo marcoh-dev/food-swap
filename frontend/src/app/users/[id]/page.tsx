@@ -131,7 +131,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 							className={
 								view === "list"
 									? "grid auto-rows-fr gap-3 max-sm:mx-[-1em]"
-									: "grid grid-cols-2 gap-3 max-sm:mx-[-1em] max-sm:*:odd:*:rounded-l-none max-sm:*:even:*:rounded-r-none sm:gap-8 md:gap-12"
+									: "grid grid-cols-2 gap-3 sm:gap-8 md:gap-12"
 							}
 						>
 							{listingsData.data.map((listing) => (
