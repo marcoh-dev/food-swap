@@ -11,9 +11,10 @@
 		"lint": "npm run lint --workspaces",
 		"lint:fix": "npm run lint:fix --workspaces",
 		"build": "npm run build --workspaces",
+		"test": "npm run test --workspaces",
 		"sync": "git switch main && git pull && node scripts/install-if-changed.mjs && docker compose up -d --wait && npm run migration:run -w backend",
 		"sync:branch": "git fetch origin && git merge --no-commit origin/main && node scripts/install-if-changed.mjs && docker compose up -d --wait && npm run migration:run -w backend",
-		"check": "npm run lint && npm run format:check -w frontend && npm run build"
+		"check": "npm run lint && npm run format:check -w frontend && npm test && npm run build"
 	},
 	"devDependencies": {
 		"concurrently": "^9.2.5"
