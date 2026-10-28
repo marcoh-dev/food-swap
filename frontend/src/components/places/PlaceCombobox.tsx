@@ -212,6 +212,7 @@ export default function PlaceCombobox({
 							</InputGroupAddon>
 							<CommandPrimitive.Input
 								ref={inputRef}
+								data-slot="input-group-control"
 								id={id}
 								placeholder={placeholder}
 								value={query}
