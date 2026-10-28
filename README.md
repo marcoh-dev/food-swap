@@ -168,9 +168,10 @@ ESLint checks the imports in both projects (`import/order`, `import/no-duplicate
 
 - Three groups in this order, with one blank line between them: packages (`react`, `next/*`, `typeorm`, …), then `@/…`, then relative paths (`./…`, `../…`).
 - Sorted A–Z within each group and inside `{ … }`; two imports from the same file are merged.
+- Frontend: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend has no `@/` alias and uses relative paths.
 - Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
 
-In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, and saving a file formats it and fixes the imports (`.vscode/settings.json`). From the terminal, `npm run lint:fix` and `npm run format` do the same. This also applies to the shadcn files in `components/ui/`, so run both after `npx shadcn add`.
+In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `npm run lint:fix` and `npm run format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `npx shadcn add`.
 
 ### Tests
 
