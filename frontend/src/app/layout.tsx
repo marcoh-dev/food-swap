@@ -63,17 +63,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					disableTransitionOnChange
 				>
 					<header className="flex flex-row justify-between items-center p-[1em] h-header sticky top-0 z-50 bg-background/85 backdrop-blur-md text-foreground border-b">
-						<div className="flex flex-row gap-5">
-							<div>
-								<Link href="/" aria-label="Home">
-									<Image
-										src="/icon.svg"
-										alt="FoodSwap Logo"
-										width="50"
-										height="50"
-									/>
-								</Link>
-							</div>
+						<div className="flex flex-row items-center gap-5">
+							<Link href="/" aria-label="Home" className="block">
+								<Image
+									src="/icon.svg"
+									alt="FoodSwap Logo"
+									width="50"
+									height="50"
+									className="block"
+								/>
+							</Link>
 							<Link href="/" className="text-h1 no-underline">
 								FoodSwap
 							</Link>

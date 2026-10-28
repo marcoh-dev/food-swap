@@ -13,11 +13,21 @@ export default async function BurgerMenu() {
 	const isLoggedIn = currentUser !== null;
 
 	return (
-		<div>
+		<div className="flex">
 			<SheetParts.Sheet>
 				<SheetParts.SheetTrigger asChild>
-					<Button type="button" variant="ghost" className="relative">
-						<Menu className="size-9" aria-hidden="true" />
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon-lg"
+						className="relative size-auto p-1"
+					>
+						<Menu
+							className="size-9"
+							strokeWidth={2}
+							nonScalingStroke
+							aria-hidden="true"
+						/>
 						<span className="sr-only">Menü öffnen</span>
 						<UnreadChatsBadge className="absolute -top-1 -right-1" />
 					</Button>
