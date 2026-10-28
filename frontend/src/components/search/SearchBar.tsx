@@ -14,6 +14,7 @@ export default function SearchBar({
 	category,
 	tags,
 	sort,
+	view,
 }: {
 	defaultTerm?: string;
 	defaultPlace?: Place | null;
@@ -21,11 +22,13 @@ export default function SearchBar({
 	category?: string;
 	tags?: string;
 	sort?: SortOption;
+	view?: "grid" | "list";
 }) {
 	return (
 		<form id={SEARCH_FORM_ID} role="search" className="pb-2" action={searchListingAction}>
 			{category && <input type="hidden" name="category" value={category} />}
 			{tags && <input type="hidden" name="tags" value={tags} />}
+			{view && <input type="hidden" name="view" value={view} />}
 			<input key={sort} type="hidden" name="sort" defaultValue={sort ?? "newest"} />
 
 			<FieldGroup className="gap-2 sm:flex-row sm:items-start">

@@ -53,7 +53,7 @@ export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFo
 					</Button>
 				</DropdownMenuTrigger>
 			</div>
-			<DropdownMenuContent className="w-40">
+			<DropdownMenuContent className="w-auto min-w-0">
 				<DropdownMenuGroup>
 					<DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
 						<DropdownMenuRadioItem value="newest">Neueste</DropdownMenuRadioItem>

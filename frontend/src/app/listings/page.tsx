@@ -1,17 +1,10 @@
 import { getListings } from "@/lib/listings.service";
 import { getCategories } from "@/lib/categories.service";
 import { getTags } from "@/lib/tags.service";
-import Link from "next/link";
-import Image from "next/image";
 import SearchBar from "@/components/search/SearchBar";
 import { SortingMenu } from "@/components/listing/SortingMenu";
 import type { SortOption } from "@/lib/types/listing.types";
-import CategoryBadge from "@/components/listing/CategoryBadge";
-import StatusBadge from "@/components/listing/StatusBadge";
-import TagList from "@/components/listing/TagList";
-import ListingMeta from "@/components/listing/ListingMeta";
 import ListingFilters from "@/components/listing/ListingFilter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Metadata } from "next";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import ListingsPagination from "@/components/listing/ListingsPagination";
@@ -21,7 +14,9 @@ import { getPlaceBySlug } from "@/lib/places.service";
 import { formatPlace } from "@/utils/place";
 import { redirect } from "next/navigation";
 import { parsePage } from "@/utils/pagination";
-import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
+
+import ListingCard from "@/components/listing/ListingCard";
+import ViewMenu from "@/components/listing/ViewMenu";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 
@@ -44,6 +39,8 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 			: params.sort === "nearest" && selectedPlace
 				? "nearest"
 				: "newest";
+
+	const view = params.view === "list" ? "list" : "grid";
 	const radius = selectedPlace ? parseRadius(getParam(params.radius)) : undefined;
 	const category = getParam(params.category);
 	const tags = getParam(params.tags);
@@ -79,11 +76,13 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					category={category}
 					tags={tags}
 					sort={sort}
+					view={view}
 				/>
 
 				<div className="flex w-full flex-col items-start mb-2">
 					<ListingFilters categories={categories} tags={allTags} />
-					<div className="self-end">
+					<div className="self-end flex items-center gap-2">
+						<ViewMenu view={view} />
 						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 					</div>
 				</div>
@@ -106,51 +105,16 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				</p>
 			) : (
 				<>
-					<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
+					<ul
+						className={
+							view === "list"
+								? "grid auto-rows-fr gap-3 max-sm:mx-[-1em]"
+								: "grid grid-cols-2 gap-3 max-sm:mx-[-1em] max-sm:*:odd:*:rounded-l-none max-sm:*:even:*:rounded-r-none sm:gap-8 md:gap-12"
+						}
+					>
 						{listings.map((listing) => (
 							<li key={listing.id}>
-								<Link
-									href={`/listings/${listing.id}`}
-									className="block h-full no-underline"
-								>
-									<Card className="h-full overflow-hidden pt-0">
-										<div className="relative aspect-[16/9] w-full overflow-hidden">
-											{listing.image ? (
-												<Image
-													src={listing.image}
-													alt={listing.title}
-													width={250}
-													height={200}
-													className="h-full w-full object-cover"
-												/>
-											) : (
-												<ListingImagePlaceholder />
-											)}
-											<div className="absolute top-2 left-2">
-												<StatusBadge listing={listing} />
-											</div>
-										</div>
-										<CardHeader>
-											<CardTitle className="text-h2">
-												{listing.title}
-											</CardTitle>
-											<CardDescription>
-												<ListingMeta
-													listing={listing}
-													dateVariant="relative"
-													className="text-xs"
-												/>
-											</CardDescription>
-											<div className="flex flex-wrap items-center gap-1.5 justify-self-start">
-												<CategoryBadge category={listing.category} />
-												<TagList tags={listing.tags} max={2} />
-											</div>
-										</CardHeader>
-										<CardContent>
-											<p className="text-xs">{listing.description}</p>
-										</CardContent>
-									</Card>
-								</Link>
+								<ListingCard listing={listing} variant={view} />
 							</li>
 						))}
 					</ul>
@@ -164,6 +128,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 							category,
 							tags,
 							sort,
+							view,
 						}}
 					/>
 				</>

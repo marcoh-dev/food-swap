@@ -4,36 +4,23 @@ import { UserUpdate } from "@/components/user/UserUpdate";
 import { NotificationSetting } from "@/components/user/NotificationSetting";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
-import { formatDate } from "@/utils/date";
+import { formatDate, isExpired } from "@/utils/date";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-	CardFooter,
-} from "@/components/ui/card";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
-import ExpiredBadge from "@/components/listing/ExpiredBadge";
-import StatusBadge from "@/components/listing/StatusBadge";
-import ListingMeta from "@/components/listing/ListingMeta";
-import CategoryBadge from "@/components/listing/CategoryBadge";
 import ListingsPagination from "@/components/listing/ListingsPagination";
 import type { SortOption } from "@/lib/types/listing.types";
 import { getUserListings } from "@/lib/listings.service";
 import { parsePage } from "@/utils/pagination";
-import ListingActions from "@/components/listing/ListingAction";
 import { getCategories } from "@/lib/categories.service";
 import { getTags } from "@/lib/tags.service";
 import { formatPlace } from "@/utils/place";
 import { ChevronDown } from "lucide-react";
 import { FieldDescription } from "@/components/ui/field";
+import ListingCard from "@/components/listing/ListingCard";
+import ListingActions from "@/components/listing/ListingAction";
+import ViewMenu from "@/components/listing/ViewMenu";
 
 export const metadata: Metadata = { title: pageTitles.myProfile };
 
@@ -50,6 +37,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 	const page = parsePage(query.page);
 	const sort: SortOption = query.sort === "endingSoon" ? "endingSoon" : "newest";
 
+	const view = query.view === "list" ? "list" : "grid";
 	const categories = await getCategories();
 	const tags = await getTags();
 
@@ -61,7 +49,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 
 	const { totalPages } = listingsData.meta;
 	if (totalPages > 0 && page > totalPages) {
-		redirect(`/users/${userId}/listings?page=${totalPages}&sort=${sort}`);
+		redirect(`/users/${userId}?page=${totalPages}&sort=${sort}&view=${view}`);
 	}
 
 	return (
@@ -119,70 +107,46 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 					</p>
 				) : (
 					<>
-						<div className="flex w-full justify-end mb-2 mt-3">
+						<div className="flex justify-end items-center gap-2 mb-2">
+							<ViewMenu view={view} />
 							<SortingMenu sort={sort} />
 						</div>
-						<ul className="grid grid-cols-2 gap-3 sm:gap-8 md:gap-12">
+						<ul
+							className={
+								view === "list"
+									? "grid auto-rows-fr gap-3 max-sm:mx-[-1em]"
+									: "grid grid-cols-2 gap-3 max-sm:mx-[-1em] max-sm:*:odd:*:rounded-l-none max-sm:*:even:*:rounded-r-none sm:gap-8 md:gap-12"
+							}
+						>
 							{listingsData.data.map((listing) => (
 								<li key={listing.id}>
-									<Card className="h-full overflow-hidden pt-0">
-										<Link
-											href={`/listings/${listing.id}`}
-											className="block h-full no-underline"
-										>
-											<div className="relative aspect-[16/9] w-full overflow-hidden">
-												{listing.image ? (
-													<Image
-														src={listing.image}
-														alt={listing.title}
-														width={250}
-														height={200}
-														className="h-full w-full object-cover"
-													/>
-												) : (
-													<ListingImagePlaceholder />
-												)}
-
-												<div className="absolute top-2 left-2 flex flex-col items-start gap-1">
-													{isOwner && <ExpiredBadge listing={listing} />}
-													<StatusBadge listing={listing} />
-												</div>
-											</div>
-											<CardHeader>
-												<CardTitle className="text-h2">
-													{listing.title}
-												</CardTitle>
-												<CardDescription>
-													<ListingMeta
-														listing={listing}
-														dateVariant="relative"
-														className="text-xs"
-													/>
-												</CardDescription>
-												<CategoryBadge category={listing.category} />
-											</CardHeader>
-											<CardContent>
-												<p className="text-xs">{listing.description}</p>
-											</CardContent>
-										</Link>
-										{isOwner && (
-											<CardFooter className="relative z-20 flex-col items-stretch">
+									<ListingCard
+										listing={listing}
+										variant={view}
+										showExpired={isOwner}
+										unavailable={
+											isOwner &&
+											(listing.status === "deactivated" ||
+												isExpired(listing.endDate))
+										}
+										actions={
+											isOwner && (
 												<ListingActions
 													listing={listing}
 													categories={categories}
 													tags={tags}
 													isEditingInList
 												/>
-											</CardFooter>
-										)}
-									</Card>
+											)
+										}
+									/>
 								</li>
 							))}
 						</ul>
 						<ListingsPagination
 							page={listingsData.meta.page}
 							totalPages={totalPages}
-							searchParams={{ sort }}
+							searchParams={{ sort, view }}
 						/>
 					</>
 				)}

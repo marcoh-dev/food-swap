@@ -164,6 +164,7 @@ export async function searchListingAction(formData: FormData) {
 	const category = formData.get("category") as string;
 	const tags = formData.get("tags") as string;
 	const sort = formData.get("sort") as string;
+	const view = formData.get("view") as string;
 
 	const searchParams = new URLSearchParams();
 	if (term) searchParams.set("term", term);
@@ -174,6 +175,7 @@ export async function searchListingAction(formData: FormData) {
 	if (sort && sort !== "newest" && (sort !== "nearest" || place)) {
 		searchParams.set("sort", sort);
 	}
+	if (view === "list") searchParams.set("view", view);
 
 	redirect(`/listings?${searchParams.toString()}`);
 }

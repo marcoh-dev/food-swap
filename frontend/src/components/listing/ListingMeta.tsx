@@ -9,18 +9,24 @@ import {
 import type { ListingResponse } from "@/lib/types/listing.types";
 import { cn } from "cn";
 import ListingDate from "./ListingDate";
-import { getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
+import { formatDate, getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
 import { formatDistance, formatPlace } from "@/utils/place";
 
 export default function ListingMeta({
 	listing,
 	dateVariant,
 	showDeletionDate = false,
+	compactType = false,
+	hideType = false,
+	hideEndDate = false,
 	className,
 }: {
 	listing: Pick<ListingResponse, "place" | "type" | "createdAt" | "endDate" | "distance">;
 	dateVariant?: "relative" | "full";
 	showDeletionDate?: boolean;
+	compactType?: boolean;
+	hideType?: boolean;
+	hideEndDate?: boolean;
 	className?: string;
 }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;
@@ -39,16 +45,24 @@ export default function ListingMeta({
 					{formatDistance(listing.distance)}
 				</span>
 			)}
-			<span className="inline-flex items-center gap-1">
-				<TypeIcon className="size-4" aria-hidden="true" />
-				{listing.type === "swap" ? "Tauschen" : "Verschenken"}
-			</span>
+			{!hideType && (
+				<span className="inline-flex items-center gap-1">
+					<TypeIcon className="size-4" aria-hidden="true" />
+					<span className={cn(compactType && "sr-only sm:not-sr-only")}>
+						{listing.type === "swap" ? "Tauschen" : "Verschenken"}
+					</span>
+				</span>
+			)}
 
 			{dateVariant && <ListingDate createdAt={listing.createdAt} variant={dateVariant} />}
-			<span className="inline-flex items-center gap-1">
-				<TimerIcon className="size-4" aria-hidden="true" />
-				{getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
-			</span>
+			{!hideEndDate && (
+				<span className="inline-flex items-center gap-1">
+					<TimerIcon className="size-4" aria-hidden="true" />
+					{dateVariant === "full"
+						? `Bis ${formatDate(listing.endDate)}`
+						: getEndDateLabel(daysLeft, listing.endDate, dateVariant)}
+				</span>
+			)}
 			{deletionLabel && (
 				<span className="inline-flex basis-full items-center gap-1">
 					<Trash2Icon className="size-4" aria-hidden="true" />
