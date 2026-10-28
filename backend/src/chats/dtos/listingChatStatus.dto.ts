@@ -1,9 +1,9 @@
-import { Expose } from 'class-transformer';
+import { Expose } from "class-transformer";
 
 export class ListingChatStatusDto {
-  @Expose()
-  chatId!: string | null;
+	@Expose()
+	chatId!: string | null;
 
-  @Expose()
-  hidden!: boolean;
+	@Expose()
+	hidden!: boolean;
 }

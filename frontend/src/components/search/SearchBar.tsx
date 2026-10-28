@@ -1,11 +1,12 @@
 import { searchListingAction } from "@/app/actions";
-import LocationRadiusSearch from "./LocationRadiusSearch";
-import type { Place } from "@/lib/types/place.types";
-import type { SortOption } from "@/lib/types/listing.types";
+import { Button } from "@/components/ui/button";
+import { FieldGroup } from "@/components/ui/field";
 import { SEARCH_FORM_ID } from "@/lib/constants/listing.constants";
+import type { SortOption } from "@/lib/types/listing.types";
+import type { Place } from "@/lib/types/place.types";
+
+import LocationRadiusSearch from "./LocationRadiusSearch";
 import TermSearch from "./TermSearch";
-import { FieldGroup } from "../ui/field";
-import { Button } from "../ui/button";
 
 export default function SearchBar({
 	defaultTerm = "",

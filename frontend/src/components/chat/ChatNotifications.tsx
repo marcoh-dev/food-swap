@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
+
 import { getChatsAction } from "@/app/actions";
 import {
 	dismissPermissionPrompt,

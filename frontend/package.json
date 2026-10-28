@@ -10,6 +10,7 @@
 		"build": "next build",
 		"start": "next start -p 5173",
 		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},
@@ -47,6 +48,7 @@
 		"eslint-config-next": "^16.4.2",
 		"eslint-config-prettier": "^10.1.8",
 		"prettier": "^3.9.10",
+		"prettier-plugin-tailwindcss": "^0.8.1",
 		"typescript": "^5"
 	}
 }

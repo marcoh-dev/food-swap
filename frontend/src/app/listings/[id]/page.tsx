@@ -1,19 +1,20 @@
-import { getPlaceBySlug } from "@/lib/places.service";
-import { parseRadius } from "@/lib/constants/listing.constants";
-import { getListingById } from "@/lib/listings.service";
-import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { ListingChat } from "@/components/chat/ListingChat";
 import ListingActions from "@/components/listing/ListingAction";
-import { getCurrentUser } from "@/lib/users.service";
+import ListingCard from "@/components/listing/ListingCard";
 import SearchBar from "@/components/search/SearchBar";
 import { getCategories } from "@/lib/categories.service";
-import { getTags } from "@/lib/tags.service";
-import ListingCard from "@/components/listing/ListingCard";
-import { ListingChat } from "@/components/chat/ListingChat";
 import { getListingChatStatus } from "@/lib/chats.service";
-import type { ListingChatStatus } from "@/lib/types/chat.types";
+import { parseRadius } from "@/lib/constants/listing.constants";
 import { pageTitles } from "@/lib/constants/titles.constants";
-import type { Metadata } from "next";
+import { getListingById } from "@/lib/listings.service";
+import { getPlaceBySlug } from "@/lib/places.service";
+import { getTags } from "@/lib/tags.service";
+import type { ListingChatStatus } from "@/lib/types/chat.types";
+import { getCurrentUser } from "@/lib/users.service";
 import { isExpired } from "@/utils/date";
 
 export async function generateMetadata({ params }: PageProps<"/listings/[id]">): Promise<Metadata> {

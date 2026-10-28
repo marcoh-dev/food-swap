@@ -1,6 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose } from "class-transformer";
 
 export class UnreadChatsCountDto {
-  @Expose()
-  count!: number;
+	@Expose()
+	count!: number;
 }

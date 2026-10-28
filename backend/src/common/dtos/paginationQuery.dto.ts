@@ -1,26 +1,27 @@
-import { Type } from 'class-transformer';
-import { IsEnum, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { ListingType } from '../../listings/entities/listing.entity';
+import { Type } from "class-transformer";
+import { IsEnum, IsIn, IsInt, IsOptional, Max, Min } from "class-validator";
+
+import { ListingType } from "../../listings/entities/listing.entity";
 
 export class PaginationQueryDto {
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Type(() => Number)
-  page: number = 1;
+	@IsOptional()
+	@IsInt()
+	@Min(1)
+	@Type(() => Number)
+	page: number = 1;
 
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  @Type(() => Number)
-  limit: number = 20;
+	@IsOptional()
+	@IsInt()
+	@Min(1)
+	@Max(100)
+	@Type(() => Number)
+	limit: number = 20;
 
-  @IsOptional()
-  @IsEnum(ListingType)
-  type?: ListingType;
+	@IsOptional()
+	@IsEnum(ListingType)
+	type?: ListingType;
 
-  @IsOptional()
-  @IsIn(['newest', 'endingSoon'])
-  sort?: 'newest' | 'endingSoon';
+	@IsOptional()
+	@IsIn(["newest", "endingSoon"])
+	sort?: "newest" | "endingSoon";
 }

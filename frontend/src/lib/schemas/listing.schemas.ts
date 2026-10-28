@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { validateEndDate } from "@/utils/date";
+
 import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
+import { validateEndDate } from "@/utils/date";
 
 const imageUrlSchema = z.url({ protocol: /^https?$/ });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+
 import type { Place } from "@/lib/types/place.types";
 
 type SearchPlaceState = {

@@ -1,17 +1,18 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Listing } from '../../listings/entities/listing.entity';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('tags')
+import { Listing } from "../../listings/entities/listing.entity";
+
+@Entity("tags")
 export class Tag {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+	@PrimaryGeneratedColumn("uuid")
+	id!: string;
 
-  @Column({ unique: true })
-  slug!: string;
+	@Column({ unique: true })
+	slug!: string;
 
-  @Column()
-  name!: string;
+	@Column()
+	name!: string;
 
-  @ManyToMany(() => Listing, (listing) => listing.tags)
-  listings!: Listing[];
+	@ManyToMany(() => Listing, (listing) => listing.tags)
+	listings!: Listing[];
 }

@@ -1,12 +1,11 @@
-import { OmitType, PartialType } from '@nestjs/mapped-types';
-import { IsOptional, IsUUID, ValidateIf } from 'class-validator';
-import { CreateUserDto } from './createUser.dto';
+import { OmitType, PartialType } from "@nestjs/mapped-types";
+import { IsOptional, IsUUID, ValidateIf } from "class-validator";
 
-export class UpdateUserDto extends PartialType(
-  OmitType(CreateUserDto, ['username'] as const),
-) {
-  @IsOptional()
-  @ValidateIf((_object, value) => value !== null)
-  @IsUUID()
-  placeId?: string | null;
+import { CreateUserDto } from "./createUser.dto";
+
+export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ["username"] as const)) {
+	@IsOptional()
+	@ValidateIf((_object, value) => value !== null)
+	@IsUUID()
+	placeId?: string | null;
 }

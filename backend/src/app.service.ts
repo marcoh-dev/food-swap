@@ -1,34 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { DataSource } from "typeorm";
 
 export type TableInfoRow = {
-  table_name: string;
-  columns: {
-    name: string;
-    data_type: string;
-    nullable: boolean;
-  }[];
+	table_name: string;
+	columns: {
+		name: string;
+		data_type: string;
+		nullable: boolean;
+	}[];
 };
 
 @Injectable()
 export class AppService {
-  constructor(private readonly dataSource: DataSource) {}
+	constructor(private readonly dataSource: DataSource) {}
 
-  async testConnection(): Promise<{ connected: boolean }> {
-    try {
-      await this.dataSource.query('SELECT 1');
+	async testConnection(): Promise<{ connected: boolean }> {
+		try {
+			await this.dataSource.query("SELECT 1");
 
-      return {
-        connected: true,
-      };
-    } catch {
-      return {
-        connected: false,
-      };
-    }
-  }
-  async getTables(): Promise<{ tables: TableInfoRow[] }> {
-    const result = await this.dataSource.query<TableInfoRow[]>(`
+			return {
+				connected: true,
+			};
+		} catch {
+			return {
+				connected: false,
+			};
+		}
+	}
+	async getTables(): Promise<{ tables: TableInfoRow[] }> {
+		const result = await this.dataSource.query<TableInfoRow[]>(`
     SELECT
       t.table_name,
       COALESCE(
@@ -52,10 +52,10 @@ export class AppService {
     ORDER BY t.table_name;
   `);
 
-    return { tables: result };
-  }
+		return { tables: result };
+	}
 
-  getHello(): string {
-    return 'Hello from Food Swap Backend!';
-  }
+	getHello(): string {
+		return "Hello from Food Swap Backend!";
+	}
 }

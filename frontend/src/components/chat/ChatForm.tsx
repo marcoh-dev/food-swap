@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type KeyboardEvent, type SubmitEvent } from "react";
 import { SendHorizontalIcon } from "lucide-react";
+import { type KeyboardEvent, type SubmitEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -68,7 +68,7 @@ export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: Cha
 					aria-describedby={error ? "chat-form-error" : undefined}
 					maxLength={MAX_LENGTH}
 					rows={1}
-					className="max-h-40 min-h-8 py-1.5 resize-none"
+					className="max-h-40 min-h-8 resize-none py-1.5"
 				/>
 				<Button type="submit" size="icon" disabled={sending} aria-label="Senden">
 					{sending ? <Spinner /> : <SendHorizontalIcon />}

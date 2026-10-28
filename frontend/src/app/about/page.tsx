@@ -1,5 +1,6 @@
-import { pageTitles } from "@/lib/constants/titles.constants";
 import type { Metadata } from "next";
+
+import { pageTitles } from "@/lib/constants/titles.constants";
 
 export const metadata: Metadata = { title: pageTitles.about };
 

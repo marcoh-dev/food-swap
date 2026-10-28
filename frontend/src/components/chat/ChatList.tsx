@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "cn";
 import { CircleAlertIcon, MessagesSquareIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ChatListItem } from "@/lib/types/chat.types";
-import { cn } from "cn";
 import { formatShortDate } from "@/utils/date";
 
 type ChatListProps = {

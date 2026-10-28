@@ -1,14 +1,16 @@
 "use client";
 
-import { loginAction } from "@/app/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { loginAction } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 import { applyServerErrors } from "@/utils/form";
-import { FieldGroup, Field, FieldLabel, FieldError } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+
 import PinInput from "./PinInput";
 
 export function UserLogin({ redirectTo }: { redirectTo?: string }) {
@@ -86,7 +88,7 @@ export function UserLogin({ redirectTo }: { redirectTo?: string }) {
 					Anmelden
 				</Button>
 			</form>
-			<div className="font-light text-[10px]">
+			<div className="text-[10px] font-light">
 				Neu bei FoodSwap? Hier geht&apos;s zur{" "}
 				<Link href={registrationHref} className="underline">
 					Registrierung

@@ -1,15 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { PencilIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+import { deleteListingAction, updateListingAction, updateListingStatusAction } from "@/app/actions";
 import ListingForm from "@/components/listing/ListingForm";
-import { updateListingAction, deleteListingAction, updateListingStatusAction } from "@/app/actions";
-import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
-import type { Category } from "@/lib/types/category.types";
-import type { Tag } from "@/lib/types/tag.types";
-import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
-import { getBerlinDay } from "@/utils/date";
-import { Button } from "@/components/ui/button";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -20,8 +16,14 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
+import type { Category } from "@/lib/types/category.types";
+import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
+import type { Tag } from "@/lib/types/tag.types";
+import { getBerlinDay } from "@/utils/date";
+
 import ListingStatusMenu from "./ListingStatusMenu";
-import Link from "next/link";
 
 export default function ListingActions({
 	listing,
@@ -29,12 +31,14 @@ export default function ListingActions({
 	tags,
 	isEditingInList = false,
 	initialEditing = false,
+	layout = "grid",
 }: {
 	listing: ListingResponse;
 	categories: Category[];
 	tags: Tag[];
 	isEditingInList?: boolean;
 	initialEditing?: boolean;
+	layout?: "list" | "grid";
 }) {
 	const [isEditing, setIsEditing] = useState(initialEditing);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -105,7 +109,7 @@ export default function ListingActions({
 					type="button"
 					variant="ghost"
 					onClick={handleCancel}
-					className="rounded-lg px-3 py-2 w-full"
+					className="w-full rounded-lg px-3 py-2"
 				>
 					Abbrechen
 				</Button>
@@ -120,7 +124,11 @@ export default function ListingActions({
 					<Button variant="secondary" asChild>
 						<Link href={`/listings/${listing.id}?edit=true`}>
 							<PencilIcon className="size-4" aria-hidden="true" />
-							<span className="sr-only md:not-sr-only">Bearbeiten</span>
+							<span
+								className={layout === "list" ? undefined : "sr-only md:not-sr-only"}
+							>
+								Bearbeiten
+							</span>
 						</Link>
 					</Button>
 				) : (

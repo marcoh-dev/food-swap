@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+
 import { getCurrentUser } from "@/lib/users.service";
 
 export default async function MyListingsPage() {

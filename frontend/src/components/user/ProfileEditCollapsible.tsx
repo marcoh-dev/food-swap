@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { Collapsible } from "../ui/collapsible";
+
+import { Collapsible } from "@/components/ui/collapsible";
 
 const CloseProfileEditContext = createContext<() => void>(() => {});
 

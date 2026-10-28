@@ -1,19 +1,19 @@
 import { deleteUserAction } from "@/app/actions";
 import {
 	AlertDialog,
-	AlertDialogTrigger,
+	AlertDialogCancel,
 	AlertDialogContent,
-	AlertDialogHeader,
-	AlertDialogTitle,
 	AlertDialogDescription,
 	AlertDialogFooter,
-	AlertDialogCancel,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export function UserDelete() {
 	return (
-		<section className="my-2 ">
+		<section className="my-2">
 			<AlertDialog>
 				<AlertDialogTrigger asChild>
 					<Button variant="destructive">Konto löschen</Button>
