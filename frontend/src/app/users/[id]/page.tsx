@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -8,9 +8,10 @@ import ListingsPagination from "@/components/listing/ListingsPagination";
 import { SortingMenu } from "@/components/listing/SortingMenu";
 import ViewMenu from "@/components/listing/ViewMenu";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { FieldDescription } from "@/components/ui/field";
 import { NotificationSetting } from "@/components/user/NotificationSetting";
+import { ProfileEditCollapsible } from "@/components/user/ProfileEditCollapsible";
 import { UserDelete } from "@/components/user/UserDelete";
 import { UserUpdate } from "@/components/user/UserUpdate";
 import { getCategories } from "@/lib/categories.service";
@@ -55,53 +56,67 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 
 	return (
 		<>
-			<h2 className="text-h2">{user.name ?? user.username}</h2>
-			{!user.name && <FieldDescription>Kein Profilname vergeben.</FieldDescription>}
-			{isOwner && (
-				<>
-					<p>Benutzername: {user.username}</p>
-					<p>
-						Ort:{" "}
-						{currentUser.place ? (
-							formatPlace(currentUser.place)
-						) : (
-							<span className="text-muted-foreground">Kein Ort gewählt.</span>
+			<section aria-label="Profil" className="rounded-xl border bg-card p-4">
+				<ProfileEditCollapsible>
+					<div className="flex items-start justify-between gap-3">
+						<div className="min-w-0">
+							<p className="text-2xl wrap-break-word">{user.name ?? user.username}</p>
+							{!user.name && (
+								<FieldDescription>Kein Profilname vergeben.</FieldDescription>
+							)}
+						</div>
+						{isOwner && (
+							<CollapsibleTrigger asChild>
+								<Button variant="outline" className="shrink-0">
+									<PencilIcon aria-hidden="true" />
+									<span className="sr-only">Profil bearbeiten</span>
+								</Button>
+							</CollapsibleTrigger>
 						)}
-					</p>
-				</>
-			)}
-			<p>Registriert seit: {formatDate(user.createdAt)}</p>
-			{isOwner && (
-				<Collapsible className="mt-3 mb-6 flex flex-col gap-4 rounded-xl border p-4">
-					<CollapsibleTrigger asChild>
-						<Button variant="outline" className="group">
-							Profil bearbeiten
-							<ChevronDown className="transition-transform group-data-[state=open]:rotate-180" />
-						</Button>
-					</CollapsibleTrigger>
-					<CollapsibleContent className="mt-1 flex flex-col gap-4">
-						<UserUpdate
-							currentName={user.name ?? undefined}
-							currentPlace={currentUser.place}
-						/>
+					</div>
 
-						<div className="border-t pt-4">
-							<NotificationSetting />
-						</div>
+					<dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+						{isOwner && (
+							<>
+								<dt className="text-muted-foreground">Benutzername:</dt>
+								<dd className="text-foreground">{user.username}</dd>
 
-						<div className="flex items-center justify-between gap-4 border-t pt-4">
-							<p className="text-sm text-muted-foreground">FoodSwap verlassen?</p>
-							<UserDelete />
-						</div>
-					</CollapsibleContent>
-				</Collapsible>
-			)}
+								<dt className="text-muted-foreground">Standort:</dt>
+								<dd className="text-foreground">
+									{currentUser.place
+										? formatPlace(currentUser.place)
+										: "Kein Ort gewählt."}
+								</dd>
+							</>
+						)}
+
+						<dt className="text-muted-foreground">Registriert seit:</dt>
+						<dd className="text-foreground">{formatDate(user.createdAt)}</dd>
+					</dl>
+
+					{isOwner && (
+						<CollapsibleContent className="mt-4 flex flex-col gap-4 border-t pt-4">
+							<UserUpdate
+								currentName={user.name ?? undefined}
+								currentPlace={currentUser.place}
+							/>
+							<div className="border-t pt-4">
+								<NotificationSetting />
+							</div>
+							<div className="flex items-center justify-between gap-4 border-t pt-4">
+								<p className="text-sm text-muted-foreground">FoodSwap verlassen?</p>
+								<UserDelete />
+							</div>
+						</CollapsibleContent>
+					)}
+				</ProfileEditCollapsible>
+			</section>
+
 			<>
-				{isOwner ? (
-					<h3 className="mt-4 text-h3">Meine Anzeigen</h3>
-				) : (
-					<h3 className="mt-8 text-h3">Anzeigen von {user.name ?? user.username}</h3>
-				)}
+				<h3 className="mt-10 text-h3">
+					{isOwner ? "Meine Anzeigen" : `Anzeigen von ${user.name ?? user.username}`}
+				</h3>
+
 				{listingsData.data.length === 0 ? (
 					<p className="py-12 text-center text-gray-500">
 						Dieser User hat aktuell keine Anzeigen.

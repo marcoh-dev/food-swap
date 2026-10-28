@@ -123,7 +123,8 @@ export async function updateUserAction(values: ProfileValues): Promise<FormState
 		};
 	}
 
-	redirect(`/users/${currentUser.id}`);
+	revalidatePath(`/users/${currentUser.id}`);
+	return {};
 }
 
 export async function deleteUserAction() {

@@ -13,6 +13,8 @@ import type { Place } from "@/lib/types/place.types";
 import { applyServerErrors } from "@/utils/form";
 import { formatPlace } from "@/utils/place";
 
+import { useCloseProfileEdit } from "./ProfileEditCollapsible";
+
 export function UserUpdate({
 	currentName,
 	currentPlace,
@@ -30,6 +32,7 @@ export function UserUpdate({
 		mode: "onSubmit",
 		reValidateMode: "onChange",
 	});
+	const closeProfileEdit = useCloseProfileEdit();
 
 	function handlePlaceQueryChange(query: string) {
 		form.setValue("placeQuery", query);
@@ -38,7 +41,11 @@ export function UserUpdate({
 
 	async function handleSubmit(values: ProfileValues) {
 		const result = await updateUserAction(values);
-		applyServerErrors(form.setError, result);
+		if (result.error || result.fieldErrors) {
+			applyServerErrors(form.setError, result);
+			return;
+		}
+		closeProfileEdit();
 	}
 
 	return (
@@ -97,9 +104,19 @@ export function UserUpdate({
 
 				<FieldError className="mt-3" errors={[form.formState.errors.root]} />
 
-				<Button type="submit" className="mt-3" disabled={form.formState.isSubmitting}>
-					Speichern
-				</Button>
+				<div className="mt-5 flex gap-2">
+					<Button type="submit" disabled={form.formState.isSubmitting}>
+						Speichern
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						onClick={closeProfileEdit}
+						disabled={form.formState.isSubmitting}
+					>
+						Abbrechen
+					</Button>
+				</div>
 			</form>
 		</section>
 	);
