@@ -17,5 +17,8 @@
 	},
 	"devDependencies": {
 		"concurrently": "^9.2.5"
+	},
+	"overrides": {
+		"multer": "^2.5.0"
 	}
 }
