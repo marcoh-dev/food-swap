@@ -138,7 +138,11 @@ export default function ListingCard({
 					<p
 						className={cn(
 							"text-xs wrap-break-word",
-							isDetail ? "whitespace-pre-line" : isList ? "line-clamp-2" : "line-clamp-3",
+							isDetail
+								? "whitespace-pre-line"
+								: isList
+									? "line-clamp-2"
+									: "line-clamp-3",
 						)}
 					>
 						{listing.description}

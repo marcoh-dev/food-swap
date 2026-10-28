@@ -86,8 +86,10 @@ export default async function ListingDetailPage({
 						)}
 						{!currentUser && (
 							<p className="text-sm">
-								<Link href={`/login?redirect=/listings/${listing.id}`}>Anmelden</Link>,
-								um {ownerName} zu schreiben.
+								<Link href={`/login?redirect=/listings/${listing.id}`}>
+									Anmelden
+								</Link>
+								, um {ownerName} zu schreiben.
 							</p>
 						)}
 					</>

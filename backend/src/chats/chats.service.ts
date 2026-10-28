@@ -16,6 +16,7 @@ import { Message } from './entities/message.entity';
 import { ChatDetailDto } from './dtos/chatDetail.dto';
 import { ChatsGateway } from './chats.gateway';
 import { ListingChatStatusDto } from './dtos/listingChatStatus.dto';
+import { UnreadChatsCountDto } from './dtos/unreadChatsCount.dto';
 
 type SavedMessage = {
   message: MessageResponseDto;
@@ -53,17 +54,28 @@ export class ChatsService {
       .getMany();
 
     const items = chats.map((chat) => {
-      const other = chat.ownerId === userId ? chat.user : chat.owner;
+      const isOwner = chat.ownerId === userId;
+      const other = isOwner ? chat.user : chat.owner;
+      const lastReadAt = isOwner ? chat.ownerLastReadAt : chat.userLastReadAt;
       return {
         id: chat.id,
         listingTitle: chat.listing?.title ?? null,
         otherName: other ? (other.name ?? other.username) : null,
         lastMessage: chat.messages[0]?.content ?? null,
         lastMessageAt: chat.lastMessageAt,
+        unread: lastReadAt === null || chat.lastMessageAt > lastReadAt,
       };
     });
 
     return plainToInstance(ChatListItemDto, items);
+  }
+
+  async countUnread(currentUser: User): Promise<UnreadChatsCountDto> {
+    const chats = await this.findAll(currentUser);
+
+    return plainToInstance(UnreadChatsCountDto, {
+      count: chats.filter((chat) => chat.unread).length,
+    });
   }
 
   async findOne(chatId: string, currentUser: User): Promise<ChatDetailDto> {
@@ -153,9 +165,15 @@ export class ChatsService {
               deletedByOwner: false,
               deletedByUser: false,
               lastMessageAt: () => 'now()',
+              userLastReadAt: () => 'now()',
             })
             .orUpdate(
-              ['deletedByOwner', 'deletedByUser', 'lastMessageAt'],
+              [
+                'deletedByOwner',
+                'deletedByUser',
+                'lastMessageAt',
+                'userLastReadAt',
+              ],
               ['listingId', 'ownerId', 'userId'],
             )
             .returning('id')
@@ -208,6 +226,8 @@ export class ChatsService {
             deletedByOwner: false,
             deletedByUser: false,
             lastMessageAt: () => 'now()',
+            [chat.ownerId === senderId ? 'ownerLastReadAt' : 'userLastReadAt']:
+              () => 'now()',
           });
 
           return {
@@ -225,6 +245,25 @@ export class ChatsService {
     this.chatsGateway.notifyNewMessage(participantIds, message);
 
     return message;
+  }
+
+  async markRead(chatId: string, currentUser: User): Promise<void> {
+    const { id: userId } = currentUser;
+    const chat = await this.chats.findOne({
+      where: { id: chatId },
+      select: { id: true, ownerId: true, userId: true },
+    });
+
+    if (!chat || (chat.ownerId !== userId && chat.userId !== userId)) {
+      throw new NotFoundException('Chat nicht gefunden');
+    }
+
+    await this.chats.update(chat.id, {
+      [chat.ownerId === userId ? 'ownerLastReadAt' : 'userLastReadAt']: () =>
+        'now()',
+    });
+
+    this.chatsGateway.notifyChatRead(userId, chatId);
   }
 
   async remove(chatId: string, currentUser: User): Promise<void> {
@@ -248,7 +287,11 @@ export class ChatsService {
         chat.deletedByUser = true;
       }
 
-      if (chat.deletedByOwner && chat.deletedByUser) {
+      // A deleted account (NULL) counts as having deleted the chat
+      const ownerGone = chat.deletedByOwner || chat.ownerId === null;
+      const userGone = chat.deletedByUser || chat.userId === null;
+
+      if (ownerGone && userGone) {
         await manager.delete(Chat, chat.id);
       } else {
         await manager.update(Chat, chat.id, {

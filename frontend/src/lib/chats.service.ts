@@ -27,6 +27,16 @@ export async function getChats(): Promise<ChatListItem[]> {
 	return response.json();
 }
 
+export async function getUnreadChatsCount(): Promise<number> {
+	const response = await fetchAPI(
+		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/chats/unread-count",
+		{ cache: "no-store" },
+	);
+	await throwIfFailed(response);
+	const { count } = await response.json();
+	return count;
+}
+
 export async function getChat(chatId: string): Promise<ChatDetail> {
 	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/chats/${chatId}`, {
 		cache: "no-store",
@@ -69,6 +79,14 @@ export async function replyToChat(chatId: string, content: string): Promise<Chat
 	);
 	await throwIfFailed(response);
 	return response.json();
+}
+
+export async function markChatRead(chatId: string): Promise<void> {
+	const response = await fetchAPI(
+		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/chats/${chatId}/read`,
+		{ method: "POST" },
+	);
+	await throwIfFailed(response);
 }
 
 export async function deleteChat(chatId: string): Promise<void> {

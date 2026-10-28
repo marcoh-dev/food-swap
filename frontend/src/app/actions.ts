@@ -19,6 +19,8 @@ import {
 	deleteChat,
 	getChat,
 	getChats,
+	getUnreadChatsCount,
+	markChatRead,
 	replyToChat,
 	startChat,
 } from "@/lib/chats.service";
@@ -310,6 +312,19 @@ export async function getChatsAction(): Promise<ActionResult<ChatListItem[]>> {
 	}
 }
 
+export async function getUnreadChatsCountAction(): Promise<ActionResult<number>> {
+	try {
+		return { data: await getUnreadChatsCount() };
+	} catch (error) {
+		return {
+			error: chatErrorMessage(
+				error,
+				"Ungelesene Chats konnten nicht geladen werden. Versuche es nochmal.",
+			),
+		};
+	}
+}
+
 export async function getChatAction(chatId: string): Promise<ActionResult<ChatDetail>> {
 	try {
 		return { data: await getChat(chatId) };
@@ -350,6 +365,20 @@ export async function replyToChatAction(
 			error: chatErrorMessage(
 				error,
 				"Die Nachricht konnte nicht gesendet werden. Versuche es nochmal.",
+			),
+		};
+	}
+}
+
+export async function markChatReadAction(chatId: string): Promise<ActionResult<null>> {
+	try {
+		await markChatRead(chatId);
+		return { data: null };
+	} catch (error) {
+		return {
+			error: chatErrorMessage(
+				error,
+				"Der Chat konnte nicht als gelesen markiert werden. Versuche es nochmal.",
 			),
 		};
 	}
