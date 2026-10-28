@@ -47,8 +47,10 @@ export default function ListingCard({
 	const isList = variant === "list";
 	const isDetail = variant === "detail";
 	const bodyClassName = cn(
-		"relative flex flex-1 no-underline",
-		isList ? "flex-row" : "flex-col gap-(--card-spacing)",
+		"relative no-underline",
+		isList
+			? "col-span-2 col-start-1 row-span-2 row-start-1 grid grid-cols-subgrid grid-rows-subgrid"
+			: "flex flex-1 flex-col gap-(--card-spacing)",
 	);
 	const body = (
 		<>
@@ -57,7 +59,7 @@ export default function ListingCard({
 				className={cn(
 					"@container relative overflow-hidden",
 					isList
-						? "w-2/5 shrink-0 sm:w-40 md:aspect-4/3 md:w-72 lg:w-96"
+						? "row-span-2 md:min-h-54"
 						: "aspect-square w-full sm:aspect-[4/3] lg:aspect-video",
 				)}
 			>
@@ -68,7 +70,7 @@ export default function ListingCard({
 						fill
 						sizes={
 							isList
-								? "(min-width: 1024px) 384px, (min-width: 768px) 288px, (min-width: 640px) 160px, 40vw"
+								? "(min-width: 1024px) 448px, (min-width: 768px) 320px, (min-width: 640px) 192px, 50vw"
 								: isDetail
 									? "(min-width: 768px) 672px, 100vw"
 									: "(min-width: 768px) 50vw, 100vw"
@@ -155,7 +157,9 @@ export default function ListingCard({
 		<Card
 			className={cn(
 				"h-full overflow-hidden",
-				isList ? "gap-0 py-0 max-sm:rounded-none" : "pt-0",
+				isList
+					? "grid grid-cols-[1fr_1fr] grid-rows-[1fr_auto] gap-0 py-0 max-sm:rounded-none sm:grid-cols-[12rem_1fr] md:grid-cols-[20rem_1fr] lg:grid-cols-[28rem_1fr]"
+					: "pt-0",
 				className,
 			)}
 		>
@@ -167,7 +171,14 @@ export default function ListingCard({
 				</Link>
 			)}
 			{actions && (
-				<CardFooter className="relative z-20 flex-col items-stretch">{actions}</CardFooter>
+				<CardFooter
+					className={cn(
+						"relative z-20 flex-col items-stretch",
+						isList && "col-start-2 row-start-2",
+					)}
+				>
+					{actions}
+				</CardFooter>
 			)}
 		</Card>
 	);
