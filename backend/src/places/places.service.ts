@@ -1,13 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { IsNull, Not, Repository } from "typeorm";
 
-import { Place } from './entities/place.entity';
+import { Place } from "./entities/place.entity";
 
 const SUGGESTION_LIMIT = 10;
 const MIN_TYPO_LENGTH = 4;
 const MAX_TYPO_LENGTH = 8;
-const ANY_CHARACTER = '\u0000';
+const ANY_CHARACTER = "\u0000";
 
 const RESPONSE_COLUMNS = `"id", "country_code" AS "countryCode", "postal_code" AS "postalCode", "name", "slug", "city", "county", "state"`;
 
@@ -55,73 +55,71 @@ const NAME_QUERY = `
   LIMIT $2`;
 
 function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function typoPrefixPattern(query: string): string | null {
-  const lower = query.toLowerCase();
-  if (lower.length < MIN_TYPO_LENGTH || lower.length > MAX_TYPO_LENGTH) {
-    return null;
-  }
+	const lower = query.toLowerCase();
+	if (lower.length < MIN_TYPO_LENGTH || lower.length > MAX_TYPO_LENGTH) {
+		return null;
+	}
 
-  const variants = new Set<string>();
-  for (let index = 0; index < lower.length; index++) {
-    const before = lower.slice(0, index);
-    const after = lower.slice(index + 1);
-    variants.add(`${before}${ANY_CHARACTER}${lower.slice(index)}`);
-    variants.add(`${before}${after}`);
-    variants.add(`${before}${ANY_CHARACTER}${after}`);
-    if (index < lower.length - 1 && lower[index] !== lower[index + 1]) {
-      variants.add(
-        `${before}${lower[index + 1]}${lower[index]}${lower.slice(index + 2)}`,
-      );
-    }
-  }
-  variants.delete(lower);
+	const variants = new Set<string>();
+	for (let index = 0; index < lower.length; index++) {
+		const before = lower.slice(0, index);
+		const after = lower.slice(index + 1);
+		variants.add(`${before}${ANY_CHARACTER}${lower.slice(index)}`);
+		variants.add(`${before}${after}`);
+		variants.add(`${before}${ANY_CHARACTER}${after}`);
+		if (index < lower.length - 1 && lower[index] !== lower[index + 1]) {
+			variants.add(`${before}${lower[index + 1]}${lower[index]}${lower.slice(index + 2)}`);
+		}
+	}
+	variants.delete(lower);
 
-  const alternatives = [...variants]
-    .filter((variant) => variant.replaceAll(ANY_CHARACTER, '').length >= 2)
-    .map((variant) => variant.split(ANY_CHARACTER).map(escapeRegex).join('.'));
+	const alternatives = [...variants]
+		.filter((variant) => variant.replaceAll(ANY_CHARACTER, "").length >= 2)
+		.map((variant) => variant.split(ANY_CHARACTER).map(escapeRegex).join("."));
 
-  return `^(${alternatives.join('|')})`;
+	return `^(${alternatives.join("|")})`;
 }
 
 @Injectable()
 export class PlacesService {
-  constructor(
-    @InjectRepository(Place)
-    private readonly places: Repository<Place>,
-  ) {}
+	constructor(
+		@InjectRepository(Place)
+		private readonly places: Repository<Place>,
+	) {}
 
-  search(query: string, withPostalCode: boolean): Promise<Place[]> {
-    if (/^\d+$/.test(query)) {
-      return this.places.query(POSTAL_CODE_QUERY, [query, SUGGESTION_LIMIT]);
-    }
-    return this.places.query(NAME_QUERY, [
-      query,
-      SUGGESTION_LIMIT,
-      typoPrefixPattern(query),
-      withPostalCode,
-    ]);
-  }
+	search(query: string, withPostalCode: boolean): Promise<Place[]> {
+		if (/^\d+$/.test(query)) {
+			return this.places.query(POSTAL_CODE_QUERY, [query, SUGGESTION_LIMIT]);
+		}
+		return this.places.query(NAME_QUERY, [
+			query,
+			SUGGESTION_LIMIT,
+			typoPrefixPattern(query),
+			withPostalCode,
+		]);
+	}
 
-  async findBySlug(slug: string): Promise<Place> {
-    const place = await this.places.findOneBy({ slug });
-    if (!place) {
-      throw new NotFoundException(`Place "${slug}" not found.`);
-    }
-    return place;
-  }
+	async findBySlug(slug: string): Promise<Place> {
+		const place = await this.places.findOneBy({ slug });
+		if (!place) {
+			throw new NotFoundException(`Place "${slug}" not found.`);
+		}
+		return place;
+	}
 
-  async findNearest(lat: number, lng: number): Promise<Place> {
-    const [place] = await this.places.query<Place[]>(NEAREST_QUERY, [lat, lng]);
-    if (!place) {
-      throw new NotFoundException('No place found near this location.');
-    }
-    return place;
-  }
+	async findNearest(lat: number, lng: number): Promise<Place> {
+		const [place] = await this.places.query<Place[]>(NEAREST_QUERY, [lat, lng]);
+		if (!place) {
+			throw new NotFoundException("No place found near this location.");
+		}
+		return place;
+	}
 
-  existsWithPostalCode(id: string): Promise<boolean> {
-    return this.places.exists({ where: { id, postalCode: Not(IsNull()) } });
-  }
+	existsWithPostalCode(id: string): Promise<boolean> {
+		return this.places.exists({ where: { id, postalCode: Not(IsNull()) } });
+	}
 }

@@ -1,11 +1,11 @@
-import { IsLatitude, IsLongitude, IsNumber } from 'class-validator';
+import { IsLatitude, IsLongitude, IsNumber } from "class-validator";
 
 export class NearestPlaceDto {
-  @IsNumber()
-  @IsLatitude()
-  lat!: number;
+	@IsNumber()
+	@IsLatitude()
+	lat!: number;
 
-  @IsNumber()
-  @IsLongitude()
-  lng!: number;
+	@IsNumber()
+	@IsLongitude()
+	lng!: number;
 }

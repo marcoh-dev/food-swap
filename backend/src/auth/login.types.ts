@@ -1,11 +1,11 @@
-import { Request } from 'express';
+import { Request } from "express";
 
-import { User } from '../users/entities/user.entity';
+import { User } from "../users/entities/user.entity";
 
 export type Payload = {
-  sub: string;
+	sub: string;
 };
 
 export type AuthenticatedRequest = Request & {
-  user: User;
+	user: User;
 };
