@@ -29,12 +29,14 @@ export default function ListingActions({
 	tags,
 	isEditingInList = false,
 	initialEditing = false,
+	layout = "grid",
 }: {
 	listing: ListingResponse;
 	categories: Category[];
 	tags: Tag[];
 	isEditingInList?: boolean;
 	initialEditing?: boolean;
+	layout?: "list" | "grid";
 }) {
 	const [isEditing, setIsEditing] = useState(initialEditing);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -120,7 +122,11 @@ export default function ListingActions({
 					<Button variant="secondary" asChild>
 						<Link href={`/listings/${listing.id}?edit=true`}>
 							<PencilIcon className="size-4" aria-hidden="true" />
-							<span className="sr-only md:not-sr-only">Bearbeiten</span>
+							<span
+								className={layout === "list" ? undefined : "sr-only md:not-sr-only"}
+							>
+								Bearbeiten
+							</span>
 						</Link>
 					</Button>
 				) : (
