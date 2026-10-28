@@ -88,7 +88,7 @@ export function UserLogin({ redirectTo }: { redirectTo?: string }) {
 					Anmelden
 				</Button>
 			</form>
-			<div className="font-light text-[10px]">
+			<div className="text-[10px] font-light">
 				Neu bei FoodSwap? Hier geht&apos;s zur{" "}
 				<Link href={registrationHref} className="underline">
 					Registrierung

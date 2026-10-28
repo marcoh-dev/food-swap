@@ -79,9 +79,9 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					view={view}
 				/>
 
-				<div className="flex w-full flex-col items-start mb-2">
+				<div className="mb-2 flex w-full flex-col items-start">
 					<ListingFilters categories={categories} tags={allTags} />
-					<div className="self-end flex items-center gap-2">
+					<div className="flex items-center gap-2 self-end">
 						<ViewMenu view={view} />
 						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 					</div>

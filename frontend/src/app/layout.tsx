@@ -64,7 +64,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<header className="flex flex-row justify-between items-center p-[1em] h-header sticky top-0 z-50 bg-background/85 backdrop-blur-md text-foreground border-b">
+					<header className="sticky top-0 z-50 flex h-header flex-row items-center justify-between border-b bg-background/85 p-[1em] text-foreground backdrop-blur-md">
 						<div className="flex flex-row items-center gap-5">
 							<Link href="/" aria-label="Home" className="block">
 								<Image

@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 
 export function UserDelete() {
 	return (
-		<section className="my-2 ">
+		<section className="my-2">
 			<AlertDialog>
 				<AlertDialogTrigger asChild>
 					<Button variant="destructive">Konto löschen</Button>

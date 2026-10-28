@@ -86,7 +86,7 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 					Registrieren
 				</Button>
 			</form>
-			<div className="font-light text-[10px]">
+			<div className="text-[10px] font-light">
 				Du hast schon ein Konto? Hier geht&apos;s zum{" "}
 				<Link href={loginHref} className="underline">
 					Login

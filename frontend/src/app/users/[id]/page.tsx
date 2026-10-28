@@ -98,9 +98,9 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 			)}
 			<>
 				{isOwner ? (
-					<h3 className="text-h3 mt-4">Meine Anzeigen</h3>
+					<h3 className="mt-4 text-h3">Meine Anzeigen</h3>
 				) : (
-					<h3 className="text-h3 mt-8">Anzeigen von {user.name ?? user.username}</h3>
+					<h3 className="mt-8 text-h3">Anzeigen von {user.name ?? user.username}</h3>
 				)}
 				{listingsData.data.length === 0 ? (
 					<p className="py-12 text-center text-gray-500">
@@ -108,7 +108,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 					</p>
 				) : (
 					<>
-						<div className="flex justify-end items-center gap-2 mb-2">
+						<div className="mb-2 flex items-center justify-end gap-2">
 							<ViewMenu view={view} />
 							<SortingMenu sort={sort} />
 						</div>

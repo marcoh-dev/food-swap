@@ -16,10 +16,10 @@ const badgeVariants = cva(
 					"border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
 				ghost: "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
 				link: "text-primary underline-offset-4 hover:underline",
-				tag: "bg-transparent text-foreground border-input",
+				tag: "border-input bg-transparent text-foreground",
 				category: "bg-category text-category-foreground",
-				status: "bg-primary text-primary-foreground rounded-full",
-				expired: "bg-muted text-muted-foreground border-border rounded-full",
+				status: "rounded-full bg-primary text-primary-foreground",
+				expired: "rounded-full border-border bg-muted text-muted-foreground",
 			},
 		},
 		defaultVariants: {

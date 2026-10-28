@@ -109,7 +109,7 @@ export default function ListingActions({
 					type="button"
 					variant="ghost"
 					onClick={handleCancel}
-					className="rounded-lg px-3 py-2 w-full"
+					className="w-full rounded-lg px-3 py-2"
 				>
 					Abbrechen
 				</Button>

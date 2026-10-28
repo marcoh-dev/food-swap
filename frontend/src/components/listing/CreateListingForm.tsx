@@ -25,7 +25,7 @@ export default function CreateListingForm({ categories, tags, defaultPlace }: Pr
 				tags={tags}
 				defaultPlace={defaultPlace}
 			/>
-			<Button variant="ghost" asChild className="rounded-lg px-3 py-2 w-full">
+			<Button variant="ghost" asChild className="w-full rounded-lg px-3 py-2">
 				<Link href="/me">Abbrechen</Link>
 			</Button>
 		</>
