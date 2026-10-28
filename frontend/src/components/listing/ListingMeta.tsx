@@ -67,7 +67,7 @@ export default function ListingMeta({
 			)}
 			{deletionLabel && (
 				<span className="inline-flex basis-full items-center gap-1">
-					 <CircleAlertIcon className="size-4 text-destructive" aria-hidden="true" />
+					<CircleAlertIcon className="size-4 text-destructive" aria-hidden="true" />
 					{deletionLabel}
 				</span>
 			)}
