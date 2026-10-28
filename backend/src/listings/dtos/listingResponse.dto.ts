@@ -1,8 +1,9 @@
 import { Expose, Type } from 'class-transformer';
-import { UserResponseDto } from '../../users/dtos/userResponse.dto';
+
 import { CategoryResponseDto } from '../../categories/dtos/categoryResponse.dto';
-import { TagResponseDto } from '../../tags/dtos/tagResponse.dto';
 import { PlaceResponseDto } from '../../places/dtos/placeResponse.dto';
+import { TagResponseDto } from '../../tags/dtos/tagResponse.dto';
+import { UserResponseDto } from '../../users/dtos/userResponse.dto';
 import { ListingStatus, ListingType } from '../entities/listing.entity';
 
 export class ListingResponseDto {

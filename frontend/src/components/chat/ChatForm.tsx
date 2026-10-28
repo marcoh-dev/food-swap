@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type KeyboardEvent, type SubmitEvent } from "react";
 import { SendHorizontalIcon } from "lucide-react";
+import { type KeyboardEvent, type SubmitEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";

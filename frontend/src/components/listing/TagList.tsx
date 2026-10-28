@@ -1,6 +1,8 @@
-import type { Tag } from "@/lib/types/tag.types";
-import { Badge } from "../ui/badge";
 import { cn } from "cn";
+
+import type { Tag } from "@/lib/types/tag.types";
+
+import { Badge } from "../ui/badge";
 
 const BREAKPOINTS = ["base", "sm", "md", "lg", "xl"] as const;
 type Breakpoint = (typeof BREAKPOINTS)[number];

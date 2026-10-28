@@ -1,6 +1,7 @@
+import type { Metadata } from "next";
+
 import { UserLogin } from "@/components/user/UserLogin";
 import { pageTitles } from "@/lib/constants/titles.constants";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: pageTitles.login };
 

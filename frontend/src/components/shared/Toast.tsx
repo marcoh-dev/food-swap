@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
+
 import { toastMessages } from "@/lib/constants/toast.constants";
 
 export default function Toast() {

@@ -1,4 +1,5 @@
 import { IsIn } from 'class-validator';
+
 import { ListingStatus } from '../entities/listing.entity';
 
 export class UpdateListingStatusDto {

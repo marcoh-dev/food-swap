@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import {
 	GiftIcon,
 	MapPinIcon,
@@ -6,11 +7,12 @@ import {
 	TimerIcon,
 	Trash2Icon,
 } from "lucide-react";
+
 import type { ListingResponse } from "@/lib/types/listing.types";
-import { cn } from "cn";
-import ListingDate from "./ListingDate";
 import { formatDate, getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
 import { formatDistance, formatPlace } from "@/utils/place";
+
+import ListingDate from "./ListingDate";
 
 export default function ListingMeta({
 	listing,

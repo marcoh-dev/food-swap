@@ -1,22 +1,22 @@
-import { getListings } from "@/lib/listings.service";
-import { getCategories } from "@/lib/categories.service";
-import { getTags } from "@/lib/tags.service";
-import SearchBar from "@/components/search/SearchBar";
-import { SortingMenu } from "@/components/listing/SortingMenu";
-import type { SortOption } from "@/lib/types/listing.types";
-import ListingFilters from "@/components/listing/ListingFilter";
 import type { Metadata } from "next";
-import { pageTitles } from "@/lib/constants/titles.constants";
-import ListingsPagination from "@/components/listing/ListingsPagination";
-import { parseRadius, SEARCH_FORM_ID } from "@/lib/constants/listing.constants";
-import { SearchPlaceProvider } from "@/components/search/SearchPlaceContext";
-import { getPlaceBySlug } from "@/lib/places.service";
-import { formatPlace } from "@/utils/place";
 import { redirect } from "next/navigation";
-import { parsePage } from "@/utils/pagination";
 
 import ListingCard from "@/components/listing/ListingCard";
+import ListingFilters from "@/components/listing/ListingFilter";
+import ListingsPagination from "@/components/listing/ListingsPagination";
+import { SortingMenu } from "@/components/listing/SortingMenu";
 import ViewMenu from "@/components/listing/ViewMenu";
+import SearchBar from "@/components/search/SearchBar";
+import { SearchPlaceProvider } from "@/components/search/SearchPlaceContext";
+import { getCategories } from "@/lib/categories.service";
+import { parseRadius, SEARCH_FORM_ID } from "@/lib/constants/listing.constants";
+import { pageTitles } from "@/lib/constants/titles.constants";
+import { getListings } from "@/lib/listings.service";
+import { getPlaceBySlug } from "@/lib/places.service";
+import { getTags } from "@/lib/tags.service";
+import type { SortOption } from "@/lib/types/listing.types";
+import { parsePage } from "@/utils/pagination";
+import { formatPlace } from "@/utils/place";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 

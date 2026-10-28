@@ -10,8 +10,9 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { ListingType } from '../entities/listing.entity';
+
 import { trimString } from '../../common/utils/trim-string';
+import { ListingType } from '../entities/listing.entity';
 
 export class CreateListingDto {
   @IsString()

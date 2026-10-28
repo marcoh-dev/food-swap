@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -5,8 +6,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+
 import { trimString } from '../../common/utils/trim-string';
-import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString()

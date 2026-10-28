@@ -1,4 +1,5 @@
 import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
+
 import type { FormState } from "@/lib/types/common.types";
 
 export function applyServerErrors<TValues extends FieldValues>(

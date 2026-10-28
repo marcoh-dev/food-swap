@@ -9,11 +9,12 @@ import {
   Query,
   SerializeOptions,
 } from '@nestjs/common';
-import { Public } from '../common/decorators/public.decorator';
-import { PlacesService } from './places.service';
-import { PlacesQueryDto } from './dtos/placesQuery.dto';
-import { PlaceResponseDto } from './dtos/placeResponse.dto';
+
 import { NearestPlaceDto } from './dtos/nearestPlace.dto';
+import { PlaceResponseDto } from './dtos/placeResponse.dto';
+import { PlacesQueryDto } from './dtos/placesQuery.dto';
+import { PlacesService } from './places.service';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('places')
 export class PlacesController {

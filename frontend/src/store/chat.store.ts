@@ -9,9 +9,9 @@ import {
 	replyToChatAction,
 	startChatAction,
 } from "@/app/actions";
-import { socket } from "@/socket";
 import type { ChatActions, ChatMessage, ChatState } from "@/lib/types/chat.types";
 import type { ActionResult } from "@/lib/types/common.types";
+import { socket } from "@/socket";
 
 async function call<T>(action: Promise<ActionResult<T>>): Promise<T> {
 	const result = await action.catch(() => {

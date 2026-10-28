@@ -1,20 +1,22 @@
+import { cn } from "cn";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import Link from "next/link";
-import Image from "next/image";
-import { cn } from "cn";
-import { ThemeProvider } from "@/components/ui/theme-provider";
-import BurgerMenu from "@/components/menu/BurgerMenu";
 import { cookies } from "next/headers";
+import Image from "next/image";
+import Link from "next/link";
+import { Suspense } from "react";
+
+import { ChatNotifications } from "@/components/chat/ChatNotifications";
+import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
+import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
+import BurgerMenu from "@/components/menu/BurgerMenu";
+import Toast from "@/components/shared/Toast";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AUTH_COOKIE } from "@/lib/fetchAPI";
 import { getCurrentUser } from "@/lib/users.service";
-import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
-import { ChatNotifications } from "@/components/chat/ChatNotifications";
-import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
-import { Toaster } from "@/components/ui/sonner";
-import Toast from "@/components/shared/Toast";
-import { Suspense } from "react";
+
+import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
 	subsets: ["latin"],

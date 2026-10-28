@@ -1,3 +1,4 @@
+import { fetchAPI } from "./fetchAPI";
 import type {
 	GetListingsOptions,
 	ListingResponse,
@@ -6,7 +7,6 @@ import type {
 	PaginatedListingsResponse,
 	SortOption,
 } from "./types/listing.types";
-import { fetchAPI } from "./fetchAPI";
 
 export async function getListings({
 	page = 1,

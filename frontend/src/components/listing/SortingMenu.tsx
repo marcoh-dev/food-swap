@@ -1,5 +1,8 @@
 "use client";
 
+import { ArrowDownUp } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -10,8 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { SortOption } from "@/lib/types/listing.types";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowDownUp } from "lucide-react";
+
 import { useSearchPlace } from "../search/SearchPlaceContext";
 
 const SORT_LABELS: Record<SortOption, string> = {

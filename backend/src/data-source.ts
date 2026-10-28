@@ -1,14 +1,15 @@
 import 'dotenv/config';
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
 import path from 'path';
-import { Listing } from './listings/entities/listing.entity';
-import { User } from './users/entities/user.entity';
+import { DataSource } from 'typeorm';
+
 import { Category } from './categories/entities/category.entity';
-import { Tag } from './tags/entities/tag.entity';
 import { Chat } from './chats/entities/chat.entity';
 import { Message } from './chats/entities/message.entity';
+import { Listing } from './listings/entities/listing.entity';
 import { Place } from './places/entities/place.entity';
+import { Tag } from './tags/entities/tag.entity';
+import { User } from './users/entities/user.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

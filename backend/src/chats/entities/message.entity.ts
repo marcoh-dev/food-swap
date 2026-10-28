@@ -8,8 +8,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+
 import { Chat } from './chat.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('messages')
 @Index(['chatId', 'createdAt'])

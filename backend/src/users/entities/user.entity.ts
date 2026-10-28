@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { Listing } from '../../listings/entities/listing.entity';
 import { Place } from '../../places/entities/place.entity';
 

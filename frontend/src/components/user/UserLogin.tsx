@@ -1,15 +1,17 @@
 "use client";
 
-import { loginAction } from "@/app/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { loginAction } from "@/app/actions";
 import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 import { applyServerErrors } from "@/utils/form";
-import { FieldGroup, Field, FieldLabel, FieldError } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+
 import PinInput from "./PinInput";
+import { Button } from "../ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
 
 export function UserLogin({ redirectTo }: { redirectTo?: string }) {
 	const form = useForm<LoginValues>({

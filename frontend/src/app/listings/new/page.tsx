@@ -1,11 +1,12 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
 import { isAuthenticated } from "@/app/actions";
-import { getCurrentUser } from "@/lib/users.service";
 import CreateListingForm from "@/components/listing/CreateListingForm";
 import { getCategories } from "@/lib/categories.service";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getTags } from "@/lib/tags.service";
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/users.service";
 
 export const metadata: Metadata = { title: pageTitles.newListing };
 

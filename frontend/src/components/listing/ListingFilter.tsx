@@ -1,9 +1,7 @@
 "use client";
 
-import type { Category } from "@/lib/types/category.types";
-import type { Tag } from "@/lib/types/tag.types";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Label } from "../ui/label";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import {
 	Select,
 	SelectContent,
@@ -11,9 +9,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Button } from "../ui/button";
-import { FieldSet, FieldLegend } from "../ui/field";
+import type { Category } from "@/lib/types/category.types";
+import type { Tag } from "@/lib/types/tag.types";
+
 import TagSelect from "./TagSelect";
+import { Button } from "../ui/button";
+import { FieldLegend, FieldSet } from "../ui/field";
+import { Label } from "../ui/label";
 
 const ALL_CATEGORIES = "all";
 type Props = {

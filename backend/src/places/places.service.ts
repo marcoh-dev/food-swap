@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
+
 import { Place } from './entities/place.entity';
 
 const SUGGESTION_LIMIT = 10;

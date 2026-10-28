@@ -1,9 +1,10 @@
 // components/ui/mode-toggle.tsx
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { Moon, Sun, SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
+
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const emptySubscribe = () => () => {};

@@ -9,10 +9,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Tag } from '../../tags/entities/tag.entity';
+
 import { Category } from '../../categories/entities/category.entity';
 import { Place } from '../../places/entities/place.entity';
+import { Tag } from '../../tags/entities/tag.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum ListingType {
   SWAP = 'swap',

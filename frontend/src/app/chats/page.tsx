@@ -1,8 +1,9 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/users.service";
-import { ChatsView } from "@/components/chat/ChatsView";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+import { ChatsView } from "@/components/chat/ChatsView";
 import { pageTitles } from "@/lib/constants/titles.constants";
+import { getCurrentUser } from "@/lib/users.service";
 
 export const metadata: Metadata = { title: pageTitles.myChats };
 

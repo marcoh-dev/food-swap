@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+
 import { ListingType } from '../../listings/entities/listing.entity';
 
 export class PaginationQueryDto {

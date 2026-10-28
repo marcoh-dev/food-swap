@@ -1,24 +1,25 @@
-import type { ReactNode } from "react";
-import Link from "next/link";
+import { cn } from "cn";
 import Image from "next/image";
-import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
+import Link from "next/link";
+import type { ReactNode } from "react";
+
 import CategoryBadge from "@/components/listing/CategoryBadge";
-import StatusBadge from "@/components/listing/StatusBadge";
-import ExpiredBadge from "@/components/listing/ExpiredBadge";
-import TypeBadge from "@/components/listing/TypeBadge";
 import EndDateBadge from "@/components/listing/EndDateBadge";
-import TagList from "@/components/listing/TagList";
+import ExpiredBadge from "@/components/listing/ExpiredBadge";
+import ListingImagePlaceholder from "@/components/listing/ListingImagePlaceholder";
 import ListingMeta from "@/components/listing/ListingMeta";
+import StatusBadge from "@/components/listing/StatusBadge";
+import TagList from "@/components/listing/TagList";
+import TypeBadge from "@/components/listing/TypeBadge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
-	CardFooter,
 } from "@/components/ui/card";
 import type { ListingResponse } from "@/lib/types/listing.types";
-import { cn } from "cn";
 
 type ListingCardProps = {
 	listing: ListingResponse;

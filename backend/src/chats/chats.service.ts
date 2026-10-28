@@ -4,19 +4,20 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Chat } from './entities/chat.entity';
-import { EntityManager, Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
+import { EntityManager, Repository } from 'typeorm';
+
+import { ChatsGateway } from './chats.gateway';
+import { ChatDetailDto } from './dtos/chatDetail.dto';
 import { ChatListItemDto } from './dtos/chatListItem.dto';
+import { ListingChatStatusDto } from './dtos/listingChatStatus.dto';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { StartChatDto } from './dtos/startChat.dto';
-import { Listing } from '../listings/entities/listing.entity';
-import { Message } from './entities/message.entity';
-import { ChatDetailDto } from './dtos/chatDetail.dto';
-import { ChatsGateway } from './chats.gateway';
-import { ListingChatStatusDto } from './dtos/listingChatStatus.dto';
 import { UnreadChatsCountDto } from './dtos/unreadChatsCount.dto';
+import { Chat } from './entities/chat.entity';
+import { Message } from './entities/message.entity';
+import { Listing } from '../listings/entities/listing.entity';
+import { User } from '../users/entities/user.entity';
 
 type SavedMessage = {
   message: MessageResponseDto;

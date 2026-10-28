@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+
 import { trimString } from '../../common/utils/trim-string';
 
 export class PlacesQueryDto {

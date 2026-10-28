@@ -1,3 +1,5 @@
+import { OmitType } from '@nestjs/mapped-types';
+import { Transform, Type } from 'class-transformer';
 import {
   IsIn,
   IsOptional,
@@ -5,9 +7,8 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { OmitType } from '@nestjs/mapped-types';
+
 import { PaginationQueryDto } from '../../common/dtos/paginationQuery.dto';
-import { Transform, Type } from 'class-transformer';
 import { toSlugArray } from '../../common/utils/trim-string';
 
 export const RADIUS_OPTIONS_KM = [5, 10, 20, 50];

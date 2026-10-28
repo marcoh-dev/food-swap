@@ -1,5 +1,7 @@
 import { GiftIcon, RepeatIcon } from "lucide-react";
+
 import type { ListingResponse } from "@/lib/types/listing.types";
+
 import { Badge } from "../ui/badge";
 
 export default function TypeBadge({ listing }: { listing: Pick<ListingResponse, "type"> }) {

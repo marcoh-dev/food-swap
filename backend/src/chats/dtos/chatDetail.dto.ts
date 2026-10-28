@@ -1,4 +1,5 @@
 import { Expose, Type } from 'class-transformer';
+
 import { MessageResponseDto } from './messageResponse.dto';
 
 export class ChatDetailDto {

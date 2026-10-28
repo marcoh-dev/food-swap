@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -6,20 +7,20 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
-  SerializeOptions,
-  Request,
   Patch,
-  Body,
   Query,
+  Request,
+  SerializeOptions,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { Public } from '../common/decorators/public.decorator';
+
 import { UserResponseDto } from './dtos/userResponse.dto';
+import { UsersService } from './users.service';
 import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateUserDto } from './dtos/updateUser.dto';
-import { ListingsService } from '../listings/listings.service';
-import { PaginatedListingsResponseDto } from '../listings/dtos/paginatedListingsResponse.dto';
+import { Public } from '../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../common/dtos/paginationQuery.dto';
+import { PaginatedListingsResponseDto } from '../listings/dtos/paginatedListingsResponse.dto';
+import { ListingsService } from '../listings/listings.service';
 
 @Controller('users')
 export class UsersController {

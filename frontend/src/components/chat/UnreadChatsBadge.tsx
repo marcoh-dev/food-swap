@@ -1,8 +1,9 @@
 "use client";
 
+import { cn } from "cn";
+
 import { Badge } from "@/components/ui/badge";
 import { useChatStore } from "@/store/chat.store";
-import { cn } from "cn";
 
 export function formatUnreadCount(count: number): string {
 	return count > 9 ? "9+" : String(count);

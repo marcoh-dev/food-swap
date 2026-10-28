@@ -1,7 +1,7 @@
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { Slot } from "radix-ui";
+import * as React from "react";
 
 function BubbleGroup({ className, ...props }: React.ComponentProps<"div">) {
 	return (
@@ -118,4 +118,4 @@ function BubbleReactions({
 	);
 }
 
-export { BubbleGroup, Bubble, BubbleContent, BubbleReactions };
+export { Bubble, BubbleContent, BubbleGroup, BubbleReactions };

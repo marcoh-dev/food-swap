@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Listing } from '../../listings/entities/listing.entity';
 
 @Entity('tags')

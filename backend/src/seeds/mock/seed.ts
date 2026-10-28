@@ -1,16 +1,17 @@
-import { createHash } from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
 import { EntityManager } from 'typeorm';
-import { AppDataSource } from '../../data-source';
+
+import { mockChats } from './chats';
+import { MockListing, mockListings } from './listings';
+import { MOCK_USERNAME_PREFIX, mockUsers } from './users';
 import {
   berlinDay,
   berlinTime,
   endOfDay,
   shiftDay,
 } from '../../common/utils/berlin-date';
-import { mockChats } from './chats';
-import { MockListing, mockListings } from './listings';
-import { MOCK_USERNAME_PREFIX, mockUsers } from './users';
+import { AppDataSource } from '../../data-source';
 
 // Seeds mock users, listings and chats, or removes them again with --remove.
 // Every row gets a fixed id derived from its key, so running the seed twice

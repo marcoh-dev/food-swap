@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
-import { AppDataSource } from '../../src/data-source';
+
 import { testDatabaseUrl } from './test-database';
+import { AppDataSource } from '../../src/data-source';
 
 async function createDatabaseIfMissing(url: string): Promise<void> {
   const serverUrl = new URL(url);

@@ -1,4 +1,5 @@
 import { Expose, Type } from 'class-transformer';
+
 import { PlaceResponseDto } from '../../places/dtos/placeResponse.dto';
 
 export class CurrentUserResponseDto {

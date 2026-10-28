@@ -10,10 +10,11 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
+
 import { ChatsService } from './chats.service';
 import type { AuthenticatedRequest } from '../auth/login.types';
-import { StartChatDto } from './dtos/startChat.dto';
 import { SendMessageDto } from './dtos/sendMessage.dto';
+import { StartChatDto } from './dtos/startChat.dto';
 
 @Controller('chats')
 export class ChatsController {

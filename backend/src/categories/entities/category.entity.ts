@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Listing } from '../../listings/entities/listing.entity';
 
 @Entity('categories')

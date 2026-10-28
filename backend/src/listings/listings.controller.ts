@@ -1,29 +1,30 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  ParseUUIDPipe,
-  SerializeOptions,
-  Query,
-  Request,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
   Patch,
+  Post,
+  Query,
+  Request,
+  SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
-import { ListingsService } from './listings.service';
+
+import { CleanupSecretGuard } from './cleanupSecret.guard';
 import { CreateListingDto } from './dtos/createListing.dto';
 import { ListingResponseDto } from './dtos/listingResponse.dto';
+import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { PaginatedListingsResponseDto } from './dtos/paginatedListingsResponse.dto';
-import { Public } from '../common/decorators/public.decorator';
+import { ListingsService } from './listings.service';
 import type { AuthenticatedRequest } from '../auth/login.types';
 import { UpdateListingDto } from './dtos/updateListing.dto';
-import { ListingsQueryDto } from './dtos/listingsQuery.dto';
 import { UpdateListingStatusDto } from './dtos/updateListingStatus.dto';
-import { CleanupSecretGuard } from './cleanupSecret.guard';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('listings')
 export class ListingsController {

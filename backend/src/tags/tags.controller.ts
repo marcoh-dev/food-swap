@@ -1,8 +1,8 @@
 import { Controller, Get, SerializeOptions } from '@nestjs/common';
 
-import { Public } from '../common/decorators/public.decorator';
-import { TagsService } from './tags.service';
 import { TagResponseDto } from './dtos/tagResponse.dto';
+import { TagsService } from './tags.service';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('tags')
 export class TagsController {

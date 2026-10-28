@@ -10,9 +10,10 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+
+import { Message } from './message.entity';
 import { Listing } from '../../listings/entities/listing.entity';
 import { User } from '../../users/entities/user.entity';
-import { Message } from './message.entity';
 
 @Entity('chats')
 @Unique('UQ_chats_listing_owner_user', ['listingId', 'ownerId', 'userId'])

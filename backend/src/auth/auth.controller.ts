@@ -7,14 +7,15 @@ import {
   SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import { CreateUserDto } from '../users/dtos/createUser.dto';
-import { Public } from '../common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
+
+import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
-import { CurrentUserResponseDto } from '../users/dtos/currentUserResponse.dto';
 import type { AuthenticatedRequest } from './login.types';
+import { Public } from '../common/decorators/public.decorator';
+import { CreateUserDto } from '../users/dtos/createUser.dto';
+import { CurrentUserResponseDto } from '../users/dtos/currentUserResponse.dto';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {

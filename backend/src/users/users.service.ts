@@ -5,14 +5,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dtos/createUser.dto';
 import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+
+import { CreateUserDto } from './dtos/createUser.dto';
 import { UpdateUserDto } from './dtos/updateUser.dto';
-import { PlacesService } from '../places/places.service';
+import { User } from './entities/user.entity';
 import { Chat } from '../chats/entities/chat.entity';
+import { PlacesService } from '../places/places.service';
 
 const SALT_ROUNDS = 12;
 
