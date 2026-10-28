@@ -16,7 +16,7 @@ export default function NavLink({ href, activeHref, className, ...props }: NavLi
 			aria-current={isActive ? "page" : undefined}
 			className={`${
 				isActive
-					? "no-underline before:mr-2 before:inline-block before:size-7 before:align-middle before:bg-[url('/logo.svg')] before:bg-contain before:bg-center before:bg-no-repeat before:content-['']"
+					? "no-underline before:mr-2 before:inline-block before:size-7 before:bg-[url('/logo.svg')] before:bg-contain before:bg-center before:bg-no-repeat before:align-middle before:content-['']"
 					: "no-underline"
 			} ${className ?? ""}`}
 			{...props}

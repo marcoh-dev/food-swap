@@ -1,17 +1,17 @@
-import { Controller, Get, SerializeOptions } from '@nestjs/common';
+import { Controller, Get, SerializeOptions } from "@nestjs/common";
 
-import { Public } from '../common/decorators/public.decorator';
-import { TagsService } from './tags.service';
-import { TagResponseDto } from './dtos/tagResponse.dto';
+import { TagResponseDto } from "./dtos/tagResponse.dto";
+import { TagsService } from "./tags.service";
+import { Public } from "../common/decorators/public.decorator";
 
-@Controller('tags')
+@Controller("tags")
 export class TagsController {
-  constructor(private readonly tagsService: TagsService) {}
+	constructor(private readonly tagsService: TagsService) {}
 
-  @Public()
-  @Get()
-  @SerializeOptions({ type: TagResponseDto })
-  findAll() {
-    return this.tagsService.findAll();
-  }
+	@Public()
+	@Get()
+	@SerializeOptions({ type: TagResponseDto })
+	findAll() {
+		return this.tagsService.findAll();
+	}
 }

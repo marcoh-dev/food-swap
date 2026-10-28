@@ -1,5 +1,5 @@
-import * as React from "react";
 import { cn } from "cn";
+import * as React from "react";
 
 function MessageGroup({ className, ...props }: React.ComponentProps<"div">) {
 	return (
@@ -81,4 +81,4 @@ function MessageFooter({ className, ...props }: React.ComponentProps<"div">) {
 	);
 }
 
-export { MessageGroup, Message, MessageAvatar, MessageContent, MessageFooter, MessageHeader };
+export { Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader };

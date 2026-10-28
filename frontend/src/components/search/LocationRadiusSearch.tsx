@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { cn } from "cn";
-import type { Place } from "@/lib/types/place.types";
+import { useState } from "react";
+
+import PlaceCombobox from "@/components/places/PlaceCombobox";
+import { Slider } from "@/components/ui/slider";
 import { RADIUS_OPTIONS_KM } from "@/lib/constants/listing.constants";
-import PlaceCombobox from "../places/PlaceCombobox";
-import { Slider } from "../ui/slider";
+import type { Place } from "@/lib/types/place.types";
+
 import { useSearchPlace } from "./SearchPlaceContext";
 
 const RADIUS_STEPS = [undefined, ...RADIUS_OPTIONS_KM];

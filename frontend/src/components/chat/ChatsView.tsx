@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { cn } from "cn";
 import { MessagesSquareIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { cn } from "cn";
 import { useChatStore } from "@/store/chat.store";
 
 import { ChatConversation } from "./ChatConversation";

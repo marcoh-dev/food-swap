@@ -6,6 +6,14 @@
 		{
 			"files": "*.{yml,yaml}",
 			"options": { "tabWidth": 2 }
+		},
+		{
+			"files": "frontend/**",
+			"options": {
+				"plugins": ["prettier-plugin-tailwindcss"],
+				"tailwindStylesheet": "./frontend/src/app/globals.css",
+				"tailwindFunctions": ["cn", "cva"]
+			}
 		}
 	]
 }

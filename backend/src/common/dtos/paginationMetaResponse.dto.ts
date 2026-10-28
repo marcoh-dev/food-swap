@@ -1,15 +1,15 @@
-import { Expose } from 'class-transformer';
+import { Expose } from "class-transformer";
 
 export class PaginationMetaResponseDto {
-  @Expose()
-  page!: number;
+	@Expose()
+	page!: number;
 
-  @Expose()
-  limit!: number;
+	@Expose()
+	limit!: number;
 
-  @Expose()
-  total!: number;
+	@Expose()
+	total!: number;
 
-  @Expose()
-  totalPages!: number;
+	@Expose()
+	totalPages!: number;
 }

@@ -1,5 +1,5 @@
+import { Badge } from "@/components/ui/badge";
 import type { ListingResponse } from "@/lib/types/listing.types";
-import { Badge } from "../ui/badge";
 import { isExpired } from "@/utils/date";
 
 export default function ExpiredBadge({ listing }: { listing: Pick<ListingResponse, "endDate"> }) {

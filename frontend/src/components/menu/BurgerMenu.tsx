@@ -1,11 +1,13 @@
-import * as SheetParts from "@/components/ui/sheet";
-import { UserLogout } from "@/components/user/UserLogout";
-import { AuthLink } from "@/components/user/AuthLink";
-import { ModeToggle } from "@/components/menu/ModeToggle";
 import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { getCurrentUser } from "@/lib/users.service";
+
 import { UnreadChatsBadge } from "@/components/chat/UnreadChatsBadge";
+import { ModeToggle } from "@/components/menu/ModeToggle";
+import { Button } from "@/components/ui/button";
+import * as SheetParts from "@/components/ui/sheet";
+import { AuthLink } from "@/components/user/AuthLink";
+import { UserLogout } from "@/components/user/UserLogout";
+import { getCurrentUser } from "@/lib/users.service";
+
 import NavLink from "./NavLink";
 
 export default async function BurgerMenu() {

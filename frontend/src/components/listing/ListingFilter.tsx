@@ -1,9 +1,10 @@
 "use client";
 
-import type { Category } from "@/lib/types/category.types";
-import type { Tag } from "@/lib/types/tag.types";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Label } from "../ui/label";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { FieldLegend, FieldSet } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -11,8 +12,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Button } from "../ui/button";
-import { FieldSet, FieldLegend } from "../ui/field";
+import type { Category } from "@/lib/types/category.types";
+import type { Tag } from "@/lib/types/tag.types";
+
 import TagSelect from "./TagSelect";
 
 const ALL_CATEGORIES = "all";
@@ -66,7 +68,7 @@ export default function ListingFilters({ categories, tags }: Props) {
 	const hasFilters = selectedCategory !== "" || selectedTags.length > 0;
 
 	return (
-		<div className="flex flex-col gap-4 my-3">
+		<div className="my-3 flex flex-col gap-4">
 			<div className="grid gap-1.5">
 				<Label htmlFor="category-filter" className="sr-only">
 					Kategorie

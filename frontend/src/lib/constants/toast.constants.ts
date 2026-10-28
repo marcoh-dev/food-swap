@@ -1,4 +1,4 @@
-import type { ToastType } from "../types/toast.types";
+import type { ToastType } from "@/lib/types/toast.types";
 
 export const toastMessages: Record<string, { type: ToastType; message: string }> = {
 	registered: {

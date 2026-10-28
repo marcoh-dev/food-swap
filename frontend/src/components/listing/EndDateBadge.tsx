@@ -1,7 +1,8 @@
 import { TimerIcon } from "lucide-react";
-import type { ListingResponse } from "@/lib/types/listing.types";
-import { Badge } from "../ui/badge";
+
+import { Badge } from "@/components/ui/badge";
 import { endDateRules } from "@/lib/constants/listing.constants";
+import type { ListingResponse } from "@/lib/types/listing.types";
 import { getDaysUntil, getEndDateLabel } from "@/utils/date";
 
 export default function EndDateBadge({ listing }: { listing: Pick<ListingResponse, "endDate"> }) {

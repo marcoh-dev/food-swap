@@ -1,26 +1,27 @@
-import { SortingMenu } from "@/components/listing/SortingMenu";
-import { UserDelete } from "@/components/user/UserDelete";
-import { UserUpdate } from "@/components/user/UserUpdate";
-import { NotificationSetting } from "@/components/user/NotificationSetting";
-import { pageTitles } from "@/lib/constants/titles.constants";
-import { getCurrentUser, getUserById } from "@/lib/users.service";
-import { formatDate, isExpired } from "@/utils/date";
+import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import ListingsPagination from "@/components/listing/ListingsPagination";
-import type { SortOption } from "@/lib/types/listing.types";
-import { getUserListings } from "@/lib/listings.service";
-import { parsePage } from "@/utils/pagination";
-import { getCategories } from "@/lib/categories.service";
-import { getTags } from "@/lib/tags.service";
-import { formatPlace } from "@/utils/place";
-import { ChevronDown } from "lucide-react";
-import { FieldDescription } from "@/components/ui/field";
-import ListingCard from "@/components/listing/ListingCard";
+
 import ListingActions from "@/components/listing/ListingAction";
+import ListingCard from "@/components/listing/ListingCard";
+import ListingsPagination from "@/components/listing/ListingsPagination";
+import { SortingMenu } from "@/components/listing/SortingMenu";
 import ViewMenu from "@/components/listing/ViewMenu";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { FieldDescription } from "@/components/ui/field";
+import { NotificationSetting } from "@/components/user/NotificationSetting";
+import { UserDelete } from "@/components/user/UserDelete";
+import { UserUpdate } from "@/components/user/UserUpdate";
+import { getCategories } from "@/lib/categories.service";
+import { pageTitles } from "@/lib/constants/titles.constants";
+import { getUserListings } from "@/lib/listings.service";
+import { getTags } from "@/lib/tags.service";
+import type { SortOption } from "@/lib/types/listing.types";
+import { getCurrentUser, getUserById } from "@/lib/users.service";
+import { formatDate, isExpired } from "@/utils/date";
+import { parsePage } from "@/utils/pagination";
+import { formatPlace } from "@/utils/place";
 
 export const metadata: Metadata = { title: pageTitles.myProfile };
 
@@ -97,9 +98,9 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 			)}
 			<>
 				{isOwner ? (
-					<h3 className="text-h3 mt-4">Meine Anzeigen</h3>
+					<h3 className="mt-4 text-h3">Meine Anzeigen</h3>
 				) : (
-					<h3 className="text-h3 mt-8">Anzeigen von {user.name ?? user.username}</h3>
+					<h3 className="mt-8 text-h3">Anzeigen von {user.name ?? user.username}</h3>
 				)}
 				{listingsData.data.length === 0 ? (
 					<p className="py-12 text-center text-gray-500">
@@ -107,7 +108,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 					</p>
 				) : (
 					<>
-						<div className="flex justify-end items-center gap-2 mb-2">
+						<div className="mb-2 flex items-center justify-end gap-2">
 							<ViewMenu view={view} />
 							<SortingMenu sort={sort} />
 						</div>

@@ -1,14 +1,16 @@
 "use client";
 
-import { registerAction } from "@/app/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { registerAction } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { registrationSchema, type RegistrationValues } from "@/lib/schemas/user.schemas";
 import { applyServerErrors } from "@/utils/form";
-import { FieldGroup, Field, FieldLabel, FieldError } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+
 import PinInput from "./PinInput";
 
 export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
@@ -84,7 +86,7 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 					Registrieren
 				</Button>
 			</form>
-			<div className="font-light text-[10px]">
+			<div className="text-[10px] font-light">
 				Du hast schon ein Konto? Hier geht&apos;s zum{" "}
 				<Link href={loginHref} className="underline">
 					Login

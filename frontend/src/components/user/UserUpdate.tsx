@@ -1,15 +1,16 @@
 "use client";
 
-import { updateUserAction } from "@/app/actions";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+
+import { updateUserAction } from "@/app/actions";
+import PlaceCombobox from "@/components/places/PlaceCombobox";
+import { Button } from "@/components/ui/button";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { profileSchema, type ProfileValues } from "@/lib/schemas/user.schemas";
-import { applyServerErrors } from "@/utils/form";
-import { FieldGroup, Field, FieldLabel, FieldDescription, FieldError } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import PlaceCombobox from "../places/PlaceCombobox";
 import type { Place } from "@/lib/types/place.types";
+import { applyServerErrors } from "@/utils/form";
 import { formatPlace } from "@/utils/place";
 
 export function UserUpdate({
