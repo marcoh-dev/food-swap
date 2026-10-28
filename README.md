@@ -151,7 +151,7 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                                           |
 | `npm run migration:run -w backend`                               | applies pending migrations                                                        |
 | `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
-| `npm run test:e2e -w backend`                                    | runs the backend e2e tests against the test database                              |
+| `npm run test:integration -w backend`                            | runs the backend integration tests against the test database                      |
 | `npm run seed:mock -w backend`                                   | adds or updates the mock data                                                     |
 | `npm run seed:mock:live -w backend`                              | adds or updates the mock data in the live database (`backend/.env.live`)          |
 | `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
@@ -175,7 +175,7 @@ In VS Code, install the recommended extensions (ESLint and Prettier). Wrong impo
 
 ### Tests
 
-`npm run test:e2e -w backend` runs the backend e2e tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
+`npm run test:integration -w backend` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
 
 ### Updating a feature branch
 

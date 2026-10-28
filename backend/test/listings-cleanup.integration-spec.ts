@@ -22,7 +22,7 @@ const CLEANUP_SECRET = "test-cleanup-secret";
 const runAt = (day: string) => berlinTime(`${day} 03:00`);
 const overdueDay = () => shiftDay(berlinDay(new Date()), { days: -29 });
 
-describe("Deleting expired listings (e2e)", () => {
+describe("Deleting expired listings (integration)", () => {
 	let app: INestApplication<App>;
 	let dataSource: DataSource;
 	let listingsService: ListingsService;
