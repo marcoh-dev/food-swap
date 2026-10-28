@@ -140,6 +140,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 										listing={listing}
 										variant={view}
 										showExpired={isOwner}
+										showDeletionDate={isOwner}
 										unavailable={
 											isOwner &&
 											(listing.status === "deactivated" ||

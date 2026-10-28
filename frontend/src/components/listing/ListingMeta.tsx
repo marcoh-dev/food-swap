@@ -1,11 +1,11 @@
 import { cn } from "cn";
 import {
+	CircleAlertIcon,
 	GiftIcon,
 	MapPinIcon,
 	NavigationIcon,
 	RepeatIcon,
 	TimerIcon,
-	Trash2Icon,
 } from "lucide-react";
 
 import type { ListingResponse } from "@/lib/types/listing.types";
@@ -67,7 +67,7 @@ export default function ListingMeta({
 			)}
 			{deletionLabel && (
 				<span className="inline-flex basis-full items-center gap-1">
-					<Trash2Icon className="size-4" aria-hidden="true" />
+					<CircleAlertIcon className="size-4 text-destructive" aria-hidden="true" />
 					{deletionLabel}
 				</span>
 			)}
