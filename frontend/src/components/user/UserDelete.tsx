@@ -1,5 +1,4 @@
 import { deleteUserAction } from "@/app/actions";
-
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -9,8 +8,8 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export function UserDelete() {
 	return (

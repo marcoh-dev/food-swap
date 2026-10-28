@@ -3,12 +3,12 @@
 import Link from "next/link";
 
 import { createListingAction } from "@/app/actions";
+import { Button } from "@/components/ui/button";
 import type { Category } from "@/lib/types/category.types";
 import type { Place } from "@/lib/types/place.types";
 import type { Tag } from "@/lib/types/tag.types";
 
 import ListingForm from "./ListingForm";
-import { Button } from "../ui/button";
 
 type Props = {
 	categories: Category[];

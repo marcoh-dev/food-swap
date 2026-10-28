@@ -1,7 +1,6 @@
+import { Badge } from "@/components/ui/badge";
 import { statusLabels } from "@/lib/constants/listing.constants";
 import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
-
-import { Badge } from "../ui/badge";
 
 const badgeStatuses: ListingStatus[] = ["reserved", "deactivated"];
 

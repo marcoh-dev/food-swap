@@ -2,6 +2,9 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
+import { FieldLegend, FieldSet } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -13,9 +16,6 @@ import type { Category } from "@/lib/types/category.types";
 import type { Tag } from "@/lib/types/tag.types";
 
 import TagSelect from "./TagSelect";
-import { Button } from "../ui/button";
-import { FieldLegend, FieldSet } from "../ui/field";
-import { Label } from "../ui/label";
 
 const ALL_CATEGORIES = "all";
 type Props = {

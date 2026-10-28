@@ -1,6 +1,6 @@
 import { SearchIcon } from "lucide-react";
 
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
 export default function TermSearch({ defaultValue = "" }: { defaultValue?: string }) {
 	return (

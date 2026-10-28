@@ -3,12 +3,12 @@
 import { cn } from "cn";
 import { useState } from "react";
 
+import PlaceCombobox from "@/components/places/PlaceCombobox";
+import { Slider } from "@/components/ui/slider";
 import { RADIUS_OPTIONS_KM } from "@/lib/constants/listing.constants";
 import type { Place } from "@/lib/types/place.types";
 
 import { useSearchPlace } from "./SearchPlaceContext";
-import PlaceCombobox from "../places/PlaceCombobox";
-import { Slider } from "../ui/slider";
 
 const RADIUS_STEPS = [undefined, ...RADIUS_OPTIONS_KM];
 

@@ -3,6 +3,7 @@
 import { ArrowDownUp } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { useSearchPlace } from "@/components/search/SearchPlaceContext";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -13,8 +14,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { SortOption } from "@/lib/types/listing.types";
-
-import { useSearchPlace } from "../search/SearchPlaceContext";
 
 const SORT_LABELS: Record<SortOption, string> = {
 	newest: "Neueste zuerst",

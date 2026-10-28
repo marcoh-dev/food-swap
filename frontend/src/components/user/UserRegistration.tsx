@@ -5,13 +5,13 @@ import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 
 import { registerAction } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { registrationSchema, type RegistrationValues } from "@/lib/schemas/user.schemas";
 import { applyServerErrors } from "@/utils/form";
 
 import PinInput from "./PinInput";
-import { Button } from "../ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
 
 export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 	const form = useForm<RegistrationValues>({

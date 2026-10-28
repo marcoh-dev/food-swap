@@ -5,14 +5,13 @@ import { LocateFixedIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { findNearestPlaceAction, searchPlacesAction } from "@/app/actions";
+import { Command, CommandEmpty, CommandItem, CommandList } from "@/components/ui/command";
+import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
+import { Spinner } from "@/components/ui/spinner";
 import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 import type { Place } from "@/lib/types/place.types";
 import { formatPlace } from "@/utils/place";
-
-import { Command, CommandEmpty, CommandItem, CommandList } from "../ui/command";
-import { InputGroup, InputGroupAddon, InputGroupButton } from "../ui/input-group";
-import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover";
-import { Spinner } from "../ui/spinner";
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_MS = 150;
