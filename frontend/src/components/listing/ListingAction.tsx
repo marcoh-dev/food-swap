@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import ListingStatusMenu from "./ListingStatusMenu";
 import Link from "next/link";
-import { cn } from "cn";
 
 export default function ListingActions({
 	listing,
@@ -118,7 +117,7 @@ export default function ListingActions({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<div className={cn("flex gap-2", layout === "list" && "justify-end")}>
+			<div className="flex gap-2">
 				{isEditingInList ? (
 					<Button variant="secondary" asChild>
 						<Link href={`/listings/${listing.id}?edit=true`}>
@@ -144,11 +143,7 @@ export default function ListingActions({
 				/>
 			</div>
 
-			{errorMessage && (
-				<p className={cn("text-destructive", layout === "list" && "text-right")}>
-					{errorMessage}
-				</p>
-			)}
+			{errorMessage && <p className="text-destructive">{errorMessage}</p>}
 
 			<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<AlertDialogContent>
