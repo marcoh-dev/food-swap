@@ -144,7 +144,7 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`)                            |
 | `npm run build`                                                  | builds both projects                                                              |
 | `npm run lint`                                                   | lints both projects                                                               |
-| `npm run lint:fix -w backend`                                    | lints the backend and fixes what can be fixed                                     |
+| `npm run lint:fix`                                               | lints both projects and fixes what can be fixed (e.g. the import style)           |
 | `npm run format`                                                 | formats both projects with Prettier                                               |
 | `npm run format:check -w frontend`                               | checks the frontend formatting without changing files                             |
 | `npm install -w frontend <package>`                              | adds a package to one project                                                     |
@@ -159,6 +159,16 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 `npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`, only if `package-lock.json` changed since the last install), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
 
 If the dependencies were reinstalled and you use VS Code, run **Developer: Reload Window** (Cmd/Ctrl+Shift+P) afterwards. `npm ci` replaces `node_modules`, and the TypeScript and ESLint servers in VS Code keep using the old files until they restart.
+
+### Import style
+
+ESLint checks the imports in both projects (`import/order`, `import/no-duplicates`):
+
+- Three groups in this order, with one blank line between them: packages (`react`, `next/*`, `typeorm`, …), then `@/…`, then relative paths (`./…`, `../…`).
+- Sorted A–Z within each group and inside `{ … }`; two imports from the same file are merged.
+- Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
+
+`npm run lint:fix` fixes all of this. In VS Code, install the recommended ESLint extension: it shows wrong imports right away, and saving the file fixes them (`.vscode/settings.json`). This also applies to the shadcn files in `components/ui/`, so run `npm run lint:fix` after `npx shadcn add`.
 
 ### Tests
 
