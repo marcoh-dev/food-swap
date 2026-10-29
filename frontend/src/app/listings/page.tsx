@@ -10,7 +10,11 @@ import SearchBar from "@/components/search/SearchBar";
 import { SearchPlaceProvider } from "@/components/search/SearchPlaceContext";
 import { Announcement } from "@/components/shared/Announcement";
 import { getCategories } from "@/lib/categories.service";
-import { parseRadius, SEARCH_FORM_ID } from "@/lib/constants/listing.constants";
+import {
+	LISTING_VIEW_CLASSES,
+	parseRadius,
+	SEARCH_FORM_ID,
+} from "@/lib/constants/listing.constants";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getListings } from "@/lib/listings.service";
 import { getPlaceBySlug } from "@/lib/places.service";
@@ -105,13 +109,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				</p>
 			) : (
 				<>
-					<ul
-						className={
-							view === "list"
-								? "grid auto-rows-fr gap-3 max-sm:mx-[-1em]"
-								: "grid grid-cols-2 gap-3 max-sm:mx-[-1em] max-sm:*:odd:*:rounded-l-none max-sm:*:even:*:rounded-r-none sm:gap-8 md:gap-12"
-						}
-					>
+					<ul className={LISTING_VIEW_CLASSES[view]}>
 						{listings.map((listing) => (
 							<li key={listing.id}>
 								<ListingCard listing={listing} variant={view} />

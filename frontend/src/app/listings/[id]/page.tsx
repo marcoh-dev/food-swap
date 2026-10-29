@@ -66,7 +66,7 @@ export default async function ListingDetailPage({
 				showDeletionDate={isOwner}
 				showEndDate={isOwner}
 				unavailable={listing.status === "deactivated" || isExpired(listing.endDate)}
-				className="mx-auto mt-6 h-auto w-full max-w-2xl"
+				className="mt-6 h-auto w-full max-w-2xl"
 				actions={
 					<>
 						{isOwner && (

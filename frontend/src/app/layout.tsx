@@ -71,24 +71,26 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<header className="sticky top-0 z-50 flex h-header flex-row items-center justify-between border-b bg-background/85 p-[1em] text-foreground backdrop-blur-md">
-						<Link
-							href="/"
-							aria-label="FoodSwap – Startseite"
-							className="flex items-center gap-5 text-h1 no-underline"
-						>
-							<Image
-								src="/icon.svg"
-								alt=""
-								width="50"
-								height="44"
-								className="block"
-							/>
-							FoodSwap
-						</Link>
-						<BurgerMenu />
+					<header className="sticky top-0 z-50 h-header border-b bg-background/85 text-foreground backdrop-blur-md">
+						<div className="mx-auto flex h-full w-full max-w-7xl flex-row items-center justify-between p-[1em]">
+							<Link
+								href="/"
+								aria-label="FoodSwap – Startseite"
+								className="flex items-center gap-5 text-h1 no-underline"
+							>
+								<Image
+									src="/icon.svg"
+									alt=""
+									width="50"
+									height="44"
+									className="block"
+								/>
+								FoodSwap
+							</Link>
+							<BurgerMenu />
+						</div>
 					</header>
-					<main id="main" className="p-[1em]">
+					<main id="main" className="mx-auto w-full max-w-7xl p-[1em]">
 						{children}
 					</main>
 					<Toaster />

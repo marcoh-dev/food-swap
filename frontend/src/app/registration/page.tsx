@@ -9,9 +9,9 @@ export default async function Registration({ searchParams }: PageProps<"/registr
 	const { redirect } = await searchParams;
 
 	return (
-		<>
+		<div className="mx-auto w-full max-w-md">
 			<h1>Erstelle ein Konto und tausche deine Ernte.</h1>
 			<UserRegistration redirectTo={typeof redirect === "string" ? redirect : undefined} />
-		</>
+		</div>
 	);
 }

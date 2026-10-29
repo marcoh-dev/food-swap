@@ -47,7 +47,8 @@ export default function EndDatePicker({ value, onChange, ref, ...ariaProps }: Pr
 					ref={ref}
 					type="button"
 					variant="outline"
-					className="w-full justify-start rounded-sm"
+					// as wide as the calendar: 7 cells of --spacing(7) plus its p-2
+					className="w-full max-w-53 justify-start rounded-sm"
 					{...ariaProps}
 				>
 					<CalendarIcon className="size-4" aria-hidden="true" /> {label}

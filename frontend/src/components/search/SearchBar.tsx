@@ -26,7 +26,12 @@ export default function SearchBar({
 	view?: "grid" | "list";
 }) {
 	return (
-		<form id={SEARCH_FORM_ID} role="search" className="pb-2" action={searchListingAction}>
+		<form
+			id={SEARCH_FORM_ID}
+			role="search"
+			className="pb-2 lg:max-w-3xl"
+			action={searchListingAction}
+		>
 			{category && <input type="hidden" name="category" value={category} />}
 			{tags && <input type="hidden" name="tags" value={tags} />}
 			{view && <input type="hidden" name="view" value={view} />}
