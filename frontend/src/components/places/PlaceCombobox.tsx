@@ -1,11 +1,10 @@
 "use client";
 
-import { Command as CommandPrimitive } from "cmdk";
+import { cn } from "cn";
 import { LocateFixedIcon, MapPinIcon } from "lucide-react";
-import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useEffect, useId, useImperativeHandle, useRef, useState } from "react";
 
 import { findNearestPlaceAction, searchPlacesAction } from "@/app/actions";
-import { Command, CommandEmpty, CommandItem, CommandList } from "@/components/ui/command";
 import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
@@ -46,6 +45,15 @@ function placeRegion(place: Place) {
 	return place.county.startsWith(place.state) ? place.county : `${place.county}, ${place.state}`;
 }
 
+function optionId(listId: string, place: Place) {
+	return `${listId}-${place.id}`;
+}
+
+function resultsMessage(count: number) {
+	if (count === 0) return "Keinen Ort gefunden";
+	return count === 1 ? "1 Ort gefunden" : `${count} Orte gefunden`;
+}
+
 export default function PlaceCombobox({
 	id,
 	name,
@@ -63,6 +71,9 @@ export default function PlaceCombobox({
 	onPlaceChange,
 	onQueryChange,
 }: Props) {
+	const inputId = useId();
+	const listId = useId();
+	const hintId = useId();
 	const anchorRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
@@ -77,11 +88,14 @@ export default function PlaceCombobox({
 		query: "",
 		places: [],
 	});
+	const [activeIndex, setActiveIndex] = useState(0);
 
 	const trimmedQuery = query.trim();
 	const canSearch = !selectedPlace && trimmedQuery.length >= MIN_QUERY_LENGTH;
 	const isLoaded = result.query === trimmedQuery;
 	const showList = isOpen && canSearch && (isLoaded || result.places.length > 0);
+	const hasOptions = showList && result.places.length > 0;
+	const activePlace = hasOptions ? result.places[activeIndex] : undefined;
 	const firstSuggestion = useFirstSuggestion && isLoaded ? result.places[0] : undefined;
 	const isMissingSelection =
 		!selectedPlace && (required || (requireSelection && trimmedQuery !== ""));
@@ -96,7 +110,9 @@ export default function PlaceCombobox({
 		let isCurrent = true;
 		const timeout = setTimeout(async () => {
 			const response = await searchPlacesAction(trimmedQuery, withPostalCode);
-			if (isCurrent) setResult({ query: trimmedQuery, places: response.data ?? [] });
+			if (!isCurrent) return;
+			setResult({ query: trimmedQuery, places: response.data ?? [] });
+			setActiveIndex(0);
 		}, DEBOUNCE_MS);
 
 		return () => {
@@ -119,6 +135,13 @@ export default function PlaceCombobox({
 	}, [firstSuggestion, name, valueKey]);
 
 	useEffect(() => clearLocationRequest, []);
+
+	useEffect(() => {
+		if (activePlace)
+			document
+				.getElementById(optionId(listId, activePlace))
+				?.scrollIntoView({ block: "nearest" });
+	}, [activePlace, listId]);
 
 	function changeQuery(value: string) {
 		setQuery(value);
@@ -193,8 +216,18 @@ export default function PlaceCombobox({
 	}
 
 	function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-		if (event.key === "Enter" && (!showList || result.places.length === 0)) {
-			event.currentTarget.form?.requestSubmit();
+		const count = result.places.length;
+		if (event.key === "ArrowDown" && hasOptions) {
+			event.preventDefault();
+			setActiveIndex((activeIndex + 1) % count);
+		}
+		if (event.key === "ArrowUp" && hasOptions) {
+			event.preventDefault();
+			setActiveIndex((activeIndex - 1 + count) % count);
+		}
+		if (event.key === "Enter" && activePlace) {
+			event.preventDefault();
+			selectPlace(activePlace);
 		}
 		if (event.key === "Escape") {
 			setIsOpen(false);
@@ -202,25 +235,36 @@ export default function PlaceCombobox({
 	}
 
 	return (
-		<Command label={label} shouldFilter={false} className="overflow-visible bg-transparent">
+		<div>
 			<input type="hidden" name={name} value={selectedPlace?.[valueKey] ?? ""} />
 			<Popover open={showList}>
 				<PopoverAnchor asChild>
 					<div ref={anchorRef}>
 						<InputGroup>
 							<InputGroupAddon>
-								<MapPinIcon />
+								<MapPinIcon aria-hidden="true" />
 							</InputGroupAddon>
-							<CommandPrimitive.Input
+							<input
 								ref={inputRef}
 								data-slot="input-group-control"
-								id={id}
+								id={id ?? inputId}
+								role="combobox"
+								aria-label={label}
+								aria-expanded={hasOptions}
+								aria-controls={hasOptions ? listId : undefined}
+								aria-autocomplete="list"
+								aria-activedescendant={
+									activePlace ? optionId(listId, activePlace) : undefined
+								}
+								aria-invalid={ariaInvalid}
+								aria-describedby={
+									ariaDescribedBy ? `${hintId} ${ariaDescribedBy}` : hintId
+								}
+								autoComplete="off"
 								placeholder={placeholder}
 								value={query}
-								aria-invalid={ariaInvalid}
-								aria-describedby={ariaDescribedBy}
-								onValueChange={(value) => {
-									changeQuery(value);
+								onChange={(event) => {
+									changeQuery(event.target.value);
 									setLocationError(null);
 									if (isLocating) cancelLocating();
 									if (selectedPlace) changePlace(null);
@@ -257,30 +301,50 @@ export default function PlaceCombobox({
 						setIsOpen(false);
 					}}
 				>
-					<CommandList>
-						<CommandEmpty>Keinen Ort gefunden</CommandEmpty>
-						{result.places.map((place) => (
-							<CommandItem
-								key={place.id}
-								value={place.id}
-								onSelect={() => selectPlace(place)}
-							>
-								<div className="flex flex-col">
+					{result.places.length === 0 ? (
+						<p className="py-6 text-center text-xs">Keinen Ort gefunden</p>
+					) : (
+						<ul
+							id={listId}
+							role="listbox"
+							aria-label={label ?? "Orte"}
+							className="no-scrollbar max-h-72 overflow-y-auto"
+						>
+							{result.places.map((place, index) => (
+								<li
+									key={place.id}
+									id={optionId(listId, place)}
+									role="option"
+									aria-selected={index === activeIndex}
+									onMouseDown={(event) => event.preventDefault()}
+									onMouseMove={() => setActiveIndex(index)}
+									onClick={() => selectPlace(place)}
+									className={cn(
+										"flex cursor-default flex-col px-2 py-2 text-xs select-none",
+										index === activeIndex && "bg-muted text-foreground",
+									)}
+								>
 									<span>{formatPlace(place)}</span>
 									<span className="text-muted-foreground">
 										{placeRegion(place)}
 									</span>
-								</div>
-							</CommandItem>
-						))}
-					</CommandList>
+								</li>
+							))}
+						</ul>
+					)}
 				</PopoverContent>
 			</Popover>
+			<span id={hintId} className="sr-only">
+				Mindestens {MIN_QUERY_LENGTH} Zeichen eingeben, dann einen Ort aus der Liste wählen.
+			</span>
+			<span role="status" className="sr-only">
+				{canSearch && isLoaded ? resultsMessage(result.places.length) : ""}
+			</span>
 			{locationError && (
 				<p role="alert" className="mt-1 text-xs text-destructive">
 					{locationError}
 				</p>
 			)}
-		</Command>
+		</div>
 	);
 }
