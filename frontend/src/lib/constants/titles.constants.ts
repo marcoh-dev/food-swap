@@ -3,7 +3,7 @@ export const pageTitles = {
 	newListing: "Neues Angebot",
 	login: "Anmelden",
 	register: "Registrieren",
-	myProfile: "Profil",
+	myProfile: "Mein Profil",
 	myChats: "Chats",
 	about: "Über uns",
 	listingNotFound: "Angebot nicht gefunden",

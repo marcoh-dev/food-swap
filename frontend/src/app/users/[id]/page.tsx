@@ -24,7 +24,19 @@ import { formatDate, isExpired } from "@/utils/date";
 import { parsePage } from "@/utils/pagination";
 import { formatPlace } from "@/utils/place";
 
-export const metadata: Metadata = { title: pageTitles.myProfile };
+export async function generateMetadata({ params }: PageProps<"/users/[id]">): Promise<Metadata> {
+	const { id } = await params;
+	const [user, currentUser] = await Promise.all([getUserById(id), getCurrentUser()]);
+
+	if (!user) notFound();
+
+	return {
+		title:
+			currentUser?.id === id
+				? pageTitles.myProfile
+				: `Profil von ${user.name ?? user.username}`,
+	};
+}
 
 export default async function UserPage({ params, searchParams }: PageProps<"/users/[id]">) {
 	const { id: userId } = await params;
