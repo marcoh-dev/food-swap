@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { MessagesSquareIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { useChatStore } from "@/store/chat.store";
@@ -22,9 +22,21 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 	const chatsError = useChatStore((state) => state.chatsError);
 	const loadChats = useChatStore((state) => state.loadChats);
 
+	const headingRef = useRef<HTMLHeadingElement>(null);
+	const previousChatId = useRef(selectedChatId);
+
 	useEffect(() => {
 		void loadChats();
 	}, [loadChats]);
+
+	useEffect(() => {
+		const closedChatId = previousChatId.current;
+		previousChatId.current = selectedChatId;
+		if (!closedChatId || selectedChatId) return;
+
+		const item = document.querySelector<HTMLElement>(`[data-chat-id="${closedChatId}"]`);
+		(item ?? headingRef.current)?.focus();
+	}, [selectedChatId]);
 
 	function selectChat(chatId: string | null) {
 		router.push(chatId ? `/chats?chat=${chatId}` : "/chats");
@@ -39,7 +51,13 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 					selectedChatId && "hidden md:flex",
 				)}
 			>
-				<h1 className="border-b px-4 py-3 text-sm font-semibold">Chats</h1>
+				<h1
+					ref={headingRef}
+					tabIndex={-1}
+					className="border-b px-4 py-3 text-sm font-semibold outline-none"
+				>
+					Chats
+				</h1>
 				<div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
 					<ChatList
 						chats={chats}

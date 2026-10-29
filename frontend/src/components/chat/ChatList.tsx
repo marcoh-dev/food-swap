@@ -69,6 +69,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 				<li key={chat.id}>
 					<button
 						type="button"
+						data-chat-id={chat.id}
 						onClick={() => onSelect(chat.id)}
 						aria-current={chat.id === selectedChatId ? "true" : undefined}
 						className={cn(
