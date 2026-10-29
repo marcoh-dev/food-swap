@@ -151,9 +151,17 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 			</section>
 
 			<>
-				<h2 className="mt-10 text-h3">
-					{isOwner ? "Meine Anzeigen" : `Anzeigen von ${user.name ?? user.username}`}
-				</h2>
+				<div className="mt-10 mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-6">
+					<h2 className="text-h3">
+						{isOwner ? "Meine Anzeigen" : `Anzeigen von ${user.name ?? user.username}`}
+					</h2>
+					{listingsData.data.length > 0 && (
+						<div className="ml-auto flex items-center gap-2">
+							<ViewMenu view={view} />
+							<SortingMenu sort={sort} />
+						</div>
+					)}
+				</div>
 
 				{listingsData.data.length === 0 ? (
 					<p className="py-12 text-center text-gray-500">
@@ -161,10 +169,6 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 					</p>
 				) : (
 					<>
-						<div className="mb-2 flex items-center justify-end gap-2">
-							<ViewMenu view={view} />
-							<SortingMenu sort={sort} />
-						</div>
 						<ul className={LISTING_VIEW_CLASSES[view]}>
 							{listingsData.data.map((listing) => (
 								<li key={listing.id}>
