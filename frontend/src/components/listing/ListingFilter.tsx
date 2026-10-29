@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, XIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
@@ -23,12 +24,14 @@ const ALL_CATEGORIES = "all";
 type Props = {
 	categories: Category[];
 	tags: Tag[];
+	resultCount: number;
 };
 
-export default function ListingFilters({ categories, tags }: Props) {
+export default function ListingFilters({ categories, tags, resultCount }: Props) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const [isOpen, setIsOpen] = useState(false);
 
 	const selectedCategory = searchParams.get("category") ?? "";
 	const tagsParam = searchParams.get("tags");
@@ -65,22 +68,31 @@ export default function ListingFilters({ categories, tags }: Props) {
 		params.delete("tags");
 		params.delete("page");
 		router.push(`${pathname}?${params.toString()}`, { scroll: false });
+		setIsOpen(false);
 	}
 
-	const activeFilterCount = (selectedCategory !== "" ? 1 : 0) + selectedTags.length;
-	const hasFilters = activeFilterCount > 0;
+	const hasFilters = selectedCategory !== "" || selectedTags.length > 0;
 
 	return (
-		<Popover>
+		<Popover open={isOpen} onOpenChange={setIsOpen}>
+			{isOpen && (
+				<div
+					aria-hidden
+					className="fixed inset-0 z-50 animate-in bg-black/10 duration-100 fade-in-0 supports-backdrop-filter:backdrop-blur-xs"
+				/>
+			)}
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
-					aria-label={`Filter${hasFilters ? `, ${activeFilterCount} aktiv` : ""}`}
+					className={`relative z-50 ${hasFilters && !isOpen ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary dark:bg-primary/25 dark:text-foreground dark:hover:bg-primary/30" : ""}`}
 				>
 					<SlidersHorizontal size={16} strokeWidth={1} />
 					Filter
-					{hasFilters && <span>({activeFilterCount})</span>}
-					<ChevronDown className="size-3" strokeWidth={1} />
+					{hasFilters && <span className="sr-only">(aktiv)</span>}
+					<ChevronDown
+						className={`size-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+						strokeWidth={1}
+					/>
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
@@ -88,6 +100,20 @@ export default function ListingFilters({ categories, tags }: Props) {
 				collisionPadding={16}
 				className="w-80 max-w-(--radix-popover-content-available-width) gap-4"
 			>
+				<div className="flex items-center justify-between">
+					<p aria-live="polite" className="text-sm font-medium">
+						{resultCount} Treffer
+					</p>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon-xs"
+						aria-label="Filter schließen"
+						onClick={() => setIsOpen(false)}
+					>
+						<XIcon />
+					</Button>
+				</div>
 				<div className="grid gap-1.5">
 					<Label htmlFor="category-filter">Kategorie</Label>
 					<Select

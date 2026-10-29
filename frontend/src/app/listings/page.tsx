@@ -85,7 +85,11 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 
 				<div className="mt-3 mb-2 flex items-center justify-end gap-2">
 					<div className="mr-auto sm:mr-0">
-						<ListingFilters categories={categories} tags={allTags} />
+						<ListingFilters
+							categories={categories}
+							tags={allTags}
+							resultCount={total}
+						/>
 					</div>
 					<ViewMenu view={view} />
 					<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
