@@ -111,7 +111,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		set({ connected: true });
 
 		void get().loadUnreadCount();
-		if (get().chats) void get().loadChats();
+		if (get().chats || get().chatsError) void get().loadChats();
 		if (openChatId) void get().openChat(openChatId);
 	});
 

@@ -42,7 +42,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-	const currentUser = await getCurrentUser();
+	// app/error.tsx does not catch errors here, so show the logged-out header instead
+	const currentUser = await getCurrentUser().catch(() => null);
 	const token = currentUser ? ((await cookies()).get(AUTH_COOKIE)?.value ?? null) : null;
 
 	return (

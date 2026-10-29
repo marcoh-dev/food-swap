@@ -16,7 +16,7 @@ export async function getListings({
 	radius,
 	category,
 	tags,
-}: GetListingsOptions): Promise<PaginatedListingsResponse | null> {
+}: GetListingsOptions): Promise<PaginatedListingsResponse> {
 	const query = new URLSearchParams();
 	query.set("page", String(page));
 	query.set("sort", sort);
@@ -30,9 +30,8 @@ export async function getListings({
 	const response = await fetchAPI(
 		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/listings?${query.toString()}`,
 	);
-	if (!response.ok) {
-		return null;
-	}
+	if (!response.ok) throw new Error("Die Angebote konnten nicht geladen werden.");
+
 	const listingsData = await response.json();
 	return listingsData;
 }
