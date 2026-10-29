@@ -2,7 +2,7 @@
 
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -60,6 +60,12 @@ export function ChatConversation({
 	}, [chatId, openChat, closeChat]);
 
 	const chat = conversation?.id === chatId ? conversation : null;
+	const isLoaded = chat !== null;
+	const headingRef = useRef<HTMLHeadingElement>(null);
+
+	useEffect(() => {
+		if (isLoaded) headingRef.current?.focus();
+	}, [isLoaded]);
 
 	return (
 		<section aria-label="Unterhaltung" className="flex h-full min-h-0 flex-col">
@@ -74,7 +80,11 @@ export function ChatConversation({
 					<ArrowLeftIcon />
 				</Button>
 				<div className="min-w-0 flex-1">
-					<h2 className="truncate text-sm font-semibold">
+					<h2
+						ref={headingRef}
+						tabIndex={-1}
+						className="truncate text-sm font-semibold outline-none"
+					>
 						{chat ? (chat.otherName ?? "Gelöschtes Konto") : " "}
 					</h2>
 					{chat && (
@@ -127,8 +137,18 @@ export function ChatConversation({
 }
 
 export function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId: string }) {
+	const lastMessage = chat.messages.at(-1);
+	const [initialLastMessageId] = useState(lastMessage?.id);
+	const isNewIncoming =
+		lastMessage &&
+		lastMessage.id !== initialLastMessageId &&
+		lastMessage.senderId !== currentUserId;
+
 	return (
 		<MessageScrollerProvider autoScroll>
+			<p aria-live="polite" className="sr-only">
+				{isNewIncoming && `${chat.otherName ?? "Gelöschtes Konto"}: ${lastMessage.content}`}
+			</p>
 			<MessageScroller className="flex-1">
 				<MessageScrollerViewport aria-label="Nachrichten">
 					<MessageScrollerContent className="gap-3 p-4">

@@ -34,6 +34,7 @@ export default function LocationRadiusSearch({
 			<PlaceCombobox
 				name="place"
 				valueKey="slug"
+				label="Ort"
 				defaultPlace={defaultPlace}
 				useFirstSuggestion
 				onPlaceChange={(newPlace) => {
@@ -45,7 +46,10 @@ export default function LocationRadiusSearch({
 			<div className="flex items-center gap-3">
 				<div className="flex flex-1 flex-col gap-1">
 					<Slider
-						aria-label="Umkreis"
+						thumbProps={{
+							"aria-label": "Umkreis",
+							"aria-valuetext": radiusLabel(radius),
+						}}
 						min={0}
 						max={RADIUS_STEPS.length - 1}
 						step={1}
@@ -69,7 +73,7 @@ export default function LocationRadiusSearch({
 				</div>
 				<span
 					className="w-24 shrink-0 text-right text-xs text-muted-foreground"
-					aria-live="polite"
+					aria-hidden="true"
 				>
 					{radiusLabel(radius)}
 				</span>

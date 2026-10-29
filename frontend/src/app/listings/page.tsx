@@ -8,6 +8,7 @@ import { SortingMenu } from "@/components/listing/SortingMenu";
 import ViewMenu from "@/components/listing/ViewMenu";
 import SearchBar from "@/components/search/SearchBar";
 import { SearchPlaceProvider } from "@/components/search/SearchPlaceContext";
+import { Announcement } from "@/components/shared/Announcement";
 import { getCategories } from "@/lib/categories.service";
 import {
 	LISTING_VIEW_CLASSES,
@@ -67,11 +68,16 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 
 	const listings = listingsData.data;
 	const total = listingsData.meta.total;
-	const isSearching = Boolean(term || selectedPlace);
 	const hasFilters = Boolean(category || tags);
+	const resultsMessage =
+		`${total} ${total === 1 ? "Ergebnis" : "Ergebnisse"}` +
+		(term ? ` für "${term}"` : "") +
+		(selectedPlace ? ` in "${formatPlace(selectedPlace)}"` : "") +
+		(radius ? ` (+${radius}\u00a0km)` : "");
 
 	return (
 		<>
+			<h1 className="sr-only">Angebote</h1>
 			<SearchPlaceProvider key={selectedPlace?.slug ?? ""} initialPlace={selectedPlace}>
 				<SearchBar
 					defaultTerm={term}
@@ -92,14 +98,8 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				</div>
 			</SearchPlaceProvider>
 
-			{isSearching && total > 0 && (
-				<p className="mb-3">
-					{total} {total === 1 ? "Ergebnis" : "Ergebnisse"}
-					{term && ` für "${term}"`}
-					{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
-					{radius && ` (+${radius}\u00a0km)`}
-				</p>
-			)}
+			{total > 0 && <p className="mb-3">{resultsMessage}</p>}
+			<Announcement message={resultsMessage} />
 
 			{listings.length === 0 ? (
 				<p className="py-12 text-center">

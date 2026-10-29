@@ -69,10 +69,11 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 				<li key={chat.id}>
 					<button
 						type="button"
+						data-chat-id={chat.id}
 						onClick={() => onSelect(chat.id)}
 						aria-current={chat.id === selectedChatId ? "true" : undefined}
 						className={cn(
-							"grid w-full gap-0.5 border-b px-4 py-3 text-left text-xs transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none",
+							"grid w-full gap-0.5 border-b px-4 py-3 text-left text-xs transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2",
 							chat.id === selectedChatId && "bg-muted",
 						)}
 					>

@@ -35,7 +35,11 @@ export default function ListingStatusMenu({ status, onStatusChange, onDeleteClic
 	return (
 		<DropdownMenu open={open} onOpenChange={onOpenChange}>
 			<DropdownMenuTrigger asChild {...triggerProps}>
-				<Button variant="outline" disabled={status === "pending"}>
+				<Button
+					variant="outline"
+					disabled={status === "pending"}
+					aria-label={`Status: ${statusLabels[status]}`}
+				>
 					{statusLabels[status]}
 					<ChevronDownIcon aria-hidden="true" />
 				</Button>

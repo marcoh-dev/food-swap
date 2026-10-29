@@ -104,9 +104,9 @@ export default function ListingForm({
 			aria-labelledby={heading ? "listing-form-heading" : undefined}
 		>
 			{heading && (
-				<h3 id="listing-form-heading" tabIndex={-1} className="mb-4 text-h3 outline-none">
+				<h2 id="listing-form-heading" tabIndex={-1} className="mb-4 text-h3 outline-none">
 					{heading}
-				</h3>
+				</h2>
 			)}
 			<div
 				className={cn(
@@ -184,11 +184,11 @@ export default function ListingForm({
 						control={form.control}
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel>Ort</FieldLabel>
+								<FieldLabel htmlFor="placeId">Ort</FieldLabel>
 								<PlaceCombobox
 									ref={field.ref}
+									id="placeId"
 									name={field.name}
-									label="Ort"
 									defaultPlace={defaultPlace}
 									placeholder="PLZ oder Ort"
 									withPostalCode
@@ -292,9 +292,13 @@ export default function ListingForm({
 						control={form.control}
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel>Verfügbar bis</FieldLabel>
+								<FieldLabel id="endDate-label" htmlFor="endDate">
+									Verfügbar bis
+								</FieldLabel>
 								<EndDatePicker
 									ref={field.ref}
+									id="endDate"
+									aria-labelledby="endDate-label endDate"
 									value={field.value}
 									onChange={field.onChange}
 									aria-invalid={fieldState.invalid}

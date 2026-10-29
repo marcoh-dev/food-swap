@@ -28,8 +28,8 @@ export default function ErrorPage({ retry }: { retry: () => void }) {
 	const [isRetrying, startTransition] = useTransition();
 
 	return (
-		<main>
-			<h2 className="text-h2">Da ist etwas schiefgelaufen.</h2>
+		<div>
+			<h1 className="text-h2">Da ist etwas schiefgelaufen.</h1>
 			<p>
 				Es gibt gerade vorübergehende Probleme. Die Seite sollte in Kürze wieder verfügbar
 				sein.
@@ -53,6 +53,6 @@ export default function ErrorPage({ retry }: { retry: () => void }) {
 			>
 				Erneut versuchen
 			</Button>
-		</main>
+		</div>
 	);
 }

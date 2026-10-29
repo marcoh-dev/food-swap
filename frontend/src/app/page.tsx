@@ -5,7 +5,7 @@ export default function Home() {
 		<>
 			<SearchBar />
 			<div className="mt-4">
-				<h2 className="text-h2">Willkommen bei FoodSwap!</h2>
+				<h1 className="text-h2">Willkommen bei FoodSwap!</h1>
 				<p>
 					Teile, was du hast.
 					<br />

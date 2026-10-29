@@ -77,15 +77,15 @@ export function UserUpdate({
 						control={form.control}
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel>Ort</FieldLabel>
+								<FieldLabel htmlFor="placeId">Ort</FieldLabel>
 								<FieldDescription>
 									Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich
 									sichtbar.
 								</FieldDescription>
 								<PlaceCombobox
 									ref={field.ref}
+									id="placeId"
 									name={field.name}
-									label="Ort"
 									defaultPlace={currentPlace}
 									placeholder="PLZ oder Ort"
 									withPostalCode

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ type Props = {
 	value: string;
 	onChange: (value: string) => void;
 	ref?: React.Ref<HTMLButtonElement>;
+	id?: string;
+	"aria-labelledby"?: string;
 	"aria-invalid"?: boolean;
 	"aria-describedby"?: string;
 };
@@ -46,10 +48,14 @@ export default function EndDatePicker({ value, onChange, ref, ...ariaProps }: Pr
 					type="button"
 					variant="outline"
 					// as wide as the calendar: 7 cells of --spacing(7) plus its p-2
-					className="w-full max-w-53 justify-start rounded-sm"
+					className="w-full max-w-53 justify-start rounded-sm hover:bg-background dark:hover:bg-input/30"
 					{...ariaProps}
 				>
 					<CalendarIcon className="size-4" aria-hidden="true" /> {label}
+					<ChevronDownIcon
+						className="ml-auto size-4 text-muted-foreground"
+						aria-hidden="true"
+					/>
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-0">

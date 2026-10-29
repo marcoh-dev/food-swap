@@ -149,7 +149,11 @@ export default function ListingActions({
 				/>
 			</div>
 
-			{errorMessage && <p className="text-destructive">{errorMessage}</p>}
+			{errorMessage && (
+				<p role="alert" className="text-destructive">
+					{errorMessage}
+				</p>
+			)}
 
 			<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<AlertDialogContent>
