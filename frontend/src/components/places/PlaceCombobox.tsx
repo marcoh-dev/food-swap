@@ -272,7 +272,7 @@ export default function PlaceCombobox({
 								}}
 								onFocus={() => setIsOpen(true)}
 								onKeyDown={handleKeyDown}
-								className="h-8 w-full min-w-0 flex-1 bg-transparent px-2.5 py-1 text-body-small outline-none placeholder:text-muted-foreground md:text-xs"
+								className="h-8 w-full min-w-0 flex-1 bg-transparent px-2.5 py-1 text-body-small outline-none placeholder:text-muted-foreground md:text-xs dark:placeholder:text-foreground/80"
 							/>
 							<InputGroupAddon align="inline-end">
 								<InputGroupButton
