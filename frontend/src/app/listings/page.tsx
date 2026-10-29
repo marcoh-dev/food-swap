@@ -90,9 +90,9 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						view={view}
 					/>
 				</div>
-				<div className="mb-3 flex flex-col gap-3 sm:mb-6">
+				<div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
 					{total > 0 && <p>{resultsMessage}</p>}
-					<div className="flex items-center justify-end gap-2">
+					<div className="flex items-center justify-end gap-2 sm:ml-auto">
 						<div className="mr-auto flex sm:mr-0">
 							<ListingFilters
 								categories={categories}
