@@ -13,6 +13,7 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSelectLikeMenu } from "@/hooks/useSelectLikeMenu";
 import type { SortOption } from "@/lib/types/listing.types";
 
 const SORT_LABELS: Record<SortOption, string> = {
@@ -26,6 +27,7 @@ export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFo
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const searchPlace = useSearchPlace();
+	const { open, onOpenChange, triggerProps, contentProps } = useSelectLikeMenu();
 
 	function handleSortChange(value: string) {
 		const searchForm = searchFormId ? document.getElementById(searchFormId) : null;
@@ -45,16 +47,16 @@ export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFo
 	}
 
 	return (
-		<DropdownMenu>
+		<DropdownMenu open={open} onOpenChange={onOpenChange}>
 			<div>
-				<DropdownMenuTrigger asChild>
+				<DropdownMenuTrigger asChild {...triggerProps}>
 					<Button variant="outline">
 						{SORT_LABELS[sort]}
 						<ArrowDownUp size={16} strokeWidth={1} />
 					</Button>
 				</DropdownMenuTrigger>
 			</div>
-			<DropdownMenuContent className="w-auto min-w-0">
+			<DropdownMenuContent className="w-auto min-w-0" {...contentProps}>
 				<DropdownMenuGroup>
 					<DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
 						<DropdownMenuRadioItem value="newest">Neueste</DropdownMenuRadioItem>
