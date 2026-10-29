@@ -7,10 +7,10 @@ export const metadata: Metadata = { title: pageTitles.about };
 export default function About() {
 	return (
 		<div className="mx-auto max-w-prose">
-			<h2>Wir sind FoodSwap.</h2>
+			<h1>Wir sind FoodSwap.</h1>
 
 			<section className="mt-8">
-				<h3 className="mb-2 font-medium">Datenquellen</h3>
+				<h2 className="mb-2 font-medium">Datenquellen</h2>
 				<p className="text-body-small">
 					Orte und Postleitzahlen stammen von{" "}
 					<a

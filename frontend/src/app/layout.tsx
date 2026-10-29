@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
 	return (
 		<html
-			lang="en"
+			lang="de"
 			className={cn(
 				"scroll-pt-header",
 				jetbrainsMono.variable,
@@ -58,6 +58,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 			suppressHydrationWarning
 		>
 			<body className="text-body">
+				<a
+					href="#main"
+					className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-60 focus:rounded-md focus:bg-background focus:p-2"
+				>
+					Zum Inhalt springen
+				</a>
 				<ChatSocketConnector token={token} userId={currentUser?.id ?? null} />
 				<ThemeProvider
 					attribute="class"
@@ -67,24 +73,26 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 				>
 					<header className="sticky top-0 z-50 h-header border-b bg-background/85 text-foreground backdrop-blur-md">
 						<div className="mx-auto flex h-full w-full max-w-7xl flex-row items-center justify-between p-[1em]">
-							<div className="flex flex-row items-center gap-5">
-								<Link href="/" aria-label="Home" className="block">
-									<Image
-										src="/icon.svg"
-										alt="FoodSwap Logo"
-										width="50"
-										height="50"
-										className="block"
-									/>
-								</Link>
-								<Link href="/" className="text-h1 no-underline">
-									FoodSwap
-								</Link>
-							</div>
+							<Link
+								href="/"
+								aria-label="FoodSwap – Startseite"
+								className="flex items-center gap-5 text-h1 no-underline"
+							>
+								<Image
+									src="/icon.svg"
+									alt=""
+									width="50"
+									height="44"
+									className="block"
+								/>
+								FoodSwap
+							</Link>
 							<BurgerMenu />
 						</div>
 					</header>
-					<main className="mx-auto w-full max-w-7xl p-[1em]">{children}</main>
+					<main id="main" className="mx-auto w-full max-w-7xl p-[1em]">
+						{children}
+					</main>
 					<Toaster />
 					{currentUser && (
 						<>

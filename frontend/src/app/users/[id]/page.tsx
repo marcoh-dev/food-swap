@@ -26,7 +26,19 @@ import { formatDate, isExpired } from "@/utils/date";
 import { parsePage } from "@/utils/pagination";
 import { formatPlace } from "@/utils/place";
 
-export const metadata: Metadata = { title: pageTitles.myProfile };
+export async function generateMetadata({ params }: PageProps<"/users/[id]">): Promise<Metadata> {
+	const { id } = await params;
+	const [user, currentUser] = await Promise.all([getUserById(id), getCurrentUser()]);
+
+	if (!user) notFound();
+
+	return {
+		title:
+			currentUser?.id === id
+				? pageTitles.myProfile
+				: `Profil von ${user.name ?? user.username}`,
+	};
+}
 
 export default async function UserPage({ params, searchParams }: PageProps<"/users/[id]">) {
 	const { id: userId } = await params;
@@ -71,7 +83,9 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 				<ProfileEditCollapsible>
 					<div className="flex items-start justify-between gap-3">
 						<div className="min-w-0">
-							<p className="text-2xl wrap-break-word">{user.name ?? user.username}</p>
+							<h1 className="text-2xl wrap-break-word">
+								{user.name ?? user.username}
+							</h1>
 							{!user.name && (
 								<FieldDescription>Kein Profilname vergeben.</FieldDescription>
 							)}
@@ -137,9 +151,9 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 			</section>
 
 			<>
-				<h3 className="mt-10 text-h3">
+				<h2 className="mt-10 text-h3">
 					{isOwner ? "Meine Anzeigen" : `Anzeigen von ${user.name ?? user.username}`}
-				</h3>
+				</h2>
 
 				{listingsData.data.length === 0 ? (
 					<p className="py-12 text-center text-gray-500">
