@@ -81,7 +81,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 								src="/icon.svg"
 								alt=""
 								width="50"
-								height="50"
+								height="44"
 								className="block"
 							/>
 							FoodSwap
