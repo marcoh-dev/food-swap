@@ -83,24 +83,26 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						view={view}
 					/>
 				</div>
-				{total > 0 && (
-					<p className="mb-3">
-						{total} {total === 1 ? "Angebot" : "Angebote"}
-						{term && ` für "${term}"`}
-						{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
-						{radius && ` (+${radius}\u00a0km)`}
-					</p>
-				)}
-				<div className="mt-3 mb-2 flex items-center justify-end gap-2">
-					<div className="mr-auto sm:mr-0">
-						<ListingFilters
-							categories={categories}
-							tags={allTags}
-							resultCount={total}
-						/>
+				<div className="mb-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+					{total > 0 && (
+						<p>
+							{total} {total === 1 ? "Angebot" : "Angebote"}
+							{term && ` für "${term}"`}
+							{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
+							{radius && ` (+${radius}\u00a0km)`}
+						</p>
+					)}
+					<div className="flex items-center justify-end gap-2 sm:ml-auto">
+						<div className="mr-auto flex sm:mr-0">
+							<ListingFilters
+								categories={categories}
+								tags={allTags}
+								resultCount={total}
+							/>
+						</div>
+						<ViewMenu view={view} />
+						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 					</div>
-					<ViewMenu view={view} />
-					<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 				</div>
 			</SearchPlaceProvider>
 

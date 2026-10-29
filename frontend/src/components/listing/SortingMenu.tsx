@@ -48,7 +48,7 @@ export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFo
 
 	return (
 		<DropdownMenu open={open} onOpenChange={onOpenChange}>
-			<div>
+			<div className="flex">
 				<DropdownMenuTrigger asChild {...triggerProps}>
 					<Button variant="outline">
 						{SORT_LABELS[sort]}
