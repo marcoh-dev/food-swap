@@ -55,7 +55,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 		getTags(),
 	]);
 
-	const totalPages = listingsData?.meta.totalPages ?? 0;
+	const totalPages = listingsData.meta.totalPages;
 	if (totalPages > 0 && page > totalPages) {
 		const query = new URLSearchParams();
 		for (const [key, value] of Object.entries(params)) {
@@ -65,8 +65,8 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 		redirect(`/listings?${query.toString()}`);
 	}
 
-	const listings = listingsData?.data ?? [];
-	const total = listingsData?.meta.total ?? 0;
+	const listings = listingsData.data;
+	const total = listingsData.meta.total;
 	const isSearching = Boolean(term || selectedPlace);
 	const hasFilters = Boolean(category || tags);
 
@@ -117,7 +117,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						))}
 					</ul>
 					<ListingsPagination
-						page={listingsData?.meta.page ?? 1}
+						page={listingsData.meta.page}
 						totalPages={totalPages}
 						searchParams={{
 							term,

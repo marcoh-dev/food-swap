@@ -3,6 +3,11 @@ import type { User } from "./types/user.types";
 
 export async function getUserById(id: string): Promise<User | null> {
 	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/users/${id}`);
+
+	// 404: no such user, 400: malformed ID; both show the not-found page
+	if (response.status === 404 || response.status === 400) return null;
+	if (!response.ok) throw new Error("Das Profil konnte nicht geladen werden.");
+
 	const userData = await response.json();
 	return userData;
 }
@@ -12,7 +17,8 @@ export async function getCurrentUser(): Promise<User | null> {
 		cache: "no-store",
 	});
 
-	if (!response.ok) return null;
+	if (response.status === 401) return null;
+	if (!response.ok) throw new Error("Der Login konnte nicht geprüft werden.");
 
 	return response.json();
 }
