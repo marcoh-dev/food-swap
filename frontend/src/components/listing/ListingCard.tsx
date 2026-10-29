@@ -47,6 +47,7 @@ export default function ListingCard({
 	const isList = variant === "list";
 	const isDetail = variant === "detail";
 	const Heading = isDetail ? "h1" : "h2";
+	const titleId = `listing-${listing.id}-title`;
 	const bodyClassName = cn(
 		"relative no-underline",
 		isList
@@ -67,7 +68,7 @@ export default function ListingCard({
 				{listing.image ? (
 					<Image
 						src={listing.image}
-						alt={listing.title}
+						alt={isDetail ? listing.title : ""}
 						fill
 						sizes={
 							isList
@@ -108,6 +109,7 @@ export default function ListingCard({
 				<CardHeader>
 					<CardTitle title={listing.title}>
 						<Heading
+							id={titleId}
 							className={cn("text-h2 wrap-break-word", !isDetail && "line-clamp-2")}
 						>
 							{listing.title}
@@ -158,7 +160,7 @@ export default function ListingCard({
 	return (
 		<Card
 			className={cn(
-				"h-full overflow-hidden",
+				"h-full overflow-hidden has-[>a:focus-visible]:ring-2 has-[>a:focus-visible]:ring-ring",
 				isList
 					? "grid grid-cols-[1fr_1fr] grid-rows-[1fr_auto] gap-0 py-0 max-sm:rounded-none sm:grid-cols-[12rem_1fr] md:grid-cols-[20rem_1fr] lg:grid-cols-[28rem_1fr]"
 					: "pt-0",
@@ -168,7 +170,11 @@ export default function ListingCard({
 			{isDetail ? (
 				<div className={bodyClassName}>{body}</div>
 			) : (
-				<Link href={`/listings/${listing.id}`} className={bodyClassName}>
+				<Link
+					href={`/listings/${listing.id}`}
+					aria-labelledby={titleId}
+					className={cn(bodyClassName, "focus-visible:outline-none")}
+				>
 					{body}
 				</Link>
 			)}
