@@ -256,9 +256,13 @@ export default function ListingForm({
 					control={form.control}
 					render={({ field, fieldState }) => (
 						<Field data-invalid={fieldState.invalid}>
-							<FieldLabel>Verfügbar bis</FieldLabel>
+							<FieldLabel id="endDate-label" htmlFor="endDate">
+								Verfügbar bis
+							</FieldLabel>
 							<EndDatePicker
 								ref={field.ref}
+								id="endDate"
+								aria-labelledby="endDate-label endDate"
 								value={field.value}
 								onChange={field.onChange}
 								aria-invalid={fieldState.invalid}

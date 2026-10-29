@@ -6,9 +6,14 @@ export default function TermSearch({ defaultValue = "" }: { defaultValue?: strin
 	return (
 		<InputGroup>
 			<InputGroupAddon>
-				<SearchIcon />
+				<SearchIcon aria-hidden="true" />
 			</InputGroupAddon>
-			<InputGroupInput name="term" placeholder="Was suchst du?" defaultValue={defaultValue} />
+			<InputGroupInput
+				name="term"
+				aria-label="Suchbegriff"
+				placeholder="Was suchst du?"
+				defaultValue={defaultValue}
+			/>
 		</InputGroup>
 	);
 }

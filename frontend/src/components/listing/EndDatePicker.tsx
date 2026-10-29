@@ -20,6 +20,8 @@ type Props = {
 	value: string;
 	onChange: (value: string) => void;
 	ref?: React.Ref<HTMLButtonElement>;
+	id?: string;
+	"aria-labelledby"?: string;
 	"aria-invalid"?: boolean;
 	"aria-describedby"?: string;
 };

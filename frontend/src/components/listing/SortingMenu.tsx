@@ -50,9 +50,9 @@ export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFo
 		<DropdownMenu open={open} onOpenChange={onOpenChange}>
 			<div>
 				<DropdownMenuTrigger asChild {...triggerProps}>
-					<Button variant="outline">
+					<Button variant="outline" aria-label={`Sortierung: ${SORT_LABELS[sort]}`}>
 						{SORT_LABELS[sort]}
-						<ArrowDownUp size={16} strokeWidth={1} />
+						<ArrowDownUp size={16} strokeWidth={1} aria-hidden="true" />
 					</Button>
 				</DropdownMenuTrigger>
 			</div>
