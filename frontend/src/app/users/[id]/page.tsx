@@ -62,8 +62,10 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 			<section
 				aria-label="Profil"
 				className={cn(
-					"max-w-2xl rounded-xl border bg-card p-4 sm:w-[calc(50%-0.75rem)]",
-					view === "grid" && "lg:w-[calc((100%-3rem)/3)] xl:w-[calc(50%-0.75rem)]",
+					"rounded-xl border bg-card p-4",
+					view === "grid"
+						? "max-w-2xl sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)] xl:w-[calc(50%-0.75rem)]"
+						: "lg:w-[calc(50%-0.75rem)]",
 				)}
 			>
 				<ProfileEditCollapsible>
@@ -76,9 +78,22 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 						</div>
 						{isOwner && (
 							<CollapsibleTrigger asChild>
-								<Button variant="outline" className="shrink-0">
+								<Button
+									variant="outline"
+									className="shrink-0"
+									aria-label="Profil bearbeiten"
+								>
 									<PencilIcon aria-hidden="true" />
-									<span className="sr-only">Profil bearbeiten</span>
+									{/* same breakpoints as the edit button in the listing cards */}
+									<span
+										className={
+											view === "list"
+												? "sr-only sm:not-sr-only"
+												: "sr-only md:not-sr-only"
+										}
+									>
+										Bearbeiten
+									</span>
 								</Button>
 							</CollapsibleTrigger>
 						)}
