@@ -59,7 +59,8 @@ export default function ListingCard({
 				className={cn(
 					"@container relative overflow-hidden",
 					isList
-						? "row-span-2 md:min-h-54"
+						? // padding spacer instead of aspect-square, so the image stretches with taller content
+							"row-span-2 before:block before:pt-[100%] md:before:pt-[80%]"
 						: "aspect-square w-full sm:aspect-[4/3] lg:aspect-video",
 				)}
 			>
@@ -70,10 +71,10 @@ export default function ListingCard({
 						fill
 						sizes={
 							isList
-								? "(min-width: 1024px) 448px, (min-width: 768px) 320px, (min-width: 640px) 192px, 50vw"
+								? "(min-width: 1024px) 250px, 40vw"
 								: isDetail
 									? "(min-width: 768px) 672px, 100vw"
-									: "(min-width: 768px) 50vw, 100vw"
+									: "(min-width: 1280px) 300px, (min-width: 1024px) 33vw, 50vw"
 						}
 						className="object-cover"
 					/>
@@ -128,7 +129,11 @@ export default function ListingCard({
 						) : (
 							<TagList
 								tags={listing.tags}
-								max={isList ? { sm: 2, md: 3, lg: 5 } : { sm: 2, lg: 3 }}
+								max={
+									isList
+										? { sm: 6, md: 8, lg: 5, xl: 6 }
+										: { sm: 5, md: 6, lg: 5 }
+								}
 								scrollable
 							/>
 						)}
@@ -158,7 +163,7 @@ export default function ListingCard({
 			className={cn(
 				"h-full overflow-hidden",
 				isList
-					? "grid grid-cols-[1fr_1fr] grid-rows-[1fr_auto] gap-0 py-0 max-sm:rounded-none sm:grid-cols-[12rem_1fr] md:grid-cols-[20rem_1fr] lg:grid-cols-[28rem_1fr]"
+					? "grid grid-cols-[2fr_3fr] grid-rows-[1fr_auto] gap-0 py-0 max-sm:rounded-none"
 					: "pt-0",
 				className,
 			)}

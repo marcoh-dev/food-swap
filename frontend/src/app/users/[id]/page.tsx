@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { PencilIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -15,6 +16,7 @@ import { ProfileEditCollapsible } from "@/components/user/ProfileEditCollapsible
 import { UserDelete } from "@/components/user/UserDelete";
 import { UserUpdate } from "@/components/user/UserUpdate";
 import { getCategories } from "@/lib/categories.service";
+import { LISTING_VIEW_CLASSES } from "@/lib/constants/listing.constants";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getUserListings } from "@/lib/listings.service";
 import { getTags } from "@/lib/tags.service";
@@ -56,7 +58,16 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 
 	return (
 		<>
-			<section aria-label="Profil" className="rounded-xl border bg-card p-4">
+			{/* matches the listing cards below: (100% - gaps) / columns * span + spanned gaps */}
+			<section
+				aria-label="Profil"
+				className={cn(
+					"rounded-xl border bg-card p-4",
+					view === "grid"
+						? "max-w-2xl sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)] xl:w-[calc(50%-0.75rem)]"
+						: "lg:w-[calc(50%-0.75rem)]",
+				)}
+			>
 				<ProfileEditCollapsible>
 					<div className="flex items-start justify-between gap-3">
 						<div className="min-w-0">
@@ -67,9 +78,22 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 						</div>
 						{isOwner && (
 							<CollapsibleTrigger asChild>
-								<Button variant="outline" className="shrink-0">
+								<Button
+									variant="outline"
+									className="shrink-0"
+									aria-label="Profil bearbeiten"
+								>
 									<PencilIcon aria-hidden="true" />
-									<span className="sr-only">Profil bearbeiten</span>
+									{/* same breakpoints as the edit button in the listing cards */}
+									<span
+										className={
+											view === "list"
+												? "sr-only sm:not-sr-only"
+												: "sr-only md:not-sr-only"
+										}
+									>
+										Bearbeiten
+									</span>
 								</Button>
 							</CollapsibleTrigger>
 						)}
@@ -127,13 +151,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 							<ViewMenu view={view} />
 							<SortingMenu sort={sort} />
 						</div>
-						<ul
-							className={
-								view === "list"
-									? "grid auto-rows-fr gap-3 max-sm:mx-[-1em]"
-									: "grid grid-cols-2 gap-3 max-sm:mx-[-1em] max-sm:*:odd:*:rounded-l-none max-sm:*:even:*:rounded-r-none sm:gap-8 md:gap-12"
-							}
-						>
+						<ul className={LISTING_VIEW_CLASSES[view]}>
 							{listingsData.data.map((listing) => (
 								<li key={listing.id}>
 									<ListingCard
