@@ -58,6 +58,6 @@ export const MISSING_PLACE_MESSAGE = "Bitte wähle einen Ort aus der Liste aus."
 export const SEARCH_FORM_ID = "listing-search";
 
 export const LISTING_VIEW_CLASSES: Record<"grid" | "list", string> = {
-	grid: "grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4",
-	list: "grid auto-rows-fr gap-3 max-sm:mx-[-1em] lg:grid-cols-2",
+	grid: "grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4",
+	list: "grid auto-rows-fr gap-3 max-sm:mx-[-1em] sm:gap-6 lg:grid-cols-2",
 };

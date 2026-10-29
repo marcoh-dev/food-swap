@@ -63,9 +63,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 				aria-label="Profil"
 				className={cn(
 					"max-w-2xl rounded-xl border bg-card p-4 sm:w-[calc(50%-0.75rem)]",
-					view === "list"
-						? "lg:w-[calc(50%-0.375rem)]"
-						: "lg:w-[calc((100%-4rem)/3)] xl:w-[calc(50%-1rem)]",
+					view === "grid" && "lg:w-[calc((100%-3rem)/3)] xl:w-[calc(50%-0.75rem)]",
 				)}
 			>
 				<ProfileEditCollapsible>
