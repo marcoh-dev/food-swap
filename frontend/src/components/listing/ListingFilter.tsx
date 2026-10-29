@@ -96,13 +96,14 @@ export default function ListingFilters({ categories, tags, resultCount }: Props)
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
-				align="end"
-				collisionPadding={16}
-				className="w-80 max-w-(--radix-popover-content-available-width) gap-4"
+				side="bottom"
+				align="start"
+				avoidCollisions={false}
+				className="max-h-(--radix-popover-content-available-height) w-80 max-w-[calc(100vw-2rem)] gap-4 overflow-y-auto"
 			>
 				<div className="flex items-center justify-between">
 					<p aria-live="polite" className="text-sm font-medium">
-						{resultCount} Treffer
+						{hasFilters && `${resultCount} Treffer`}
 					</p>
 					<Button
 						type="button"
@@ -143,16 +144,15 @@ export default function ListingFilters({ categories, tags, resultCount }: Props)
 					/>
 				</FieldSet>
 
-				{hasFilters && (
-					<Button
-						type="button"
-						variant="ghost"
-						onClick={handleReset}
-						className="self-end"
-					>
-						Filter zurücksetzen
-					</Button>
-				)}
+				<Button
+					type="button"
+					variant="ghost"
+					onClick={handleReset}
+					disabled={!hasFilters}
+					className="self-end"
+				>
+					Filter zurücksetzen
+				</Button>
 			</PopoverContent>
 		</Popover>
 	);
