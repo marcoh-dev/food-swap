@@ -129,3 +129,9 @@
 		color: inherit;
 	}
 }
+
+@keyframes drain {
+	to {
+		stroke-dashoffset: -1;
+	}
+}
