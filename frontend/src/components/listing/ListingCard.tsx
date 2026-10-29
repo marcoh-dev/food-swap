@@ -71,10 +71,10 @@ export default function ListingCard({
 						fill
 						sizes={
 							isList
-								? "40vw"
+								? "(min-width: 1024px) 250px, 40vw"
 								: isDetail
 									? "(min-width: 768px) 672px, 100vw"
-									: "(min-width: 768px) 50vw, 100vw"
+									: "(min-width: 1280px) 300px, (min-width: 1024px) 33vw, 50vw"
 						}
 						className="object-cover"
 					/>
