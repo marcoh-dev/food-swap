@@ -70,7 +70,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	const total = listingsData.meta.total;
 	const hasFilters = Boolean(category || tags);
 	const resultsMessage =
-		`${total} ${total === 1 ? "Ergebnis" : "Ergebnisse"}` +
+		`${total} ${total === 1 ? "Angebot" : "Angebote"}` +
 		(term ? ` für "${term}"` : "") +
 		(selectedPlace ? ` in "${formatPlace(selectedPlace)}"` : "") +
 		(radius ? ` (+${radius}\u00a0km)` : "");
@@ -90,16 +90,9 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 						view={view}
 					/>
 				</div>
-				<div className="mb-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-					{total > 0 && (
-						<p>
-							{total} {total === 1 ? "Angebot" : "Angebote"}
-							{term && ` für "${term}"`}
-							{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
-							{radius && ` (+${radius}\u00a0km)`}
-						</p>
-					)}
-					<div className="flex items-center justify-end gap-2 sm:ml-auto">
+				<div className="mb-2 flex flex-col gap-3">
+					{total > 0 && <p>{resultsMessage}</p>}
+					<div className="flex items-center justify-end gap-2">
 						<div className="mr-auto flex sm:mr-0">
 							<ListingFilters
 								categories={categories}
@@ -113,7 +106,6 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 				</div>
 			</SearchPlaceProvider>
 
-			{total > 0 && <p className="mb-3">{resultsMessage}</p>}
 			<Announcement message={resultsMessage} />
 
 			{listings.length === 0 ? (
