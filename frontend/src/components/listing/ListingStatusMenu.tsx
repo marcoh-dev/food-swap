@@ -12,6 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSelectLikeMenu } from "@/hooks/useSelectLikeMenu";
 import { statusActions, statusLabels, statusOrder } from "@/lib/constants/listing.constants";
 import type { ListingStatus } from "@/lib/types/listing.types";
 
@@ -29,15 +30,17 @@ export default function ListingStatusMenu({ status, onStatusChange, onDeleteClic
 			? statusOrder.filter((option) => option === "pending")
 			: statusOrder.filter((option) => option !== "pending");
 
+	const { open, onOpenChange, triggerProps, contentProps } = useSelectLikeMenu();
+
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+		<DropdownMenu open={open} onOpenChange={onOpenChange}>
+			<DropdownMenuTrigger asChild {...triggerProps}>
 				<Button variant="outline" disabled={status === "pending"}>
 					{statusLabels[status]}
 					<ChevronDownIcon aria-hidden="true" />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
+			<DropdownMenuContent align="end" {...contentProps}>
 				<DropdownMenuRadioGroup
 					value={status}
 					onValueChange={(value) => onStatusChange(value as ListingStatus)}
