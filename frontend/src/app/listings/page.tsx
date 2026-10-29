@@ -72,7 +72,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	return (
 		<>
 			<SearchPlaceProvider key={selectedPlace?.slug ?? ""} initialPlace={selectedPlace}>
-				<div className="mb-8">
+				<div className="mb-6">
 					<SearchBar
 						defaultTerm={term}
 						defaultPlace={selectedPlace}
