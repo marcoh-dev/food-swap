@@ -59,8 +59,8 @@ export default function ListingCard({
 				className={cn(
 					"@container relative overflow-hidden",
 					isList
-						? // padding spacer instead of aspect-square, so the image still stretches with taller content
-							"row-span-2 before:block before:pt-[100%] md:before:pt-[80%]"
+						? // padding spacer instead of aspect-square, so the image stretches with taller content
+						"row-span-2 before:block before:pt-[100%] md:before:pt-[80%]"
 						: "aspect-square w-full sm:aspect-[4/3] lg:aspect-video",
 				)}
 			>

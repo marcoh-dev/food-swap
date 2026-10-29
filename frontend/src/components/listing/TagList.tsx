@@ -64,9 +64,8 @@ export default function TagList({ tags, max, scrollable = false }: Props) {
 		(count) => count > 0,
 	);
 
-	// Two tags never need scrolling: wrapping fits them into at most two rows
 	const rows = scrollable && tags.length > 2;
-	// Scrollable rows need wrapper elements, which <ul> can't contain
+	// <ul> can't contain the row wrappers, so items become divs with role=listitem
 	const Item = rows ? "div" : "li";
 	const itemRole = rows ? "listitem" : undefined;
 
@@ -78,7 +77,6 @@ export default function TagList({ tags, max, scrollable = false }: Props) {
 				role={itemRole}
 				className={
 					cn(
-						// without rows to scroll, an overlong tag is clipped instead of overflowing the card
 						rows ? "shrink-0" : "max-w-full",
 						visibilityClasses((bp) => i < limits[bp]),
 					) || undefined
@@ -113,8 +111,6 @@ export default function TagList({ tags, max, scrollable = false }: Props) {
 		);
 	}
 
-	// Below sm: two independent rows that scroll together. From sm on the rows
-	// dissolve (display: contents) into one wrapping list in the original order.
 	const split = Math.ceil(tags.length / 2);
 	const rowClassName = "flex w-max gap-1 sm:contents";
 	return (
@@ -122,7 +118,6 @@ export default function TagList({ tags, max, scrollable = false }: Props) {
 			role="list"
 			aria-label="Tags"
 			className={cn(
-				// contain-inline-size keeps the unwrapped rows from widening their parents
 				"no-scrollbar flex w-full flex-col gap-1 overflow-x-auto overscroll-x-contain contain-inline-size",
 				"sm:flex-row sm:flex-wrap sm:overflow-visible",
 			)}

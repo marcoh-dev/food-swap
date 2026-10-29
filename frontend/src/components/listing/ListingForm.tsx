@@ -44,14 +44,11 @@ type Props = {
 	submitLabel?: string;
 	autoFocus?: boolean;
 	heading?: string;
-	// from lg on: details left, classification right
 	twoColumns?: boolean;
-	// rendered next to the submit button
 	children?: ReactNode;
 };
 
-// Both columns share the wrapper's four rows, so fields side by side line up.
-// FieldGroup's query container implies layout containment, which disables subgrid.
+// FieldGroup's container query disables subgrid, hence @container-normal
 const columnClassName = "lg:row-span-4 lg:grid lg:grid-rows-subgrid lg:@container-normal";
 
 const emptyValues = {
@@ -111,7 +108,6 @@ export default function ListingForm({
 					{heading}
 				</h3>
 			)}
-			{/* a plain wrapper: nested FieldGroups would get a smaller gap */}
 			<div
 				className={cn(
 					"flex flex-col gap-5",
@@ -152,7 +148,6 @@ export default function ListingForm({
 									id="description"
 									placeholder="3 Tomaten von meiner Ernte …"
 									rows={5}
-									// grows to the height of the tags next to it
 									className={cn(twoColumns && "lg:flex-1")}
 									required
 									aria-invalid={fieldState.invalid}
