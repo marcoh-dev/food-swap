@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: pageTitles.about };
 
 export default function About() {
 	return (
-		<>
+		<div className="mx-auto max-w-prose">
 			<h2>Wir sind FoodSwap.</h2>
 
 			<section className="mt-8">
@@ -33,6 +33,6 @@ export default function About() {
 					. Die Daten wurden für Food Swap gefiltert und um Städte ergänzt.
 				</p>
 			</section>
-		</>
+		</div>
 	);
 }

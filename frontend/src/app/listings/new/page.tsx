@@ -23,13 +23,13 @@ export default async function NewListingPage() {
 	]);
 
 	return (
-		<>
+		<div className="mx-auto w-full max-w-2xl">
 			<h1>Erstelle ein neues Angebot</h1>
 			<CreateListingForm
 				categories={categories}
 				tags={tags}
 				defaultPlace={currentUser?.place}
 			/>
-		</>
+		</div>
 	);
 }
