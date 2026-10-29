@@ -81,7 +81,9 @@ function ListingChatCard({
 	return (
 		<Card className="w-full max-w-[450px]">
 			<CardHeader>
-				<CardTitle>{title}</CardTitle>
+				<CardTitle>
+					<h2>{title}</h2>
+				</CardTitle>
 				<CardDescription>{children}</CardDescription>
 			</CardHeader>
 			{form && <CardContent>{form}</CardContent>}

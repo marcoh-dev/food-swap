@@ -10,7 +10,7 @@ export default function NotFound() {
 				<ArrowLeftIcon className="size-4" />
 				Zurück
 			</Link>
-			<h2>Das Angebot scheint es nicht zu geben…</h2>
+			<h1>Das Angebot scheint es nicht zu geben…</h1>
 		</div>
 	);
 }

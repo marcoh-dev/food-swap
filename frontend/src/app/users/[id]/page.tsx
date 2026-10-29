@@ -60,7 +60,9 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 				<ProfileEditCollapsible>
 					<div className="flex items-start justify-between gap-3">
 						<div className="min-w-0">
-							<p className="text-2xl wrap-break-word">{user.name ?? user.username}</p>
+							<h1 className="text-2xl wrap-break-word">
+								{user.name ?? user.username}
+							</h1>
 							{!user.name && (
 								<FieldDescription>Kein Profilname vergeben.</FieldDescription>
 							)}
@@ -113,9 +115,9 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 			</section>
 
 			<>
-				<h3 className="mt-10 text-h3">
+				<h2 className="mt-10 text-h3">
 					{isOwner ? "Meine Anzeigen" : `Anzeigen von ${user.name ?? user.username}`}
-				</h3>
+				</h2>
 
 				{listingsData.data.length === 0 ? (
 					<p className="py-12 text-center text-gray-500">

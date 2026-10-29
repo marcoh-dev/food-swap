@@ -46,6 +46,7 @@ export default function ListingCard({
 }: ListingCardProps) {
 	const isList = variant === "list";
 	const isDetail = variant === "detail";
+	const Heading = isDetail ? "h1" : "h2";
 	const bodyClassName = cn(
 		"relative no-underline",
 		isList
@@ -105,11 +106,12 @@ export default function ListingCard({
 			</div>
 			<div className={cn("flex flex-col gap-3", isList && "min-w-0 flex-1 py-3")}>
 				<CardHeader>
-					<CardTitle
-						className={cn("text-h2 wrap-break-word", !isDetail && "line-clamp-2")}
-						title={listing.title}
-					>
-						{listing.title}
+					<CardTitle title={listing.title}>
+						<Heading
+							className={cn("text-h2 wrap-break-word", !isDetail && "line-clamp-2")}
+						>
+							{listing.title}
+						</Heading>
 					</CardTitle>
 					<CardDescription>
 						<ListingMeta

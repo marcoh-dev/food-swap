@@ -96,9 +96,9 @@ export default function ListingForm({
 			aria-labelledby={heading ? "listing-form-heading" : undefined}
 		>
 			{heading && (
-				<h3 id="listing-form-heading" tabIndex={-1} className="mb-4 text-h3 outline-none">
+				<h2 id="listing-form-heading" tabIndex={-1} className="mb-4 text-h3 outline-none">
 					{heading}
-				</h3>
+				</h2>
 			)}
 			<FieldGroup>
 				<Controller

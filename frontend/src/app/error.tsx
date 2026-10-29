@@ -29,7 +29,7 @@ export default function ErrorPage({ retry }: { retry: () => void }) {
 
 	return (
 		<div>
-			<h2 className="text-h2">Da ist etwas schiefgelaufen.</h2>
+			<h1 className="text-h2">Da ist etwas schiefgelaufen.</h1>
 			<p>
 				Es gibt gerade vorübergehende Probleme. Die Seite sollte in Kürze wieder verfügbar
 				sein.

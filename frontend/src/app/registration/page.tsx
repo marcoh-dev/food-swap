@@ -10,7 +10,7 @@ export default async function Registration({ searchParams }: PageProps<"/registr
 
 	return (
 		<>
-			<h2>Erstelle ein Konto und tausche deine Ernte.</h2>
+			<h1>Erstelle ein Konto und tausche deine Ernte.</h1>
 			<UserRegistration redirectTo={typeof redirect === "string" ? redirect : undefined} />
 		</>
 	);
