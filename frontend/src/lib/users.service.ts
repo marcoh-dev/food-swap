@@ -17,7 +17,8 @@ export async function getCurrentUser(): Promise<User | null> {
 		cache: "no-store",
 	});
 
-	if (!response.ok) return null;
+	if (response.status === 401) return null;
+	if (!response.ok) throw new Error("Der Login konnte nicht geprüft werden.");
 
 	return response.json();
 }

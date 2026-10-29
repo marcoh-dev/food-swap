@@ -11,7 +11,8 @@ import { getCurrentUser } from "@/lib/users.service";
 import NavLink from "./NavLink";
 
 export default async function BurgerMenu() {
-	const currentUser = await getCurrentUser();
+	// app/error.tsx does not catch errors here, so show the logged-out header instead
+	const currentUser = await getCurrentUser().catch(() => null);
 	const isLoggedIn = currentUser !== null;
 
 	return (
