@@ -64,46 +64,78 @@ export default function TagList({ tags, max, scrollable = false }: Props) {
 		(count) => count > 0,
 	);
 
-	return (
-		<ul
+	// Two tags never need scrolling: wrapping fits them into at most two rows
+	const rows = scrollable && tags.length > 2;
+	// Scrollable rows need wrapper elements, which <ul> can't contain
+	const Item = rows ? "div" : "li";
+	const itemRole = rows ? "listitem" : undefined;
+
+	const items = tags.map((tag, i) => {
+		if (BREAKPOINTS.every((bp) => i >= limits[bp])) return null;
+		return (
+			<Item
+				key={tag.id}
+				role={itemRole}
+				className={
+					cn(
+						// without rows to scroll, an overlong tag is clipped instead of overflowing the card
+						rows ? "shrink-0" : "max-w-full",
+						visibilityClasses((bp) => i < limits[bp]),
+					) || undefined
+				}
+			>
+				<Badge variant="tag" className="max-w-full rounded-full">
+					{tag.name}
+				</Badge>
+			</Item>
+		);
+	});
+	const counters = hiddenCounts.map((count) => (
+		<Item
+			key={count}
+			role={itemRole}
 			className={cn(
-				"flex flex-wrap gap-1.5",
-				scrollable &&
-					// contain-inline-size keeps the unwrapped row from widening its parents
-					"no-scrollbar w-full flex-nowrap overflow-x-auto overscroll-x-contain contain-inline-size sm:flex-wrap sm:overflow-visible",
+				"px-1 py-0.5 text-xs text-muted-foreground",
+				visibilityClasses((bp) => tags.length - limits[bp] === count),
 			)}
-			aria-label="Tags"
 		>
-			{tags.map((tag, i) => {
-				if (BREAKPOINTS.every((bp) => i >= limits[bp])) return null;
-				return (
-					<li
-						key={tag.id}
-						className={
-							cn(
-								scrollable && "shrink-0",
-								visibilityClasses((bp) => i < limits[bp]),
-							) || undefined
-						}
-					>
-						<Badge variant="tag" className="rounded-full">
-							{tag.name}
-						</Badge>
-					</li>
-				);
-			})}
-			{hiddenCounts.map((count) => (
-				<li
-					key={count}
-					className={cn(
-						"px-1 py-0.5 text-xs text-muted-foreground",
-						visibilityClasses((bp) => tags.length - limits[bp] === count),
-					)}
-				>
-					<span aria-hidden="true">+{count}</span>
-					<span className="sr-only">{count} weitere Tags</span>
-				</li>
-			))}
-		</ul>
+			<span aria-hidden="true">+{count}</span>
+			<span className="sr-only">{count} weitere Tags</span>
+		</Item>
+	));
+
+	if (!rows) {
+		return (
+			<ul className="flex flex-wrap gap-1" aria-label="Tags">
+				{items}
+				{counters}
+			</ul>
+		);
+	}
+
+	// Below sm: two independent rows that scroll together. From sm on the rows
+	// dissolve (display: contents) into one wrapping list in the original order.
+	const split = Math.ceil(tags.length / 2);
+	const rowClassName = "flex w-max gap-1 sm:contents";
+	return (
+		<div
+			role="list"
+			aria-label="Tags"
+			className={cn(
+				// contain-inline-size keeps the unwrapped rows from widening their parents
+				"no-scrollbar flex w-full flex-col gap-1 overflow-x-auto overscroll-x-contain contain-inline-size",
+				"sm:flex-row sm:flex-wrap sm:overflow-visible",
+			)}
+		>
+			<div role="none" className={rowClassName}>
+				{items.slice(0, split)}
+			</div>
+			{split < tags.length && (
+				<div role="none" className={rowClassName}>
+					{items.slice(split)}
+				</div>
+			)}
+			{counters}
+		</div>
 	);
 }
