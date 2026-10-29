@@ -11,6 +11,7 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSelectLikeMenu } from "@/hooks/useSelectLikeMenu";
 
 type View = "grid" | "list";
 
@@ -31,10 +32,11 @@ export default function ViewMenu({ view }: { view: View }) {
 	}
 
 	const CurrentIcon = VIEW_OPTIONS[view].icon;
+	const { open, onOpenChange, triggerProps, contentProps } = useSelectLikeMenu();
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+		<DropdownMenu open={open} onOpenChange={onOpenChange}>
+			<DropdownMenuTrigger asChild {...triggerProps}>
 				<Button
 					variant="outline"
 					aria-label={`Ansicht wählen, aktuell: ${VIEW_OPTIONS[view].label}`}
@@ -44,7 +46,7 @@ export default function ViewMenu({ view }: { view: View }) {
 					<ChevronDown className="size-3" strokeWidth={1} />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-auto min-w-0">
+			<DropdownMenuContent className="w-auto min-w-0" {...contentProps}>
 				<DropdownMenuRadioGroup value={view} onValueChange={handleViewChange}>
 					{(Object.keys(VIEW_OPTIONS) as View[]).map((option) => {
 						const Icon = VIEW_OPTIONS[option].icon;

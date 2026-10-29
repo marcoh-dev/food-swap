@@ -140,7 +140,7 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | `npm run dev`                                                    | starts backend and frontend                                                       |
 | `npm run sync`                                                   | updates `main`, dependencies, local database and migrations                       |
 | `npm run sync:branch`                                            | merges `main` into the current branch (without committing) and updates everything |
-| `npm run check`                                                  | runs the same checks as CI (lint, format check, build)                            |
+| `npm run check`                                                  | runs the same checks as CI (lint, format check, unit tests, build)                |
 | `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`)                            |
 | `npm run build`                                                  | builds both projects                                                              |
 | `npm run lint`                                                   | lints both projects                                                               |
@@ -151,7 +151,8 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                                           |
 | `npm run migration:run -w backend`                               | applies pending migrations                                                        |
 | `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
-| `npm run test:e2e -w backend`                                    | runs the backend e2e tests against the test database                              |
+| `npm test`                                                       | runs the unit tests of both projects                                              |
+| `npm run test:integration -w backend`                            | runs the backend integration tests against the test database                      |
 | `npm run seed:mock -w backend`                                   | adds or updates the mock data                                                     |
 | `npm run seed:mock:live -w backend`                              | adds or updates the mock data in the live database (`backend/.env.live`)          |
 | `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
@@ -175,7 +176,10 @@ In VS Code, install the recommended extensions (ESLint and Prettier). Wrong impo
 
 ### Tests
 
-`npm run test:e2e -w backend` runs the backend e2e tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
+- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend (Vitest). `npm test` runs them; CI and `npm run check` run them too.
+- **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and only run locally, because they need the Docker database.
+
+`npm run test:integration -w backend` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
 
 ### Updating a feature branch
 
@@ -189,7 +193,7 @@ git commit
 
 `npm run sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `npm install` (not `npm ci`) if `package.json` or `package-lock.json` were affected, then `docker compose up -d --wait`, `npm run migration:run -w backend` and `npm run check` before committing.
 
-CI runs install, lint, format check and build on every pull request to `main`.
+CI runs install, lint, format check, unit tests and build on every pull request to `main`.
 
 ### API requests with Bruno
 

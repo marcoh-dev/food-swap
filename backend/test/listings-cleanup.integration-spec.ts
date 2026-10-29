@@ -13,16 +13,19 @@ import { ListingsService } from "../src/listings/listings.service";
 import { Place } from "../src/places/entities/place.entity";
 import { User } from "../src/users/entities/user.entity";
 
+// A listing ending on 20.11. is kept on end day + 28 (18.12.) and deleted on end day + 29 (19.12.)
 const END_DAY = "2026-11-20";
 const END_DAY_PLUS_28 = "2026-12-18";
 const END_DAY_PLUS_29 = "2026-12-19";
 
 const CLEANUP_SECRET = "test-cleanup-secret";
 
+// The nightly cron job runs at 03:00 Berlin time
 const runAt = (day: string) => berlinTime(`${day} 03:00`);
+// Ended 29 days ago, so it is due today
 const overdueDay = () => shiftDay(berlinDay(new Date()), { days: -29 });
 
-describe("Deleting expired listings (e2e)", () => {
+describe("Deleting expired listings (integration)", () => {
 	let app: INestApplication<App>;
 	let dataSource: DataSource;
 	let listingsService: ListingsService;
@@ -83,6 +86,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("deletes a listing in the run on end day + 29", async () => {
+		// 4 full weeks after the end day are over
 		const listing = await createListing(END_DAY);
 
 		await listingsService.deleteExpired(runAt(END_DAY_PLUS_29), "daily");
@@ -91,6 +95,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("keeps a listing in the run on end day + 28", async () => {
+		// One day before the deletion day
 		const listing = await createListing(END_DAY);
 
 		await listingsService.deleteExpired(runAt(END_DAY_PLUS_28), "daily");
@@ -99,6 +104,8 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("keeps a listing until end day + 29 after the change to winter time", async () => {
+		// Ends 01.10.; on 25.10. the clocks go back one hour. 29.10. 23:30 is still
+		// end day + 28. Counting in hours instead of calendar days would delete it here.
 		const listing = await createListing("2026-10-01");
 
 		await listingsService.deleteExpired(berlinTime("2026-10-29 23:30"), "daily");
@@ -107,6 +114,8 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("deletes a listing early on end day + 29 after the change to summer time", async () => {
+		// Ends 10.03.; on 29.03. the clocks go forward one hour. 08.04. 00:30 is already
+		// end day + 29. Counting in hours instead of calendar days would keep it until 01:00.
 		const listing = await createListing("2026-03-10");
 
 		await listingsService.deleteExpired(berlinTime("2026-04-08 00:30"), "daily");
@@ -115,6 +124,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("deletes a deactivated listing on end day + 29", async () => {
+		// Only the end date counts, not the status
 		const listing = await createListing(END_DAY, ListingStatus.DEACTIVATED);
 
 		await listingsService.deleteExpired(runAt(END_DAY_PLUS_29), "daily");
@@ -123,6 +133,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("keeps a listing whose end date was extended", async () => {
+		// The owner extends it to 31.12., so 19.12. is no longer its deletion day
 		const listing = await createListing(END_DAY);
 		await listings.update(listing.id, { endDate: endOfDay("2026-12-31") });
 
@@ -132,6 +143,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("keeps the chats of a deleted listing", async () => {
+		// The chat stays, only its link to the listing is removed
 		const listing = await createListing(END_DAY);
 		const user = await createUser("user");
 		const chat = await chats.save(
@@ -150,6 +162,7 @@ describe("Deleting expired listings (e2e)", () => {
 
 	it("logs how many listings it deleted", async () => {
 		const log = jest.spyOn(Logger.prototype, "log");
+		// Two are due, the third one ends later and is not
 		await createListing(END_DAY);
 		await createListing(END_DAY);
 		await createListing(END_DAY_PLUS_28);
@@ -161,6 +174,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("deletes overdue listings when the backend starts", async () => {
+		// The free Render backend sleeps, so the cron job alone would rarely run
 		const listing = await createListing(overdueDay());
 
 		await listingsService.onApplicationBootstrap();
@@ -169,6 +183,7 @@ describe("Deleting expired listings (e2e)", () => {
 	});
 
 	it("still starts the backend when the startup cleanup fails", async () => {
+		// A failing cleanup is logged, but must not stop the app
 		jest.spyOn(listingsService, "deleteExpired").mockRejectedValue(
 			new Error("Database unavailable"),
 		);
@@ -185,6 +200,7 @@ describe("Deleting expired listings (e2e)", () => {
 		const cleanup = () => request(app.getHttpServer()).post("/listings/cleanup");
 
 		it("deletes overdue listings with the cleanup secret", async () => {
+			// This is the request the nightly GitHub workflow sends
 			const log = jest.spyOn(Logger.prototype, "log");
 			const listing = await createListing(overdueDay());
 
@@ -215,6 +231,7 @@ describe("Deleting expired listings (e2e)", () => {
 		});
 
 		it("rejects all requests when no cleanup secret is configured", async () => {
+			// A missing secret must not mean "no protection"
 			jest.spyOn(app.get(ConfigService), "get").mockReturnValue(undefined);
 			const listing = await createListing(overdueDay());
 

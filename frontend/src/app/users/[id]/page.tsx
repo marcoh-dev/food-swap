@@ -15,6 +15,7 @@ import { ProfileEditCollapsible } from "@/components/user/ProfileEditCollapsible
 import { UserDelete } from "@/components/user/UserDelete";
 import { UserUpdate } from "@/components/user/UserUpdate";
 import { getCategories } from "@/lib/categories.service";
+import { LISTING_VIEW_CLASSES } from "@/lib/constants/listing.constants";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getUserListings } from "@/lib/listings.service";
 import { getTags } from "@/lib/tags.service";
@@ -127,13 +128,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 							<ViewMenu view={view} />
 							<SortingMenu sort={sort} />
 						</div>
-						<ul
-							className={
-								view === "list"
-									? "grid auto-rows-fr gap-3 max-sm:mx-[-1em]"
-									: "grid grid-cols-2 gap-3 sm:gap-8 md:gap-12"
-							}
-						>
+						<ul className={LISTING_VIEW_CLASSES[view]}>
 							{listingsData.data.map((listing) => (
 								<li key={listing.id}>
 									<ListingCard
