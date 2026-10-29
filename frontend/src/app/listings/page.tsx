@@ -67,22 +67,30 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 
 	const listings = listingsData.data;
 	const total = listingsData.meta.total;
-	const isSearching = Boolean(term || selectedPlace);
 	const hasFilters = Boolean(category || tags);
 
 	return (
 		<>
 			<SearchPlaceProvider key={selectedPlace?.slug ?? ""} initialPlace={selectedPlace}>
-				<SearchBar
-					defaultTerm={term}
-					defaultPlace={selectedPlace}
-					defaultRadius={radius}
-					category={category}
-					tags={tags}
-					sort={sort}
-					view={view}
-				/>
-
+				<div className="mb-8">
+					<SearchBar
+						defaultTerm={term}
+						defaultPlace={selectedPlace}
+						defaultRadius={radius}
+						category={category}
+						tags={tags}
+						sort={sort}
+						view={view}
+					/>
+				</div>
+				{total > 0 && (
+					<p className="mb-3">
+						{total} {total === 1 ? "Angebot" : "Angebote"}
+						{term && ` für "${term}"`}
+						{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
+						{radius && ` (+${radius}\u00a0km)`}
+					</p>
+				)}
 				<div className="mt-3 mb-2 flex items-center justify-end gap-2">
 					<div className="mr-auto sm:mr-0">
 						<ListingFilters
@@ -95,15 +103,6 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 				</div>
 			</SearchPlaceProvider>
-
-			{isSearching && total > 0 && (
-				<p className="mb-3">
-					{total} {total === 1 ? "Ergebnis" : "Ergebnisse"}
-					{term && ` für "${term}"`}
-					{selectedPlace && ` in "${formatPlace(selectedPlace)}"`}
-					{radius && ` (+${radius}\u00a0km)`}
-				</p>
-			)}
 
 			{listings.length === 0 ? (
 				<p className="py-12 text-center">
