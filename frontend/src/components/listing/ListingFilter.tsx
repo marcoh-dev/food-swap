@@ -1,10 +1,12 @@
 "use client";
 
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -42,7 +44,7 @@ export default function ListingFilters({ categories, tags }: Props) {
 		}
 
 		params.delete("page");
-		router.push(`${pathname}?${params.toString()}`);
+		router.push(`${pathname}?${params.toString()}`, { scroll: false });
 	}
 
 	function handleCategoryChange(value: string) {
@@ -62,56 +64,70 @@ export default function ListingFilters({ categories, tags }: Props) {
 		params.delete("category");
 		params.delete("tags");
 		params.delete("page");
-		router.push(`${pathname}?${params.toString()}`);
+		router.push(`${pathname}?${params.toString()}`, { scroll: false });
 	}
 
-	const hasFilters = selectedCategory !== "" || selectedTags.length > 0;
+	const activeFilterCount = (selectedCategory !== "" ? 1 : 0) + selectedTags.length;
+	const hasFilters = activeFilterCount > 0;
 
 	return (
-		<div className="my-3 flex flex-col gap-4">
-			<div className="grid gap-1.5">
-				<Label htmlFor="category-filter" className="sr-only">
-					Kategorie
-				</Label>
-				<Select
-					value={selectedCategory || ALL_CATEGORIES}
-					onValueChange={handleCategoryChange}
-				>
-					<SelectTrigger id="category-filter" className="w-full max-w-40">
-						<SelectValue placeholder="Kategorie wählen" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value={ALL_CATEGORIES}>Alle Kategorien</SelectItem>
-						{categories.map((category) => (
-							<SelectItem key={category.id} value={category.slug}>
-								{category.name}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-			</div>
-			<FieldSet>
-				<FieldLegend variant="label" className="sr-only">
-					Tags
-				</FieldLegend>
-				<TagSelect
-					tags={tags}
-					value={selectedTags}
-					onChange={handleTagToggle}
-					valueKey="slug"
-				/>
-			</FieldSet>
-
-			{hasFilters && (
+		<Popover>
+			<PopoverTrigger asChild>
 				<Button
-					type="button"
 					variant="outline"
-					onClick={handleReset}
-					className="self-start"
+					aria-label={`Filter${hasFilters ? `, ${activeFilterCount} aktiv` : ""}`}
 				>
-					Filter zurücksetzen
+					<SlidersHorizontal size={16} strokeWidth={1} />
+					Filter
+					{hasFilters && <span>({activeFilterCount})</span>}
+					<ChevronDown className="size-3" strokeWidth={1} />
 				</Button>
-			)}
-		</div>
+			</PopoverTrigger>
+			<PopoverContent
+				align="end"
+				collisionPadding={16}
+				className="w-80 max-w-(--radix-popover-content-available-width) gap-4"
+			>
+				<div className="grid gap-1.5">
+					<Label htmlFor="category-filter">Kategorie</Label>
+					<Select
+						value={selectedCategory || ALL_CATEGORIES}
+						onValueChange={handleCategoryChange}
+					>
+						<SelectTrigger id="category-filter" className="w-full">
+							<SelectValue placeholder="Kategorie wählen" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value={ALL_CATEGORIES}>Alle Kategorien</SelectItem>
+							{categories.map((category) => (
+								<SelectItem key={category.id} value={category.slug}>
+									{category.name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+				<FieldSet>
+					<FieldLegend variant="label">Tags</FieldLegend>
+					<TagSelect
+						tags={tags}
+						value={selectedTags}
+						onChange={handleTagToggle}
+						valueKey="slug"
+					/>
+				</FieldSet>
+
+				{hasFilters && (
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={handleReset}
+						className="self-end"
+					>
+						Filter zurücksetzen
+					</Button>
+				)}
+			</PopoverContent>
+		</Popover>
 	);
 }
