@@ -1,10 +1,13 @@
 "use client";
 
+import { ChevronDown, SlidersHorizontal, XIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -21,12 +24,14 @@ const ALL_CATEGORIES = "all";
 type Props = {
 	categories: Category[];
 	tags: Tag[];
+	resultCount: number;
 };
 
-export default function ListingFilters({ categories, tags }: Props) {
+export default function ListingFilters({ categories, tags, resultCount }: Props) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const [isOpen, setIsOpen] = useState(false);
 
 	const selectedCategory = searchParams.get("category") ?? "";
 	const tagsParam = searchParams.get("tags");
@@ -42,7 +47,7 @@ export default function ListingFilters({ categories, tags }: Props) {
 		}
 
 		params.delete("page");
-		router.push(`${pathname}?${params.toString()}`);
+		router.push(`${pathname}?${params.toString()}`, { scroll: false });
 	}
 
 	function handleCategoryChange(value: string) {
@@ -62,56 +67,95 @@ export default function ListingFilters({ categories, tags }: Props) {
 		params.delete("category");
 		params.delete("tags");
 		params.delete("page");
-		router.push(`${pathname}?${params.toString()}`);
+		router.push(`${pathname}?${params.toString()}`, { scroll: false });
+		setIsOpen(false);
 	}
 
-	const hasFilters = selectedCategory !== "" || selectedTags.length > 0;
+	const activeFilterCount = (selectedCategory !== "" ? 1 : 0) + selectedTags.length;
+	const hasFilters = activeFilterCount > 0;
 
 	return (
-		<div className="my-3 flex flex-col gap-4">
-			<div className="grid gap-1.5">
-				<Label htmlFor="category-filter" className="sr-only">
-					Kategorie
-				</Label>
-				<Select
-					value={selectedCategory || ALL_CATEGORIES}
-					onValueChange={handleCategoryChange}
-				>
-					<SelectTrigger id="category-filter" className="w-full max-w-40">
-						<SelectValue placeholder="Kategorie wählen" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value={ALL_CATEGORIES}>Alle Kategorien</SelectItem>
-						{categories.map((category) => (
-							<SelectItem key={category.id} value={category.slug}>
-								{category.name}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-			</div>
-			<FieldSet>
-				<FieldLegend variant="label" className="sr-only">
-					Tags
-				</FieldLegend>
-				<TagSelect
-					tags={tags}
-					value={selectedTags}
-					onChange={handleTagToggle}
-					valueKey="slug"
+		<Popover open={isOpen} onOpenChange={setIsOpen}>
+			{isOpen && (
+				<div
+					aria-hidden
+					className="fixed inset-0 z-50 animate-in bg-black/10 duration-100 fade-in-0 supports-backdrop-filter:backdrop-blur-xs"
 				/>
-			</FieldSet>
+			)}
+			<PopoverTrigger asChild>
+				<Button
+					variant="outline"
+					className="relative z-50"
+					aria-label={`Filter${hasFilters ? `, ${activeFilterCount} aktiv` : ""}`}
+				>
+					<SlidersHorizontal size={16} strokeWidth={1} />
+					Filter
+					{hasFilters && <span>({activeFilterCount})</span>}
+					<ChevronDown
+						className={`size-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+						strokeWidth={1}
+					/>
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent
+				side="bottom"
+				align="start"
+				avoidCollisions={false}
+				className="max-h-(--radix-popover-content-available-height) w-80 max-w-[calc(100vw-2rem)] gap-4 overflow-y-auto"
+			>
+				<div className="flex items-center justify-between">
+					<p aria-live="polite" className="text-sm font-medium">
+						{hasFilters && `${resultCount} Treffer`}
+					</p>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon-xs"
+						aria-label="Filter schließen"
+						onClick={() => setIsOpen(false)}
+					>
+						<XIcon />
+					</Button>
+				</div>
+				<div className="grid gap-1.5">
+					<Label htmlFor="category-filter">Kategorie</Label>
+					<Select
+						value={selectedCategory || ALL_CATEGORIES}
+						onValueChange={handleCategoryChange}
+					>
+						<SelectTrigger id="category-filter" className="w-full">
+							<SelectValue placeholder="Kategorie wählen" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value={ALL_CATEGORIES}>Alle Kategorien</SelectItem>
+							{categories.map((category) => (
+								<SelectItem key={category.id} value={category.slug}>
+									{category.name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+				<FieldSet>
+					<FieldLegend variant="label">Tags</FieldLegend>
+					<TagSelect
+						tags={tags}
+						value={selectedTags}
+						onChange={handleTagToggle}
+						valueKey="slug"
+					/>
+				</FieldSet>
 
-			{hasFilters && (
 				<Button
 					type="button"
-					variant="outline"
+					variant="ghost"
 					onClick={handleReset}
-					className="self-start"
+					disabled={!hasFilters}
+					className="self-end"
 				>
 					Filter zurücksetzen
 				</Button>
-			)}
-		</div>
+			</PopoverContent>
+		</Popover>
 	);
 }

@@ -70,7 +70,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	const total = listingsData.meta.total;
 	const hasFilters = Boolean(category || tags);
 	const resultsMessage =
-		`${total} ${total === 1 ? "Ergebnis" : "Ergebnisse"}` +
+		`${total} ${total === 1 ? "Angebot" : "Angebote"}` +
 		(term ? ` für "${term}"` : "") +
 		(selectedPlace ? ` in "${formatPlace(selectedPlace)}"` : "") +
 		(radius ? ` (+${radius}\u00a0km)` : "");
@@ -79,26 +79,33 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 		<>
 			<h1 className="sr-only">Angebote</h1>
 			<SearchPlaceProvider key={selectedPlace?.slug ?? ""} initialPlace={selectedPlace}>
-				<SearchBar
-					defaultTerm={term}
-					defaultPlace={selectedPlace}
-					defaultRadius={radius}
-					category={category}
-					tags={tags}
-					sort={sort}
-					view={view}
-				/>
-
-				<div className="mb-2 flex w-full flex-col items-start">
-					<ListingFilters categories={categories} tags={allTags} />
-					<div className="flex items-center gap-2 self-end">
+				<div className="mb-6">
+					<SearchBar
+						defaultTerm={term}
+						defaultPlace={selectedPlace}
+						defaultRadius={radius}
+						category={category}
+						tags={tags}
+						sort={sort}
+						view={view}
+					/>
+				</div>
+				<div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+					{total > 0 && <p>{resultsMessage}</p>}
+					<div className="flex items-center justify-end gap-2 sm:ml-auto">
+						<div className="mr-auto flex sm:mr-0">
+							<ListingFilters
+								categories={categories}
+								tags={allTags}
+								resultCount={total}
+							/>
+						</div>
 						<ViewMenu view={view} />
 						<SortingMenu sort={sort} searchFormId={SEARCH_FORM_ID} />
 					</div>
 				</div>
 			</SearchPlaceProvider>
 
-			{total > 0 && <p className="mb-3">{resultsMessage}</p>}
 			<Announcement message={resultsMessage} />
 
 			{listings.length === 0 ? (

@@ -52,13 +52,17 @@ export default async function ListingDetailPage({
 
 	return (
 		<>
-			<SearchBar
-				defaultTerm={typeof term === "string" ? term : undefined}
-				defaultPlace={selectedPlace}
-				defaultRadius={
-					selectedPlace && typeof radius === "string" ? parseRadius(radius) : undefined
-				}
-			/>
+			<div className="mb-8">
+				<SearchBar
+					defaultTerm={typeof term === "string" ? term : undefined}
+					defaultPlace={selectedPlace}
+					defaultRadius={
+						selectedPlace && typeof radius === "string"
+							? parseRadius(radius)
+							: undefined
+					}
+				/>
+			</div>
 			<ListingCard
 				listing={listing}
 				variant="detail"

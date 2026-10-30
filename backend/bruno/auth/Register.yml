@@ -10,17 +10,9 @@ http:
     type: json
     data: |-
       {
-        "username": "newuser6",
+        "username": "newuser23",
         "password": "myCoolPassword1!"
       }
-
-runtime:
-  scripts:
-    - type: after-response
-      code: |-
-        if (res.status === 201) {
-          bru.setVar("token", res.body.access_token);
-        }
 
 settings:
   encodeUrl: true
