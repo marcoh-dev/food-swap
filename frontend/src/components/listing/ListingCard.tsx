@@ -19,11 +19,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import type { ListingResponse } from "@/lib/types/listing.types";
+import type { ListingOrigin, ListingResponse } from "@/lib/types/listing.types";
 
 type ListingCardProps = {
 	listing: ListingResponse;
 	variant?: "grid" | "list" | "detail";
+	from?: ListingOrigin;
 	showExpired?: boolean;
 	showDeletionDate?: boolean;
 	showEndDate?: boolean;
@@ -36,6 +37,7 @@ type ListingCardProps = {
 export default function ListingCard({
 	listing,
 	variant = "grid",
+	from,
 	showExpired = false,
 	showDeletionDate = false,
 	showEndDate = false,
@@ -175,7 +177,7 @@ export default function ListingCard({
 				<div className={bodyClassName}>{body}</div>
 			) : (
 				<Link
-					href={`/listings/${listing.id}`}
+					href={from ? `/listings/${listing.id}?from=${from}` : `/listings/${listing.id}`}
 					aria-labelledby={titleId}
 					className={cn(bodyClassName, "focus-visible:outline-none")}
 				>
