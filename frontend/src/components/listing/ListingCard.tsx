@@ -108,11 +108,8 @@ export default function ListingCard({
 			</div>
 			<div className={cn("flex flex-col gap-3", isList && "min-w-0 flex-1 py-3")}>
 				<CardHeader>
-					<CardTitle title={listing.title}>
-						<Heading
-							id={titleId}
-							className={cn("text-h2 wrap-break-word", !isDetail && "line-clamp-2")}
-						>
+					<CardTitle className="text-h2 wrap-break-word" title={listing.title}>
+						<Heading id={titleId} className={cn(!isDetail && "line-clamp-2")}>
 							{listing.title}
 						</Heading>
 					</CardTitle>
