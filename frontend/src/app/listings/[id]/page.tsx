@@ -100,7 +100,7 @@ export default async function ListingDetailPage({
 					</>
 				}
 			>
-				<p className="mt-3 text-xs">
+				<p className="mt-3 text-xs text-muted-foreground">
 					Angeboten von <Link href={`/users/${listing.owner.id}`}>{ownerName}</Link>
 				</p>
 			</ListingCard>
