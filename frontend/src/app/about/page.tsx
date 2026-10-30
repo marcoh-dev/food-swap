@@ -106,6 +106,25 @@ export default function About() {
 					. Die Daten wurden für Food Swap gefiltert und um Städte ergänzt.
 				</p>
 			</section>
+			<section className="mt-8">
+				<h2 className="mb-2 font-medium">Datenschutz</h2>
+				<ul className="list-disc space-y-1 pl-5 text-body-small">
+					<li>
+						Deinen Standort nutzen wir nur, wenn du ihn anforderst. Er wird auf etwa
+						100&nbsp;m gerundet, nur zum Finden des nächsten Ortes verwendet und nicht
+						gespeichert.
+					</li>
+					<li>
+						Wir verwenden kein Tracking. Cookies setzen wir nur für die Anmeldung und um
+						die Willkommensbox auszublenden.
+					</li>
+					<li>Passwörter speichern wir nur verschlüsselt.</li>
+					<li>
+						Wenn du dein Konto löschst, werden auch deine Angebote gelöscht. Deine
+						Nachrichten bleiben ohne deinen Namen im Chat deiner Gesprächspartner.
+					</li>
+				</ul>
+			</section>
 		</div>
 	);
 }
