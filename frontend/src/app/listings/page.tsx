@@ -109,14 +109,14 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 			<Announcement message={resultsMessage} />
 
 			{listings.length === 0 ? (
-				<p className="py-12 text-center">
+				<p id="results" className="py-12 text-center">
 					{hasFilters
 						? "Keine Angebote passen zu deinen Filtern."
 						: "Keine Angebote gefunden. Versuche, deine Suche anzupassen."}
 				</p>
 			) : (
 				<>
-					<ul className={LISTING_VIEW_CLASSES[view]}>
+					<ul id="results" className={LISTING_VIEW_CLASSES[view]}>
 						{listings.map((listing) => (
 							<li key={listing.id}>
 								<ListingCard listing={listing} variant={view} from="listings" />

@@ -199,11 +199,6 @@ CI runs install, lint, format check, unit tests and build on every pull request 
 
 `backend/bruno` is a [Bruno](https://www.usebruno.com/) collection with requests for every endpoint. Open the folder in Bruno and pick an environment (`local` or `live-server`). Run `auth/Login` (or `auth/Register`) first: it stores the token that the other requests use. `listings/Clean up Listings` uses `CLEANUP_SECRET` from `backend/bruno/.env` instead, which has to match the one in `backend/.env`.
 
-### Test endpoints
-
-- `GET /database/connection`
-- `GET /database/tables`
-
 ## Deployment
 
 - **Frontend:** Vercel deploys `main` automatically.
