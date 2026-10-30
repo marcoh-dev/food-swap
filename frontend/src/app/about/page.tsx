@@ -1,7 +1,6 @@
 import { ExternalLinkIcon, QuoteIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 
 import { pageTitles } from "@/lib/constants/titles.constants";
 
