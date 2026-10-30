@@ -121,7 +121,7 @@ export default function ListingForm({
 						control={form.control}
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor="title">Name</FieldLabel>
+								<FieldLabel htmlFor="title">Titel</FieldLabel>
 								<Input
 									{...field}
 									id="title"

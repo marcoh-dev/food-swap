@@ -19,11 +19,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import type { ListingResponse } from "@/lib/types/listing.types";
+import type { ListingOrigin, ListingResponse } from "@/lib/types/listing.types";
 
 type ListingCardProps = {
 	listing: ListingResponse;
 	variant?: "grid" | "list" | "detail";
+	from?: ListingOrigin;
 	showExpired?: boolean;
 	showDeletionDate?: boolean;
 	showEndDate?: boolean;
@@ -36,6 +37,7 @@ type ListingCardProps = {
 export default function ListingCard({
 	listing,
 	variant = "grid",
+	from,
 	showExpired = false,
 	showDeletionDate = false,
 	showEndDate = false,
@@ -108,7 +110,13 @@ export default function ListingCard({
 			</div>
 			<div className={cn("flex flex-col gap-3", isList && "min-w-0 flex-1 py-3")}>
 				<CardHeader>
-					<CardTitle className="text-h2 wrap-break-word" title={listing.title}>
+					<CardTitle
+						className={cn(
+							"wrap-break-word",
+							isDetail ? "text-xl sm:text-h2" : "text-base sm:text-body",
+						)}
+						title={listing.title}
+					>
 						<Heading id={titleId} className={cn(!isDetail && "line-clamp-2")}>
 							{listing.title}
 						</Heading>
@@ -120,10 +128,10 @@ export default function ListingCard({
 							showDeletionDate={showDeletionDate}
 							hideType
 							hideEndDate={!showEndDate}
-							className="text-xs"
+							className="gap-y-1.5 text-xs"
 						/>
 					</CardDescription>
-					<div className="mt-1 flex min-w-0 flex-col items-start gap-1.5">
+					<div className="mt-2 flex min-w-0 flex-col items-start gap-3">
 						<CategoryBadge category={listing.category} />
 						{isDetail ? (
 							<TagList tags={listing.tags} />
@@ -143,12 +151,8 @@ export default function ListingCard({
 				<CardContent className={cn(!isDetail && "hidden sm:block")}>
 					<p
 						className={cn(
-							"text-xs wrap-break-word",
-							isDetail
-								? "whitespace-pre-line"
-								: isList
-									? "line-clamp-2"
-									: "line-clamp-3",
+							"leading-normal font-light wrap-break-word",
+							isDetail ? "text-sm whitespace-pre-line" : "line-clamp-2 text-[13px]",
 						)}
 					>
 						{listing.description}
@@ -173,7 +177,7 @@ export default function ListingCard({
 				<div className={bodyClassName}>{body}</div>
 			) : (
 				<Link
-					href={`/listings/${listing.id}`}
+					href={from ? `/listings/${listing.id}?from=${from}` : `/listings/${listing.id}`}
 					aria-labelledby={titleId}
 					className={cn(bodyClassName, "focus-visible:outline-none")}
 				>

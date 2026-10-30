@@ -175,6 +175,7 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 									<ListingCard
 										listing={listing}
 										variant={view}
+										from="profile"
 										showExpired={isOwner}
 										showDeletionDate={isOwner}
 										unavailable={

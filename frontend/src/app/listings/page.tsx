@@ -124,7 +124,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 					<ul id="results" className={LISTING_VIEW_CLASSES[view]}>
 						{listings.map((listing) => (
 							<li key={listing.id}>
-								<ListingCard listing={listing} variant={view} />
+								<ListingCard listing={listing} variant={view} from="listings" />
 							</li>
 						))}
 					</ul>
