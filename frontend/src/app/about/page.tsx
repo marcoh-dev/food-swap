@@ -1,14 +1,88 @@
+import { ExternalLinkIcon, QuoteIcon } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
 import { pageTitles } from "@/lib/constants/titles.constants";
 
 export const metadata: Metadata = { title: pageTitles.about };
 
+const TEAM = [
+	{ name: "Marco", github: "https://github.com/marcoh-dev" },
+	{ name: "Simon", github: "https://github.com/SimonNancekievill" },
+	{ name: "Maria", github: "https://github.com/maria-traut" },
+];
+
 export default function About() {
 	return (
 		<div className="mx-auto max-w-prose">
-			<h1>Wir sind FoodSwap.</h1>
-
+			<h1 className="mb-2 text-h2">Wir sind FoodSwap.</h1>
+			<section className="space-y-2 text-body-small font-light">
+				<ul className="flex flex-wrap gap-x-6">
+					{TEAM.map(({ name, github }) => (
+						<li key={name}>
+							<a
+								href={github}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-flex items-center gap-1.5 no-underline hover:underline"
+							>
+								<Image src="/icon.svg" alt="" width={16} height={14} />
+								{name}
+								<ExternalLinkIcon aria-hidden="true" className="size-3" />
+								<span className="sr-only">(öffnet in neuem Tab)</span>
+							</a>
+						</li>
+					))}
+				</ul>
+				<figure className="relative mt-4 w-fit rounded-lg bg-muted/50 px-4 py-6 sm:px-7">
+					<blockquote className="space-y-2 leading-relaxed italic">
+						<QuoteIcon
+							aria-hidden="true"
+							className="absolute -top-2.5 left-4 size-5 fill-current text-border sm:left-7"
+						/>
+						<p>
+							Drei Tomatoes betraten im Frühjahr das Beet,
+							<br />
+							Verschiedene Sorten - &bdquo;Wie es uns wohl ergeht?&ldquo;.
+							<br />
+							Viel zu tun gab es im neuen Garten,
+							<br />
+							Zwischen all dem Gemüse und manchen Irrfahrten.
+						</p>
+						<p>
+							Als im Sommer warmes Licht die Gemüter erwärmte,
+							<br />
+							War ein Teil des Beetes längst bereit für die Ernte.
+							<br />
+							Die Tomatoes blieben, ob dies sie nun verbinde?
+							<br />
+							Ab sofort wehten dann plötzlich stürmische Winde.
+						</p>
+						<p>
+							Der Herbst brach an, es kam die Kälte,
+							<br />
+							als Zusammenhalt den nötigen Anker darstellte.
+							<br />
+							Sie träumten von Freiheit, schwimmen wie Delphine,
+							<br />
+							statt zu verschrumpeln vor Stress wie die Sultanine.
+						</p>
+						<p>
+							Ob ich Pomodoro oder Tomato sage,
+							<br />
+							das war nun die entscheidende Frage.
+						</p>
+						<QuoteIcon
+							aria-hidden="true"
+							className="absolute right-4 -bottom-2.5 size-5 rotate-180 fill-current text-border sm:right-7"
+						/>
+					</blockquote>
+					<figcaption className="mt-4 text-right not-italic">
+						- The Three Tomateers
+					</figcaption>
+				</figure>
+			</section>
 			<section className="mt-8">
 				<h2 className="mb-2 font-medium">Datenquellen</h2>
 				<p className="text-body-small">
