@@ -59,5 +59,5 @@ export const SEARCH_FORM_ID = "listing-search";
 
 export const LISTING_VIEW_CLASSES: Record<"grid" | "list", string> = {
 	grid: "grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4",
-	list: "grid auto-rows-fr gap-3 max-sm:mx-[-1em] sm:gap-6 lg:grid-cols-2",
+	list: "grid auto-rows-fr gap-3 max-sm:-mx-3 sm:gap-6 lg:grid-cols-2",
 };
