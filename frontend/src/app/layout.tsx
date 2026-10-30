@@ -10,6 +10,8 @@ import { ChatNotifications } from "@/components/chat/ChatNotifications";
 import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
 import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
 import BurgerMenu from "@/components/menu/BurgerMenu";
+import { PageSkipLink } from "@/components/shared/PageSkipLink";
+import { SkipLink } from "@/components/shared/SkipLink";
 import Toast from "@/components/shared/Toast";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
@@ -58,12 +60,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 			suppressHydrationWarning
 		>
 			<body className="text-body">
-				<a
-					href="#main"
-					className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-60 focus:rounded-md focus:bg-background focus:p-2"
-				>
-					Zum Inhalt springen
-				</a>
+				<SkipLink href="#main">Zum Inhalt springen</SkipLink>
+				<PageSkipLink />
 				<ChatSocketConnector token={token} userId={currentUser?.id ?? null} />
 				<ThemeProvider
 					attribute="class"
