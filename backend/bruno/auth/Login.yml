@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "username": "Minna",
-        "password": "MariaMaria1!"
+        "username": "newuser23",
+        "password": "myCoolPassword1!"
       }
 
 settings:
