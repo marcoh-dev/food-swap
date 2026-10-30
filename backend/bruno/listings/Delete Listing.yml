@@ -8,9 +8,11 @@ http:
   url: "{{baseURL}}/listings/:id"
   params:
     - name: id
-      value: d1d8d2da-3e8c-4943-9e84-f62a598b6286
+      value: 59d97bde-7808-4b85-bbde-6bf21a0bf12a
       type: path
-  auth: inherit
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNDk4YWVlNC0wODE4LTQ4ZDctYmE2My0zOGJiMGY5MzRlMWYiLCJpYXQiOjE3OTIwNjg3MzksImV4cCI6MTc5MjA3MjMzOX0.d7A2UovYbJa3Tl65NvL0WHFPvcJ9BnvrDVFymtfTeTI
 
 settings:
   encodeUrl: true

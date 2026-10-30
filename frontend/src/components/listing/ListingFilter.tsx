@@ -71,7 +71,8 @@ export default function ListingFilters({ categories, tags, resultCount }: Props)
 		setIsOpen(false);
 	}
 
-	const hasFilters = selectedCategory !== "" || selectedTags.length > 0;
+	const activeFilterCount = (selectedCategory !== "" ? 1 : 0) + selectedTags.length;
+	const hasFilters = activeFilterCount > 0;
 
 	return (
 		<Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -84,11 +85,12 @@ export default function ListingFilters({ categories, tags, resultCount }: Props)
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
-					className={`relative z-50 ${hasFilters && !isOpen ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary dark:bg-primary/25 dark:text-foreground dark:hover:bg-primary/30" : ""}`}
+					className="relative z-50"
+					aria-label={`Filter${hasFilters ? `, ${activeFilterCount} aktiv` : ""}`}
 				>
 					<SlidersHorizontal size={16} strokeWidth={1} />
 					Filter
-					{hasFilters && <span className="sr-only">(aktiv)</span>}
+					{hasFilters && <span>({activeFilterCount})</span>}
 					<ChevronDown
 						className={`size-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
 						strokeWidth={1}

@@ -10,18 +10,9 @@ http:
     type: json
     data: |-
       {
-        "username": "simon",
-        "password": "Pomodoro!1"
+        "username": "Minna",
+        "password": "MariaMaria1!"
       }
-
-runtime:
-  scripts:
-    - type: after-response
-      code: |-
-        // Store the token; the collection's bearer auth uses {{token}}
-        if (res.status === 201) {
-          bru.setVar("token", res.body.access_token);
-        }
 
 settings:
   encodeUrl: true

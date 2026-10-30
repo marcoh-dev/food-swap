@@ -8,17 +8,17 @@ http:
   url: "{{baseURL}}/listings/:id/status"
   params:
     - name: id
-      value: 6e739d20-246b-4a92-9145-271420e7ff9d
+      value: 07c40e71-b008-4787-bb47-502db8d3ce44
       type: path
   body:
     type: json
     data: |-
       {
-        "status": "reserved"
+        "status": "active"
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZjUwYmQ0ZC02N2M2LTQ2M2QtOWEyMy1kYTkyZjgzZGJkZDAiLCJpYXQiOjE3OTE5ODI3MjksImV4cCI6MTc5MTk4NjMyOX0.MPwYqwKo2pCP2xWmWLVlTp3c212IvEnXDCFKMRiw6xo
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNDk4YWVlNC0wODE4LTQ4ZDctYmE2My0zOGJiMGY5MzRlMWYiLCJpYXQiOjE3OTIzOTg3ODcsImV4cCI6MTc5MjQwMjM4N30.z8_HROf2HRMzpj7Cumf0i7N1PtToGzZhd5Gm4mEfC0Q
 
 settings:
   encodeUrl: true

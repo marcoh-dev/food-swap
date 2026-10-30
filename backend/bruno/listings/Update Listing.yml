@@ -14,7 +14,8 @@ http:
     type: json
     data: |2-
        {
-          "title": "2,5kg Tomaten"
+          "title": "2,5kg Tomaten",
+        "image": "https://images.pexels.com/photos/39688964/pexels-photo-39688964.jpeg"
         }
   auth: inherit
 
