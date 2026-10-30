@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import ListingCard from "@/components/listing/ListingCard";
@@ -6,6 +7,7 @@ import ListingFilters from "@/components/listing/ListingFilter";
 import ListingsPagination from "@/components/listing/ListingsPagination";
 import { SortingMenu } from "@/components/listing/SortingMenu";
 import ViewMenu from "@/components/listing/ViewMenu";
+import { WelcomeBox } from "@/components/listing/WelcomeBox";
 import SearchBar from "@/components/search/SearchBar";
 import { SearchPlaceProvider } from "@/components/search/SearchPlaceContext";
 import { Announcement } from "@/components/shared/Announcement";
@@ -16,6 +18,7 @@ import {
 	SEARCH_FORM_ID,
 } from "@/lib/constants/listing.constants";
 import { pageTitles } from "@/lib/constants/titles.constants";
+import { WELCOME_DISMISSED_COOKIE } from "@/lib/constants/welcome.constants";
 import { getListings } from "@/lib/listings.service";
 import { getPlaceBySlug } from "@/lib/places.service";
 import { getTags } from "@/lib/tags.service";
@@ -49,6 +52,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	const radius = selectedPlace ? parseRadius(getParam(params.radius)) : undefined;
 	const category = getParam(params.category);
 	const tags = getParam(params.tags);
+	const showWelcome = !(await cookies()).has(WELCOME_DISMISSED_COOKIE);
 
 	const [listingsData, categories, allTags] = await Promise.all([
 		getListings({ page, sort, term, place: selectedPlace?.slug, radius, category, tags }),
@@ -78,6 +82,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/listing
 	return (
 		<>
 			<h1 className="sr-only">Angebote</h1>
+			{showWelcome && <WelcomeBox />}
 			<SearchPlaceProvider key={selectedPlace?.slug ?? ""} initialPlace={selectedPlace}>
 				<div className="mb-6">
 					<SearchBar

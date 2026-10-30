@@ -1,17 +1,5 @@
-import SearchBar from "@/components/search/SearchBar";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-	return (
-		<>
-			<SearchBar />
-			<div className="mt-4">
-				<h1 className="text-h2">Willkommen bei FoodSwap!</h1>
-				<p>
-					Teile, was du hast.
-					<br />
-					Finde, was du brauchst.
-				</p>
-			</div>
-		</>
-	);
+	redirect("/listings");
 }
