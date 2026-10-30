@@ -8,6 +8,7 @@ import { AuthLink } from "@/components/user/AuthLink";
 import { UserLogout } from "@/components/user/UserLogout";
 import { getCurrentUser } from "@/lib/users.service";
 
+import { MenuSheetContent } from "./MenuSheetContent";
 import NavLink from "./NavLink";
 
 export default async function BurgerMenu() {
@@ -36,7 +37,7 @@ export default async function BurgerMenu() {
 					</Button>
 				</SheetParts.SheetTrigger>
 
-				<SheetParts.SheetContent className="w-full">
+				<MenuSheetContent className="w-full">
 					<nav className="flex flex-1 flex-col gap-8 p-4 pt-14">
 						<ul className="flex flex-col gap-2">
 							<li>
@@ -104,7 +105,7 @@ export default async function BurgerMenu() {
 							<ModeToggle />
 						</div>
 					</nav>
-				</SheetParts.SheetContent>
+				</MenuSheetContent>
 			</SheetParts.Sheet>
 		</div>
 	);
