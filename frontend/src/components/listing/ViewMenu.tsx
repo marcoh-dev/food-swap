@@ -43,7 +43,10 @@ export default function ViewMenu({ view }: { view: View }) {
 				>
 					<span className="hidden sm:inline">{VIEW_OPTIONS[view].label}</span>
 					<CurrentIcon size={16} strokeWidth={1} />
-					<ChevronDown className="size-3" strokeWidth={1} />
+					<ChevronDown
+						className={`size-3 transition-transform ${open ? "rotate-180" : ""}`}
+						strokeWidth={1}
+					/>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-auto min-w-0" {...contentProps}>

@@ -6,6 +6,7 @@ import { ListingChat } from "@/components/chat/ListingChat";
 import ListingActions from "@/components/listing/ListingAction";
 import ListingCard from "@/components/listing/ListingCard";
 import SearchBar from "@/components/search/SearchBar";
+import BackButton from "@/components/shared/BackButton";
 import { getCategories } from "@/lib/categories.service";
 import { getListingChatStatus } from "@/lib/chats.service";
 import { parseRadius } from "@/lib/constants/listing.constants";
@@ -31,7 +32,7 @@ export default async function ListingDetailPage({
 	searchParams,
 }: PageProps<"/listings/[id]">) {
 	const { id } = await params;
-	const { term, place, radius, edit } = await searchParams;
+	const { term, place, radius, edit, from } = await searchParams;
 	const selectedPlace = typeof place === "string" ? await getPlaceBySlug(place) : null;
 	const listing = await getListingById(id);
 	const categories = await getCategories();
@@ -41,6 +42,7 @@ export default async function ListingDetailPage({
 	if (!listing) notFound();
 
 	const isOwner = currentUser?.id === listing.owner.id;
+	const isFromProfile = from === "profile";
 	const ownerName = listing.owner.name ?? listing.owner.username;
 	const chatStatus: ListingChatStatus | null =
 		currentUser && !isOwner
@@ -63,6 +65,11 @@ export default async function ListingDetailPage({
 					}
 				/>
 			</div>
+			<BackButton
+				href={isFromProfile ? `/users/${listing.owner.id}` : "/listings"}
+				label={isFromProfile ? "Zurück zum Profil" : "Zurück zu allen Angeboten"}
+				preferHistory={from === "listings" || isFromProfile}
+			/>
 			<ListingCard
 				listing={listing}
 				variant="detail"
@@ -70,7 +77,7 @@ export default async function ListingDetailPage({
 				showDeletionDate={isOwner}
 				showEndDate={isOwner}
 				unavailable={listing.status === "deactivated" || isExpired(listing.endDate)}
-				className="mt-6 h-auto w-full max-w-2xl"
+				className="mt-2 h-auto w-full max-w-2xl"
 				actions={
 					<>
 						{isOwner && (
@@ -100,7 +107,7 @@ export default async function ListingDetailPage({
 					</>
 				}
 			>
-				<p className="mt-3 text-xs">
+				<p className="mt-3 text-xs text-muted-foreground">
 					Angeboten von <Link href={`/users/${listing.owner.id}`}>{ownerName}</Link>
 				</p>
 			</ListingCard>

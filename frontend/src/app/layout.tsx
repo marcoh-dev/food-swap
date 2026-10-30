@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					disableTransitionOnChange
 				>
 					<header className="sticky top-0 z-50 h-header border-b bg-background/85 text-foreground backdrop-blur-md">
-						<div className="mx-auto flex h-full w-full max-w-7xl flex-row items-center justify-between p-[1em]">
+						<div className="mx-auto flex h-full w-full max-w-7xl flex-row items-center justify-between p-3 sm:p-[1em]">
 							<Link
 								href="/"
 								aria-label="FoodSwap – Startseite"
@@ -89,7 +89,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 							<BurgerMenu />
 						</div>
 					</header>
-					<main id="main" className="mx-auto w-full max-w-7xl p-[1em]">
+					<main id="main" className="mx-auto w-full max-w-7xl p-3 sm:p-[1em]">
 						{children}
 					</main>
 					<Toaster />

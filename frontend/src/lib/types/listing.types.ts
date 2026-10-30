@@ -42,6 +42,8 @@ export type ListingType = "swap" | "giveaway";
 
 export type SortOption = "newest" | "endingSoon" | "nearest";
 
+export type ListingOrigin = "listings" | "profile";
+
 export type ListingStatus = "pending" | "active" | "reserved" | "deactivated";
 
 export type StatusAction = {
