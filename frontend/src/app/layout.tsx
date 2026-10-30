@@ -81,6 +81,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 									alt=""
 									width="50"
 									height="44"
+									loading="eager"
 									className="block"
 								/>
 								FoodSwap
