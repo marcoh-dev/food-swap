@@ -136,7 +136,7 @@ export function ChatConversation({
 	);
 }
 
-export function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId: string }) {
+function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId: string }) {
 	const lastMessage = chat.messages.at(-1);
 	const [initialLastMessageId] = useState(lastMessage?.id);
 	const isNewIncoming =

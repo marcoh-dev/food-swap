@@ -5,7 +5,7 @@ import { IsIn, IsOptional, IsString, Matches, MaxLength } from "class-validator"
 import { PaginationQueryDto } from "../../common/dtos/paginationQuery.dto";
 import { toSlugArray } from "../../common/utils/trim-string";
 
-export const RADIUS_OPTIONS_KM = [5, 10, 20, 50];
+const RADIUS_OPTIONS_KM = [5, 10, 20, 50];
 
 export class ListingsQueryDto extends OmitType(PaginationQueryDto, ["sort"] as const) {
 	@IsOptional()

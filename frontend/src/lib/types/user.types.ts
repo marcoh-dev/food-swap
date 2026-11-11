@@ -1,10 +1,5 @@
 import type { Place } from "./place.types";
 
-export type UserResponse = {
-	id: string;
-	username: string;
-};
-
 export type UserCredentials = {
 	username: string;
 	password: string;

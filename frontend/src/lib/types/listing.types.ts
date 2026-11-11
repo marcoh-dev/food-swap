@@ -38,7 +38,7 @@ export type PaginatedListingsResponse = {
 	meta: PaginationMetaResponse;
 };
 
-export type ListingType = "swap" | "giveaway";
+type ListingType = "swap" | "giveaway";
 
 export type SortOption = "newest" | "endingSoon" | "nearest";
 

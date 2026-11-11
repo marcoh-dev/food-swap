@@ -162,9 +162,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  multer: ^2.5.0
-
 importers:
 
   .:
@@ -245,9 +242,6 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(pg@8.23.1)(supports-color@8.1.1)(ts-node@10.9.2(@types/node@24.19.2)(typescript@6.0.3))
     devDependencies:
-      '@eslint/eslintrc':
-        specifier: ^3.3.7
-        version: 3.3.7(supports-color@8.1.1)
       '@eslint/js':
         specifier: ^9.39.5
         version: 9.39.5
@@ -302,9 +296,6 @@ importers:
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
-      source-map-support:
-        specifier: ^0.5.21
-        version: 0.5.21
       supertest:
         specifier: ^7.3.2
         version: 7.3.2(supports-color@8.1.1)
@@ -344,9 +335,6 @@ importers:
       cn:
         specifier: ^0.5.2
         version: 0.5.2
-      date-fns:
-        specifier: ^4.4.0
-        version: 4.4.0
       lucide-react:
         specifier: ^1.71.0
         version: 1.71.0(@types/react@19.3.0)(react@19.3.1)
