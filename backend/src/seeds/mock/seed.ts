@@ -21,7 +21,7 @@ type Lookup = Map<string, string>;
 
 function mockId(kind: string, key: string): string {
 	const hex = createHash("sha1").update(`food-swap-mock:${kind}:${key}`).digest("hex");
-	const variant = ((parseInt(hex[16], 16) & 0x3) | 0x8).toString(16);
+	const variant = ((parseInt(hex.charAt(16), 16) & 0x3) | 0x8).toString(16);
 
 	return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
@@ -197,7 +197,7 @@ function validate(now: Date, places: Places, categories: Lookup, tags: Lookup): 
 			previous = sentAt;
 		}
 		check(
-			berlinTime(user!.createdAt) < berlinTime(chat.messages[0].at),
+			berlinTime(user!.createdAt) < berlinTime(chat.messages[0]!.at),
 			`${where}: user wrote before registering`,
 		);
 	}

@@ -4,7 +4,7 @@ import { registrationSchema } from "@/lib/schemas/user.schemas";
 
 // The first error message, as shown below the form field
 const firstError = (values: { username: string; password: string }) =>
-	registrationSchema.safeParse(values).error?.issues[0].message;
+	registrationSchema.safeParse(values).error?.issues[0]?.message;
 
 describe("registrationSchema", () => {
 	it("accepts a valid username and password", () => {
