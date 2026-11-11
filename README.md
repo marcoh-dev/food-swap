@@ -26,23 +26,23 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 ### Requirements
 
 - Node.js 24 (see `.nvmrc`, run `fnm use` or `nvm use`)
-- npm
+- pnpm 12 (`brew install pnpm`, see `devEngines` in `package.json`; npm is blocked)
 - Docker (for the local database)
 
 ### Setup
 
-All commands run from the **repository root**. The root is an npm workspace for `frontend` and `backend`, so never run `npm install` inside a subfolder.
+All commands run from the **repository root**. The root is a pnpm workspace for `frontend` and `backend` (`pnpm-workspace.yaml`), and `pnpm install` always installs both.
 
 ```bash
 git clone <repository-url>
 cd food-swap
-npm install
+pnpm install
 cp backend/.env.example backend/.env
 cp backend/bruno/.env.example backend/bruno/.env
 cp frontend/.env.example frontend/.env
 docker compose up -d --wait
-npm run migration:run -w backend
-npm run dev
+pnpm --filter backend migration:run
+pnpm dev
 ```
 
 The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d --wait` starts a local PostgreSQL with PostGIS on port 5432 and waits until it is ready (`docker compose down` stops it, the data is kept).
@@ -90,7 +90,7 @@ docker compose down -v
 docker compose up -d --wait
 docker compose exec -T db pg_dump "<LIVE_DATABASE_URL>" --no-owner --no-privileges -Fc > live.dump
 docker compose exec -T db pg_restore -U postgres -d foodswap --no-owner --no-privileges < live.dump
-npm run migration:run -w backend
+pnpm --filter backend migration:run
 rm live.dump
 ```
 
@@ -103,7 +103,7 @@ Places (cities, districts and postal codes) come from [GeoNames](https://downloa
 ```bash
 curl -sSfLO https://download.geonames.org/export/zip/DE.zip
 unzip DE.zip -d geonames
-npm run places:build -w backend -- geonames/DE.txt
+pnpm --filter backend places:build geonames/DE.txt
 rm -r DE.zip geonames
 ```
 
@@ -118,15 +118,15 @@ The seed adds 10 mock users (usernames start with `mock_`) with their listings a
 **Local database** (uses `SEED_PASSWORD` from `backend/.env`):
 
 ```bash
-npm run seed:mock -w backend
+pnpm --filter backend seed:mock
 ```
 
-`npm run seed:mock:remove -w backend` removes the mock users with their listings and chats again.
+`pnpm --filter backend seed:mock:remove` removes the mock users with their listings and chats again.
 
 **Live database** (uses `backend/.env.live`): copy `backend/.env.live.example` to `backend/.env.live` once and fill in the live `DATABASE_URL` and the stored live mock password. A different password changes the mock users' logins. Then run:
 
 ```bash
-npm run seed:mock:live -w backend
+pnpm --filter backend seed:mock:live
 ```
 
 Only commands with `live` in their name read `backend/.env.live`, so `backend/.env` always stays local.
@@ -137,29 +137,29 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 
 | Command                                                          | What it does                                                                      |
 | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `npm run dev`                                                    | starts backend and frontend                                                       |
-| `npm run sync`                                                   | updates `main`, dependencies, local database and migrations                       |
-| `npm run sync:branch`                                            | merges `main` into the current branch (without committing) and updates everything |
-| `npm run check`                                                  | runs the same checks as CI (lint, format check, unit tests, build)                |
-| `npm run dev -w backend`                                         | starts only one project (`-w frontend` / `-w backend`)                            |
-| `npm run build`                                                  | builds both projects                                                              |
-| `npm run lint`                                                   | lints both projects                                                               |
-| `npm run lint:fix`                                               | lints both projects and fixes what can be fixed (e.g. the import style)           |
-| `npm run format`                                                 | formats both projects with Prettier                                               |
-| `npm run format:check -w frontend`                               | checks the frontend formatting without changing files                             |
-| `npm install -w frontend <package>`                              | adds a package to one project                                                     |
-| `npm run migration:generate -w backend -- src/migrations/<Name>` | creates a migration from entity changes                                           |
-| `npm run migration:run -w backend`                               | applies pending migrations                                                        |
-| `npm run migration:revert -w backend`                            | reverts the last migration                                                        |
-| `npm test`                                                       | runs the unit tests of both projects                                              |
-| `npm run test:integration -w backend`                            | runs the backend integration tests against the test database                      |
-| `npm run seed:mock -w backend`                                   | adds or updates the mock data                                                     |
-| `npm run seed:mock:live -w backend`                              | adds or updates the mock data in the live database (`backend/.env.live`)          |
-| `npm run seed:mock:remove -w backend`                            | removes the mock data                                                             |
+| `pnpm dev`                                                       | starts backend and frontend                                                       |
+| `pnpm sync`                                                      | updates `main`, dependencies, local database and migrations                       |
+| `pnpm sync:branch`                                               | merges `main` into the current branch (without committing) and updates everything |
+| `pnpm check`                                                     | runs the same checks as CI (lint, format check, unit tests, build)                |
+| `pnpm --filter backend dev`                                      | starts only one project (`--filter frontend` / `--filter backend`)                |
+| `pnpm build`                                                     | builds both projects                                                              |
+| `pnpm lint`                                                      | lints both projects                                                               |
+| `pnpm lint:fix`                                                  | lints both projects and fixes what can be fixed (e.g. the import style)           |
+| `pnpm format`                                                    | formats both projects with Prettier                                               |
+| `pnpm --filter frontend format:check`                            | checks the frontend formatting without changing files                             |
+| `pnpm --filter frontend add <package>`                           | adds a package to one project                                                     |
+| `pnpm --filter backend migration:generate src/migrations/<Name>` | creates a migration from entity changes                                           |
+| `pnpm --filter backend migration:run`                            | applies pending migrations                                                        |
+| `pnpm --filter backend migration:revert`                         | reverts the last migration                                                        |
+| `pnpm test`                                                      | runs the unit tests of both projects                                              |
+| `pnpm --filter backend test:integration`                         | runs the backend integration tests against the test database                      |
+| `pnpm --filter backend seed:mock`                                | adds or updates the mock data                                                     |
+| `pnpm --filter backend seed:mock:live`                           | adds or updates the mock data in the live database (`backend/.env.live`)          |
+| `pnpm --filter backend seed:mock:remove`                         | removes the mock data                                                             |
 
-`npm run sync` switches to `main`, pulls, installs exactly the locked dependencies (`npm ci`, only if `package-lock.json` changed since the last install), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
+`pnpm sync` switches to `main`, pulls, installs exactly the locked dependencies (`pnpm install`, which skips quickly when nothing changed), starts the database and runs pending migrations. It stops if you have uncommitted changes that conflict, and it migrates the database in your `backend/.env`, so make sure that points to your local database.
 
-If the dependencies were reinstalled and you use VS Code, run **Developer: Reload Window** (Cmd/Ctrl+Shift+P) afterwards. `npm ci` replaces `node_modules`, and the TypeScript and ESLint servers in VS Code keep using the old files until they restart.
+If the dependencies changed and you use VS Code, run **Developer: Reload Window** (Cmd/Ctrl+Shift+P) afterwards, because the TypeScript and ESLint servers keep using the old files until they restart.
 
 ### Code style
 
@@ -172,26 +172,26 @@ ESLint checks the imports in both projects (`import/order`, `import/no-duplicate
 - Frontend: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend has no `@/` alias and uses relative paths.
 - Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
 
-In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `npm run lint:fix` and `npm run format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `npx shadcn add`.
+In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `pnpm lint:fix` and `pnpm format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `pnpm --filter frontend shadcn add`.
 
 ### Tests
 
-- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend (Vitest). `npm test` runs them; CI and `npm run check` run them too.
+- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend (Vitest). `pnpm test` runs them; CI and `pnpm check` run them too.
 - **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and only run locally, because they need the Docker database.
 
-`npm run test:integration -w backend` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
+`pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
 
 ### Updating a feature branch
 
 Before opening a pull request, bring the latest `main` into your branch and check that everything still works:
 
 ```bash
-npm run sync:branch
-npm run check
+pnpm sync:branch
+pnpm check
 git commit
 ```
 
-`npm run sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `npm install` (not `npm ci`) if `package.json` or `package-lock.json` were affected, then `docker compose up -d --wait`, `npm run migration:run -w backend` and `npm run check` before committing.
+`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `docker compose up -d --wait`, `pnpm --filter backend migration:run` and `pnpm check` before committing.
 
 CI runs install, lint, format check, unit tests and build on every pull request to `main`.
 
@@ -202,7 +202,7 @@ CI runs install, lint, format check, unit tests and build on every pull request 
 ## Deployment
 
 - **Frontend:** Vercel deploys `main` automatically.
-- **Backend:** Render deploys `main` automatically with Root Directory `backend`, Build Command `npm install; npm run build` and Start Command `npm run migration:run:prod && npm run start:prod`. Pending migrations run on every deploy. If one fails, the app does not start and Render keeps the previous version running.
+- **Backend:** Render deploys `main` automatically with an empty Root Directory, Build Command `pnpm install --frozen-lockfile --filter backend && pnpm --filter backend build` and Start Command `pnpm --filter backend migration:run:prod && pnpm --filter backend start:prod`. Pending migrations run on every deploy. If one fails, the app does not start and Render keeps the previous version running.
 - **Database:** Neon (free plan, region Frankfurt, Postgres 18), using the direct connection string, not the `-pooler` one. It sleeps after 5 minutes without queries, so the first request after a quiet period takes up to a second longer. The free plan has 1 GB of storage and monthly limits for compute and network transfer; if one is reached, the database stops until the next month.
 - **Listing cleanup:** listings are deleted on the 29th day after their end day. The backend does this on startup, daily at 03:00 (only while it is awake) and when `POST /listings/cleanup` is called. On the Render free plan the backend sleeps, so the `Listing cleanup` GitHub workflow (`.github/workflows/cleanup.yml`) calls that endpoint every night at 01:17 UTC, which also wakes it up. It needs the repository variable `BACKEND_URL` (live backend URL, without a trailing slash) and the repository secret `CLEANUP_SECRET` (the same value as on Render). Start it by hand under Actions → Listing cleanup → Run workflow; the log shows how many listings were deleted. GitHub pauses scheduled workflows after 60 days without repository activity; the cleanup on startup still runs then.
 
