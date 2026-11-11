@@ -140,13 +140,14 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | `pnpm dev`                                                       | starts backend and frontend                                                       |
 | `pnpm sync`                                                      | updates `main`, dependencies, local database and migrations                       |
 | `pnpm sync:branch`                                               | merges `main` into the current branch (without committing) and updates everything |
-| `pnpm check`                                                     | runs the same checks as CI (lint, format check, unit tests, build)                |
+| `pnpm check`                                                     | lint, format check and typecheck in both projects                                 |
 | `pnpm --filter backend dev`                                      | starts only one project (`--filter frontend` / `--filter backend`)                |
 | `pnpm build`                                                     | builds both projects                                                              |
 | `pnpm lint`                                                      | lints both projects                                                               |
 | `pnpm lint:fix`                                                  | lints both projects and fixes what can be fixed (e.g. the import style)           |
 | `pnpm format`                                                    | formats both projects with Prettier                                               |
-| `pnpm --filter frontend format:check`                            | checks the frontend formatting without changing files                             |
+| `pnpm format:check`                                              | checks the formatting of all files without changing them                          |
+| `pnpm typecheck`                                                 | checks the TypeScript types of both projects                                      |
 | `pnpm --filter frontend add <package>`                           | adds a package to one project                                                     |
 | `pnpm --filter backend migration:generate src/migrations/<Name>` | creates a migration from entity changes                                           |
 | `pnpm --filter backend migration:run`                            | applies pending migrations                                                        |
@@ -172,12 +173,14 @@ ESLint checks the imports in both projects (`import/order`, `import/no-duplicate
 - Frontend: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend has no `@/` alias and uses relative paths.
 - Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
 
+Other rules: `any` and unused variables or imports are errors, the frontend uses the recommended accessibility rules of `eslint-plugin-jsx-a11y`, and TypeScript runs with `noUncheckedIndexedAccess`, so `list[0]` has the type `T | undefined`.
+
 In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `pnpm lint:fix` and `pnpm format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `pnpm --filter frontend shadcn add`.
 
 ### Tests
 
-- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend (Vitest). `pnpm test` runs them; CI and `pnpm check` run them too.
-- **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and only run locally, because they need the Docker database.
+- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend (Vitest). `pnpm test` runs them, and so does CI.
+- **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and need a database: locally the Docker database, in CI a Postgres service.
 
 `pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
 
@@ -188,12 +191,14 @@ Before opening a pull request, bring the latest `main` into your branch and chec
 ```bash
 pnpm sync:branch
 pnpm check
+pnpm test
+pnpm --filter backend test:integration
 git commit
 ```
 
-`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `docker compose up -d --wait`, `pnpm --filter backend migration:run` and `pnpm check` before committing.
+`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `docker compose up -d --wait`, `pnpm --filter backend migration:run`, `pnpm check` and the tests before committing.
 
-CI runs install, lint, format check, unit tests and build on every pull request to `main`.
+CI runs `pnpm check`, the unit tests, the integration tests and the build on every pull request to `main`.
 
 ### API requests with Bruno
 
