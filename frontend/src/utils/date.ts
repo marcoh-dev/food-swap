@@ -7,7 +7,7 @@ const TIME_ZONE = "Europe/Berlin";
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
-export function getCurrentIsoDate(): string {
+function getCurrentIsoDate(): string {
 	return new Date().toISOString();
 }
 
@@ -30,7 +30,7 @@ export function formatDay(day: string): string {
 	return `${date}.${month}.${year}`;
 }
 
-export function formatDayWithoutYear(day: string): string {
+function formatDayWithoutYear(day: string): string {
 	const [, month, date] = day.split("-");
 	return `${date}.${month}.`;
 }
@@ -137,7 +137,7 @@ export function parseEndDate(value: FormDataEntryValue | null): ParsedEndDate {
 	return { status: "valid", date };
 }
 
-export function isEndDayInRange(day: string, now: Date = new Date()): boolean {
+function isEndDayInRange(day: string, now: Date = new Date()): boolean {
 	return day >= getMinEndDay(now) && day <= getMaxEndDay(now);
 }
 
@@ -201,7 +201,7 @@ export function isExpired(isoDate: string, now: Date = new Date()): boolean {
 	return getDaysUntil(isoDate, now) < 0;
 }
 
-export function getDeletionDay(endDate: string): string {
+function getDeletionDay(endDate: string): string {
 	return shiftDay(getBerlinDay(new Date(endDate)), { days: endDateRules.deleteAfterDays + 1 });
 }
 
