@@ -13,12 +13,13 @@ jobs:
       NEXT_PUBLIC_FOODSWAP_API_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run format:check -w frontend
-      - run: npm test
-      - run: npm run build
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm --filter frontend format:check
+      - run: pnpm test
+      - run: pnpm build

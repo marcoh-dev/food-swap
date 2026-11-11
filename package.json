@@ -1,25 +1,29 @@
 {
 	"name": "food-swap",
 	"private": true,
-	"workspaces": [
-		"backend",
-		"frontend"
-	],
+	"packageManager": "pnpm@12.18.0",
+	"engines": {
+		"node": "24.x"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "^12.18.0",
+			"onFail": "download"
+		}
+	},
 	"scripts": {
-		"dev": "concurrently -n backend,frontend \"npm run dev -w backend\" \"npm run dev -w frontend\"",
-		"format": "npm run format --workspaces",
-		"lint": "npm run lint --workspaces",
-		"lint:fix": "npm run lint:fix --workspaces",
-		"build": "npm run build --workspaces",
-		"test": "npm run test --workspaces",
-		"sync": "git switch main && git pull && node scripts/install-if-changed.mjs && docker compose up -d --wait && npm run migration:run -w backend",
-		"sync:branch": "git fetch origin && git merge --no-commit origin/main && node scripts/install-if-changed.mjs && docker compose up -d --wait && npm run migration:run -w backend",
-		"check": "npm run lint && npm run format:check -w frontend && npm test && npm run build"
+		"dev": "concurrently -n backend,frontend \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+		"format": "pnpm -r format",
+		"lint": "pnpm -r lint",
+		"lint:fix": "pnpm -r lint:fix",
+		"build": "pnpm -r build",
+		"test": "pnpm -r test",
+		"sync": "git switch main && git pull && pnpm install && docker compose up -d --wait && pnpm --filter backend migration:run",
+		"sync:branch": "git fetch origin && git merge --no-commit origin/main && pnpm install && docker compose up -d --wait && pnpm --filter backend migration:run",
+		"check": "pnpm lint && pnpm --filter frontend format:check && pnpm test && pnpm build"
 	},
 	"devDependencies": {
 		"concurrently": "^9.2.5"
-	},
-	"overrides": {
-		"multer": "^2.5.0"
 	}
 }

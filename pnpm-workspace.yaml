@@ -1,0 +1,10 @@
+packages:
+  - backend
+  - frontend
+
+overrides:
+  multer: ^2.5.0
+
+allowBuilds:
+  "@parcel/watcher": false
+  bcrypt: true
