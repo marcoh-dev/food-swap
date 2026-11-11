@@ -14,16 +14,19 @@
 	},
 	"scripts": {
 		"dev": "concurrently -n backend,frontend \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
-		"format": "pnpm -r format",
+		"format": "prettier --write . && pnpm -r format",
+		"format:check": "prettier --check . && pnpm -r format:check",
 		"lint": "pnpm -r lint",
 		"lint:fix": "pnpm -r lint:fix",
+		"typecheck": "pnpm -r typecheck",
 		"build": "pnpm -r build",
 		"test": "pnpm -r test",
 		"sync": "git switch main && git pull && pnpm install && docker compose up -d --wait && pnpm --filter backend migration:run",
 		"sync:branch": "git fetch origin && git merge --no-commit origin/main && pnpm install && docker compose up -d --wait && pnpm --filter backend migration:run",
-		"check": "pnpm lint && pnpm --filter frontend format:check && pnpm test && pnpm build"
+		"check": "pnpm lint && pnpm format:check && pnpm typecheck"
 	},
 	"devDependencies": {
-		"concurrently": "^10.0.7"
+		"concurrently": "^10.0.7",
+		"prettier": "^3.9.10"
 	}
 }
