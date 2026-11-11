@@ -34,8 +34,10 @@ export function berlinTime(local: string): Date {
 	const match = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2})\.(\d{3}))?$/.exec(local);
 	if (!match) throw new Error(`Invalid date "${local}"`);
 
-	const [, year, month, day, hour, minute, second = "0", ms = "0"] = match;
-	const guess = Date.UTC(+year, +month - 1, +day, +hour, +minute, +second, +ms);
+	const [, year, month, day, hour, minute, second, ms] = match.map((part = "0") =>
+		Number(part),
+	) as [number, number, number, number, number, number, number, number];
+	const guess = Date.UTC(year, month - 1, day, hour, minute, second, ms);
 	const offset = timeZoneOffset(new Date(guess - timeZoneOffset(new Date(guess))));
 
 	return new Date(guess - offset);
@@ -50,7 +52,7 @@ export function isCalendarDay(day: string): boolean {
 	const match = DAY_PATTERN.exec(day);
 	if (!match) return false;
 
-	const [, year, month, date] = match.map(Number);
+	const [, year, month, date] = match.map(Number) as [number, number, number, number];
 	const parsed = new Date(Date.UTC(year, month - 1, date));
 
 	return (
@@ -61,7 +63,7 @@ export function isCalendarDay(day: string): boolean {
 }
 
 export function shiftDay(day: string, { days = 0, months = 0 }): string {
-	const [year, month, date] = day.split("-").map(Number);
+	const [year, month, date] = day.split("-").map(Number) as [number, number, number];
 	const shifted = new Date(Date.UTC(year, month - 1 + months, date + days));
 
 	return shifted.toISOString().slice(0, 10);

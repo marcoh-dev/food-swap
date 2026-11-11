@@ -54,7 +54,7 @@ export default function LocationRadiusSearch({
 						max={RADIUS_STEPS.length - 1}
 						step={1}
 						value={[stepIndex]}
-						onValueChange={([value]) => setStepIndex(value)}
+						onValueChange={([value = 0]) => setStepIndex(value)}
 						disabled={!place}
 						className="py-3"
 					/>

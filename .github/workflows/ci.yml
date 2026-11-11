@@ -9,8 +9,26 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgis/postgis:18-3.6
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: foodswap
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U postgres -d foodswap"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
     env:
       NEXT_PUBLIC_FOODSWAP_API_URL: http://localhost:3000
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/foodswap
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/foodswap_test
+      JWT_SECRET: ci-jwt-secret
+      CLEANUP_SECRET: ci-cleanup-secret
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v6
@@ -19,7 +37,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm --filter frontend format:check
+      - run: pnpm check
       - run: pnpm test
+      - run: pnpm --filter backend test:integration
       - run: pnpm build

@@ -102,7 +102,7 @@ export default function ListingActions({
 					defaultPlace={listing.place}
 					submitLabel="Speichern"
 					heading="Anzeige bearbeiten"
-					autoFocus
+					focusHeading
 				/>
 
 				<Button

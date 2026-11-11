@@ -164,8 +164,7 @@ export class ChatsService {
 					.returning("id")
 					.execute();
 
-				const raw = result.raw as { id: string }[];
-				const chatId = raw[0].id;
+				const [{ id: chatId }] = result.raw as [{ id: string }];
 
 				return {
 					message: await this.saveMessage(manager, chatId, senderId, content),

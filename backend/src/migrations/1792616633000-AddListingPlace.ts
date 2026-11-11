@@ -46,7 +46,7 @@ export class AddListingPlace1792616633000 implements MigrationInterface {
 							city.country_code,
 						])
 					: await queryRunner.query(RANDOM_POSTAL_PLACE)
-			) as IdRow[];
+			) as [IdRow];
 
 			await queryRunner.query(`UPDATE "listings" SET "place_id" = $1 WHERE "id" = $2`, [
 				place.id,
