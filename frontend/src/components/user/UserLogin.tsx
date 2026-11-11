@@ -47,7 +47,6 @@ export function UserLogin({ redirectTo }: { redirectTo?: string }) {
 									placeholder="Pomodoro"
 									required
 									autoComplete="username"
-									autoFocus
 									autoCapitalize="off"
 									autoCorrect="off"
 									aria-invalid={fieldState.invalid}

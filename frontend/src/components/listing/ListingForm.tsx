@@ -42,7 +42,7 @@ type Props = {
 	defaultValues?: ListingFormValues;
 	defaultPlace?: Place | null;
 	submitLabel?: string;
-	autoFocus?: boolean;
+	focusHeading?: boolean;
 	heading?: string;
 	twoColumns?: boolean;
 	children?: ReactNode;
@@ -68,7 +68,7 @@ export default function ListingForm({
 	defaultValues,
 	defaultPlace,
 	submitLabel = "Erstellen",
-	autoFocus,
+	focusHeading,
 	heading,
 	twoColumns = false,
 	children,
@@ -83,12 +83,12 @@ export default function ListingForm({
 	});
 
 	useEffect(() => {
-		if (!autoFocus) return;
+		if (!focusHeading) return;
 		formRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
 		(document.getElementById("listing-form-heading") as HTMLHeadingElement | null)?.focus({
 			preventScroll: true,
 		});
-	}, [autoFocus, form]);
+	}, [focusHeading, form]);
 
 	async function handleSubmit(values: ListingFormValues) {
 		const result = await action(values);

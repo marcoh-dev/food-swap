@@ -316,9 +316,11 @@ export default function PlaceCombobox({
 									id={optionId(listId, place)}
 									role="option"
 									aria-selected={index === activeIndex}
-									onMouseDown={(event) => event.preventDefault()}
+									onMouseDown={(event) => {
+										event.preventDefault();
+										selectPlace(place);
+									}}
 									onMouseMove={() => setActiveIndex(index)}
-									onClick={() => selectPlace(place)}
 									className={cn(
 										"flex cursor-default flex-col px-2 py-2 text-xs select-none",
 										index === activeIndex && "bg-muted text-foreground",
