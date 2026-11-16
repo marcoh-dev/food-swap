@@ -5,6 +5,8 @@
 	"dependencies": {
 		"@expo/ui": "~58.0.28",
 		"@food-swap/shared": "workspace:*",
+		"@react-native-vector-icons/get-image": "^14.0.0",
+		"@react-native-vector-icons/material-design-icons": "^14.0.0",
 		"@rn-primitives/slot": "^1.5.2",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
