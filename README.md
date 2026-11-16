@@ -17,6 +17,7 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 
 - **Frontend:** Next.js, React, Tailwind CSS, shadcn/ui, Zustand
 - **Backend:** NestJS, TypeORM, Passport (JWT)
+- **Mobile:** Expo (React Native), expo-router, NativeWind 5 (RC), React Native Reusables
 - **Database:** PostgreSQL with PostGIS and `pg_trgm`
 - **Realtime:** Socket.IO (chat)
 - **Hosting:** Vercel (frontend), Render (backend), Neon (database)
@@ -31,7 +32,7 @@ Every day, perfectly good food ends up in the bin. Food Swap connects people who
 
 ### Setup
 
-All commands run from the **repository root**. The root is a pnpm workspace for `frontend` and `backend` (`pnpm-workspace.yaml`), and `pnpm install` always installs both.
+All commands run from the **repository root**. The root is a pnpm workspace for `frontend`, `backend`, `mobile` and `shared` (`pnpm-workspace.yaml`), and `pnpm install` always installs all of them.
 
 ```bash
 git clone <repository-url>
@@ -46,6 +47,18 @@ pnpm dev
 ```
 
 The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d --wait` starts a local PostgreSQL with PostGIS on port 5432 and waits until it is ready (`docker compose down` stops it, the data is kept).
+
+### Mobile app
+
+The Expo app lives in `mobile/`. It uses the same colours as the web app from `shared/theme.css` and follows the phone's light/dark mode.
+
+```bash
+pnpm mobile
+```
+
+Scan the QR code with **Expo Go** (App Store / Play Store; it must support Expo SDK 58). The phone and the computer need to be on the same Wi-Fi; otherwise use `pnpm mobile --tunnel`. Once the app calls the backend, `localhost` won't work from the phone; use your computer's LAN IP instead.
+
+Styling uses NativeWind 5, which is still a release candidate. `nativewind` and `react-native-css` are pinned to exact versions, and `lightningcss` is pinned to 1.30.1 for the whole workspace (`pnpm-workspace.yaml`). Don't update these three without testing the app.
 
 ### Environment variables
 
@@ -138,16 +151,17 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 | Command                                                          | What it does                                                                      |
 | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `pnpm dev`                                                       | starts backend and frontend                                                       |
+| `pnpm mobile`                                                    | starts the Expo dev server for the mobile app                                     |
 | `pnpm sync`                                                      | updates `main`, dependencies, local database and migrations                       |
 | `pnpm sync:branch`                                               | merges `main` into the current branch (without committing) and updates everything |
-| `pnpm check`                                                     | lint, format check and typecheck in both projects                                 |
+| `pnpm check`                                                     | lint, format check and typecheck in all projects                                  |
 | `pnpm --filter backend dev`                                      | starts only one project (`--filter frontend` / `--filter backend`)                |
 | `pnpm build`                                                     | builds both projects                                                              |
-| `pnpm lint`                                                      | lints both projects                                                               |
-| `pnpm lint:fix`                                                  | lints both projects and fixes what can be fixed (e.g. the import style)           |
-| `pnpm format`                                                    | formats both projects with Prettier                                               |
+| `pnpm lint`                                                      | lints all projects                                                                |
+| `pnpm lint:fix`                                                  | lints all projects and fixes what can be fixed (e.g. the import style)            |
+| `pnpm format`                                                    | formats all projects with Prettier                                                |
 | `pnpm format:check`                                              | checks the formatting of all files without changing them                          |
-| `pnpm typecheck`                                                 | checks the TypeScript types of both projects                                      |
+| `pnpm typecheck`                                                 | checks the TypeScript types of all projects                                       |
 | `pnpm --filter frontend add <package>`                           | adds a package to one project                                                     |
 | `pnpm --filter backend migration:generate src/migrations/<Name>` | creates a migration from entity changes                                           |
 | `pnpm --filter backend migration:run`                            | applies pending migrations                                                        |
@@ -164,18 +178,18 @@ If the dependencies changed and you use VS Code, run **Developer: Reload Window*
 
 ### Code style
 
-Both projects share one Prettier config (`.prettierrc` in the root): tabs, double quotes, 100 characters per line. In the frontend, `prettier-plugin-tailwindcss` also sorts the Tailwind classes in `className`, `cn()` and `cva()`.
+All projects share one Prettier config (`.prettierrc` in the root): tabs, double quotes, 100 characters per line. In the frontend and the mobile app, `prettier-plugin-tailwindcss` also sorts the Tailwind classes in `className`, `cn()` and `cva()`.
 
 ESLint checks the imports in both projects (`import/order`, `import/no-duplicates`):
 
 - Three groups in this order, with one blank line between them: packages (`react`, `next/*`, `typeorm`, …), then `@/…`, then relative paths (`./…`, `../…`).
 - Sorted A–Z within each group and inside `{ … }`; two imports from the same file are merged.
-- Frontend: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend has no `@/` alias and uses relative paths.
+- Frontend and mobile: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend has no `@/` alias and uses relative paths.
 - Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
 
 Other rules: `any` and unused variables or imports are errors, the frontend uses the recommended accessibility rules of `eslint-plugin-jsx-a11y`, and TypeScript runs with `noUncheckedIndexedAccess`, so `list[0]` has the type `T | undefined`.
 
-In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `pnpm lint:fix` and `pnpm format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `pnpm --filter frontend shadcn add`.
+In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `pnpm lint:fix` and `pnpm format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `pnpm --filter frontend shadcn add`. The same applies to the React Native Reusables files in `mobile/src/components/ui/`.
 
 ### Tests
 

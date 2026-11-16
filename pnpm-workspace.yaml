@@ -1,7 +1,12 @@
 packages:
   - backend
   - frontend
+  - mobile
+  - shared
 
 allowBuilds:
   "@parcel/watcher": false
   bcrypt: true
+
+overrides:
+  lightningcss: 1.30.1

@@ -1,0 +1,7 @@
+{
+	"name": "@food-swap/shared",
+	"private": true,
+	"exports": {
+		"./theme.css": "./theme.css"
+	}
+}
