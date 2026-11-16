@@ -14,6 +14,14 @@
 				"tailwindStylesheet": "./frontend/src/app/globals.css",
 				"tailwindFunctions": ["cn", "cva"]
 			}
+		},
+		{
+			"files": "mobile/**",
+			"options": {
+				"plugins": ["prettier-plugin-tailwindcss"],
+				"tailwindStylesheet": "./mobile/src/global.css",
+				"tailwindFunctions": ["cn", "cva"]
+			}
 		}
 	]
 }
