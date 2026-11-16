@@ -2,7 +2,7 @@ import { NativeTabs } from "expo-router/native-tabs";
 
 export default function TabLayout() {
 	return (
-		<NativeTabs>
+		<NativeTabs labelVisibilityMode="labeled">
 			<NativeTabs.Trigger name="index">
 				<NativeTabs.Trigger.Label>Angebote</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
