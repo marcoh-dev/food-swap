@@ -1,8 +1,19 @@
 import { NativeTabs } from "expo-router/native-tabs";
 
+import { useThemeColor } from "@/hooks/useThemeColor";
+
 export default function TabLayout() {
+	const tabActive = useThemeColor("--tab-active");
+	const card = useThemeColor("--card");
+	const accent = useThemeColor("--accent");
+
 	return (
-		<NativeTabs labelVisibilityMode="labeled">
+		<NativeTabs
+			tintColor={tabActive}
+			backgroundColor={card}
+			indicatorColor={accent}
+			labelVisibilityMode="labeled"
+		>
 			<NativeTabs.Trigger name="listings">
 				<NativeTabs.Trigger.Label>Angebote</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />

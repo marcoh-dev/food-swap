@@ -18,4 +18,9 @@
 
 :root {
 	font-size: 16px;
+	--tab-active: var(--secondary);
+
+	@variant dark {
+		--tab-active: var(--foreground);
+	}
 }
