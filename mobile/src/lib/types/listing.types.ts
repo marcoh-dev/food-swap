@@ -1,6 +1,3 @@
-// Mirrors frontend/src/lib/types (listing, place, user, category, tag, common)
-// so the backend can be connected later without changing the UI.
-
 export type Place = {
 	id: string;
 	countryCode: string;

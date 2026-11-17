@@ -122,7 +122,7 @@ const tags = {
 
 // --- Listings -------------------------------------------------------------
 
-export const dummyListings: ListingResponse[] = [
+export const mockListings: ListingResponse[] = [
 	{
 		id: "listing-1",
 		title: "Äpfel",
@@ -330,12 +330,12 @@ export const dummyListings: ListingResponse[] = [
 	},
 ];
 
-export const dummyListingsResponse: PaginatedListingsResponse = {
-	data: dummyListings,
+export const mockListingsResponse: PaginatedListingsResponse = {
+	data: mockListings,
 	meta: {
 		page: 1,
-		limit: dummyListings.length,
-		total: dummyListings.length,
+		limit: mockListings.length,
+		total: mockListings.length,
 		totalPages: 1,
 	},
 };
