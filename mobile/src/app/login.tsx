@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView } from "react-native";
 import { z } from "zod";
@@ -8,12 +8,14 @@ import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useLogin } from "@/hooks/useLogin";
+import { isAccountTab } from "@/lib/routes";
 import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>;
 
 export default function Login() {
 	const router = useRouter();
+	const { redirect } = useLocalSearchParams();
 	const login = useLogin();
 	const [values, setValues] = useState<LoginValues>({ username: "", password: "" });
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -30,7 +32,14 @@ export default function Login() {
 			return;
 		}
 
-		login.mutate(result.data, { onSuccess: () => router.back() });
+		login.mutate(result.data, {
+			onSuccess: () => {
+				router.back();
+				if (isAccountTab(redirect)) {
+					router.navigate(redirect);
+				}
+			},
+		});
 	}
 
 	return (
