@@ -8,6 +8,8 @@ import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { EnvError } from "@/components/EnvError";
+import { envError } from "@/env";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import "@/global.css";
 
@@ -45,7 +47,11 @@ export default function RootLayout() {
 		<ThemeProvider value={theme}>
 			<SafeAreaProvider>
 				<StatusBar style="auto" />
-				<Stack screenOptions={{ headerShown: false }} />
+				{envError ? (
+					<EnvError message={envError} />
+				) : (
+					<Stack screenOptions={{ headerShown: false }} />
+				)}
 			</SafeAreaProvider>
 		</ThemeProvider>
 	);
