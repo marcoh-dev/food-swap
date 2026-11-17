@@ -10,6 +10,7 @@ import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { syncAppFocus } from "@/api/appFocus";
+import { syncOnlineStatus } from "@/api/onlineStatus";
 import { isNotFoundError } from "@/api/request";
 import { EnvError } from "@/components/EnvError";
 import { envError } from "@/env";
@@ -29,6 +30,7 @@ const queryClient = new QueryClient({
 });
 
 syncAppFocus();
+syncOnlineStatus();
 
 export default function RootLayout() {
 	const isDark = useColorScheme() === "dark";
