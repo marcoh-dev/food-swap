@@ -1,11 +1,10 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-
+import { Screen } from "@/components/Screen";
 import { Text } from "@/components/ui/text";
 
 export default function Chats() {
 	return (
-		<SafeAreaView edges={["top"]} className="flex-1 gap-4 bg-background p-6">
+		<Screen>
 			<Text variant="h2">Chat</Text>
-		</SafeAreaView>
+		</Screen>
 	);
 }

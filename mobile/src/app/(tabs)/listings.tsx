@@ -1,6 +1,6 @@
 import { ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/Screen";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useListingCount } from "@/hooks/useListingCount";
@@ -11,7 +11,7 @@ export default function Listings() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 
 	return (
-		<SafeAreaView edges={["top"]} className="flex-1 gap-4 bg-background p-6">
+		<Screen>
 			<Text variant="h1">Food Swap</Text>
 			{isPending ? (
 				<ActivityIndicator color={mutedForeground} className="self-start" />
@@ -27,6 +27,6 @@ export default function Listings() {
 					{count} {count === 1 ? "Angebot" : "Angebote"}
 				</Text>
 			)}
-		</SafeAreaView>
+		</Screen>
 	);
 }
