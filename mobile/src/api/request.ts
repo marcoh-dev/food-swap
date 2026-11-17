@@ -1,3 +1,4 @@
+import { getToken } from "@/api/token";
 import { getEnv } from "@/env";
 
 class RequestError extends Error {
@@ -18,7 +19,13 @@ export function isUnauthorizedError(error: unknown) {
 }
 
 async function send(path: string, init?: RequestInit) {
-	const response = await fetch(`${getEnv().EXPO_PUBLIC_API_URL}${path}`, init);
+	const headers = new Headers(init?.headers);
+	const token = await getToken();
+	if (token) {
+		headers.set("Authorization", `Bearer ${token}`);
+	}
+
+	const response = await fetch(`${getEnv().EXPO_PUBLIC_API_URL}${path}`, { ...init, headers });
 
 	if (!response.ok) {
 		throw new RequestError(response.status);
