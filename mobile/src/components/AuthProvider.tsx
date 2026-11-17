@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, type ReactNode, use, useEffect, useState } from "react";
+import { createContext, type ReactNode, use, useCallback, useEffect, useState } from "react";
 
+import { isUnauthorizedError } from "@/api/request";
 import { deleteToken, getToken, saveToken } from "@/api/token";
 
 type AuthContextValue = {
@@ -21,15 +22,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			.catch(() => setToken(null));
 	}, []);
 
-	async function logIn(newToken: string) {
-		await saveToken(newToken);
-		setToken(newToken);
-	}
-
-	async function logOut() {
+	const logOut = useCallback(async () => {
 		await deleteToken();
 		setToken(null);
 		await queryClient.resetQueries();
+	}, [queryClient]);
+
+	useEffect(
+		() =>
+			queryClient.getQueryCache().subscribe((event) => {
+				if (
+					event.type === "updated" &&
+					event.action.type === "error" &&
+					isUnauthorizedError(event.action.error)
+				) {
+					void logOut();
+				}
+			}),
+		[queryClient, logOut],
+	);
+
+	async function logIn(newToken: string) {
+		await saveToken(newToken);
+		setToken(newToken);
 	}
 
 	if (token === undefined) {

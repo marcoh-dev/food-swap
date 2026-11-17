@@ -11,7 +11,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { syncAppFocus } from "@/api/appFocus";
 import { syncOnlineStatus } from "@/api/onlineStatus";
-import { isNotFoundError } from "@/api/request";
+import { isNotFoundError, isUnauthorizedError } from "@/api/request";
 import { AuthProvider } from "@/components/AuthProvider";
 import { CloseButton } from "@/components/CloseButton";
 import { EnvError } from "@/components/EnvError";
@@ -26,7 +26,10 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			staleTime: STALE_TIME,
-			retry: (failureCount, error) => !isNotFoundError(error) && failureCount < MAX_RETRIES,
+			retry: (failureCount, error) =>
+				!isNotFoundError(error) &&
+				!isUnauthorizedError(error) &&
+				failureCount < MAX_RETRIES,
 		},
 	},
 });
