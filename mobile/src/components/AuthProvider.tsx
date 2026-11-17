@@ -1,15 +1,18 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, use, useEffect, useState } from "react";
 
-import { getToken, saveToken } from "@/api/token";
+import { deleteToken, getToken, saveToken } from "@/api/token";
 
 type AuthContextValue = {
 	isLoggedIn: boolean;
 	logIn: (token: string) => Promise<void>;
+	logOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+	const queryClient = useQueryClient();
 	const [token, setToken] = useState<string | null>();
 
 	useEffect(() => {
@@ -23,11 +26,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		setToken(newToken);
 	}
 
+	async function logOut() {
+		await deleteToken();
+		setToken(null);
+		await queryClient.resetQueries();
+	}
+
 	if (token === undefined) {
 		return null;
 	}
 
-	return <AuthContext value={{ isLoggedIn: token !== null, logIn }}>{children}</AuthContext>;
+	return (
+		<AuthContext value={{ isLoggedIn: token !== null, logIn, logOut }}>{children}</AuthContext>
+	);
 }
 
 export function useAuth() {
