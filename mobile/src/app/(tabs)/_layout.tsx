@@ -3,7 +3,7 @@ import { NativeTabs } from "expo-router/native-tabs";
 export default function TabLayout() {
 	return (
 		<NativeTabs labelVisibilityMode="labeled">
-			<NativeTabs.Trigger name="index">
+			<NativeTabs.Trigger name="listings">
 				<NativeTabs.Trigger.Label>Angebote</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
 			</NativeTabs.Trigger>
@@ -15,11 +15,11 @@ export default function TabLayout() {
 				<NativeTabs.Trigger.Icon sf="plus" md="add" />
 				<NativeTabs.Trigger.Label>Neu</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name="chat">
+			<NativeTabs.Trigger name="chats">
 				<NativeTabs.Trigger.Icon sf="message" md="chat" />
 				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name="profile">
+			<NativeTabs.Trigger name="me">
 				<NativeTabs.Trigger.Icon sf="person" md="person" />
 				<NativeTabs.Trigger.Label>Profil</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
