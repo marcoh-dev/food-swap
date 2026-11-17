@@ -46,3 +46,17 @@
 		--tab-active: var(--foreground);
 	}
 }
+
+/* Each Geist weight is its own font in React Native, so the weight utilities also switch the font */
+@utility font-normal {
+	font-family: Geist_400Regular;
+}
+@utility font-medium {
+	font-family: Geist_500Medium;
+}
+@utility font-semibold {
+	font-family: Geist_600SemiBold;
+}
+@utility font-bold {
+	font-family: Geist_700Bold;
+}

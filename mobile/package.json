@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"main": "expo-router/entry",
 	"dependencies": {
+		"@expo-google-fonts/geist": "^0.4.2",
 		"@expo/ui": "~58.0.28",
 		"@food-swap/shared": "workspace:*",
 		"@rn-primitives/slot": "^1.5.2",
