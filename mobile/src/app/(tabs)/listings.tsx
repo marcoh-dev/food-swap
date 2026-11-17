@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from "react-native";
 
+import { Screen } from "@/components/Screen";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useListingCount } from "@/hooks/useListingCount";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { getListings } from "@/lib/listingActions";
 import type { ListingResponse } from "@/lib/types/listing.types";
 
 export default function Listings() {
+	const { data: count, isPending, isError, isFetching, refetch } = useListingCount();
+	const mutedForeground = useThemeColor("--muted-foreground");
 	const [listings, setListings] = useState<ListingResponse[]>([]);
 
 	useEffect(() => {
@@ -20,15 +24,22 @@ export default function Listings() {
 	}, []);
 
 	return (
-		<SafeAreaView edges={["top"]} className="flex-1 gap-4 bg-background p-6">
+		<Screen>
 			<Text variant="h1">Food Swap</Text>
-			<Text variant="muted">NativeWind 5 + React Native Reusables</Text>
-			<Button onPress={() => console.log("pressed")}>
-				<Text>Primary</Text>
-			</Button>
-			<Button variant="outline">
-				<Text>Outline</Text>
-			</Button>
+			{isPending ? (
+				<ActivityIndicator color={mutedForeground} className="self-start" />
+			) : isError ? (
+				<>
+					<Text>Die Angebote konnten nicht geladen werden.</Text>
+					<Button variant="outline" disabled={isFetching} onPress={() => void refetch()}>
+						<Text>Erneut versuchen</Text>
+					</Button>
+				</>
+			) : (
+				<Text variant="muted">
+					{count} {count === 1 ? "Angebot" : "Angebote"}
+				</Text>
+			)}
 			<ScrollView contentContainerStyle={styles.list}>
 				{listings.map(
 					({
@@ -57,7 +68,7 @@ export default function Listings() {
 					),
 				)}
 			</ScrollView>
-		</SafeAreaView>
+		</Screen>
 	);
 }
 

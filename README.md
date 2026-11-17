@@ -41,6 +41,7 @@ pnpm install
 cp backend/.env.example backend/.env
 cp backend/bruno/.env.example backend/bruno/.env
 cp frontend/.env.example frontend/.env
+cp mobile/.env.example mobile/.env.local
 docker compose up -d --wait
 pnpm --filter backend migration:run
 pnpm dev
@@ -56,7 +57,7 @@ The Expo app lives in `mobile/`. It uses the same colours as the web app from `s
 pnpm mobile
 ```
 
-Scan the QR code with **Expo Go** (App Store / Play Store; it must support Expo SDK 58). The phone and the computer need to be on the same Wi-Fi; otherwise use `pnpm mobile --tunnel`. Once the app calls the backend, `localhost` won't work from the phone; use your computer's LAN IP instead.
+Scan the QR code with **Expo Go** (App Store / Play Store; it must support Expo SDK 58). The phone and the computer need to be on the same Wi-Fi; otherwise use `pnpm mobile --tunnel`. The app needs the backend URL in `mobile/.env.local` (see below).
 
 Styling uses NativeWind 5, which is still a release candidate. `nativewind` and `react-native-css` are pinned to exact versions, and `lightningcss` is pinned to 1.30.1 for the whole workspace (`pnpm-workspace.yaml`). Don't update these three without testing the app.
 
@@ -91,6 +92,14 @@ Styling uses NativeWind 5, which is still a release candidate. `nativewind` and 
 | Variable                       | Local                   | Live             |
 | ------------------------------ | ----------------------- | ---------------- |
 | `NEXT_PUBLIC_FOODSWAP_API_URL` | `http://localhost:3000` | live backend URL |
+
+**`mobile/.env.local`**
+
+| Variable              | Local                                                     | Live             |
+| --------------------- | --------------------------------------------------------- | ---------------- |
+| `EXPO_PUBLIC_API_URL` | `http://<your computer's network IP>:3000`, not localhost | live backend URL |
+
+The phone can't reach `localhost`. Find your computer's network IP under System Settings → Wi-Fi → Details. With the live URL, the first request can take up to a minute while Render wakes up. Expo builds the value into the app, so restart with `pnpm mobile --clear` after changing it. If it is missing or invalid, the app shows a configuration error.
 
 Never commit `.env` files, only `.env.example`. When you add a variable, add it to `.env.example` and to the hosting dashboards too.
 
