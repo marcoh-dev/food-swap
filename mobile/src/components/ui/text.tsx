@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const textVariants = cva(
 	cn(
-		"text-base text-foreground",
+		"text-body text-foreground",
 		Platform.select({
 			web: "select-text",
 		}),
@@ -16,18 +16,9 @@ const textVariants = cva(
 		variants: {
 			variant: {
 				default: "",
-				h1: cn(
-					"text-center text-4xl font-extrabold tracking-tight",
-					Platform.select({ web: "scroll-m-20 text-balance" }),
-				),
-				h2: cn(
-					"border-b border-border pb-2 text-3xl font-semibold tracking-tight",
-					Platform.select({ web: "scroll-m-20 first:mt-0" }),
-				),
-				h3: cn(
-					"text-2xl font-semibold tracking-tight",
-					Platform.select({ web: "scroll-m-20" }),
-				),
+				h1: cn("text-h1", Platform.select({ web: "scroll-m-20 text-balance" })),
+				h2: cn("text-h2", Platform.select({ web: "scroll-m-20 first:mt-0" })),
+				h3: cn("text-h3", Platform.select({ web: "scroll-m-20" })),
 				h4: cn(
 					"text-xl font-semibold tracking-tight",
 					Platform.select({ web: "scroll-m-20" }),
@@ -40,7 +31,7 @@ const textVariants = cva(
 				lead: "text-xl text-muted-foreground",
 				large: "text-lg font-semibold",
 				small: "text-sm leading-none font-medium",
-				muted: "text-sm text-muted-foreground",
+				muted: "text-body-small text-muted-foreground",
 			},
 		},
 		defaultVariants: {
