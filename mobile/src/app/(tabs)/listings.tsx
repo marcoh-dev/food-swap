@@ -14,14 +14,19 @@ export default function Listings() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const [listings, setListings] = useState<ListingResponse[]>([]);
 
-	useEffect(() => {
-		async function loadListings() {
+
+useEffect(() => {
+	async function fetchListings() {
+		try {
 			const data = await getListings();
 			setListings(data);
+		} catch (error) {
+		console.error(error)
 		}
+	}
 
-		loadListings();
-	}, []);
+	fetchListings();
+}, []);
 
 	return (
 		<Screen>
