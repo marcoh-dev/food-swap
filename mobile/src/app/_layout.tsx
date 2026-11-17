@@ -9,17 +9,20 @@ import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { isNotFoundError } from "@/api/request";
 import { EnvError } from "@/components/EnvError";
 import { envError } from "@/env";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import "@/global.css";
 
+const MAX_RETRIES = 3;
 const STALE_TIME = 5 * 60 * 1000;
 
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			staleTime: STALE_TIME,
+			retry: (failureCount, error) => !isNotFoundError(error) && failureCount < MAX_RETRIES,
 		},
 	},
 });
