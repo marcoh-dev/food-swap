@@ -12,6 +12,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { syncAppFocus } from "@/api/appFocus";
 import { syncOnlineStatus } from "@/api/onlineStatus";
 import { isNotFoundError } from "@/api/request";
+import { CloseButton } from "@/components/CloseButton";
 import { EnvError } from "@/components/EnvError";
 import { envError } from "@/env";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -70,7 +71,17 @@ export default function RootLayout() {
 					{envError ? (
 						<EnvError message={envError} />
 					) : (
-						<Stack screenOptions={{ headerShown: false }} />
+						<Stack screenOptions={{ headerShown: false }}>
+							<Stack.Screen
+								name="login"
+								options={{
+									presentation: "modal",
+									headerShown: true,
+									title: "Anmelden",
+									headerLeft: () => <CloseButton />,
+								}}
+							/>
+						</Stack>
 					)}
 				</SafeAreaProvider>
 			</ThemeProvider>
