@@ -14,8 +14,49 @@
 	--text-2xl: 1.5rem;
 	--text-3xl: 1.875rem;
 	--text-4xl: 2.25rem;
+
+	/* Web sizes; line heights are unitless because React Native multiplies them by the font size */
+	--text-h1: 42px;
+	--text-h1--line-height: 1.2857;
+	--text-h1--letter-spacing: -0.03em;
+
+	--text-h2: 30px;
+	--text-h2--line-height: 1.4;
+	--text-h2--letter-spacing: -0.02em;
+
+	--text-h3: 24px;
+	--text-h3--line-height: 1.3333;
+	--text-h3--letter-spacing: -0.01em;
+
+	--text-body: 18px;
+	--text-body--line-height: 1.7778;
+	--text-body--letter-spacing: 0.01em;
+
+	--text-body-small: 14px;
+
+	--text-body-s: 12px;
+	--text-body-s--line-height: 1.1667;
+	--text-body-s--letter-spacing: 0.02em;
 }
 
 :root {
-	font-size: 16px;
+	--tab-active: var(--secondary);
+
+	@variant dark {
+		--tab-active: var(--foreground);
+	}
+}
+
+/* Each Geist weight is its own font in React Native, so the weight utilities also switch the font */
+@utility font-normal {
+	font-family: Geist_400Regular;
+}
+@utility font-medium {
+	font-family: Geist_500Medium;
+}
+@utility font-semibold {
+	font-family: Geist_600SemiBold;
+}
+@utility font-bold {
+	font-family: Geist_700Bold;
 }
