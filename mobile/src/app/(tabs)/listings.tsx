@@ -1,14 +1,24 @@
-import { ScrollView } from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { mockListings as data } from "@/lib/data/listings.mockdata";
+import { getListings } from "@/lib/listingActions";
 import type { ListingResponse } from "@/lib/types/listing.types";
 
 
 export default function Listings() {
-const mockListings: ListingResponse[] = data;
+	const [listings, setListings] = useState<ListingResponse[]>([]);
+
+	useEffect(() => {
+		async function loadListings() {
+			const data = await getListings();
+			setListings(data);
+		}
+
+		loadListings();
+	}, []);
 
 	return (
 		<SafeAreaView edges={["top"]} className="flex-1 gap-4 bg-background p-6">
@@ -20,8 +30,13 @@ const mockListings: ListingResponse[] = data;
 			<Button variant="outline">
 				<Text>Outline</Text>
 			</Button>
-			<ScrollView>{mockListings.map(({id, title}) => <Text key={id}>{title}</Text>)}</ScrollView>
-			
-		</SafeAreaView>
+			<ScrollView contentContainerStyle={styles.list}>{listings.map(({id, title, description, image, place, distance, type, status, category, tags, createdAt, endDate, updatedAt }) => <><Text key={id}>{title}</Text></>)}</ScrollView>
+					</SafeAreaView>
 	);
 }
+
+const styles = StyleSheet.create({
+	list: {
+    padding: 16,
+  },}
+)
