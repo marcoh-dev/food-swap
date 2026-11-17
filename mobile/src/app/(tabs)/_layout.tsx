@@ -12,6 +12,7 @@ export default function TabLayout() {
 			tintColor={tabActive}
 			backgroundColor={card}
 			indicatorColor={accent}
+			minimizeBehavior="onScrollDown"
 			labelVisibilityMode="labeled"
 		>
 			<NativeTabs.Trigger name="listings">
@@ -23,7 +24,7 @@ export default function TabLayout() {
 				<NativeTabs.Trigger.Icon sf="heart" md="favorite" />
 				<NativeTabs.Trigger.Label>Favoriten</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name="new">
+			<NativeTabs.Trigger name="new" prominent>
 				<NativeTabs.Trigger.Icon sf="plus" md="add" />
 				<NativeTabs.Trigger.Label>Neu</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
