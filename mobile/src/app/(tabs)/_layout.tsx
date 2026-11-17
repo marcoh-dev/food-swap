@@ -21,7 +21,10 @@ export default function TabLayout() {
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="favorites">
 				{/* <NativeTabs.Trigger.Icon sf="ant" md="bug_report" /> */}
-				<NativeTabs.Trigger.Icon sf="heart" md="favorite" />
+				<NativeTabs.Trigger.Icon
+					sf={{ default: "heart", selected: "heart.fill" }}
+					md="favorite"
+				/>
 				<NativeTabs.Trigger.Label>Favoriten</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="new" prominent>
@@ -30,12 +33,21 @@ export default function TabLayout() {
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="chats">
 				{/* <NativeTabs.Trigger.Icon sf="message" md="chat" /> */}
-				<NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right" md="forum" />
+				<NativeTabs.Trigger.Icon
+					sf={{
+						default: "bubble.left.and.bubble.right",
+						selected: "bubble.left.and.bubble.right.fill",
+					}}
+					md="forum"
+				/>
 				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="me">
 				{/* <NativeTabs.Trigger.Icon sf="person" md="person" /> */}
-				<NativeTabs.Trigger.Icon sf="person.crop.circle" md="account_circle" />
+				<NativeTabs.Trigger.Icon
+					sf={{ default: "person.crop.circle", selected: "person.crop.circle.fill" }}
+					md="account_circle"
+				/>
 				<NativeTabs.Trigger.Label>Profil</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 		</NativeTabs>
