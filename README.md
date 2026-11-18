@@ -61,6 +61,19 @@ Scan the QR code with **Expo Go** (App Store / Play Store; it must support Expo 
 
 Styling uses NativeWind 5, which is still a release candidate. `nativewind` and `react-native-css` are pinned to exact versions, and `lightningcss` is pinned to 1.30.1 for the whole workspace (`pnpm-workspace.yaml`). Don't update these three without testing the app.
 
+### Shared package
+
+`shared/` (`@food-swap/shared`) holds what web and mobile both use, so it exists only once:
+
+| Import                           | Content                                                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `@food-swap/shared/theme.css`    | colours and theme variables (mobile)                                                               |
+| `@food-swap/shared/types`        | API types: the shapes the backend sends and receives (`ListingResponse`, `User`, `CurrentUser`, …) |
+| `@food-swap/shared/schemas/user` | zod schemas for login, registration and profile, with their validation messages                    |
+| `@food-swap/shared/messages`     | texts used by both apps (e.g. the login error)                                                     |
+
+Types and schemas that only one app needs stay in that app (`frontend/src/lib/types`, `frontend/src/lib/schemas`). The package has no build step: it exports its TypeScript files directly, Metro handles them, and Next.js compiles them through `transpilePackages` in `next.config.ts`. Inside `shared` there is no `@/` alias, so it uses relative imports. New files need an entry in `exports` in `shared/package.json`.
+
 ### Environment variables
 
 **`backend/.env`**
@@ -193,16 +206,16 @@ ESLint checks the imports in both projects (`import/order`, `import/no-duplicate
 
 - Three groups in this order, with one blank line between them: packages (`react`, `next/*`, `typeorm`, …), then `@/…`, then relative paths (`./…`, `../…`).
 - Sorted A–Z within each group and inside `{ … }`; two imports from the same file are merged.
-- Frontend and mobile: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend has no `@/` alias and uses relative paths.
+- Frontend and mobile: `@/…` for files outside the current folder, `./…` for files in the same folder; `../…` is not allowed. The backend and `shared` have no `@/` alias and use relative paths.
 - Imports only for side effects (like `import "./globals.css"`) are not moved; put them after the other imports.
 
 Other rules: `any` and unused variables or imports are errors, the frontend uses the recommended accessibility rules of `eslint-plugin-jsx-a11y`, and TypeScript runs with `noUncheckedIndexedAccess`, so `list[0]` has the type `T | undefined`.
 
-In VS Code, install the recommended extensions (ESLint and Prettier). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `pnpm lint:fix` and `pnpm format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `pnpm --filter frontend shadcn add`. The same applies to the React Native Reusables files in `mobile/src/components/ui/`.
+In VS Code, open the repository folder itself (not a parent folder), so `.vscode/settings.json` applies, and install the recommended extensions (ESLint, Prettier, Tailwind CSS IntelliSense; CSS files open in Tailwind mode, so `@theme` and similar rules are not flagged). Wrong imports are then shown right away, saving a file formats it and fixes the import order (`.vscode/settings.json`), and auto-imports use `@/…`. From the terminal, `pnpm lint:fix` and `pnpm format` do the same. Only `../…` imports are not fixed automatically; change them to `@/…` by hand. This also applies to the shadcn files in `components/ui/`, so run both commands after `pnpm --filter frontend shadcn add`. The same applies to the React Native Reusables files in `mobile/src/components/ui/`.
 
 ### Tests
 
-- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend (Vitest). `pnpm test` runs them, and so does CI.
+- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend and in `shared` (Vitest). `pnpm test` runs them, and so does CI.
 - **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and need a database: locally the Docker database, in CI a Postgres service.
 
 `pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
