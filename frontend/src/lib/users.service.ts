@@ -1,4 +1,4 @@
-import type { User } from "@food-swap/shared/types";
+import type { CurrentUser, User } from "@food-swap/shared/types";
 
 import { fetchAPI } from "./fetchAPI";
 
@@ -13,7 +13,7 @@ export async function getUserById(id: string): Promise<User | null> {
 	return userData;
 }
 
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<CurrentUser | null> {
 	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/auth/me`, {
 		cache: "no-store",
 	});
