@@ -31,7 +31,7 @@ export default function TabLayout() {
 				<NativeTabs.Trigger.Label>Neu</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="chats">
-				<NativeTabs.Trigger.Icon sf="message" md="chat" />
+				<NativeTabs.Trigger.Icon sf="message" md="chat_bubble" />
 				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="me">
