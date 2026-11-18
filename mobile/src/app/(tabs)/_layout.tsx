@@ -46,7 +46,7 @@ export default function TabLayout() {
 				<NativeTabs.Trigger.Label>Favoriten</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="new" disabled={!isLoggedIn} listeners={requireLogin("/new")}>
-				<NativeTabs.Trigger.Icon sf="plus" md="add" />
+				<NativeTabs.Trigger.Icon sf="plus" md="add_2" />
 				<NativeTabs.Trigger.Label>Neu</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger
@@ -54,7 +54,7 @@ export default function TabLayout() {
 				disabled={!isLoggedIn}
 				listeners={requireLogin("/chats")}
 			>
-				<NativeTabs.Trigger.Icon sf="message" md="chat_bubble" />
+				<NativeTabs.Trigger.Icon sf="bubble" md="chat_bubble" />
 				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="me" disabled={!isLoggedIn} listeners={requireLogin("/me")}>
