@@ -51,7 +51,7 @@ The frontend runs on http://localhost:5173, the backend on http://localhost:3000
 
 ### Mobile app
 
-The Expo app lives in `mobile/`. It uses the same colours as the web app from `shared/theme.css` and follows the phone's light/dark mode.
+The Expo app lives in `mobile/`. It uses the same colours as the web app (`shared/theme.css`) and follows the phone's light/dark mode.
 
 ```bash
 pnpm mobile
@@ -65,14 +65,14 @@ Styling uses NativeWind 5, which is still a release candidate. `nativewind` and 
 
 `shared/` (`@food-swap/shared`) holds what web and mobile both use, so it exists only once:
 
-| Import                           | Content                                                                                            |
-| -------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `@food-swap/shared/theme.css`    | colours and theme variables (mobile)                                                               |
-| `@food-swap/shared/types`        | API types: the shapes the backend sends and receives (`ListingResponse`, `User`, `CurrentUser`, …) |
-| `@food-swap/shared/schemas/user` | zod schemas for login, registration and profile, with their validation messages                    |
-| `@food-swap/shared/messages`     | texts used by both apps (e.g. the login error)                                                     |
+| Import                           | Content                                                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `@food-swap/shared/theme.css`    | colours for light and dark mode (each app decides what `dark` means: the `.dark` class on the web, the phone setting on mobile) |
+| `@food-swap/shared/types`        | API types: the shapes the backend sends and receives (`ListingResponse`, `User`, `CurrentUser`, …)                              |
+| `@food-swap/shared/schemas/user` | zod schemas for login, registration and profile, with their validation messages                                                 |
+| `@food-swap/shared/messages`     | texts used by both apps (e.g. the login error)                                                                                  |
 
-Types and schemas that only one app needs stay in that app (`frontend/src/lib/types`, `frontend/src/lib/schemas`). The package has no build step: it exports its TypeScript files directly, Metro handles them, and Next.js compiles them through `transpilePackages` in `next.config.ts`. Inside `shared` there is no `@/` alias, so it uses relative imports. New files need an entry in `exports` in `shared/package.json`.
+Things that only one app needs stay in that app (e.g. `frontend/src/lib/types`, `frontend/src/lib/schemas`, fonts and text sizes in `frontend/src/app/globals.css`); more can move to `shared` once both apps need it. The package has no build step: it exports its TypeScript files directly, Metro handles them, and Next.js compiles them through `transpilePackages` in `next.config.ts`. Inside `shared` there is no `@/` alias, so it uses relative imports. New files need an entry in `exports` in `shared/package.json`.
 
 ### Environment variables
 

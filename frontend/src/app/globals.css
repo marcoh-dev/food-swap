@@ -1,35 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@food-swap/shared/theme.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-jetbrains-mono);
-
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--color-card: var(--card);
-	--color-card-foreground: var(--card-foreground);
-	--color-category: var(--category);
-	--color-category-foreground: var(--category-foreground);
-	--color-popover: var(--popover);
-	--color-popover-foreground: var(--popover-foreground);
-	--color-primary: var(--primary);
-	--color-primary-foreground: var(--primary-foreground);
-	--color-secondary: var(--secondary);
-	--color-secondary-foreground: var(--secondary-foreground);
-	--color-muted: var(--muted);
-	--color-muted-foreground: var(--muted-foreground);
-	--color-accent: var(--accent);
-	--color-accent-foreground: var(--accent-foreground);
-	--color-success: var(--success);
-	--color-destructive: var(--destructive);
-	--color-destructive-foreground: var(--destructive-foreground);
-	--color-border: var(--border);
-	--color-input: var(--input);
-	--color-ring: var(--ring);
 
 	--radius-sm: calc(var(--radius) * 0.6);
 	--radius-md: calc(var(--radius) * 0.8);
@@ -66,54 +44,6 @@
 
 :root {
 	--radius: 0.625rem;
-
-	--background: #f7f3eb;
-	--foreground: #093451;
-	--card: #fdfbf7;
-	--card-foreground: #093451;
-	--category: #e6ead2;
-	--category-foreground: #55621a;
-	--popover: #fdfbf7;
-	--popover-foreground: #093451;
-	--primary: #ad242f;
-	--primary-foreground: #fdfbf7;
-	--secondary: #093451;
-	--secondary-foreground: #fdfbf7;
-	--muted: #ede7db;
-	--muted-foreground: #56676e;
-	--accent: #e6ead2;
-	--accent-foreground: #093451;
-	--success: #849725;
-	--destructive: #ad242f;
-	--destructive-foreground: #fdfbf7;
-	--border: #ddd6c8;
-	--input: #8f8777;
-	--ring: #093451;
-}
-
-.dark {
-	--background: #1a282e;
-	--foreground: #f7f3eb;
-	--card: #2c424a;
-	--card-foreground: #f7f3eb;
-	--category: #4e5e22;
-	--category-foreground: #f0f4d8;
-	--popover: #2c424a;
-	--popover-foreground: #f7f3eb;
-	--primary: #ad242f;
-	--primary-foreground: #fdfbf7;
-	--secondary: #093451;
-	--secondary-foreground: #f7f3eb;
-	--muted: #24363d;
-	--muted-foreground: #aeb9bd;
-	--accent: #3a535c;
-	--accent-foreground: #f7f3eb;
-	--success: #849725;
-	--destructive: #f29599;
-	--destructive-foreground: #1a282e;
-	--border: #3e555e;
-	--input: #889398;
-	--ring: #849725;
 }
 
 @layer base {
