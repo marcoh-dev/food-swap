@@ -1,5 +1,6 @@
 "use server";
 
+import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
 import {
 	loginSchema,
 	type LoginValues,
@@ -103,7 +104,7 @@ export async function loginAction(values: LoginValues, redirectTo?: string): Pro
 	const authData = await loginUser(result.data);
 
 	if (!authData.access_token) {
-		return { error: "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch." };
+		return { error: LOGIN_FAILED_MESSAGE };
 	}
 
 	await setAuthCookie(authData.access_token);
