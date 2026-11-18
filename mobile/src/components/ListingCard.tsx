@@ -1,5 +1,5 @@
 import { SymbolView } from "expo-symbols";
-import { Image, ScrollView, Text, useColorScheme, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import type { ListingResponse } from "@/lib/types/listing.types";
@@ -30,11 +30,8 @@ export default function ListingCard({
 	const daysLeft = Math.ceil((new Date(endDate).getTime() - now) / DAY_MS);
 	const endsSoon = daysLeft >= 0 && daysLeft <= SOON_DAYS;
 
-	const colorScheme = useColorScheme();
-	const foreground =
-		useThemeColor("--foreground") ?? (colorScheme === "dark" ? "#f7f3eb" : "#093451");
-	const mutedForeground =
-		useThemeColor("--muted-foreground") ?? (colorScheme === "dark" ? "#a8a29e" : "#64748b");
+	const foreground = useThemeColor("--foreground");
+	const mutedForeground = useThemeColor("--muted-foreground");
 
 	return (
 		<View className="h-44 flex-row overflow-hidden bg-card">
