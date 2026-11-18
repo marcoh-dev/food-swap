@@ -1,3 +1,4 @@
+import { loginSchema, type LoginValues } from "@food-swap/shared/schemas/user";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView } from "react-native";
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useLogin } from "@/hooks/useLogin";
 import { isAccountTab } from "@/lib/routes";
-import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>;
 

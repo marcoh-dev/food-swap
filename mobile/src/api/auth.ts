@@ -1,7 +1,7 @@
+import type { LoginValues } from "@food-swap/shared/schemas/user";
 import type { AuthResponse, CurrentUser } from "@food-swap/shared/types";
 
 import { post, request } from "@/api/request";
-import type { LoginValues } from "@/lib/schemas/user.schemas";
 
 export const CURRENT_USER_QUERY_KEY = ["auth", "me"];
 
