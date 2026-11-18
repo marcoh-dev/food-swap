@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, ScrollView } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
 import { Screen } from "@/components/Screen";
