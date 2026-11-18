@@ -33,6 +33,11 @@ export default function ListingCard({
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
 
+	const firstRowCount = tags.length <= 2 ? tags.length : Math.ceil(tags.length / 2);
+	const tagRows = [tags.slice(0, firstRowCount), tags.slice(firstRowCount)].filter(
+		(row) => row.length > 0,
+	);
+
 	return (
 		<View className="h-44 flex-row overflow-hidden bg-card">
 			<View className="w-2/5 bg-muted">
@@ -122,7 +127,7 @@ export default function ListingCard({
 					</View>
 				</View>
 
-				<View className="mt-2 items-start gap-3">
+				<View className="mt-1 items-start gap-2">
 					<View className="rounded-full bg-category px-2 py-0.5">
 						<Text
 							className="font-medium text-xs text-category-foreground"
@@ -136,16 +141,20 @@ export default function ListingCard({
 						<ScrollView
 							horizontal
 							showsHorizontalScrollIndicator={false}
-							contentContainerClassName="gap-1"
+							contentContainerClassName="flex-col gap-1"
 						>
-							{tags.map((tag) => (
-								<View
-									key={tag.id}
-									className="rounded-full border border-input px-2 py-0.5"
-								>
-									<Text className="font-medium text-xs text-foreground">
-										{tag.name}
-									</Text>
+							{tagRows.map((row, i) => (
+								<View key={i} className="flex-row gap-1">
+									{row.map((tag) => (
+										<View
+											key={tag.id}
+											className="rounded-full border border-input px-2 py-0.5"
+										>
+											<Text className="font-medium text-xs text-foreground">
+												{tag.name}
+											</Text>
+										</View>
+									))}
 								</View>
 							))}
 						</ScrollView>
