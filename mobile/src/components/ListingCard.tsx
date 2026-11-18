@@ -33,12 +33,12 @@ export default function ListingCard({
 	const colorScheme = useColorScheme();
 	const foreground =
 		useThemeColor("--foreground") ?? (colorScheme === "dark" ? "#f7f3eb" : "#093451");
-        const mutedForeground =
-        useThemeColor("--muted-foreground") ?? (colorScheme === "dark" ? "#a8a29e" : "#64748b");
+	const mutedForeground =
+		useThemeColor("--muted-foreground") ?? (colorScheme === "dark" ? "#a8a29e" : "#64748b");
 
 	return (
 		<View className="h-44 flex-row overflow-hidden bg-card">
-		<View className="w-2/5 bg-muted">
+			<View className="w-2/5 bg-muted">
 				{image ? (
 					<Image
 						source={{ uri: image }}
@@ -68,12 +68,10 @@ export default function ListingCard({
 									? {
 											ios: "repeat",
 											android: "repeat",
-											web: "repeat",
 										}
 									: {
 											ios: "gift",
 											android: "redeem",
-											web: "redeem",
 										}
 							}
 							size={12}
@@ -100,32 +98,32 @@ export default function ListingCard({
 					{title}
 				</Text>
 				<View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
-       <View className="shrink flex-row items-center gap-1">
-                <SymbolView
-                        name={{ ios: "mappin", android: "location_on", web: "location_on" }}
-                        size={12}
-                        tintColor={mutedForeground}
-                />
-                <Text className="text-xs text-muted-foreground" numberOfLines={1}>
-                        {place.postalCode ? `${place.postalCode} ${place.name}` : place.name}
-                </Text>
-        </View>
+					<View className="shrink flex-row items-center gap-1">
+						<SymbolView
+							name={{ ios: "mappin", android: "location_on" }}
+							size={12}
+							tintColor={mutedForeground}
+						/>
+						<Text className="text-xs text-muted-foreground" numberOfLines={1}>
+							{place.postalCode ? `${place.postalCode} ${place.name}` : place.name}
+						</Text>
+					</View>
 
-        <View className="flex-row items-center gap-1">
-                <SymbolView
-                        name={{ ios: "calendar", android: "calendar_today", web: "calendar_today" }}
-                        size={12}
-                        tintColor={mutedForeground}
-                />
-                <Text className="text-xs text-muted-foreground">
-                        {new Date(createdAt).toLocaleDateString("de-DE", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                timeZone: "Europe/Berlin",
-                        })}
-                </Text>
-        </View>
-</View>
+					<View className="flex-row items-center gap-1">
+						<SymbolView
+							name={{ ios: "calendar", android: "calendar_today" }}
+							size={12}
+							tintColor={mutedForeground}
+						/>
+						<Text className="text-xs text-muted-foreground">
+							{new Date(createdAt).toLocaleDateString("de-DE", {
+								day: "2-digit",
+								month: "2-digit",
+								timeZone: "Europe/Berlin",
+							})}
+						</Text>
+					</View>
+				</View>
 
 				<View className="mt-2 items-start gap-3">
 					<View className="rounded-full bg-category px-2 py-0.5">

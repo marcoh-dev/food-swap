@@ -53,26 +53,26 @@ export default function Listings() {
 				</Text>
 			)}
 			<FlatList
-	className="-mx-6"
-	contentContainerClassName="gap-3"
-	data={listings}
-	keyExtractor={({ id }) => id}
-	extraData={now}
-	renderItem={({ item }) => (
-		<ListingCard
-			title={item.title}
-			image={item.image}
-			place={item.place}
-			type={item.type}
-			category={item.category}
-			tags={item.tags}
-			createdAt={item.createdAt}
-			endDate={item.endDate}
-			statusLabel={STATUS_LABELS[item.status]}
-			now={now}
-		/>
-	)}
-/>
+				className="-mx-6"
+				contentContainerClassName="gap-3"
+				data={listings}
+				keyExtractor={({ id }) => id}
+				extraData={now}
+				renderItem={({ item }) => (
+					<ListingCard
+						title={item.title}
+						image={item.image}
+						place={item.place}
+						type={item.type}
+						category={item.category}
+						tags={item.tags}
+						createdAt={item.createdAt}
+						endDate={item.endDate}
+						statusLabel={STATUS_LABELS[item.status]}
+						now={now}
+					/>
+				)}
+			/>
 		</Screen>
 	);
 }
