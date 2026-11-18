@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChatListItem, ChatMessage } from "@food-swap/shared/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -12,7 +13,6 @@ import {
 	setNotificationsTurnedOff,
 	shouldAskForPermission,
 } from "@/lib/notifications";
-import type { ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import { socket } from "@/socket";
 import { useChatStore } from "@/store/chat.store";
 

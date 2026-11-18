@@ -1,6 +1,7 @@
+import type { ListingResponse, ListingStatus } from "@food-swap/shared/types";
+
 import { Badge } from "@/components/ui/badge";
 import { statusLabels } from "@/lib/constants/listing.constants";
-import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 
 const badgeStatuses: ListingStatus[] = ["reserved", "deactivated"];
 

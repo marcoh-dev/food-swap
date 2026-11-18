@@ -1,10 +1,10 @@
 "use client";
 
+import type { ListingChatStatus } from "@food-swap/shared/types";
 import Link from "next/link";
 import { useState } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ListingChatStatus } from "@/lib/types/chat.types";
 import { useChatStore } from "@/store/chat.store";
 
 import { ChatForm } from "./ChatForm";

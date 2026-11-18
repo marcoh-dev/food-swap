@@ -1,7 +1,7 @@
+import type { ListingResponse } from "@food-swap/shared/types";
 import { GiftIcon, RepeatIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import type { ListingResponse } from "@/lib/types/listing.types";
 
 export default function TypeBadge({ listing }: { listing: Pick<ListingResponse, "type"> }) {
 	const TypeIcon = listing.type === "swap" ? RepeatIcon : GiftIcon;

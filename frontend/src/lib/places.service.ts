@@ -1,4 +1,4 @@
-import type { Place } from "./types/place.types";
+import type { Place } from "@food-swap/shared/types";
 
 // Place suggestions are cached without expiry. Bump this whenever the place data
 // or the search in backend/src/places/places.service.ts changes.

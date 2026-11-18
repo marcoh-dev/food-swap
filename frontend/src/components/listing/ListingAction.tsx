@@ -1,5 +1,6 @@
 "use client";
 
+import type { Category, ListingResponse, ListingStatus, Tag } from "@food-swap/shared/types";
 import { PencilIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -18,9 +19,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
-import type { Category } from "@/lib/types/category.types";
-import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
-import type { Tag } from "@/lib/types/tag.types";
 import { getBerlinDay } from "@/utils/date";
 
 import ListingStatusMenu from "./ListingStatusMenu";

@@ -1,4 +1,4 @@
-import type { Tag } from "./types/tag.types";
+import type { Tag } from "@food-swap/shared/types";
 
 export async function getTags(): Promise<Tag[]> {
 	const res = await fetch(`${process.env.NEXT_PUBLIC_FOODSWAP_API_URL}/tags`, {

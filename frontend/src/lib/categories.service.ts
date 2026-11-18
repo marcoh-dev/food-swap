@@ -1,4 +1,4 @@
-import type { Category } from "./types/category.types";
+import type { Category } from "@food-swap/shared/types";
 
 export async function getCategories(): Promise<Category[]> {
 	const res = await fetch(`${process.env.NEXT_PUBLIC_FOODSWAP_API_URL}/categories`, {

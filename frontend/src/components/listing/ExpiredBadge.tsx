@@ -1,5 +1,6 @@
+import type { ListingResponse } from "@food-swap/shared/types";
+
 import { Badge } from "@/components/ui/badge";
-import type { ListingResponse } from "@/lib/types/listing.types";
 import { isExpired } from "@/utils/date";
 
 export default function ExpiredBadge({ listing }: { listing: Pick<ListingResponse, "endDate"> }) {

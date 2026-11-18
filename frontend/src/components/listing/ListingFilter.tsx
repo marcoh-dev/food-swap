@@ -1,5 +1,6 @@
 "use client";
 
+import type { Category, Tag } from "@food-swap/shared/types";
 import { ChevronDown, SlidersHorizontal, XIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -15,8 +16,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import type { Category } from "@/lib/types/category.types";
-import type { Tag } from "@/lib/types/tag.types";
 
 import TagSelect from "./TagSelect";
 

@@ -1,3 +1,4 @@
+import type { ListingChatStatus } from "@food-swap/shared/types";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,7 +15,6 @@ import { pageTitles } from "@/lib/constants/titles.constants";
 import { getListingById } from "@/lib/listings.service";
 import { getPlaceBySlug } from "@/lib/places.service";
 import { getTags } from "@/lib/tags.service";
-import type { ListingChatStatus } from "@/lib/types/chat.types";
 import { getCurrentUser } from "@/lib/users.service";
 import { isExpired } from "@/utils/date";
 

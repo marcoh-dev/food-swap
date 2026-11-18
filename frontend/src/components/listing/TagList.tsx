@@ -1,7 +1,7 @@
+import type { Tag } from "@food-swap/shared/types";
 import { cn } from "cn";
 
 import { Badge } from "@/components/ui/badge";
-import type { Tag } from "@/lib/types/tag.types";
 
 const BREAKPOINTS = ["base", "sm", "md", "lg", "xl"] as const;
 type Breakpoint = (typeof BREAKPOINTS)[number];

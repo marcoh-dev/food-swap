@@ -1,5 +1,6 @@
+import type { Category } from "@food-swap/shared/types";
+
 import { Badge } from "@/components/ui/badge";
-import type { Category } from "@/lib/types/category.types";
 
 export default function CategoryBadge({ category }: { category: Category | null }) {
 	if (!category) return null;

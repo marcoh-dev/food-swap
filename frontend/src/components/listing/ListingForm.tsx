@@ -1,5 +1,6 @@
 "use client";
 
+import type { Category, Place, Tag } from "@food-swap/shared/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "cn";
 import { type ReactNode, useEffect, useRef } from "react";
@@ -26,10 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
-import type { Category } from "@/lib/types/category.types";
 import type { FormState } from "@/lib/types/common.types";
-import type { Place } from "@/lib/types/place.types";
-import type { Tag } from "@/lib/types/tag.types";
 import { applyServerErrors } from "@/utils/form";
 
 import EndDatePicker from "./EndDatePicker";

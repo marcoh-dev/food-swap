@@ -1,6 +1,6 @@
+import type { AuthResponse, RegistrationResponse, UserCredentials } from "@food-swap/shared/types";
+
 import { fetchAPI } from "./fetchAPI";
-import type { AuthResponse, RegistrationResponse } from "./types/auth.types";
-import type { UserCredentials } from "./types/user.types";
 
 export async function loginUser({ username, password }: UserCredentials): Promise<AuthResponse> {
 	const response = await fetch(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/auth/login`, {

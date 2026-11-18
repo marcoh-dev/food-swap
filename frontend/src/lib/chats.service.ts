@@ -1,5 +1,11 @@
+import type {
+	ChatDetail,
+	ChatListItem,
+	ChatMessage,
+	ListingChatStatus,
+} from "@food-swap/shared/types";
+
 import { fetchAPI } from "./fetchAPI";
-import type { ChatDetail, ChatListItem, ChatMessage, ListingChatStatus } from "./types/chat.types";
 
 export class ApiError extends Error {
 	constructor(

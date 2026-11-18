@@ -1,5 +1,6 @@
 "use client";
 
+import type { Place } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { LocateFixedIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useId, useImperativeHandle, useRef, useState } from "react";
@@ -9,7 +10,6 @@ import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/i
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
 import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
-import type { Place } from "@/lib/types/place.types";
 import { formatPlace } from "@/utils/place";
 
 const MIN_QUERY_LENGTH = 2;

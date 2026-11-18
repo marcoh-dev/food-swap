@@ -1,4 +1,6 @@
-import type { ListingStatus, StatusAction } from "@/lib/types/listing.types";
+import type { ListingStatus } from "@food-swap/shared/types";
+
+import type { StatusAction } from "@/lib/types/listing.types";
 
 export const statusActions: Partial<Record<ListingStatus, StatusAction[]>> = {
 	active: [

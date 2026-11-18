@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChatDetail } from "@food-swap/shared/types";
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -29,7 +30,6 @@ import {
 	MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
-import type { ChatDetail } from "@/lib/types/chat.types";
 import { errorMessage, useChatStore } from "@/store/chat.store";
 import { formatDate, formatTime, isSameDay } from "@/utils/date";
 

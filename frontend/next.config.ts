@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	/* config options here */
+	transpilePackages: ["@food-swap/shared"],
 	reactCompiler: true,
 	experimental: { authInterrupts: true },
 	images: {

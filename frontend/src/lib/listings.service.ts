@@ -1,12 +1,14 @@
-import { fetchAPI } from "./fetchAPI";
 import type {
-	GetListingsOptions,
 	ListingResponse,
 	ListingStatus,
 	NewListing,
 	PaginatedListingsResponse,
 	SortOption,
-} from "./types/listing.types";
+} from "@food-swap/shared/types";
+
+import type { GetListingsOptions } from "@/lib/types/listing.types";
+
+import { fetchAPI } from "./fetchAPI";
 
 export async function getListings({
 	page = 1,
