@@ -1,5 +1,6 @@
 "use client";
 
+import { MISSING_PLACE_MESSAGE } from "@food-swap/shared/messages";
 import type { Place } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { LocateFixedIcon, MapPinIcon } from "lucide-react";
@@ -9,7 +10,6 @@ import { findNearestPlaceAction, searchPlacesAction } from "@/app/actions";
 import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
-import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
 import { formatPlace } from "@/utils/place";
 
 const MIN_QUERY_LENGTH = 2;

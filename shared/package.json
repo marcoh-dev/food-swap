@@ -3,12 +3,15 @@
 	"private": true,
 	"exports": {
 		"./theme.css": "./theme.css",
-		"./types": "./src/types/index.ts"
+		"./types": "./src/types/index.ts",
+		"./messages": "./src/messages.ts",
+		"./schemas/user": "./src/schemas/user.schemas.ts"
 	},
 	"scripts": {
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
@@ -16,6 +19,10 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-import": "^2.32.0",
 		"typescript": "~6.0.3",
-		"typescript-eslint": "^8.72.2"
+		"typescript-eslint": "^8.72.2",
+		"vitest": "^5.1.0"
+	},
+	"dependencies": {
+		"zod": "^4.6.7"
 	}
 }

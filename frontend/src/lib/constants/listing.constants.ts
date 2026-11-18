@@ -55,8 +55,6 @@ export function parseRadius(value: string | undefined): number | undefined {
 	return RADIUS_OPTIONS_KM.includes(radius) ? radius : undefined;
 }
 
-export const MISSING_PLACE_MESSAGE = "Bitte wähle einen Ort aus der Liste aus.";
-
 export const SEARCH_FORM_ID = "listing-search";
 
 export const LISTING_VIEW_CLASSES: Record<"grid" | "list", string> = {

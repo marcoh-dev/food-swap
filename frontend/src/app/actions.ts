@@ -1,5 +1,13 @@
 "use server";
 
+import {
+	loginSchema,
+	type LoginValues,
+	profileSchema,
+	type ProfileValues,
+	registrationSchema,
+	type RegistrationValues,
+} from "@food-swap/shared/schemas/user";
 import type {
 	ChatDetail,
 	ChatListItem,
@@ -35,14 +43,6 @@ import {
 } from "@/lib/listings.service";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
-import {
-	loginSchema,
-	type LoginValues,
-	profileSchema,
-	type ProfileValues,
-	registrationSchema,
-	type RegistrationValues,
-} from "@/lib/schemas/user.schemas";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { getBerlinDay } from "@/utils/date";

@@ -570,6 +570,10 @@ importers:
         version: 6.0.3
 
   shared:
+    dependencies:
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.5
@@ -589,6 +593,9 @@ importers:
       typescript-eslint:
         specifier: ^8.72.2
         version: 8.72.2(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
+      vitest:
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@24.19.2)(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)(terser@5.51.2))
 
 packages:
 

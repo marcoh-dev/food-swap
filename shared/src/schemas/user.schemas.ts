@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { MISSING_PLACE_MESSAGE } from "@/lib/constants/listing.constants";
+import { MISSING_PLACE_MESSAGE } from "../messages";
 
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
