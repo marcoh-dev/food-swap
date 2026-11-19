@@ -1,8 +1,8 @@
+import type { ListingResponse } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
 import { Image, ScrollView, Text, View } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
-import type { ListingResponse } from "@/lib/types/listing.types";
 
 const SOON_DAYS = 7;
 const DAY_MS = 24 * 60 * 60 * 1000;

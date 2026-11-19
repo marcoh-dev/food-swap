@@ -1,5 +1,23 @@
 "use server";
 
+import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
+import {
+	loginSchema,
+	type LoginValues,
+	profileSchema,
+	type ProfileValues,
+	registrationSchema,
+	type RegistrationValues,
+} from "@food-swap/shared/schemas/user";
+import type {
+	ChatDetail,
+	ChatListItem,
+	ChatMessage,
+	ListingResponse,
+	ListingStatus,
+	NewListing,
+	Place,
+} from "@food-swap/shared/types";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { notFound, redirect, unauthorized } from "next/navigation";
@@ -26,18 +44,7 @@ import {
 } from "@/lib/listings.service";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
-import {
-	loginSchema,
-	type LoginValues,
-	profileSchema,
-	type ProfileValues,
-	registrationSchema,
-	type RegistrationValues,
-} from "@/lib/schemas/user.schemas";
-import type { ChatDetail, ChatListItem, ChatMessage } from "@/lib/types/chat.types";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
-import type { ListingResponse, ListingStatus, NewListing } from "@/lib/types/listing.types";
-import type { Place } from "@/lib/types/place.types";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 import { getBerlinDay } from "@/utils/date";
 
@@ -97,7 +104,7 @@ export async function loginAction(values: LoginValues, redirectTo?: string): Pro
 	const authData = await loginUser(result.data);
 
 	if (!authData.access_token) {
-		return { error: "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch." };
+		return { error: LOGIN_FAILED_MESSAGE };
 	}
 
 	await setAuthCookie(authData.access_token);

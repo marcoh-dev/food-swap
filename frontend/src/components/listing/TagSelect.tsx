@@ -1,7 +1,8 @@
 "use client";
 
+import type { Tag } from "@food-swap/shared/types";
+
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import type { Tag } from "@/lib/types/tag.types";
 
 type Props = {
 	tags: Tag[];

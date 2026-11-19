@@ -1,5 +1,6 @@
 "use client";
 
+import type { ListingStatus } from "@food-swap/shared/types";
 import { ChevronDownIcon, Trash2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSelectLikeMenu } from "@/hooks/useSelectLikeMenu";
 import { statusActions, statusLabels, statusOrder } from "@/lib/constants/listing.constants";
-import type { ListingStatus } from "@/lib/types/listing.types";
 
 type Props = {
 	status: ListingStatus;

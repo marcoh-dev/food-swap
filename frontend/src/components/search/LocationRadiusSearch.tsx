@@ -1,12 +1,12 @@
 "use client";
 
+import type { Place } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { useState } from "react";
 
 import PlaceCombobox from "@/components/places/PlaceCombobox";
 import { Slider } from "@/components/ui/slider";
 import { RADIUS_OPTIONS_KM } from "@/lib/constants/listing.constants";
-import type { Place } from "@/lib/types/place.types";
 
 import { useSearchPlace } from "./SearchPlaceContext";
 

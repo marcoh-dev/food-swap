@@ -1,3 +1,4 @@
+import type { ChatMessage } from "@food-swap/shared/types";
 import { create } from "zustand";
 
 import {
@@ -9,7 +10,7 @@ import {
 	replyToChatAction,
 	startChatAction,
 } from "@/app/actions";
-import type { ChatActions, ChatMessage, ChatState } from "@/lib/types/chat.types";
+import type { ChatActions, ChatState } from "@/lib/types/chat.types";
 import type { ActionResult } from "@/lib/types/common.types";
 import { socket } from "@/socket";
 

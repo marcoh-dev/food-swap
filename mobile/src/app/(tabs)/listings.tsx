@@ -1,3 +1,4 @@
+import type { ListingResponse, ListingStatus } from "@food-swap/shared/types";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList } from "react-native";
 
@@ -8,7 +9,6 @@ import { Text } from "@/components/ui/text";
 import { useListingCount } from "@/hooks/useListingCount";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { getListings } from "@/lib/listingActions";
-import type { ListingResponse, ListingStatus } from "@/lib/types/listing.types";
 
 const STATUS_LABELS: Partial<Record<ListingStatus, string>> = {
 	reserved: "Reserviert",

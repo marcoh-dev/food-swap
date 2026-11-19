@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChatListItem } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { CircleAlertIcon, MessagesSquareIcon } from "lucide-react";
 
@@ -13,7 +14,6 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ChatListItem } from "@/lib/types/chat.types";
 import { formatShortDate } from "@/utils/date";
 
 type ChatListProps = {

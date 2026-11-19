@@ -1,5 +1,6 @@
 "use client";
 
+import type { SortOption } from "@food-swap/shared/types";
 import { ArrowDownUp } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -14,7 +15,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSelectLikeMenu } from "@/hooks/useSelectLikeMenu";
-import type { SortOption } from "@/lib/types/listing.types";
 
 const SORT_LABELS: Record<SortOption, string> = {
 	newest: "Neueste zuerst",

@@ -1,5 +1,7 @@
 "use client";
 
+import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
+import type { Place } from "@food-swap/shared/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
@@ -8,8 +10,6 @@ import PlaceCombobox from "@/components/places/PlaceCombobox";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { profileSchema, type ProfileValues } from "@/lib/schemas/user.schemas";
-import type { Place } from "@/lib/types/place.types";
 import { applyServerErrors } from "@/utils/form";
 import { formatPlace } from "@/utils/place";
 

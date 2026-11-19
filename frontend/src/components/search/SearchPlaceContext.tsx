@@ -1,8 +1,7 @@
 "use client";
 
+import type { Place } from "@food-swap/shared/types";
 import { createContext, useContext, useState } from "react";
-
-import type { Place } from "@/lib/types/place.types";
 
 type SearchPlaceState = {
 	place: Place | null;

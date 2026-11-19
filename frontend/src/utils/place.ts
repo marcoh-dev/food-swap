@@ -1,4 +1,4 @@
-import type { Place } from "@/lib/types/place.types";
+import type { Place } from "@food-swap/shared/types";
 
 export function formatPlace(place: Pick<Place, "postalCode" | "name">) {
 	return place.postalCode ? `${place.postalCode} ${place.name}` : place.name;

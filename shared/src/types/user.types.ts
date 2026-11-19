@@ -12,3 +12,5 @@ export type User = {
 	createdAt: string;
 	place?: Place | null;
 };
+
+export type CurrentUser = Omit<User, "createdAt">;

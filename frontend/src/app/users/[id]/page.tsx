@@ -1,3 +1,4 @@
+import type { SortOption } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { PencilIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -20,7 +21,6 @@ import { LISTING_VIEW_CLASSES } from "@/lib/constants/listing.constants";
 import { pageTitles } from "@/lib/constants/titles.constants";
 import { getUserListings } from "@/lib/listings.service";
 import { getTags } from "@/lib/tags.service";
-import type { SortOption } from "@/lib/types/listing.types";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
 import { formatDate, isExpired } from "@/utils/date";
 import { parsePage } from "@/utils/pagination";

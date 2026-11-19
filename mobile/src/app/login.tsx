@@ -1,3 +1,5 @@
+import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
+import { loginSchema, type LoginValues } from "@food-swap/shared/schemas/user";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView } from "react-native";
@@ -9,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useLogin } from "@/hooks/useLogin";
 import { isAccountTab } from "@/lib/routes";
-import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>;
 
@@ -76,7 +77,7 @@ export default function Login() {
 			{login.isError ? (
 				<Text className="text-destructive">
 					{isUnauthorizedError(login.error)
-						? "Anmeldung fehlgeschlagen. Benutzername oder Passwort ist falsch."
+						? LOGIN_FAILED_MESSAGE
 						: "Anmeldung fehlgeschlagen. Bitte versuche es später erneut."}
 				</Text>
 			) : null}

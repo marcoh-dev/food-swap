@@ -1,5 +1,6 @@
 "use client";
 
+import { loginSchema, type LoginValues } from "@food-swap/shared/schemas/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
@@ -8,7 +9,6 @@ import { loginAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { loginSchema, type LoginValues } from "@/lib/schemas/user.schemas";
 import { applyServerErrors } from "@/utils/form";
 
 import PinInput from "./PinInput";

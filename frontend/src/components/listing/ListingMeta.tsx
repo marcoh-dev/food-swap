@@ -1,3 +1,4 @@
+import type { ListingResponse } from "@food-swap/shared/types";
 import { cn } from "cn";
 import {
 	CircleAlertIcon,
@@ -8,7 +9,6 @@ import {
 	TimerIcon,
 } from "lucide-react";
 
-import type { ListingResponse } from "@/lib/types/listing.types";
 import { formatDate, getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
 import { formatDistance, formatPlace } from "@/utils/place";
 

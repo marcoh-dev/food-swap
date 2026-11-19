@@ -1,3 +1,4 @@
+import type { ListingResponse } from "@food-swap/shared/types";
 import { cn } from "cn";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +20,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import type { ListingOrigin, ListingResponse } from "@/lib/types/listing.types";
+import type { ListingOrigin } from "@/lib/types/listing.types";
 
 type ListingCardProps = {
 	listing: ListingResponse;
