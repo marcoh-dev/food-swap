@@ -51,6 +51,7 @@ export default function Listings() {
 					<FlatList
 						className="-mx-6"
 						contentContainerClassName="gap-3 pb-6"
+						contentInsetAdjustmentBehavior="automatic"
 						data={data.data}
 						keyExtractor={({ id }) => id}
 						extraData={dataUpdatedAt}
