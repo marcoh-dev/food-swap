@@ -34,8 +34,8 @@ async function send(path: string, init?: RequestInit) {
 	return response;
 }
 
-export async function request<TData>(path: string, signal: AbortSignal): Promise<TData> {
-	const response = await send(path, { signal });
+export async function get<TData>(path: string, signal: AbortSignal): Promise<TData> {
+	const response = await send(path, { method: "GET", signal });
 
 	return response.json();
 }
