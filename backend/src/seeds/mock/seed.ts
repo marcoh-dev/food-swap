@@ -4,7 +4,7 @@ import { EntityManager } from "typeorm";
 
 import { mockChats } from "./chats";
 import { MockListing, mockListings } from "./listings";
-import { MOCK_USERNAME_PREFIX, mockUsers } from "./users";
+import { MOCK_USERNAME_PREFIX, MockUser, mockUsers } from "./users";
 import { berlinDay, berlinTime, endOfDay, shiftDay } from "../../common/utils/berlin-date";
 import { AppDataSource } from "../../data-source";
 
@@ -46,6 +46,10 @@ function endDay(listing: MockListing, now: Date): string {
 		});
 	}
 	return resolveDay(listing.end, now);
+}
+
+function registeredAtOf(user: MockUser, now: Date): Date {
+	return berlinTime(resolveDay(user.createdAt, now));
 }
 
 function sentAtOf(listing: MockListing, at: string, now: Date): Date {
@@ -119,7 +123,7 @@ function validate(now: Date, places: Places, categories: Lookup, tags: Lookup): 
 		);
 		check((user.name?.length ?? 0) <= 100, `${where}: name too long`);
 		check(!user.place || places.has(user.place), `${where}: unknown place ${user.place}`);
-		check(berlinTime(user.createdAt) < now, `${where}: created in the future`);
+		check(registeredAtOf(user, now) < now, `${where}: created in the future`);
 	}
 
 	for (const listing of mockListings) {
@@ -132,7 +136,7 @@ function validate(now: Date, places: Places, categories: Lookup, tags: Lookup): 
 
 		check(owner !== undefined, `${where}: unknown owner ${listing.owner}`);
 		check(
-			berlinTime(owner!.createdAt) < createdAt,
+			registeredAtOf(owner!, now) < createdAt,
 			`${where}: created before its owner registered`,
 		);
 		check(
@@ -205,7 +209,7 @@ function validate(now: Date, places: Places, categories: Lookup, tags: Lookup): 
 			previous = sentAt;
 		}
 		check(
-			berlinTime(user!.createdAt) < sentAtOf(listing!, chat.messages[0]!.at, now),
+			registeredAtOf(user!, now) < sentAtOf(listing!, chat.messages[0]!.at, now),
 			`${where}: user wrote before registering`,
 		);
 	}
@@ -231,7 +235,7 @@ async function seed(): Promise<void> {
 
 		const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 		for (const user of mockUsers) {
-			const createdAt = berlinTime(user.createdAt);
+			const createdAt = registeredAtOf(user, now);
 			await manager.query(
 				`INSERT INTO "users" ("id", "username", "passwordHash", "name", "place_id", "createdAt", "updatedAt")
         VALUES ($1, $2, $3, $4, $5, $6, $6)
