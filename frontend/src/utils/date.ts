@@ -1,11 +1,7 @@
+import { getBerlinDay, getDaysUntil, TIME_ZONE } from "@food-swap/shared/dates";
+
 import { endDateRules } from "@/lib/constants/listing.constants";
 import type { EndDateResult, ParsedEndDate } from "@/lib/types/listing.types";
-
-// Listings end at 23:59 Berlin time on their last day, so dates are shown in
-// Berlin time on the server and in every browser.
-const TIME_ZONE = "Europe/Berlin";
-
-const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 function getCurrentIsoDate(): string {
 	return new Date().toISOString();
@@ -33,11 +29,6 @@ export function formatDay(day: string): string {
 function formatDayWithoutYear(day: string): string {
 	const [, month, date] = day.split("-");
 	return `${date}.${month}.`;
-}
-
-// The Berlin calendar day of a point in time as "YYYY-MM-DD".
-export function getBerlinDay(date: Date = new Date()): string {
-	return new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(date);
 }
 
 function shiftDay(day: string, { days = 0, months = 0 }): string {
@@ -169,18 +160,6 @@ export function validateEndDate(
 	}
 
 	return { ok: true, date: parsed.date };
-}
-
-function toUtcTime(day: string): number {
-	const [year, month, date] = day.split("-").map(Number) as [number, number, number];
-	return Date.UTC(year, month - 1, date);
-}
-
-export function getDaysUntil(isoDate: string, now: Date = new Date()): number {
-	const endDay = getBerlinDay(new Date(isoDate));
-	const today = getBerlinDay(now);
-
-	return Math.round((toUtcTime(endDay) - toUtcTime(today)) / MILLISECONDS_PER_DAY);
 }
 
 export function getEndDateLabel(

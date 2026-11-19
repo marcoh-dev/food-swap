@@ -1,3 +1,4 @@
+import { END_SOON_DAYS } from "@food-swap/shared/dates";
 import type { ListingStatus } from "@food-swap/shared/types";
 
 import type { StatusAction } from "@/lib/types/listing.types";
@@ -44,7 +45,7 @@ export const endDateRules = {
 	defaultDays: 28,
 	minDays: 1,
 	maxMonths: 6,
-	soonDays: 7,
+	soonDays: END_SOON_DAYS,
 	deleteAfterDays: 28,
 } as const;
 
