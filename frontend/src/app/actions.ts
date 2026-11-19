@@ -61,6 +61,11 @@ function getRedirectTarget(target: unknown): string {
 	return target;
 }
 
+function withToast(target: string, toast: string): string {
+	const separator = target.includes("?") ? "&" : "?";
+	return `${target}${separator}toast=${toast}`;
+}
+
 async function setAuthCookie(token: string) {
 	const cookieStore = await cookies();
 
@@ -92,9 +97,7 @@ export async function registerAction(
 
 	await setAuthCookie(authData.access_token);
 
-	const target = getRedirectTarget(redirectTo);
-	const separator = target.includes("?") ? "&" : "?";
-	redirect(`${target}${separator}toast=registered`);
+	redirect(withToast(getRedirectTarget(redirectTo), "registered"));
 }
 
 export async function loginAction(values: LoginValues, redirectTo?: string): Promise<FormState> {
@@ -282,17 +285,19 @@ export async function updateListingAction(
 	return {};
 }
 
-export async function deleteListingAction(id: string) {
+export async function deleteListingAction(id: string, redirectTo?: string) {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
+
+	const target = redirectTo ? getRedirectTarget(redirectTo) : "/listings";
 
 	try {
 		await deleteListing(id);
 	} catch {
-		redirect("/listings?toast=listing-delete-error");
+		redirect(withToast(target, "listing-delete-error"));
 	}
 	revalidatePath("/listings");
-	redirect("/listings?toast=listing-deleted");
+	redirect(withToast(target, "listing-deleted"));
 }
 
 function chatErrorMessage(error: unknown, fallback: string): string {
