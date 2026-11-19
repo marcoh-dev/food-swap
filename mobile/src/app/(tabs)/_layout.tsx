@@ -31,19 +31,22 @@ export default function TabLayout() {
 			labelVisibilityMode="labeled"
 		>
 			<NativeTabs.Trigger name="listings">
-				<NativeTabs.Trigger.Label>Angebote</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
+				<NativeTabs.Trigger.Label>Angebote</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger
 				name="favorites"
 				disabled={!isLoggedIn}
 				listeners={requireLogin("/favorites")}
 			>
-				<NativeTabs.Trigger.Icon sf="ant" md="bug_report" />
+				<NativeTabs.Trigger.Icon
+					src={require("@/assets/images/tabs/tomato.png")}
+					renderingMode="template"
+				/>
 				<NativeTabs.Trigger.Label>Favoriten</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="new" disabled={!isLoggedIn} listeners={requireLogin("/new")}>
-				<NativeTabs.Trigger.Icon sf="plus" md="add" />
+				<NativeTabs.Trigger.Icon sf="plus" md="add_2" />
 				<NativeTabs.Trigger.Label>Neu</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger
@@ -51,7 +54,7 @@ export default function TabLayout() {
 				disabled={!isLoggedIn}
 				listeners={requireLogin("/chats")}
 			>
-				<NativeTabs.Trigger.Icon sf="message" md="chat" />
+				<NativeTabs.Trigger.Icon sf="bubble" md="chat_bubble" />
 				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="me" disabled={!isLoggedIn} listeners={requireLogin("/me")}>
