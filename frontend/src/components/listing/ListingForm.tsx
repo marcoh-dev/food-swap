@@ -75,7 +75,7 @@ export default function ListingForm({
 
 	const form = useForm<ListingFormValues>({
 		resolver: zodResolver(createListingSchema(defaultValues?.endDate)),
-		defaultValues: defaultValues ?? emptyValues,
+		defaultValues: defaultValues ?? { ...emptyValues, placeId: defaultPlace?.id ?? "" },
 		mode: "onSubmit",
 		reValidateMode: "onChange",
 	});
