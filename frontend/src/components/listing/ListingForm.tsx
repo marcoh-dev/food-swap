@@ -259,7 +259,7 @@ export default function ListingForm({
 						control={form.control}
 						render={({ field, fieldState }) => (
 							<FieldSet data-invalid={fieldState.invalid}>
-								<FieldLegend variant="label">Art</FieldLegend>
+								<FieldLegend variant="label">Ich möchte …</FieldLegend>
 								<RadioGroup
 									name={field.name}
 									value={field.value ?? ""}
@@ -274,11 +274,11 @@ export default function ListingForm({
 											value="swap"
 											id="type-swap"
 										/>
-										<FieldLabel htmlFor="type-swap">Tauschen</FieldLabel>
+										<FieldLabel htmlFor="type-swap">tauschen</FieldLabel>
 									</Field>
 									<Field orientation="horizontal">
 										<RadioGroupItem value="giveaway" id="type-giveaway" />
-										<FieldLabel htmlFor="type-giveaway">Verschenken</FieldLabel>
+										<FieldLabel htmlFor="type-giveaway">verschenken</FieldLabel>
 									</Field>
 								</RadioGroup>
 								<FieldError id="type-error" errors={[fieldState.error]} />
