@@ -2,6 +2,7 @@ import type { ListingResponse, ListingStatus } from "@food-swap/shared/types";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList } from "react-native";
 
+import Carousel from "@/components/Carousel";
 import ListingCard from "@/components/ListingCard";
 import { Screen } from "@/components/Screen";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ export default function Listings() {
 	return (
 		<Screen>
 			<Text variant="h1">Food Swap</Text>
+			<Carousel />
 			{isPending ? (
 				<ActivityIndicator color={mutedForeground} className="self-start" />
 			) : isError ? (
