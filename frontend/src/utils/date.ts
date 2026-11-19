@@ -1,4 +1,4 @@
-import { getBerlinDay, getDaysUntil, TIME_ZONE } from "@food-swap/shared/dates";
+import { formatTime, getBerlinDay, getDaysUntil, TIME_ZONE } from "@food-swap/shared/dates";
 
 import { endDateRules } from "@/lib/constants/listing.constants";
 import type { EndDateResult, ParsedEndDate } from "@/lib/types/listing.types";
@@ -51,18 +51,6 @@ export function formatIsoDate(date: Date): string {
 	const day = String(date.getDate()).padStart(2, "0");
 
 	return `${year}-${month}-${day}`;
-}
-
-export function formatTime(isoDate: string): string {
-	const date = new Date(isoDate);
-
-	if (Number.isNaN(date.getTime())) return "";
-
-	return date.toLocaleTimeString("de-DE", {
-		hour: "2-digit",
-		minute: "2-digit",
-		timeZone: TIME_ZONE,
-	});
 }
 
 export function isSameDay(a: string, b: string): boolean {

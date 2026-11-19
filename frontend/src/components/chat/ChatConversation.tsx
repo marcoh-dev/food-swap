@@ -1,5 +1,6 @@
 "use client";
 
+import { formatTime } from "@food-swap/shared/dates";
 import type { ChatDetail } from "@food-swap/shared/types";
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
@@ -31,7 +32,7 @@ import {
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
 import { errorMessage, useChatStore } from "@/store/chat.store";
-import { formatDate, formatTime, isSameDay } from "@/utils/date";
+import { formatDate, isSameDay } from "@/utils/date";
 
 import { ChatForm } from "./ChatForm";
 
