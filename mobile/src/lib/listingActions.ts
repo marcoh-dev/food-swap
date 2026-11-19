@@ -1,4 +1,4 @@
-import type { ListingResponse } from "@/lib/types/listing.types";
+import type { ListingResponse } from "@food-swap/shared/types";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL as string;
 
