@@ -1,3 +1,4 @@
+import { getDaysUntil } from "@food-swap/shared/dates";
 import type { ListingResponse } from "@food-swap/shared/types";
 import { cn } from "cn";
 import {
@@ -9,7 +10,7 @@ import {
 	TimerIcon,
 } from "lucide-react";
 
-import { formatDate, getDaysUntil, getDeletionLabel, getEndDateLabel } from "@/utils/date";
+import { formatDate, getDeletionLabel, getEndDateLabel } from "@/utils/date";
 import { formatDistance, formatPlace } from "@/utils/place";
 
 import ListingDate from "./ListingDate";

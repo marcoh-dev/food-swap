@@ -1,9 +1,10 @@
+import { getDaysUntil } from "@food-swap/shared/dates";
 import type { ListingResponse } from "@food-swap/shared/types";
 import { TimerIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { endDateRules } from "@/lib/constants/listing.constants";
-import { getDaysUntil, getEndDateLabel } from "@/utils/date";
+import { getEndDateLabel } from "@/utils/date";
 
 export default function EndDateBadge({ listing }: { listing: Pick<ListingResponse, "endDate"> }) {
 	const daysLeft = getDaysUntil(listing.endDate);

@@ -4,6 +4,7 @@
 	"exports": {
 		"./theme.css": "./theme.css",
 		"./types": "./src/types/index.ts",
+		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts"
 	},
