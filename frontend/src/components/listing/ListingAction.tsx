@@ -66,7 +66,11 @@ export default function ListingActions({
 	}
 
 	function handleDelete() {
-		deleteListingAction(listing.id);
+		// In a list (profile) stay on the same page, otherwise go to all listings
+		const redirectTo = isEditingInList
+			? `${window.location.pathname}${window.location.search}`
+			: undefined;
+		deleteListingAction(listing.id, redirectTo);
 	}
 
 	async function handleStatusChange(targetStatus: ListingStatus) {
