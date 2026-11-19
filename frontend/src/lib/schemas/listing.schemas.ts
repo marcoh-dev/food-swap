@@ -28,7 +28,10 @@ export function createListingSchema(originalEndDate?: string) {
 			.refine(isEmptyOrImageUrl, "Bitte gib eine gültige URL ein."),
 		placeId: z.string().min(1, MISSING_PLACE_MESSAGE),
 		categoryId: z.string().min(1, "Bitte wähle eine Kategorie."),
-		type: z.enum(["swap", "giveaway"], "Bitte wähle eine Art."),
+		type: z.enum(
+			["swap", "giveaway"],
+			"Bitte wähle, ob du tauschen oder verschenken möchtest.",
+		),
 		tagIds: z.array(z.string()),
 		endDate: z.string().superRefine((value, context) => {
 			if (value === originalEndDate) return;
