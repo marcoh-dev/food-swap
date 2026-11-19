@@ -50,7 +50,7 @@ export default function Listings() {
 					</Text>
 					<FlatList
 						className="-mx-6"
-						contentContainerClassName="gap-3"
+						contentContainerClassName="gap-3 pb-6"
 						data={data.data}
 						keyExtractor={({ id }) => id}
 						extraData={dataUpdatedAt}
