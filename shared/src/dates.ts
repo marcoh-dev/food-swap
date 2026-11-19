@@ -20,6 +20,19 @@ export function getBerlinDay(date: Date = new Date()): string {
 	return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
+// The Berlin time of a point in time as "HH:MM".
+export function formatTime(isoDate: string): string {
+	const date = new Date(isoDate);
+
+	if (Number.isNaN(date.getTime())) return "";
+
+	return date.toLocaleTimeString("de-DE", {
+		hour: "2-digit",
+		minute: "2-digit",
+		timeZone: TIME_ZONE,
+	});
+}
+
 function toUtcTime(day: string): number {
 	const [year, month, date] = day.split("-").map(Number) as [number, number, number];
 	return Date.UTC(year, month - 1, date);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getBerlinDay, getDaysUntil } from "./dates";
+import { formatTime, getBerlinDay, getDaysUntil } from "./dates";
 
 // Ends on 20.11.2026 at 23:59:59.999 Berlin time
 const END_DATE = "2026-11-20T22:59:59.999Z";
@@ -14,6 +14,16 @@ describe("getBerlinDay", () => {
 	it("uses Berlin summer time", () => {
 		// 22:30 UTC is 00:30 the next day in Berlin during summer time
 		expect(getBerlinDay(new Date("2026-07-01T22:30:00Z"))).toBe("2026-07-02");
+	});
+});
+
+describe("formatTime", () => {
+	it("shows the Berlin time", () => {
+		expect(formatTime("2026-11-19T13:05:00Z")).toBe("14:05");
+	});
+
+	it("returns an empty string for an invalid date", () => {
+		expect(formatTime("not a date")).toBe("");
 	});
 });
 
