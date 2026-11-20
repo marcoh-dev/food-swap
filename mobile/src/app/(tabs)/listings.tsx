@@ -95,6 +95,11 @@ export default function Listings() {
 					</Text>
 				</View>
 			}
+			ListFooterComponent={
+				isFetchingNextPage ? (
+					<ActivityIndicator color={mutedForeground} className="self-center py-4" />
+				) : undefined
+			}
 			refreshControl={
 				<RefreshControl
 					refreshing={isRefreshing}
