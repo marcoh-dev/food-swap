@@ -17,7 +17,17 @@ const STATUS_LABELS: Partial<Record<ListingStatus, string>> = {
 };
 
 export default function Listings() {
-	const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useListings();
+	const {
+		data,
+		dataUpdatedAt,
+		isPending,
+		isError,
+		isFetching,
+		refetch,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useListings();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const [isRefreshing, setIsRefreshing] = useState(false);
@@ -26,6 +36,12 @@ export default function Listings() {
 		setIsRefreshing(true);
 		await refetch();
 		setIsRefreshing(false);
+	}
+
+	function loadMore() {
+		if (hasNextPage && !isFetchingNextPage) {
+			void fetchNextPage();
+		}
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
@@ -62,6 +78,7 @@ export default function Listings() {
 			data={data.pages.flatMap((page) => page.data)}
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
+			onEndReached={loadMore}
 			ListHeaderComponent={
 				<View
 					className={cn(
