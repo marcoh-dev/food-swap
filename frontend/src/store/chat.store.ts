@@ -13,18 +13,13 @@ import {
 import type { ChatActions, ChatState } from "@/lib/types/chat.types";
 import type { ActionResult } from "@/lib/types/common.types";
 
-async function call<T>(action: Promise<ActionResult<T>>): Promise<T> {
-	const result = await action.catch(() => {
-		throw new Error("Der Server ist nicht erreichbar. Versuche es später nochmal.");
-	});
-	if (result.error !== undefined) throw new Error(result.error);
-	return result.data;
-}
-
-export function errorMessage(error: unknown): string {
-	return error instanceof Error
-		? error.message
-		: "Etwas ist schiefgelaufen. Versuche es nochmal.";
+// The server actions turn backend errors into texts; this adds the one for when they can't run at all
+async function call<T>(action: Promise<ActionResult<T>>): Promise<ActionResult<T>> {
+	try {
+		return await action;
+	} catch {
+		return { error: "Der Server ist nicht erreichbar. Versuche es später nochmal." };
+	}
 }
 
 function mergeMessages(current: ChatMessage[], incoming: ChatMessage[]): ChatMessage[] {
@@ -46,12 +41,9 @@ const initialState: ChatState = {
 };
 
 export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
-	async function markRead(chatId: string) {
-		try {
-			await call(markChatReadAction(chatId));
-		} catch {
-			// Stays unread until the chat is opened again.
-		}
+	function markRead(chatId: string) {
+		// On an error the chat stays unread until it's opened again
+		void call(markChatReadAction(chatId));
 	}
 
 	function receiveMessage(message: ChatMessage) {
@@ -60,7 +52,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		const fromOther = message.senderId !== userId;
 
 		if (fromOther) {
-			if (isOpen) void markRead(message.chatId);
+			if (isOpen) markRead(message.chatId);
 			else void get().loadUnreadCount();
 		}
 
@@ -146,20 +138,18 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		},
 
 		loadChats: async () => {
-			try {
-				const chats = await call(getChatsAction());
-				set({ chats, chatsError: null });
-			} catch (error) {
-				set({ chatsError: errorMessage(error) });
-			}
+			const result = await call(getChatsAction());
+			set(
+				result.error === undefined
+					? { chats: result.data, chatsError: null }
+					: { chatsError: result.error },
+			);
 		},
 
 		loadUnreadCount: async () => {
-			try {
-				set({ unreadCount: await call(getUnreadChatsCountAction()) });
-			} catch {
-				// Keeps the last known count; it refreshes on the next chat event.
-			}
+			const result = await call(getUnreadChatsCountAction());
+			// On an error the last known count stays; it refreshes on the next chat event
+			if (result.error === undefined) set({ unreadCount: result.data });
 		},
 
 		openChat: async (chatId) => {
@@ -169,23 +159,26 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 				set({ conversation: null, conversationError: null });
 			}
 
-			try {
-				const chat = await call(getChatAction(chatId));
-				if (get().openChatId !== chatId) return;
+			const result = await call(getChatAction(chatId));
+			if (get().openChatId !== chatId) return;
 
-				const current = get().conversation;
-				set({
-					conversation:
-						current?.id === chatId
-							? { ...chat, messages: mergeMessages(current.messages, chat.messages) }
-							: chat,
-					conversationError: null,
-				});
-				void markRead(chatId);
-			} catch (error) {
-				if (get().openChatId !== chatId || get().conversation?.id === chatId) return;
-				set({ conversationError: errorMessage(error) });
+			const current = get().conversation;
+
+			if (result.error !== undefined) {
+				// A chat that is already shown stays visible when reloading it fails
+				if (current?.id !== chatId) set({ conversationError: result.error });
+				return;
 			}
+
+			const chat = result.data;
+			set({
+				conversation:
+					current?.id === chatId
+						? { ...chat, messages: mergeMessages(current.messages, chat.messages) }
+						: chat,
+				conversationError: null,
+			});
+			markRead(chatId);
 		},
 
 		closeChat: () => {
@@ -193,22 +186,30 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		},
 
 		startChat: async (listingId, content) => {
-			const message = await call(startChatAction(listingId, content));
-			receiveMessage(message);
-			return message;
+			const result = await call(startChatAction(listingId, content));
+			if (result.error !== undefined) return result.error;
+
+			receiveMessage(result.data);
+			return null;
 		},
 
 		sendReply: async (content) => {
 			const chatId = get().conversation?.id;
-			if (!chatId) return;
+			if (!chatId) return null;
 
-			const message = await call(replyToChatAction(chatId, content));
-			receiveMessage(message);
+			const result = await call(replyToChatAction(chatId, content));
+			if (result.error !== undefined) return result.error;
+
+			receiveMessage(result.data);
+			return null;
 		},
 
 		deleteChat: async (chatId) => {
-			await call(deleteChatAction(chatId));
+			const result = await call(deleteChatAction(chatId));
+			if (result.error !== undefined) return result.error;
+
 			removeChat(chatId);
+			return null;
 		},
 	};
 });

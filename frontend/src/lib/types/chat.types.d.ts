@@ -23,7 +23,10 @@ export type ChatActions = {
 	loadUnreadCount: () => Promise<void>;
 	openChat: (chatId: string) => Promise<void>;
 	closeChat: () => void;
-	startChat: (listingId: string, content: string) => Promise<ChatMessage>;
-	sendReply: (content: string) => Promise<void>;
-	deleteChat: (chatId: string) => Promise<void>;
+	/** Returns the error text to show, or `null` if it worked. */
+	startChat: (listingId: string, content: string) => Promise<string | null>;
+	/** Returns the error text to show, or `null` if it worked. */
+	sendReply: (content: string) => Promise<string | null>;
+	/** Returns the error text to show, or `null` if it worked. */
+	deleteChat: (chatId: string) => Promise<string | null>;
 };

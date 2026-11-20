@@ -187,6 +187,29 @@ describe("newMessage", () => {
 	});
 });
 
+describe("sending", () => {
+	it("returns the server's error text and doesn't add the message", async () => {
+		await openChat(chatDetail("chat-1"));
+		vi.mocked(replyToChatAction).mockResolvedValueOnce({
+			error: "Dieser Chat ist geschlossen.",
+		});
+
+		const error = await useChatStore.getState().sendReply("Hallo");
+
+		expect(error).toBe("Dieser Chat ist geschlossen.");
+		expect(useChatStore.getState().conversation?.messages).toEqual([]);
+	});
+
+	it("returns a text when the server can't be reached", async () => {
+		await openChat(chatDetail("chat-1"));
+		vi.mocked(replyToChatAction).mockRejectedValueOnce(new Error("fetch failed"));
+
+		const error = await useChatStore.getState().sendReply("Hallo");
+
+		expect(error).toBe("Der Server ist nicht erreichbar. Versuche es später nochmal.");
+	});
+});
+
 describe("chatRead", () => {
 	it("marks the chat as read and reloads the unread count", async () => {
 		useChatStore.setState({ chats: [chatItem("chat-1", true)], unreadCount: 1 });

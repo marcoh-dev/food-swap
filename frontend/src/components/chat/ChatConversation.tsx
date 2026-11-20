@@ -31,7 +31,7 @@ import {
 	MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
-import { errorMessage, useChatStore } from "@/store/chat.store";
+import { useChatStore } from "@/store/chat.store";
 import { isSameDay } from "@/utils/date";
 
 import { ChatForm } from "./ChatForm";
@@ -205,15 +205,16 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 	async function handleDelete() {
 		setDeleting(true);
 		setError(null);
-		try {
-			await deleteChat(chatId);
-			setOpen(false);
-			onDeleted();
-		} catch (error) {
-			setError(errorMessage(error));
-		} finally {
-			setDeleting(false);
+		const deleteError = await deleteChat(chatId);
+		setDeleting(false);
+
+		if (deleteError) {
+			setError(deleteError);
+			return;
 		}
+
+		setOpen(false);
+		onDeleted();
 	}
 
 	return (
