@@ -18,7 +18,15 @@
 	--color-success: var(--success);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
+
+	--color-destructive-inverse: var(--destructive-inverse);
+	--color-destructive-inverse-foreground: var(--destructive-inverse-foreground);
+	--color-highlight: var(--highlight);
+	--color-highlight-foreground: var(--highlight-foreground);
+	--color-highlight-muted-foreground: var(--highlight-muted-foreground);
+	--color-highlight-muted: var(--highlight-muted);
 	--color-info: var(--info);
+
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
@@ -44,6 +52,12 @@
 	--success: #849725;
 	--destructive: #ad242f;
 	--destructive-foreground: #fdfbf7;
+	--destructive-inverse: #f29599;
+	--destructive-inverse-foreground: #1a282e;
+	--highlight: #6d4aff;
+	--highlight-foreground: #fdfbf7;
+	--highlight-muted-foreground: #e0d8f9;
+	--highlight-muted: #aa8ed6;
 	--info: #2866bb;
 	--border: #ddd6c8;
 	--input: #8f8777;
@@ -69,6 +83,12 @@
 		--success: #849725;
 		--destructive: #f29599;
 		--destructive-foreground: #1a282e;
+		--destructive-inverse: #ad242f;
+		--destructive-inverse-foreground: #fdfbf7;
+		--highlight: #5a3fd1;
+		--highlight-foreground: #f7f3eb;
+		--highlight-muted-foreground: #e6e0f7;
+		--highlight-muted: #6b55a0;
 		--info: #6ea2ea;
 		--border: #3e555e;
 		--input: #889398;

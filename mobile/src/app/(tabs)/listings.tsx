@@ -2,6 +2,7 @@ import type { ListingResponse, ListingStatus } from "@food-swap/shared/types";
 import { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
+import Carousel from "@/components/Carousel";
 import ListingCard from "@/components/ListingCard";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
@@ -141,6 +142,7 @@ export default function Listings() {
 					{heading}
 					{offlineNotice}
 					{errorNotice}
+					<Carousel />
 					<Text variant="muted">
 						{data.pages[0]?.meta.total}{" "}
 						{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
