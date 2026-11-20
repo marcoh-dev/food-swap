@@ -6,6 +6,7 @@ export type ChatState = {
 	chats: ChatListItem[] | null;
 	chatsError: string | null;
 	unreadCount: number;
+	openChatId: string | null;
 	conversation: ChatDetail | null;
 	conversationError: string | null;
 };

@@ -14,9 +14,9 @@ type ConnectChatOptions = {
 async function showNotification(message: ChatMessage, onClick: (chatId: string) => void) {
 	if (!notificationsEnabled()) return;
 
-	const { userId, conversation, chats } = useChatStore.getState();
+	const { userId, openChatId, chats } = useChatStore.getState();
 	if (message.senderId === userId) return;
-	if (!document.hidden && conversation?.id === message.chatId) return;
+	if (!document.hidden && openChatId === message.chatId) return;
 
 	const findChat = (list?: ChatListItem[] | null) =>
 		list?.find((item) => item.id === message.chatId);

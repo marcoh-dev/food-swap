@@ -158,6 +158,23 @@ describe("newMessage", () => {
 		expect(markChatReadAction).not.toHaveBeenCalled();
 	});
 
+	it("counts a chat that is still loading as open", async () => {
+		useChatStore.setState({ chats: [chatItem("chat-1"), chatItem("chat-2")] });
+		const loading = Promise.withResolvers<ActionResult<ChatDetail>>();
+		vi.mocked(getChatAction).mockReturnValueOnce(loading.promise);
+		const opening = useChatStore.getState().openChat("chat-2");
+
+		emit("newMessage", message("chat-2", OTHER));
+		await flush();
+
+		expect(useChatStore.getState().chats?.[0]?.unread).toBe(false);
+		expect(markChatReadAction).toHaveBeenCalledWith("chat-2");
+		expect(getUnreadChatsCountAction).not.toHaveBeenCalled();
+
+		loading.resolve({ data: chatDetail("chat-2") });
+		await opening;
+	});
+
 	it("shows an own reply only once when the socket sends it back", async () => {
 		await openChat(chatDetail("chat-1"));
 		const reply = message("chat-1", ME);
@@ -197,6 +214,19 @@ describe("chatRemoved", () => {
 		expect(conversation).toBeNull();
 		expect(conversationError).toBe("Dieser Chat wurde gelöscht.");
 		expect(getUnreadChatsCountAction).toHaveBeenCalled();
+	});
+	it("closes a chat that is deleted while it's loading", async () => {
+		const loading = Promise.withResolvers<ActionResult<ChatDetail>>();
+		vi.mocked(getChatAction).mockReturnValueOnce(loading.promise);
+		const opening = useChatStore.getState().openChat("chat-1");
+
+		emit("chatRemoved", { chatId: "chat-1" });
+		loading.resolve({ error: "Chat nicht gefunden" });
+		await opening;
+
+		const { openChatId, conversationError } = useChatStore.getState();
+		expect(openChatId).toBeNull();
+		expect(conversationError).toBe("Dieser Chat wurde gelöscht.");
 	});
 });
 

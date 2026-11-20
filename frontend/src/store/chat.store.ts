@@ -40,13 +40,12 @@ const initialState: ChatState = {
 	chats: null,
 	chatsError: null,
 	unreadCount: 0,
+	openChatId: null,
 	conversation: null,
 	conversationError: null,
 };
 
 export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
-	let openChatId: string | null = null;
-
 	async function markRead(chatId: string) {
 		try {
 			await call(markChatReadAction(chatId));
@@ -56,8 +55,8 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 	}
 
 	function receiveMessage(message: ChatMessage) {
-		const { conversation, chats, userId } = get();
-		const isOpen = conversation?.id === message.chatId;
+		const { openChatId, conversation, chats, userId } = get();
+		const isOpen = openChatId === message.chatId;
 		const fromOther = message.senderId !== userId;
 
 		if (fromOther) {
@@ -65,7 +64,8 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 			else void get().loadUnreadCount();
 		}
 
-		if (isOpen) {
+		// A chat that is still loading gets the message with its data
+		if (conversation?.id === message.chatId) {
 			set({
 				conversation: {
 					...conversation,
@@ -101,9 +101,12 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 			chats: state.chats?.filter((item) => item.id !== chatId) ?? null,
 		}));
 
-		if (get().conversation?.id === chatId) {
-			openChatId = null;
-			set({ conversation: null, conversationError: "Dieser Chat wurde gelöscht." });
+		if (get().openChatId === chatId) {
+			set({
+				openChatId: null,
+				conversation: null,
+				conversationError: "Dieser Chat wurde gelöscht.",
+			});
 		}
 	}
 
@@ -112,16 +115,14 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 
 		setUserId: (userId) => set({ userId }),
 
-		reset: () => {
-			openChatId = null;
-			set(initialState);
-		},
+		reset: () => set(initialState),
 
 		onConnect: () => {
 			set({ connected: true });
 
 			void get().loadUnreadCount();
 			if (get().chats || get().chatsError) void get().loadChats();
+			const { openChatId } = get();
 			if (openChatId) void get().openChat(openChatId);
 		},
 
@@ -162,7 +163,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		},
 
 		openChat: async (chatId) => {
-			openChatId = chatId;
+			set({ openChatId: chatId });
 
 			if (get().conversation?.id !== chatId) {
 				set({ conversation: null, conversationError: null });
@@ -170,7 +171,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 
 			try {
 				const chat = await call(getChatAction(chatId));
-				if (openChatId !== chatId) return;
+				if (get().openChatId !== chatId) return;
 
 				const current = get().conversation;
 				set({
@@ -182,14 +183,13 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 				});
 				void markRead(chatId);
 			} catch (error) {
-				if (openChatId !== chatId || get().conversation?.id === chatId) return;
+				if (get().openChatId !== chatId || get().conversation?.id === chatId) return;
 				set({ conversationError: errorMessage(error) });
 			}
 		},
 
 		closeChat: () => {
-			openChatId = null;
-			set({ conversation: null, conversationError: null });
+			set({ openChatId: null, conversation: null, conversationError: null });
 		},
 
 		startChat: async (listingId, content) => {
