@@ -39,7 +39,7 @@ export const SLIDES: SlideContent[] = [
 		id: "tomato-etymology",
 		type: "facts",
 		title: "Woher kommt das Wort Tomate?",
-		body: "Das Wort kam über das Französische aus dem Nahuatl, der Sprache der Azteken, wo die Frucht „tomatl“ hieß. In Deutschland war sie lange nur eine Zierpflanze namens „Liebesapfel“ und wurde erst im 19. Jahrhundert gegessen.",
+		body: "Das Wort stammt aus dem Nahuatl: Die Azteken nannten die Frucht „tomatl“. In Deutschland war sie lange nur als Zierpflanze „Liebesapfel“ bekannt.",
 		source: "Quelle: DWDS",
 	},
 ];
