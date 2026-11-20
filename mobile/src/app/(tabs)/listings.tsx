@@ -46,7 +46,7 @@ export default function Listings() {
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
-	const errorNotice = isError && (
+	const errorNotice = isError && !isFetchNextPageError && (
 		<>
 			<Text>
 				{data
