@@ -8,8 +8,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { useEffect } from "react";
-import { ActivityIndicator, Image, ScrollView, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Image, RefreshControl, ScrollView, View } from "react-native";
 import { z } from "zod";
 
 import { LISTINGS_QUERY_KEY } from "@/api/listings";
@@ -46,6 +46,18 @@ export default function ListingDetail() {
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const destructive = useThemeColor("--destructive");
+	const card = useThemeColor("--card");
+	const [isRefreshing, setIsRefreshing] = useState(false);
+
+	async function refresh() {
+		if (!isOnline) {
+			return;
+		}
+
+		setIsRefreshing(true);
+		await refetch();
+		setIsRefreshing(false);
+	}
 
 	const isNotFound = !isValidId || isNotFoundError(error);
 
@@ -119,6 +131,15 @@ export default function ListingDetail() {
 			className="bg-background"
 			contentContainerClassName="pb-6"
 			contentInsetAdjustmentBehavior="automatic"
+			refreshControl={
+				<RefreshControl
+					refreshing={isRefreshing}
+					onRefresh={refresh}
+					tintColor={mutedForeground}
+					colors={mutedForeground ? [mutedForeground] : undefined}
+					progressBackgroundColor={card}
+				/>
+			}
 		>
 			{(offlineNotice || errorNotice) && (
 				<View className="gap-4 px-6 py-4">
