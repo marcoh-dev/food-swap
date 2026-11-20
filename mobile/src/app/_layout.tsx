@@ -78,6 +78,14 @@ export default function RootLayout() {
 						<AuthProvider>
 							<Stack screenOptions={{ headerShown: false }}>
 								<Stack.Screen
+									name="listings/[id]"
+									options={{
+										headerShown: true,
+										title: "Angebot",
+										headerBackButtonDisplayMode: "minimal",
+									}}
+								/>
+								<Stack.Screen
 									name="login"
 									options={{
 										presentation: "modal",

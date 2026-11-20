@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatTime, getBerlinDay, getDaysUntil } from "./dates";
+import { formatTime, getBerlinDay, getDaysUntil, getDeletionLabel, getEndDateLabel } from "./dates";
 
 // Ends on 20.11.2026 at 23:59:59.999 Berlin time
 const END_DATE = "2026-11-20T22:59:59.999Z";
@@ -39,5 +39,35 @@ describe("getDaysUntil", () => {
 
 	it("returns a negative number after the end", () => {
 		expect(getDaysUntil(END_DATE, new Date("2026-11-21T12:00:00Z"))).toBe(-1);
+	});
+});
+
+describe("getEndDateLabel", () => {
+	it("counts down the last days", () => {
+		expect(getEndDateLabel(0, END_DATE)).toBe("Läuft heute ab");
+		expect(getEndDateLabel(1, END_DATE)).toBe("Noch 1 Tag");
+		expect(getEndDateLabel(7, END_DATE)).toBe("Noch 7 Tage");
+	});
+
+	it("shows the end date further ahead", () => {
+		expect(getEndDateLabel(8, END_DATE)).toBe("Bis 20.11.2026");
+	});
+
+	it("marks ended listings", () => {
+		expect(getEndDateLabel(-1, END_DATE)).toBe("Abgelaufen");
+	});
+});
+
+describe("getDeletionLabel", () => {
+	it("shows no deletion date before the listing has ended", () => {
+		// On its last day the listing is still active
+		expect(getDeletionLabel(END_DATE, new Date("2026-11-20T12:00:00Z"))).toBeNull();
+	});
+
+	it("shows the deletion day the cleanup uses after the listing has ended", () => {
+		// The cleanup deletes on end day + 29 (#98): 20.11. → 19.12.
+		expect(getDeletionLabel(END_DATE, new Date("2026-11-21T12:00:00Z"))).toBe(
+			"Wird am 19.12. gelöscht",
+		);
 	});
 });

@@ -1,9 +1,16 @@
-import { END_SOON_DAYS, getDaysUntil, TIME_ZONE } from "@food-swap/shared/dates";
+import {
+	ENDING_SOON_DAYS,
+	getDaysUntil,
+	getEndDateLabel,
+	TIME_ZONE,
+} from "@food-swap/shared/dates";
 import type { ListingResponse } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
 import { Image, ScrollView, Text, View } from "react-native";
 
+import { ListingImagePlaceholder } from "@/components/ListingImagePlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
 
 type ListingCardProps = Pick<
 	ListingResponse,
@@ -26,7 +33,7 @@ export default function ListingCard({
 	now,
 }: ListingCardProps) {
 	const daysLeft = getDaysUntil(endDate, new Date(now));
-	const endsSoon = daysLeft >= 0 && daysLeft <= END_SOON_DAYS;
+	const endsSoon = daysLeft >= 0 && daysLeft <= ENDING_SOON_DAYS;
 
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
@@ -45,7 +52,9 @@ export default function ListingCard({
 						className="absolute inset-0"
 						resizeMode="cover"
 					/>
-				) : null}
+				) : (
+					<ListingImagePlaceholder />
+				)}
 
 				<View className="absolute inset-x-2 top-2 flex-row items-start justify-between gap-1">
 					{statusLabel ? (
@@ -59,21 +68,11 @@ export default function ListingCard({
 					)}
 					<View
 						accessible
-						accessibilityLabel={type === "swap" ? "Tauschen" : "Verschenken"}
+						accessibilityLabel={LISTING_TYPE_LABELS[type]}
 						className="h-5 flex-row items-center justify-center rounded-full bg-background px-2 shadow-sm"
 					>
 						<SymbolView
-							name={
-								type === "swap"
-									? {
-											ios: "repeat",
-											android: "repeat",
-										}
-									: {
-											ios: "gift",
-											android: "redeem",
-										}
-							}
+							name={LISTING_TYPE_ICONS[type]}
 							size={12}
 							tintColor={foreground}
 						/>
@@ -83,11 +82,7 @@ export default function ListingCard({
 				{endsSoon && (
 					<View className="absolute bottom-2 left-2 rounded-full bg-background px-2 py-0.5 shadow-sm">
 						<Text className="font-medium text-xs text-foreground">
-							{daysLeft === 0
-								? "Läuft heute ab"
-								: daysLeft === 1
-									? "Noch 1 Tag"
-									: `Noch ${daysLeft} Tage`}
+							{getEndDateLabel(daysLeft, endDate)}
 						</Text>
 					</View>
 				)}

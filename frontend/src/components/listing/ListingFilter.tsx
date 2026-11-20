@@ -74,7 +74,7 @@ export default function ListingFilters({ categories, tags, resultCount }: Props)
 	const hasFilters = activeFilterCount > 0;
 
 	return (
-		<Popover open={isOpen} onOpenChange={setIsOpen}>
+		<Popover modal open={isOpen} onOpenChange={setIsOpen}>
 			{isOpen && (
 				<div
 					aria-hidden
@@ -84,7 +84,7 @@ export default function ListingFilters({ categories, tags, resultCount }: Props)
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
-					className="relative z-50"
+					className={isOpen ? "relative z-50" : undefined}
 					aria-label={`Filter${hasFilters ? `, ${activeFilterCount} aktiv` : ""}`}
 				>
 					<SlidersHorizontal size={16} strokeWidth={1} />

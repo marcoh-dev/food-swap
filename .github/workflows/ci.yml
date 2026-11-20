@@ -37,7 +37,10 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
+      - run: pnpm lint
+      - name: Check formatting
+        run: pnpm format:check || { echo "::error::Formatting is off. Run 'pnpm format' and push the changes."; exit 1; }
+      - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm --filter backend test:integration
       - run: pnpm build
