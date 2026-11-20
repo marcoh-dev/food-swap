@@ -40,6 +40,7 @@ export default function ListingDetail() {
 	} = useListing(id, { enabled: isValidId });
 	const isOnline = useIsOnline();
 	const queryClient = useQueryClient();
+	const router = useRouter();
 	const { isLoggedIn } = useAuth();
 	const { data: currentUser } = useCurrentUser({ enabled: isLoggedIn });
 	const foreground = useThemeColor("--foreground");
@@ -109,6 +110,7 @@ export default function ListingDetail() {
 	const isOwner = isLoggedIn && currentUser?.id === listing.owner.id;
 	const deletionLabel = isOwner ? getDeletionLabel(listing.endDate) : null;
 	const statusLabel = LISTING_STATUS_LABELS[listing.status];
+	const ownerName = listing.owner.name ?? listing.owner.username;
 	const { place } = listing;
 
 	// The scroll view must be the screen's first view, like on the tabs (iOS insets).
@@ -229,9 +231,21 @@ export default function ListingDetail() {
 
 				<Text>{listing.description}</Text>
 
-				<Text variant="muted">
-					Angeboten von {listing.owner.name ?? listing.owner.username}
-				</Text>
+				<Text variant="muted">Angeboten von {ownerName}</Text>
+
+				{!isLoggedIn && (
+					<View className="gap-3 rounded-lg bg-muted p-4">
+						<Text>Melde dich an, um {ownerName} zu schreiben.</Text>
+						{/* The login modal closes with router.back(), so you're back here afterwards */}
+						<Button
+							variant="outline"
+							className="self-start"
+							onPress={() => router.push("/login")}
+						>
+							<Text>Anmelden</Text>
+						</Button>
+					</View>
+				)}
 			</View>
 		</ScrollView>
 	);
