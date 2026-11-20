@@ -1,5 +1,5 @@
-import type { ListingStatus } from "@food-swap/shared/types";
-import { useState } from "react";
+import type { ListingResponse, ListingStatus } from "@food-swap/shared/types";
+import { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
@@ -32,6 +32,7 @@ export default function Listings() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const [isRefreshing, setIsRefreshing] = useState(false);
+	const listRef = useRef<FlatList<ListingResponse>>(null);
 
 	async function refresh() {
 		setIsRefreshing(true);
@@ -40,7 +41,7 @@ export default function Listings() {
 	}
 
 	function loadMore() {
-		if (hasNextPage && !isFetchingNextPage) {
+		if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
 			void fetchNextPage();
 		}
 	}
@@ -64,7 +65,11 @@ export default function Listings() {
 		footer = <ActivityIndicator color={mutedForeground} className="self-center py-4" />;
 	} else if (isFetchNextPageError) {
 		footer = (
-			<View className="gap-4 px-6 py-4">
+			// iOS: scrollToEnd ignores the space the system adds for the tab bar, so we add it here
+			<View
+				className={cn("gap-4 px-6 py-6", Platform.OS === "ios" && "pb-24")}
+				onLayout={() => listRef.current?.scrollToEnd({ animated: true })}
+			>
 				<Text>Weitere Angebote konnten nicht geladen werden.</Text>
 				<Button variant="outline" onPress={() => void fetchNextPage()}>
 					<Text>Erneut versuchen</Text>
@@ -94,6 +99,7 @@ export default function Listings() {
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
 			onEndReached={loadMore}
+			ref={listRef}
 			ListHeaderComponent={
 				<View
 					className={cn(
