@@ -1,6 +1,7 @@
 "use server";
 
 import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
+import { z } from "zod";
 
 import {
 	ApiError,
@@ -55,6 +56,9 @@ export async function getUnreadChatsCountAction(): Promise<ActionResult<number>>
 }
 
 export async function getChatAction(chatId: string): Promise<ActionResult<ChatDetail>> {
+	// The chat id comes from the URL; the backend would answer an invalid one with an English 400
+	if (!z.uuid().safeParse(chatId).success) return { error: "Chat nicht gefunden" };
+
 	try {
 		return { data: await getChat(chatId) };
 	} catch (error) {
