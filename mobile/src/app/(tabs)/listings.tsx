@@ -3,9 +3,9 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
-import { Notice } from "@/components/Notice";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
@@ -47,10 +47,7 @@ export default function Listings() {
 		/>
 	);
 	const errorNotice = isOnline && isError && (
-		<Notice
-			icon={{ ios: "exclamationmark.triangle", android: "warning" }}
-			variant="destructive"
-			title="Laden fehlgeschlagen"
+		<ServerErrorNotice
 			message={
 				data
 					? `Die Angebote konnten nicht aktualisiert werden. Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}.`
@@ -65,7 +62,7 @@ export default function Listings() {
 			>
 				<Text>Erneut versuchen</Text>
 			</Button>
-		</Notice>
+		</ServerErrorNotice>
 	);
 
 	if (!data) {

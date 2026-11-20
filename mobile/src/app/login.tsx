@@ -6,8 +6,8 @@ import { AccessibilityInfo, ScrollView } from "react-native";
 import { z } from "zod";
 
 import { isUnauthorizedError } from "@/api/request";
-import { Notice } from "@/components/Notice";
 import { OfflineNotice } from "@/components/OfflineNotice";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -72,12 +72,7 @@ export default function Login() {
 				<OfflineNotice message="Du kannst dich anmelden, sobald du wieder online bist." />
 			)}
 			{isOnline && login.isError && !isUnauthorizedError(login.error) && (
-				<Notice
-					icon={{ ios: "exclamationmark.triangle", android: "warning" }}
-					variant="destructive"
-					title="Anmeldung fehlgeschlagen"
-					message="Der Server ist gerade nicht erreichbar. Bitte versuche es später erneut."
-				/>
+				<ServerErrorNotice message="Die Anmeldung hat nicht geklappt. Bitte versuche es später erneut." />
 			)}
 			<TextField
 				label="Benutzername"

@@ -1,10 +1,10 @@
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
-import { Notice } from "@/components/Notice";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Screen } from "@/components/Screen";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -38,10 +38,7 @@ function ProfileContent() {
 				/>
 			)}
 			{isOnline && isError && (
-				<Notice
-					icon={{ ios: "exclamationmark.triangle", android: "warning" }}
-					variant="destructive"
-					title="Laden fehlgeschlagen"
+				<ServerErrorNotice
 					message={
 						user
 							? "Dein Profil konnte nicht aktualisiert werden."
@@ -56,7 +53,7 @@ function ProfileContent() {
 					>
 						<Text>Erneut versuchen</Text>
 					</Button>
-				</Notice>
+				</ServerErrorNotice>
 			)}
 			{user ? (
 				<>
