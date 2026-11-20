@@ -11,7 +11,7 @@ export default function Carousel() {
 	return (
 		<View className="gap-2">
 			<FlatList
-            className="-mr-3"
+				className="-mr-3"
 				data={SLIDES}
 				keyExtractor={(slide) => slide.id}
 				horizontal
@@ -23,7 +23,12 @@ export default function Carousel() {
 				}
 				renderItem={({ item }) => (
 					<View style={{ width }} className="pr-3">
-						<Slide title={item.title} body={item.body} source={item.source} image={item.image}/>
+						<Slide
+							title={item.title}
+							body={item.body}
+							source={item.source}
+							image={item.image}
+						/>
 					</View>
 				)}
 			/>
@@ -35,7 +40,6 @@ export default function Carousel() {
 							"h-2 w-2 rounded-full",
 							i === index ? "bg-foreground" : "bg-muted-foreground",
 						)}
-			
 					/>
 				))}
 			</View>
