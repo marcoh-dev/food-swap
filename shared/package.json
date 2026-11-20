@@ -6,7 +6,8 @@
 		"./types": "./src/types/index.ts",
 		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
-		"./schemas/user": "./src/schemas/user.schemas.ts"
+		"./schemas/user": "./src/schemas/user.schemas.ts",
+		"./assets/*": "./assets/*"
 	},
 	"scripts": {
 		"lint": "eslint .",

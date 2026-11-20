@@ -72,6 +72,7 @@ Styling uses NativeWind 5, which is still a release candidate. `nativewind` and 
 | `@food-swap/shared/schemas/user` | zod schemas for login, registration and profile, with their validation messages                                                                         |
 | `@food-swap/shared/dates`        | dates and times in Berlin time (`getDaysUntil`, `getBerlinDay`, `formatTime`, `formatDate`), the "ends soon" limit and the end date and deletion labels |
 | `@food-swap/shared/messages`     | texts used by both apps (e.g. the login error)                                                                                                          |
+| `@food-swap/shared/assets/*`     | images both apps use (e.g. `listing-placeholder.svg`, the logo shown for listings without an image)                                                     |
 
 Things that only one app needs stay in that app (e.g. `frontend/src/lib/types`, `frontend/src/lib/schemas`, fonts and text sizes in `frontend/src/app/globals.css`); more can move to `shared` once both apps need it. The package has no build step: it exports its TypeScript files directly, Metro handles them, and Next.js compiles them through `transpilePackages` in `next.config.ts`. Inside `shared` there is no `@/` alias, so it uses relative imports. New files need an entry in `exports` in `shared/package.json`.
 
