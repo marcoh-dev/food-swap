@@ -34,6 +34,9 @@ export default function Login() {
 	function update(field: keyof LoginValues, value: string) {
 		setValues((previous) => ({ ...previous, [field]: value }));
 		setFieldErrors((previous) => ({ ...previous, [field]: undefined }));
+		if (login.isError) {
+			login.reset();
+		}
 	}
 
 	function handleSubmit() {
@@ -68,6 +71,14 @@ export default function Login() {
 			{!isOnline && (
 				<OfflineNotice message="Du kannst dich anmelden, sobald du wieder online bist." />
 			)}
+			{isOnline && login.isError && !isUnauthorizedError(login.error) && (
+				<Notice
+					icon={{ ios: "exclamationmark.triangle", android: "warning" }}
+					variant="destructive"
+					title="Anmeldung fehlgeschlagen"
+					message="Der Server ist gerade nicht erreichbar. Bitte versuche es später erneut."
+				/>
+			)}
 			<TextField
 				label="Benutzername"
 				placeholder="Pomodoro"
@@ -91,18 +102,11 @@ export default function Login() {
 				returnKeyType="go"
 				onSubmitEditing={handleSubmit}
 			/>
-			{isUnauthorizedError(login.error) ? (
+			{isUnauthorizedError(login.error) && (
 				<Text className="text-destructive" accessibilityRole="alert">
 					{LOGIN_FAILED_MESSAGE}
 				</Text>
-			) : login.isError ? (
-				<Notice
-					icon={{ ios: "exclamationmark.triangle", android: "warning" }}
-					variant="destructive"
-					title="Anmeldung fehlgeschlagen"
-					message="Der Server ist gerade nicht erreichbar. Bitte versuche es später erneut."
-				/>
-			) : null}
+			)}
 			<Button disabled={!isOnline || login.isPending} onPress={handleSubmit}>
 				<Text>Anmelden</Text>
 			</Button>
