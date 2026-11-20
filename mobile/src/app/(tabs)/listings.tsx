@@ -1,4 +1,3 @@
-import type { ListingStatus } from "@food-swap/shared/types";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
@@ -12,12 +11,8 @@ import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListings } from "@/hooks/useListings";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
+import { LISTING_STATUS_LABELS } from "@/lib/listing";
 import { cn } from "@/lib/utils";
-
-const STATUS_LABELS: Partial<Record<ListingStatus, string>> = {
-	reserved: "Reserviert",
-	deactivated: "Deaktiviert",
-};
 
 export default function Listings() {
 	const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useListings();
@@ -125,7 +120,7 @@ export default function Listings() {
 					tags={item.tags}
 					createdAt={item.createdAt}
 					endDate={item.endDate}
-					statusLabel={STATUS_LABELS[item.status]}
+					statusLabel={LISTING_STATUS_LABELS[item.status]}
 					now={dataUpdatedAt}
 				/>
 			)}

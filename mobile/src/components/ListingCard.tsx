@@ -9,6 +9,7 @@ import { SymbolView } from "expo-symbols";
 import { Image, ScrollView, Text, View } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
 
 type ListingCardProps = Pick<
 	ListingResponse,
@@ -64,21 +65,11 @@ export default function ListingCard({
 					)}
 					<View
 						accessible
-						accessibilityLabel={type === "swap" ? "Tauschen" : "Verschenken"}
+						accessibilityLabel={LISTING_TYPE_LABELS[type]}
 						className="h-5 flex-row items-center justify-center rounded-full bg-background px-2 shadow-sm"
 					>
 						<SymbolView
-							name={
-								type === "swap"
-									? {
-											ios: "repeat",
-											android: "repeat",
-										}
-									: {
-											ios: "gift",
-											android: "redeem",
-										}
-							}
+							name={LISTING_TYPE_ICONS[type]}
 							size={12}
 							tintColor={foreground}
 						/>
