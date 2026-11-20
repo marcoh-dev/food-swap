@@ -76,6 +76,23 @@ Styling uses NativeWind 5, which is still a release candidate. `nativewind` and 
 
 Things that only one app needs stay in that app (e.g. `frontend/src/lib/types`, `frontend/src/lib/schemas`, fonts and text sizes in `frontend/src/app/globals.css`); more can move to `shared` once both apps need it. The package has no build step: it exports its TypeScript files directly, Metro handles them, and Next.js compiles them through `transpilePackages` in `next.config.ts`. Inside `shared` there is no `@/` alias, so it uses relative imports. New files need an entry in `exports` in `shared/package.json`.
 
+### Chat data flow (web)
+
+The web chat gets its data in two ways:
+
+- **Loading and sending** go through server actions (`frontend/src/app/chats/actions.ts`). They run on the Next.js server, read the login token from the `auth_token` cookie and call the backend's REST API (`/chats`).
+- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with the same token, through `connectChat` in `frontend/src/lib/chatEvents.ts`, which registers all socket listeners in one place. The backend puts each user in their own room (`user:<id>`) and sends three events:
+
+    | Event         | Sent when                                                 | Effect in the browser                                                               |
+    | ------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+    | `newMessage`  | someone sends a message (to both participants)            | the chat moves to the top of the list, the open chat shows it, unread count updates |
+    | `chatRead`    | a user opened a chat (only to that user, e.g. other tabs) | the chat is no longer marked unread, unread count updates                           |
+    | `chatRemoved` | a user deleted a chat (only to that user)                 | the chat disappears from the list and closes if it's open                           |
+
+The Zustand store (`frontend/src/store/chat.store.ts`) holds the chat list, the unread count and the open chat. It has no socket code: the listeners call its actions, and the components only read from it and call its actions. After a reconnect, the store reloads the unread count, the chat list and the open chat, because events sent while offline are lost.
+
+Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `NotificationPermissionPrompt` asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
+
 ### Environment variables
 
 **`backend/.env`**

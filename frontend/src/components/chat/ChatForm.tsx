@@ -6,10 +6,10 @@ import { type KeyboardEvent, type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { errorMessage } from "@/store/chat.store";
 
 type ChatFormProps = {
-	onSend: (content: string) => Promise<void>;
+	/** Returns the error text to show, or `null` if the message was sent. */
+	onSend: (content: string) => Promise<string | null>;
 	placeholder?: string;
 };
 
@@ -30,14 +30,11 @@ export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: Cha
 
 		setSending(true);
 		setError(null);
-		try {
-			await onSend(trimmed);
-			setContent("");
-		} catch (error) {
-			setError(errorMessage(error));
-		} finally {
-			setSending(false);
-		}
+		const sendError = await onSend(trimmed);
+		setSending(false);
+
+		if (sendError) setError(sendError);
+		else setContent("");
 	}
 
 	function handleSubmit(event: SubmitEvent<HTMLFormElement>) {

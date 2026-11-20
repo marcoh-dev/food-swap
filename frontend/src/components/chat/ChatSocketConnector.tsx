@@ -1,8 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { useChatStore } from "@/store/chat.store";
+import { connectChat } from "@/lib/chatEvents";
 
 type ChatSocketConnectorProps = {
 	token: string | null;
@@ -10,18 +11,17 @@ type ChatSocketConnectorProps = {
 };
 
 export function ChatSocketConnector({ token, userId }: ChatSocketConnectorProps) {
-	const connect = useChatStore((state) => state.connect);
-	const disconnect = useChatStore((state) => state.disconnect);
+	const router = useRouter();
 
 	useEffect(() => {
 		if (!token || !userId) return;
 
-		connect(token, userId);
-
-		return () => {
-			disconnect();
-		};
-	}, [token, userId, connect, disconnect]);
+		return connectChat({
+			token,
+			userId,
+			onNotificationClick: (chatId) => router.push(`/chats?chat=${chatId}`),
+		});
+	}, [token, userId, router]);
 
 	return null;
 }

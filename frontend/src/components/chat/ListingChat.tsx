@@ -55,8 +55,9 @@ export function ListingChat({ listingId, ownerId, ownerName, status }: ListingCh
 			form={
 				<ChatForm
 					onSend={async (content) => {
-						await startChat(listingId, content);
-						setSent(true);
+						const error = await startChat(listingId, content);
+						if (!error) setSent(true);
+						return error;
 					}}
 					placeholder={`Schreib ${ownerName}…`}
 				/>
