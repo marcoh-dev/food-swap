@@ -7,6 +7,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { RefreshToken } from "./auth/entities/refreshToken.entity";
 import { JwtAuthGuard } from "./auth/jwtAuth.guard";
 import { CategoriesModule } from "./categories/categories.module";
 import { Category } from "./categories/entities/category.entity";
@@ -32,7 +33,7 @@ import { UsersModule } from "./users/users.module";
 			useFactory: (configService: ConfigService) => ({
 				type: "postgres",
 				url: configService.getOrThrow<string>("DATABASE_URL"),
-				entities: [User, Listing, Chat, Message, Category, Tag, Place],
+				entities: [User, Listing, Chat, Message, Category, Tag, Place, RefreshToken],
 				synchronize: false,
 				logging: false,
 				enableWAL: true,
