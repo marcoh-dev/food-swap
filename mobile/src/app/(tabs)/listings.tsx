@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
+import { Notice } from "@/components/Notice";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
 import { Button } from "@/components/ui/button";
@@ -46,16 +47,20 @@ export default function Listings() {
 		/>
 	);
 	const errorNotice = isOnline && isError && (
-		<>
-			<Text>
-				{data
+		<Notice
+			icon={{ ios: "exclamationmark.triangle", android: "warning" }}
+			variant="destructive"
+			title="Laden fehlgeschlagen"
+			message={
+				data
 					? `Die Angebote konnten nicht aktualisiert werden. Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}.`
-					: "Die Angebote konnten nicht geladen werden."}
-			</Text>
+					: "Die Angebote konnten nicht geladen werden."
+			}
+		>
 			<Button variant="outline" disabled={isFetching} onPress={() => void refetch()}>
 				<Text>Erneut versuchen</Text>
 			</Button>
-		</>
+		</Notice>
 	);
 
 	if (!data) {
