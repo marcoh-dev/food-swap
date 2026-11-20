@@ -22,6 +22,7 @@ async function call<T>(action: Promise<ActionResult<T>>): Promise<ActionResult<T
 	}
 }
 
+// Messages can arrive twice (own reply via the action and the socket, reload after a reconnect)
 function mergeMessages(current: ChatMessage[], incoming: ChatMessage[]): ChatMessage[] {
 	const byId = new Map(current.map((message) => [message.id, message]));
 	for (const message of incoming) byId.set(message.id, message);
@@ -40,6 +41,10 @@ const initialState: ChatState = {
 	conversationError: null,
 };
 
+/**
+ * Chat list, unread count and open chat of the logged-in user. Socket events reach it
+ * through `connectChat` (`lib/chatEvents.ts`); components read from it and call its actions.
+ */
 export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 	function markRead(chatId: string) {
 		// On an error the chat stays unread until it's opened again
@@ -51,6 +56,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		const isOpen = openChatId === message.chatId;
 		const fromOther = message.senderId !== userId;
 
+		// The user sees messages in the open chat, so they count as read right away
 		if (fromOther) {
 			if (isOpen) markRead(message.chatId);
 			else void get().loadUnreadCount();
@@ -70,6 +76,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 
 		const chat = chats.find((item) => item.id === message.chatId);
 
+		// First message of a new chat: the list item comes from the server
 		if (!chat) {
 			void get().loadChats();
 			return;
@@ -112,6 +119,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		onConnect: () => {
 			set({ connected: true });
 
+			// Events sent while offline are lost; the list only if it was loaded before
 			void get().loadUnreadCount();
 			if (get().chats || get().chatsError) void get().loadChats();
 			const { openChatId } = get();

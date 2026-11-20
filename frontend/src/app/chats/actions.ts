@@ -14,6 +14,7 @@ import {
 } from "@/lib/chats.service";
 import type { ActionResult } from "@/lib/types/common.types";
 
+// The backend's texts for 400, 403 and 404 are written for users; other errors get the action's fallback
 function chatErrorMessage(error: unknown, fallback: string): string {
 	if (error instanceof ApiError) {
 		if (error.status === 401) {

@@ -11,6 +11,7 @@ type ConnectChatOptions = {
 	onNotificationClick: (chatId: string) => void;
 };
 
+// Only for messages from others, and not for the open chat while the tab is visible
 async function showNotification(message: ChatMessage, onClick: (chatId: string) => void) {
 	if (!notificationsEnabled()) return;
 
@@ -20,6 +21,7 @@ async function showNotification(message: ChatMessage, onClick: (chatId: string) 
 
 	const findChat = (list?: ChatListItem[] | null) =>
 		list?.find((item) => item.id === message.chatId);
+	// The chat list may not be loaded yet (e.g. the user never opened /chats)
 	const chat = findChat(chats) ?? findChat((await getChatsAction()).data);
 
 	const notification = new Notification(
@@ -37,6 +39,10 @@ async function showNotification(message: ChatMessage, onClick: (chatId: string) 
 	};
 }
 
+/**
+ * Connects the chat socket and forwards its events to the chat store and the browser
+ * notifications. Returns a function that disconnects and resets the store.
+ */
 export function connectChat({ token, userId, onNotificationClick }: ConnectChatOptions) {
 	const store = useChatStore.getState();
 
