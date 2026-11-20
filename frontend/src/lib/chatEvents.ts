@@ -15,9 +15,9 @@ type ConnectChatOptions = {
 async function showNotification(message: ChatMessage, onClick: (chatId: string) => void) {
 	if (!notificationsEnabled()) return;
 
-	const { userId, openChatId, chats } = useChatStore.getState();
+	const { userId, openChatId, tabVisible, chats } = useChatStore.getState();
 	if (message.senderId === userId) return;
-	if (!document.hidden && openChatId === message.chatId) return;
+	if (tabVisible && openChatId === message.chatId) return;
 
 	const findChat = (list?: ChatListItem[] | null) =>
 		list?.find((item) => item.id === message.chatId);
@@ -59,7 +59,13 @@ export function connectChat({ token, userId, onNotificationClick }: ConnectChatO
 		store.onChatRemoved(chatId);
 	}
 
+	function onVisibilityChange() {
+		store.setTabVisible(!document.hidden);
+	}
+
 	store.setUserId(userId);
+	store.setTabVisible(!document.hidden);
+	document.addEventListener("visibilitychange", onVisibilityChange);
 
 	socket.on("connect", store.onConnect);
 	socket.on("disconnect", store.onDisconnect);
@@ -76,6 +82,7 @@ export function connectChat({ token, userId, onNotificationClick }: ConnectChatO
 		socket.off("newMessage", onNewMessage);
 		socket.off("chatRead", onChatRead);
 		socket.off("chatRemoved", onChatRemoved);
+		document.removeEventListener("visibilitychange", onVisibilityChange);
 
 		socket.disconnect();
 		store.reset();

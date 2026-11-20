@@ -12,6 +12,8 @@ export type ChatState = {
 	unreadCount: number;
 	/** The chat that is open, also while it's still loading. */
 	openChatId: string | null;
+	/** Whether the browser tab is visible; messages in a hidden tab stay unread. */
+	tabVisible: boolean;
 	/** The loaded messages of the open chat. */
 	conversation: ChatDetail | null;
 	conversationError: string | null;
@@ -26,6 +28,8 @@ export type ChatActions = {
 	onDisconnect: () => void;
 	/** Adds a new or own message to the open chat and the chat list. */
 	receiveMessage: (message: ChatMessage) => void;
+	/** Marks the open chat as read when the tab becomes visible again. */
+	setTabVisible: (visible: boolean) => void;
 	/** The user read a chat, possibly in another tab. */
 	onChatRead: (chatId: string) => void;
 	/** The user deleted a chat, possibly in another tab. */

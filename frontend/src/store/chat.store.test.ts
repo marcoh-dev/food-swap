@@ -91,6 +91,15 @@ function chatIds() {
 	return useChatStore.getState().chats?.map((chat) => chat.id);
 }
 
+// The tests run in Node, which has no document; this one only knows visibility
+const fakeDocument = Object.assign(new EventTarget(), { hidden: false });
+vi.stubGlobal("document", fakeDocument);
+
+function setTabHidden(hidden: boolean) {
+	fakeDocument.hidden = hidden;
+	fakeDocument.dispatchEvent(new Event("visibilitychange"));
+}
+
 let disconnect: () => void;
 
 beforeEach(() => {
@@ -98,6 +107,7 @@ beforeEach(() => {
 	vi.mocked(getChatsAction).mockResolvedValue({ data: [] });
 	vi.mocked(getUnreadChatsCountAction).mockResolvedValue({ data: 0 });
 	vi.mocked(markChatReadAction).mockResolvedValue({ data: null });
+	fakeDocument.hidden = false;
 	disconnect = connectChat({ token: "token", userId: ME, onNotificationClick: vi.fn() });
 });
 
@@ -184,6 +194,43 @@ describe("newMessage", () => {
 		emit("newMessage", reply);
 
 		expect(useChatStore.getState().conversation?.messages).toEqual([reply]);
+	});
+});
+
+describe("hidden tab", () => {
+	it("keeps a message in the open chat unread while the tab is hidden", async () => {
+		useChatStore.setState({ chats: [chatItem("chat-1")] });
+		await openChat(chatDetail("chat-1"));
+		setTabHidden(true);
+		vi.clearAllMocks();
+
+		emit("newMessage", message("chat-1", OTHER));
+		await flush();
+
+		expect(useChatStore.getState().chats?.[0]?.unread).toBe(true);
+		expect(getUnreadChatsCountAction).toHaveBeenCalled();
+		expect(markChatReadAction).not.toHaveBeenCalled();
+	});
+
+	it("marks the open chat as read when the tab becomes visible again", async () => {
+		useChatStore.setState({ chats: [chatItem("chat-1")] });
+		await openChat(chatDetail("chat-1"));
+		setTabHidden(true);
+		emit("newMessage", message("chat-1", OTHER));
+		await flush();
+		vi.clearAllMocks();
+
+		setTabHidden(false);
+
+		expect(markChatReadAction).toHaveBeenCalledWith("chat-1");
+	});
+
+	it("doesn't mark a chat as read when it's opened in a hidden tab", async () => {
+		setTabHidden(true);
+
+		await openChat(chatDetail("chat-1"));
+
+		expect(markChatReadAction).not.toHaveBeenCalled();
 	});
 });
 
