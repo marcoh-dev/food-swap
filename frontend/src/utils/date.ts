@@ -1,4 +1,4 @@
-import { formatTime, getBerlinDay, getDaysUntil, TIME_ZONE } from "@food-swap/shared/dates";
+import { formatDate, formatTime, getBerlinDay, shiftDay } from "@food-swap/shared/dates";
 
 import { endDateRules } from "@/lib/constants/listing.constants";
 import type { EndDateResult, ParsedEndDate } from "@/lib/types/listing.types";
@@ -7,35 +7,10 @@ function getCurrentIsoDate(): string {
 	return new Date().toISOString();
 }
 
-export function formatDate(isoDate: string): string {
-	const date = new Date(isoDate);
-
-	if (Number.isNaN(date.getTime())) return "";
-
-	return date.toLocaleDateString("de-DE", {
-		day: "2-digit",
-		month: "2-digit",
-		year: "numeric",
-		timeZone: TIME_ZONE,
-	});
-}
-
 // Formats a "YYYY-MM-DD" day like formatDate, without a time zone shift.
 export function formatDay(day: string): string {
 	const [year, month, date] = day.split("-");
 	return `${date}.${month}.${year}`;
-}
-
-function formatDayWithoutYear(day: string): string {
-	const [, month, date] = day.split("-");
-	return `${date}.${month}.`;
-}
-
-function shiftDay(day: string, { days = 0, months = 0 }): string {
-	const [year, month, date] = day.split("-").map(Number) as [number, number, number];
-	const shifted = new Date(Date.UTC(year, month - 1 + months, date + days));
-
-	return shifted.toISOString().slice(0, 10);
 }
 
 // The calendar works with local dates, the end day rules with Berlin days.
@@ -59,34 +34,6 @@ export function isSameDay(a: string, b: string): boolean {
 
 export function formatShortDate(isoDate: string): string {
 	return isSameDay(isoDate, getCurrentIsoDate()) ? formatTime(isoDate) : formatDate(isoDate);
-}
-
-export function formatListingDate(
-	isoDate: string | null | undefined,
-	now: Date = new Date(),
-): string | null {
-	if (!isoDate) return null;
-
-	const date = new Date(isoDate);
-
-	if (Number.isNaN(date.getTime())) return null;
-
-	const day = getBerlinDay(date);
-	const today = getBerlinDay(now);
-
-	if (day === today) {
-		return `heute, ${formatTime(isoDate)}`;
-	}
-
-	if (day === shiftDay(today, { days: -1 })) {
-		return `gestern, ${formatTime(isoDate)}`;
-	}
-
-	return date.toLocaleDateString("de-DE", {
-		day: "2-digit",
-		month: "2-digit",
-		timeZone: TIME_ZONE,
-	});
 }
 
 export function getDefaultEndDay(now: Date = new Date()): string {
@@ -148,32 +95,4 @@ export function validateEndDate(
 	}
 
 	return { ok: true, date: parsed.date };
-}
-
-export function getEndDateLabel(
-	daysLeft: number,
-	endDate: string,
-	variant: "relative" | "full" = "full",
-): string {
-	if (daysLeft < 0) return "Abgelaufen";
-	if (daysLeft === 0) return "Läuft heute ab";
-	if (daysLeft === 1) return "Noch 1 Tag";
-	if (daysLeft <= endDateRules.soonDays) return `Noch ${daysLeft} Tage`;
-
-	const label = variant === "full" ? formatDate(endDate) : formatListingDate(endDate);
-	return `Bis ${label}`;
-}
-
-export function isExpired(isoDate: string, now: Date = new Date()): boolean {
-	return getDaysUntil(isoDate, now) < 0;
-}
-
-function getDeletionDay(endDate: string): string {
-	return shiftDay(getBerlinDay(new Date(endDate)), { days: endDateRules.deleteAfterDays + 1 });
-}
-
-export function getDeletionLabel(endDate: string, now: Date = new Date()): string | null {
-	if (!isExpired(endDate, now)) return null;
-
-	return `Wird am ${formatDayWithoutYear(getDeletionDay(endDate))} gelöscht`;
 }

@@ -1,9 +1,8 @@
 "use client";
 
+import { formatDate, formatListingDate } from "@food-swap/shared/dates";
 import { CalendarIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
-
-import { formatDate, formatListingDate } from "@/utils/date";
 
 const subscribe = () => () => {};
 

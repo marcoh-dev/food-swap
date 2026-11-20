@@ -1,3 +1,4 @@
+import { formatDate, isExpired } from "@food-swap/shared/dates";
 import type { SortOption } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { PencilIcon } from "lucide-react";
@@ -22,7 +23,6 @@ import { pageTitles } from "@/lib/constants/titles.constants";
 import { getUserListings } from "@/lib/listings.service";
 import { getTags } from "@/lib/tags.service";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
-import { formatDate, isExpired } from "@/utils/date";
 import { parsePage } from "@/utils/pagination";
 import { formatPlace } from "@/utils/place";
 

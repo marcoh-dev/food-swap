@@ -1,3 +1,4 @@
+import { isExpired } from "@food-swap/shared/dates";
 import type { ListingChatStatus } from "@food-swap/shared/types";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -16,7 +17,6 @@ import { getListingById } from "@/lib/listings.service";
 import { getPlaceBySlug } from "@/lib/places.service";
 import { getTags } from "@/lib/tags.service";
 import { getCurrentUser } from "@/lib/users.service";
-import { isExpired } from "@/utils/date";
 
 export async function generateMetadata({ params }: PageProps<"/listings/[id]">): Promise<Metadata> {
 	const { id } = await params;

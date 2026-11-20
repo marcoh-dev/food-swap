@@ -1,4 +1,9 @@
-import { END_SOON_DAYS, getDaysUntil, TIME_ZONE } from "@food-swap/shared/dates";
+import {
+	ENDING_SOON_DAYS,
+	getDaysUntil,
+	getEndDateLabel,
+	TIME_ZONE,
+} from "@food-swap/shared/dates";
 import type { ListingResponse } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
 import { Image, ScrollView, Text, View } from "react-native";
@@ -26,7 +31,7 @@ export default function ListingCard({
 	now,
 }: ListingCardProps) {
 	const daysLeft = getDaysUntil(endDate, new Date(now));
-	const endsSoon = daysLeft >= 0 && daysLeft <= END_SOON_DAYS;
+	const endsSoon = daysLeft >= 0 && daysLeft <= ENDING_SOON_DAYS;
 
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
@@ -83,11 +88,7 @@ export default function ListingCard({
 				{endsSoon && (
 					<View className="absolute bottom-2 left-2 rounded-full bg-background px-2 py-0.5 shadow-sm">
 						<Text className="font-medium text-xs text-foreground">
-							{daysLeft === 0
-								? "Läuft heute ab"
-								: daysLeft === 1
-									? "Noch 1 Tag"
-									: `Noch ${daysLeft} Tage`}
+							{getEndDateLabel(daysLeft, endDate)}
 						</Text>
 					</View>
 				)}
