@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import Image from "next/image";
@@ -41,6 +41,10 @@ export const metadata: Metadata = {
 		default: "FoodSwap",
 	},
 	description: "Tausche oder verschenke Lebensmittel in deiner Nähe.",
+};
+
+export const viewport: Viewport = {
+	interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

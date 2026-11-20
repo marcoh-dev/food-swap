@@ -3,9 +3,12 @@ import { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
+import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListings } from "@/hooks/useListings";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
@@ -31,10 +34,15 @@ export default function Listings() {
 	} = useListings();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
+	const isOnline = useIsOnline();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const listRef = useRef<FlatList<ListingResponse>>(null);
 
 	async function refresh() {
+		if (!isOnline) {
+			return;
+		}
+
 		setIsRefreshing(true);
 		await refetch();
 		setIsRefreshing(false);
@@ -47,17 +55,32 @@ export default function Listings() {
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
-	const errorNotice = isError && !isFetchNextPageError && (
-		<>
-			<Text>
-				{data
+	const offlineNotice = !isOnline && (
+		<OfflineNotice
+			message={
+				data
+					? `Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}. Die Angebote werden aktualisiert, sobald du wieder online bist.`
+					: "Die Angebote werden geladen, sobald du wieder online bist."
+			}
+		/>
+	);
+	const errorNotice = isOnline && isError && !isFetchNextPageError && (
+		<ServerErrorNotice
+			message={
+				data
 					? `Die Angebote konnten nicht aktualisiert werden. Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}.`
-					: "Die Angebote konnten nicht geladen werden."}
-			</Text>
-			<Button variant="outline" disabled={isFetching} onPress={() => void refetch()}>
+					: "Die Angebote konnten nicht geladen werden."
+			}
+		>
+			<Button
+				variant="outline"
+				className="self-start"
+				disabled={isFetching}
+				onPress={() => void refetch()}
+			>
 				<Text>Erneut versuchen</Text>
 			</Button>
-		</>
+		</ServerErrorNotice>
 	);
 
 	let footer;
@@ -82,7 +105,12 @@ export default function Listings() {
 		return (
 			<Screen>
 				{heading}
-				{isPending && <ActivityIndicator color={mutedForeground} className="self-start" />}
+				{offlineNotice}
+				{isPending && isOnline && (
+					<View className="flex-1 items-center justify-center">
+						<ActivityIndicator size="large" color={mutedForeground} />
+					</View>
+				)}
 				{errorNotice}
 			</Screen>
 		);
@@ -109,6 +137,7 @@ export default function Listings() {
 					)}
 				>
 					{heading}
+					{offlineNotice}
 					{errorNotice}
 					<Text variant="muted">
 						{data.pages[0]?.meta.total}{" "}
