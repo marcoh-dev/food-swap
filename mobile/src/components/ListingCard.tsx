@@ -8,6 +8,7 @@ import type { ListingResponse } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
 import { Image, ScrollView, Text, View } from "react-native";
 
+import { ListingImagePlaceholder } from "@/components/ListingImagePlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
 
@@ -51,7 +52,9 @@ export default function ListingCard({
 						className="absolute inset-0"
 						resizeMode="cover"
 					/>
-				) : null}
+				) : (
+					<ListingImagePlaceholder />
+				)}
 
 				<View className="absolute inset-x-2 top-2 flex-row items-start justify-between gap-1">
 					{statusLabel ? (
