@@ -3,9 +3,11 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
+import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListings } from "@/hooks/useListings";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
@@ -20,16 +22,30 @@ export default function Listings() {
 	const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useListings();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
+	const isOnline = useIsOnline();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	async function refresh() {
+		if (!isOnline) {
+			return;
+		}
+
 		setIsRefreshing(true);
 		await refetch();
 		setIsRefreshing(false);
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
-	const errorNotice = isError && (
+	const offlineNotice = !isOnline && (
+		<OfflineNotice
+			message={
+				data
+					? `Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}. Die Angebote werden aktualisiert, sobald du wieder online bist.`
+					: "Die Angebote werden geladen, sobald du wieder online bist."
+			}
+		/>
+	);
+	const errorNotice = isOnline && isError && (
 		<>
 			<Text>
 				{data
@@ -46,7 +62,10 @@ export default function Listings() {
 		return (
 			<Screen>
 				{heading}
-				{isPending && <ActivityIndicator color={mutedForeground} className="self-start" />}
+				{offlineNotice}
+				{isPending && isOnline && (
+					<ActivityIndicator color={mutedForeground} className="self-start" />
+				)}
 				{errorNotice}
 			</Screen>
 		);
@@ -71,6 +90,7 @@ export default function Listings() {
 					)}
 				>
 					{heading}
+					{offlineNotice}
 					{errorNotice}
 					<Text variant="muted">
 						{data.meta.total} {data.meta.total === 1 ? "Angebot" : "Angebote"}
