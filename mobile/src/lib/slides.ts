@@ -4,6 +4,7 @@ export type SlideContent = {
 	title: string;
 	body: string;
     source?: string;
+    image?: string;
 };
 
 export const SLIDES: SlideContent[] = [
@@ -21,6 +22,7 @@ export const SLIDES: SlideContent[] = [
 		type: "news",
 		title: "Neues aus dem Beet",
 		body: "FoodSwap gibt's bald auch als Mobile App!",
+        image: "https://images.pexels.com/photos/8516717/pexels-photo-8516717.jpeg"
 	},
     {
 		id: "the-strich",

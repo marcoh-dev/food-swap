@@ -23,7 +23,7 @@ export default function Carousel() {
 				}
 				renderItem={({ item }) => (
 					<View style={{ width }} className="pr-3">
-						<Slide title={item.title} body={item.body} source={item.source}/>
+						<Slide title={item.title} body={item.body} source={item.source} image={item.image}/>
 					</View>
 				)}
 			/>
