@@ -4,7 +4,7 @@ type Props = { title: string; body: string; source?: string; image?: string };
 
 export default function Slide({ title, body, source, image }: Props) {
 	return (
-		<View className="h-54 overflow-hidden rounded-2xl bg-highlight px-2 py-2">
+		<View className="h-54 overflow-hidden rounded-2xl bg-highlight-muted px-2 py-2">
 			{image ? (
 				<>
 					<Image
@@ -17,7 +17,7 @@ export default function Slide({ title, body, source, image }: Props) {
 			) : null}
 			<View className="mt-auto gap-1 p-4">
 				<Text className="font-bold text-3xl text-highlight-foreground">{title}</Text>
-				<Text className="text-highlight-muted-foreground">{body}</Text>
+				<Text className="text-highlight-foreground">{body}</Text>
 				{source ? (
 					<Text className="text-xs text-highlight-muted-foreground">{source}</Text>
 				) : null}

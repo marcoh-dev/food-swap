@@ -23,6 +23,7 @@
 	--color-highlight: var(--highlight);
 	--color-highlight-foreground: var(--highlight-foreground);
 	--color-highlight-muted-foreground: var(--highlight-muted-foreground);
+	--color-highlight-muted: var(--highlight-muted);
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
@@ -53,6 +54,7 @@
 	--highlight: #6d4aff;
 	--highlight-foreground: #fdfbf7;
 	--highlight-muted-foreground: #e0d8f9;
+	--highlight-muted: #aa8ed6;
 	--border: #ddd6c8;
 	--input: #8f8777;
 	--ring: #093451;
@@ -82,6 +84,7 @@
 		--highlight: #5a3fd1;
 		--highlight-foreground: #f7f3eb;
 		--highlight-muted-foreground: #e6e0f7;
+		--highlight-muted: #6b55a0;
 		--border: #3e555e;
 		--input: #889398;
 		--ring: #849725;
