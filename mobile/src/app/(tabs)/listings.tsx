@@ -59,7 +59,7 @@ export default function Listings() {
 			className="bg-background"
 			contentContainerClassName="gap-3 pb-6"
 			contentInsetAdjustmentBehavior="automatic"
-			data={data.data}
+			data={data.pages.flatMap((page) => page.data)}
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
 			ListHeaderComponent={
@@ -73,7 +73,8 @@ export default function Listings() {
 					{heading}
 					{errorNotice}
 					<Text variant="muted">
-						{data.meta.total} {data.meta.total === 1 ? "Angebot" : "Angebote"}
+						{data.pages[0]?.meta.total}{" "}
+						{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
 					</Text>
 				</View>
 			}
