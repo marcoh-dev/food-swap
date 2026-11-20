@@ -3,9 +3,12 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
+import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListings } from "@/hooks/useListings";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
@@ -20,33 +23,58 @@ export default function Listings() {
 	const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useListings();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
+	const isOnline = useIsOnline();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	async function refresh() {
+		if (!isOnline) {
+			return;
+		}
+
 		setIsRefreshing(true);
 		await refetch();
 		setIsRefreshing(false);
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
-	const errorNotice = isError && (
-		<>
-			<Text>
-				{data
+	const offlineNotice = !isOnline && (
+		<OfflineNotice
+			message={
+				data
+					? `Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}. Die Angebote werden aktualisiert, sobald du wieder online bist.`
+					: "Die Angebote werden geladen, sobald du wieder online bist."
+			}
+		/>
+	);
+	const errorNotice = isOnline && isError && (
+		<ServerErrorNotice
+			message={
+				data
 					? `Die Angebote konnten nicht aktualisiert werden. Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}.`
-					: "Die Angebote konnten nicht geladen werden."}
-			</Text>
-			<Button variant="outline" disabled={isFetching} onPress={() => void refetch()}>
+					: "Die Angebote konnten nicht geladen werden."
+			}
+		>
+			<Button
+				variant="outline"
+				className="self-start"
+				disabled={isFetching}
+				onPress={() => void refetch()}
+			>
 				<Text>Erneut versuchen</Text>
 			</Button>
-		</>
+		</ServerErrorNotice>
 	);
 
 	if (!data) {
 		return (
 			<Screen>
 				{heading}
-				{isPending && <ActivityIndicator color={mutedForeground} className="self-start" />}
+				{offlineNotice}
+				{isPending && isOnline && (
+					<View className="flex-1 items-center justify-center">
+						<ActivityIndicator size="large" color={mutedForeground} />
+					</View>
+				)}
 				{errorNotice}
 			</Screen>
 		);
@@ -71,6 +99,7 @@ export default function Listings() {
 					)}
 				>
 					{heading}
+					{offlineNotice}
 					{errorNotice}
 					<Text variant="muted">
 						{data.meta.total} {data.meta.total === 1 ? "Angebot" : "Angebote"}

@@ -1,11 +1,14 @@
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
+import { OfflineNotice } from "@/components/OfflineNotice";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Screen } from "@/components/Screen";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useIsOnline } from "@/hooks/useIsOnline";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Profile() {
@@ -19,20 +22,40 @@ export default function Profile() {
 function ProfileContent() {
 	const { logOut } = useAuth();
 	const { data: user, isPending, isError, isFetching, refetch } = useCurrentUser();
+	const isOnline = useIsOnline();
 	const mutedForeground = useThemeColor("--muted-foreground");
+	const isLoading = !user && isPending && isOnline;
 
 	return (
 		<Screen>
-			{isPending ? (
-				<ActivityIndicator color={mutedForeground} className="self-start" />
-			) : isError ? (
-				<>
-					<Text>Dein Profil konnte nicht geladen werden.</Text>
-					<Button variant="outline" disabled={isFetching} onPress={() => void refetch()}>
+			{!isOnline && (
+				<OfflineNotice
+					message={
+						user
+							? "Dein Profil wird aktualisiert, sobald du wieder online bist."
+							: "Dein Profil wird geladen, sobald du wieder online bist."
+					}
+				/>
+			)}
+			{isOnline && isError && (
+				<ServerErrorNotice
+					message={
+						user
+							? "Dein Profil konnte nicht aktualisiert werden."
+							: "Dein Profil konnte nicht geladen werden."
+					}
+				>
+					<Button
+						variant="outline"
+						className="self-start"
+						disabled={isFetching}
+						onPress={() => void refetch()}
+					>
 						<Text>Erneut versuchen</Text>
 					</Button>
-				</>
-			) : (
+				</ServerErrorNotice>
+			)}
+			{user ? (
 				<>
 					<View className="gap-1">
 						<Text variant="h2">{user.name ?? user.username}</Text>
@@ -43,10 +66,16 @@ function ProfileContent() {
 						{user.username}
 					</Text>
 				</>
+			) : isLoading ? (
+				<View className="flex-1 items-center justify-center">
+					<ActivityIndicator size="large" color={mutedForeground} />
+				</View>
+			) : null}
+			{!isLoading && (
+				<Button variant="outline" onPress={() => void logOut()}>
+					<Text>Abmelden</Text>
+				</Button>
 			)}
-			<Button variant="outline" onPress={() => void logOut()}>
-				<Text>Abmelden</Text>
-			</Button>
 		</Screen>
 	);
 }
