@@ -1,6 +1,14 @@
 import type { ListingResponse } from "@food-swap/shared/types";
+import { Link } from "expo-router";
 import { useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	Platform,
+	Pressable,
+	RefreshControl,
+	View,
+} from "react-native";
 
 import ListingCard from "@/components/ListingCard";
 import { OfflineNotice } from "@/components/OfflineNotice";
@@ -154,18 +162,30 @@ export default function Listings() {
 				/>
 			}
 			renderItem={({ item }) => (
-				<ListingCard
-					title={item.title}
-					image={item.image}
-					place={item.place}
-					type={item.type}
-					category={item.category}
-					tags={item.tags}
-					createdAt={item.createdAt}
-					endDate={item.endDate}
-					statusLabel={LISTING_STATUS_LABELS[item.status]}
-					now={dataUpdatedAt}
-				/>
+				<Link href={`/listings/${item.id}`} asChild>
+					<Pressable
+						accessibilityRole="button"
+						accessibilityLabel={item.title}
+						accessibilityHint="Öffnet das Angebot"
+					>
+						{({ pressed }) => (
+							<View className={cn(pressed && "opacity-70")}>
+								<ListingCard
+									title={item.title}
+									image={item.image}
+									place={item.place}
+									type={item.type}
+									category={item.category}
+									tags={item.tags}
+									createdAt={item.createdAt}
+									endDate={item.endDate}
+									statusLabel={LISTING_STATUS_LABELS[item.status]}
+									now={dataUpdatedAt}
+								/>
+							</View>
+						)}
+					</Pressable>
+				</Link>
 			)}
 		/>
 	);
