@@ -1,14 +1,17 @@
 import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
 import { loginSchema, type LoginValues } from "@food-swap/shared/schemas/user";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
-import { ScrollView } from "react-native";
+import { useEffect, useState } from "react";
+import { AccessibilityInfo, ScrollView } from "react-native";
 import { z } from "zod";
 
 import { isUnauthorizedError } from "@/api/request";
+import { Notice } from "@/components/Notice";
+import { OfflineNotice } from "@/components/OfflineNotice";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogin } from "@/hooks/useLogin";
 import { isAccountTab } from "@/lib/routes";
 
@@ -18,8 +21,15 @@ export default function Login() {
 	const router = useRouter();
 	const { redirect } = useLocalSearchParams();
 	const login = useLogin();
+	const isOnline = useIsOnline();
 	const [values, setValues] = useState<LoginValues>({ username: "", password: "" });
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+	useEffect(() => {
+		if (isUnauthorizedError(login.error)) {
+			AccessibilityInfo.announceForAccessibility(LOGIN_FAILED_MESSAGE);
+		}
+	}, [login.error]);
 
 	function update(field: keyof LoginValues, value: string) {
 		setValues((previous) => ({ ...previous, [field]: value }));
@@ -27,6 +37,10 @@ export default function Login() {
 	}
 
 	function handleSubmit() {
+		if (!isOnline) {
+			return;
+		}
+
 		const result = loginSchema.safeParse(values);
 		if (!result.success) {
 			setFieldErrors(z.flattenError(result.error).fieldErrors);
@@ -51,6 +65,9 @@ export default function Login() {
 			keyboardShouldPersistTaps="handled"
 		>
 			<Text variant="h2">Schön, dass du da bist!</Text>
+			{!isOnline && (
+				<OfflineNotice message="Du kannst dich anmelden, sobald du wieder online bist." />
+			)}
 			<TextField
 				label="Benutzername"
 				placeholder="Pomodoro"
@@ -74,14 +91,19 @@ export default function Login() {
 				returnKeyType="go"
 				onSubmitEditing={handleSubmit}
 			/>
-			{login.isError ? (
-				<Text className="text-destructive">
-					{isUnauthorizedError(login.error)
-						? LOGIN_FAILED_MESSAGE
-						: "Anmeldung fehlgeschlagen. Bitte versuche es später erneut."}
+			{isUnauthorizedError(login.error) ? (
+				<Text className="text-destructive" accessibilityRole="alert">
+					{LOGIN_FAILED_MESSAGE}
 				</Text>
+			) : login.isError ? (
+				<Notice
+					icon={{ ios: "exclamationmark.triangle", android: "warning" }}
+					variant="destructive"
+					title="Anmeldung fehlgeschlagen"
+					message="Der Server ist gerade nicht erreichbar. Bitte versuche es später erneut."
+				/>
 			) : null}
-			<Button disabled={login.isPending} onPress={handleSubmit}>
+			<Button disabled={!isOnline || login.isPending} onPress={handleSubmit}>
 				<Text>Anmelden</Text>
 			</Button>
 		</ScrollView>
