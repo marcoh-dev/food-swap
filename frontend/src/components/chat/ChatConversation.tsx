@@ -4,7 +4,7 @@ import { formatDate, formatTime } from "@food-swap/shared/dates";
 import type { ChatDetail } from "@food-swap/shared/types";
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -29,6 +29,7 @@ import {
 	MessageScrollerItem,
 	MessageScrollerProvider,
 	MessageScrollerViewport,
+	useMessageScroller,
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
 import { useChatStore } from "@/store/chat.store";
@@ -151,7 +152,7 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 				{isNewIncoming && `${chat.otherName ?? "Gelöschtes Konto"}: ${lastMessage.content}`}
 			</p>
 			<MessageScroller className="flex-1">
-				<MessageScrollerViewport aria-label="Nachrichten">
+				<MessagesViewport>
 					<MessageScrollerContent className="gap-3 p-4">
 						{chat.messages.map((message, index) => {
 							const own = message.senderId === currentUserId;
@@ -189,10 +190,38 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 							);
 						})}
 					</MessageScrollerContent>
-				</MessageScrollerViewport>
+				</MessagesViewport>
 				<MessageScrollerButton />
 			</MessageScroller>
 		</MessageScrollerProvider>
+	);
+}
+
+// MessageScroller stops following new messages on every wheel or key event and only starts
+// again on a scroll event at the bottom. An extra wheel tick or key press at the bottom
+// doesn't scroll, so it would stay off; scrolling to the end turns following back on.
+function MessagesViewport({ children }: { children: ReactNode }) {
+	const { scrollToEnd } = useMessageScroller();
+
+	function followIfAtBottom(viewport: HTMLDivElement, down: boolean) {
+		const distance = viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight;
+		if (down && distance <= 8) scrollToEnd();
+	}
+
+	return (
+		<MessageScrollerViewport
+			aria-label="Nachrichten"
+			onWheel={(event) => followIfAtBottom(event.currentTarget, event.deltaY > 0)}
+			onKeyDown={(event) =>
+				followIfAtBottom(
+					event.currentTarget,
+					["ArrowDown", "PageDown", "End"].includes(event.key) ||
+						(event.key === " " && !event.shiftKey),
+				)
+			}
+		>
+			{children}
+		</MessageScrollerViewport>
 	);
 }
 
