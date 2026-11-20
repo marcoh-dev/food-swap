@@ -1,6 +1,6 @@
 import type { ChatListItem, ChatMessage } from "@food-swap/shared/types";
 
-import { getChatsAction } from "@/app/actions";
+import { getChatsAction } from "@/app/chats/actions";
 import { notificationsEnabled } from "@/lib/notifications";
 import { socket } from "@/socket";
 import { useChatStore } from "@/store/chat.store";

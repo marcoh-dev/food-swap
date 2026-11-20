@@ -6,8 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { ChatNotifications } from "@/components/chat/ChatNotifications";
 import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
+import { NotificationPermissionPrompt } from "@/components/chat/NotificationPermissionPrompt";
 import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
 import BurgerMenu from "@/components/menu/BurgerMenu";
 import { PageSkipLink } from "@/components/shared/PageSkipLink";
@@ -99,7 +99,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					<Toaster />
 					{currentUser && (
 						<>
-							<ChatNotifications />
+							<NotificationPermissionPrompt />
 							<UnreadChatsTitle />
 						</>
 					)}

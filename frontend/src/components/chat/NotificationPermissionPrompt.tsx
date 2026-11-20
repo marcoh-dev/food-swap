@@ -10,7 +10,7 @@ import {
 	shouldAskForPermission,
 } from "@/lib/notifications";
 
-export function ChatNotifications() {
+export function NotificationPermissionPrompt() {
 	useEffect(() => {
 		if (!shouldAskForPermission()) return;
 

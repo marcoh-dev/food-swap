@@ -9,9 +9,9 @@ import {
 	markChatReadAction,
 	replyToChatAction,
 	startChatAction,
-} from "@/app/actions";
-import type { ChatActions, ChatState } from "@/lib/types/chat.types";
+} from "@/app/chats/actions";
 import type { ActionResult } from "@/lib/types/common.types";
+import type { ChatActions, ChatState } from "@/store/chat.types";
 
 // The server actions turn backend errors into texts; this adds the one for when they can't run at all
 async function call<T>(action: Promise<ActionResult<T>>): Promise<ActionResult<T>> {

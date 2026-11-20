@@ -7,7 +7,7 @@ import {
 	getUnreadChatsCountAction,
 	markChatReadAction,
 	replyToChatAction,
-} from "@/app/actions";
+} from "@/app/chats/actions";
 import { connectChat } from "@/lib/chatEvents";
 import type { ActionResult } from "@/lib/types/common.types";
 import { useChatStore } from "@/store/chat.store";
@@ -25,7 +25,7 @@ vi.mock("@/socket", () => ({
 	},
 }));
 
-vi.mock("@/app/actions", () => ({
+vi.mock("@/app/chats/actions", () => ({
 	deleteChatAction: vi.fn(),
 	getChatAction: vi.fn(),
 	getChatsAction: vi.fn(),
