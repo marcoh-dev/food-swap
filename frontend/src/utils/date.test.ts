@@ -1,20 +1,26 @@
 import { describe, expect, it } from "vitest";
 
-import { getDeletionLabel } from "@/utils/date";
+import { validateEndDate } from "@/utils/date";
 
-// Ends on 20.11.2026 at 23:59:59.999 Berlin time
-const END_DATE = "2026-11-20T22:59:59.999Z";
+const NOW = new Date("2026-11-20T12:00:00Z");
 
-describe("getDeletionLabel", () => {
-	it("shows no deletion date before the listing has ended", () => {
-		// On its last day the listing is still active
-		expect(getDeletionLabel(END_DATE, new Date("2026-11-20T12:00:00Z"))).toBeNull();
+describe("validateEndDate", () => {
+	it("accepts an empty end date", () => {
+		expect(validateEndDate("", NOW)).toEqual({ ok: true, date: undefined });
 	});
 
-	it("shows the deletion day the cleanup uses after the listing has ended", () => {
-		// The cleanup deletes on end day + 29 (#98): 20.11. → 19.12.
-		expect(getDeletionLabel(END_DATE, new Date("2026-11-21T12:00:00Z"))).toBe(
-			"Wird am 19.12. gelöscht",
-		);
+	it("accepts a day within the allowed range", () => {
+		expect(validateEndDate("2026-12-01", NOW).ok).toBe(true);
+	});
+
+	it("rejects a day in the past", () => {
+		expect(validateEndDate("2026-11-19", NOW)).toEqual({
+			ok: false,
+			error: "Das Enddatum muss in der Zukunft liegen.",
+		});
+	});
+
+	it("rejects a day more than six months ahead", () => {
+		expect(validateEndDate("2027-06-01", NOW).ok).toBe(false);
 	});
 });

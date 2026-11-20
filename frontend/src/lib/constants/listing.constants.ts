@@ -1,4 +1,4 @@
-import { END_SOON_DAYS } from "@food-swap/shared/dates";
+import { DELETE_AFTER_DAYS, ENDING_SOON_DAYS } from "@food-swap/shared/dates";
 import type { ListingStatus } from "@food-swap/shared/types";
 
 import type { StatusAction } from "@/lib/types/listing.types";
@@ -45,8 +45,8 @@ export const endDateRules = {
 	defaultDays: 28,
 	minDays: 1,
 	maxMonths: 6,
-	soonDays: END_SOON_DAYS,
-	deleteAfterDays: 28,
+	soonDays: ENDING_SOON_DAYS,
+	deleteAfterDays: DELETE_AFTER_DAYS,
 } as const;
 
 export const RADIUS_OPTIONS_KM = [5, 10, 20, 50];
