@@ -1,4 +1,5 @@
-import { useState } from "react";
+import type { ListingResponse } from "@food-swap/shared/types";
+import { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
 import ListingCard from "@/components/ListingCard";
@@ -15,11 +16,23 @@ import { LISTING_STATUS_LABELS } from "@/lib/listing";
 import { cn } from "@/lib/utils";
 
 export default function Listings() {
-	const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useListings();
+	const {
+		data,
+		dataUpdatedAt,
+		isPending,
+		isError,
+		isFetching,
+		refetch,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isFetchNextPageError,
+	} = useListings();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
 	const [isRefreshing, setIsRefreshing] = useState(false);
+	const listRef = useRef<FlatList<ListingResponse>>(null);
 
 	async function refresh() {
 		if (!isOnline) {
@@ -29,6 +42,12 @@ export default function Listings() {
 		setIsRefreshing(true);
 		await refetch();
 		setIsRefreshing(false);
+	}
+
+	function loadMore() {
+		if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
+			void fetchNextPage();
+		}
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
@@ -41,7 +60,7 @@ export default function Listings() {
 			}
 		/>
 	);
-	const errorNotice = isOnline && isError && (
+	const errorNotice = isOnline && isError && !isFetchNextPageError && (
 		<ServerErrorNotice
 			message={
 				data
@@ -59,6 +78,26 @@ export default function Listings() {
 			</Button>
 		</ServerErrorNotice>
 	);
+
+	let footer;
+	if (isFetchingNextPage) {
+		footer = <ActivityIndicator color={mutedForeground} className="self-center py-4" />;
+	} else if (isFetchNextPageError) {
+		footer = (
+			// iOS: scrollToEnd ignores the space the system adds for the tab bar, so we add it here
+			<View
+				className={cn("gap-4 px-6 py-6", Platform.OS === "ios" && "pb-24")}
+				onLayout={() => listRef.current?.scrollToEnd({ animated: true })}
+			>
+				<Text variant="muted" className="text-center">
+					Weitere Angebote konnten nicht geladen werden.
+				</Text>
+				<Button variant="outline" onPress={() => void fetchNextPage()}>
+					<Text>Erneut versuchen</Text>
+				</Button>
+			</View>
+		);
+	}
 
 	if (!data) {
 		return (
@@ -82,9 +121,11 @@ export default function Listings() {
 			className="bg-background"
 			contentContainerClassName="gap-3 pb-6"
 			contentInsetAdjustmentBehavior="automatic"
-			data={data.data}
+			data={data.pages.flatMap((page) => page.data)}
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
+			onEndReached={loadMore}
+			ref={listRef}
 			ListHeaderComponent={
 				<View
 					className={cn(
@@ -97,10 +138,12 @@ export default function Listings() {
 					{offlineNotice}
 					{errorNotice}
 					<Text variant="muted">
-						{data.meta.total} {data.meta.total === 1 ? "Angebot" : "Angebote"}
+						{data.pages[0]?.meta.total}{" "}
+						{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
 					</Text>
 				</View>
 			}
+			ListFooterComponent={footer}
 			refreshControl={
 				<RefreshControl
 					refreshing={isRefreshing}
