@@ -70,7 +70,7 @@ export default function Listings() {
 				className={cn("gap-4 px-6 py-6", Platform.OS === "ios" && "pb-24")}
 				onLayout={() => listRef.current?.scrollToEnd({ animated: true })}
 			>
-				<Text>Weitere Angebote konnten nicht geladen werden.</Text>
+				<Text variant="muted" className="text-center">Weitere Angebote konnten nicht geladen werden.</Text>
 				<Button variant="outline" onPress={() => void fetchNextPage()}>
 					<Text>Erneut versuchen</Text>
 				</Button>
