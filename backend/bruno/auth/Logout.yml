@@ -1,0 +1,21 @@
+info:
+  name: Logout
+  type: http
+  seq: 10
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/logout"
+  body:
+    type: json
+    data: |-
+      {
+        "refresh_token": "{{refreshToken}}"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
