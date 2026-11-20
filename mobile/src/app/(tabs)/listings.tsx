@@ -27,6 +27,7 @@ export default function Listings() {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		isFetchNextPageError,
 	} = useListings();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
@@ -57,6 +58,20 @@ export default function Listings() {
 			</Button>
 		</>
 	);
+
+	let footer;
+	if (isFetchingNextPage) {
+		footer = <ActivityIndicator color={mutedForeground} className="self-center py-4" />;
+	} else if (isFetchNextPageError) {
+		footer = (
+			<View className="gap-4 px-6 py-4">
+				<Text>Weitere Angebote konnten nicht geladen werden.</Text>
+				<Button variant="outline" onPress={() => void fetchNextPage()}>
+					<Text>Erneut versuchen</Text>
+				</Button>
+			</View>
+		);
+	}
 
 	if (!data) {
 		return (
@@ -95,11 +110,7 @@ export default function Listings() {
 					</Text>
 				</View>
 			}
-			ListFooterComponent={
-				isFetchingNextPage ? (
-					<ActivityIndicator color={mutedForeground} className="self-center py-4" />
-				) : undefined
-			}
+			ListFooterComponent={footer}
 			refreshControl={
 				<RefreshControl
 					refreshing={isRefreshing}
