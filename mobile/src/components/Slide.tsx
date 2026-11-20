@@ -1,14 +1,13 @@
 import { Text, View } from "react-native";
 
-export default function Slide() {
+type Props = { title: string; body: string };
+
+export default function Slide({ title, body }: Props) {
 	return (
 		<View className="min-h-52 overflow-hidden rounded-2xl bg-primary px-3 py-3">
 			<View className="mt-auto gap-1 p-4">
-				<Text className="font-medium text-2xl text-foreground">Warum Tomatoes?</Text>
-				<Text className="text-foreground">
-					Die drei EntwicklerInnen hinter FoodSwap lieben Pomodori. Und finden es lustig,
-					die Lerntechnik Pomodoro auch mal als Tomato zu bezeichnen.
-				</Text>
+				<Text className="font-medium text-2xl text-foreground">{title}</Text>
+				<Text className="text-foreground">{body}</Text>
 			</View>
 		</View>
 	);
