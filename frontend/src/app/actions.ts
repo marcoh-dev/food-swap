@@ -1,5 +1,6 @@
 "use server";
 
+import { getBerlinDay } from "@food-swap/shared/dates";
 import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
 import {
 	loginSchema,
@@ -46,7 +47,6 @@ import { findNearestPlace, searchPlaces } from "@/lib/places.service";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
-import { getBerlinDay } from "@/utils/date";
 
 function getRedirectTarget(target: unknown): string {
 	if (
@@ -59,6 +59,11 @@ function getRedirectTarget(target: unknown): string {
 	}
 
 	return target;
+}
+
+function withToast(target: string, toast: string): string {
+	const separator = target.includes("?") ? "&" : "?";
+	return `${target}${separator}toast=${toast}`;
 }
 
 async function setAuthCookie(token: string) {
@@ -92,9 +97,7 @@ export async function registerAction(
 
 	await setAuthCookie(authData.access_token);
 
-	const target = getRedirectTarget(redirectTo);
-	const separator = target.includes("?") ? "&" : "?";
-	redirect(`${target}${separator}toast=registered`);
+	redirect(withToast(getRedirectTarget(redirectTo), "registered"));
 }
 
 export async function loginAction(values: LoginValues, redirectTo?: string): Promise<FormState> {
@@ -282,17 +285,19 @@ export async function updateListingAction(
 	return {};
 }
 
-export async function deleteListingAction(id: string) {
+export async function deleteListingAction(id: string, redirectTo?: string) {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) unauthorized();
+
+	const target = redirectTo ? getRedirectTarget(redirectTo) : "/listings";
 
 	try {
 		await deleteListing(id);
 	} catch {
-		redirect("/listings?toast=listing-delete-error");
+		redirect(withToast(target, "listing-delete-error"));
 	}
 	revalidatePath("/listings");
-	redirect("/listings?toast=listing-deleted");
+	redirect(withToast(target, "listing-deleted"));
 }
 
 function chatErrorMessage(error: unknown, fallback: string): string {

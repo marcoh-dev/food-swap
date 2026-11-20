@@ -1,5 +1,6 @@
 "use client";
 
+import { getBerlinDay } from "@food-swap/shared/dates";
 import type { Category, ListingResponse, ListingStatus, Tag } from "@food-swap/shared/types";
 import { PencilIcon } from "lucide-react";
 import Link from "next/link";
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
-import { getBerlinDay } from "@/utils/date";
 
 import ListingStatusMenu from "./ListingStatusMenu";
 
@@ -66,7 +66,11 @@ export default function ListingActions({
 	}
 
 	function handleDelete() {
-		deleteListingAction(listing.id);
+		// In a list (profile) stay on the same page, otherwise go to all listings
+		const redirectTo = isEditingInList
+			? `${window.location.pathname}${window.location.search}`
+			: undefined;
+		deleteListingAction(listing.id, redirectTo);
 	}
 
 	async function handleStatusChange(targetStatus: ListingStatus) {

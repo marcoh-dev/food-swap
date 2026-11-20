@@ -1,19 +1,10 @@
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function Slide() {
 	return (
-		<View className="min-h-52 overflow-hidden rounded-2xl px-3 py-3">
-			<Image
-				source={{
-					uri: "https://images.pexels.com/photos/39150349/pexels-photo-39150349.jpeg",
-				}}
-				className="absolute inset-0 h-full w-full rounded-2xl"
-				resizeMode="cover"
-			/>{" "}
+		<View className="min-h-52 overflow-hidden rounded-2xl bg-primary px-3 py-3">
 			<View className="mt-auto gap-1 p-4">
-				<Text className="font-medium text-base text-foreground">
-					Warum sind überall Tomatoes?
-				</Text>
+				<Text className="font-medium text-2xl text-foreground">Warum Tomatoes?</Text>
 				<Text className="text-foreground">
 					Die drei EntwicklerInnen hinter FoodSwap lieben Pomodori. Und finden es lustig,
 					die Lerntechnik Pomodoro auch mal als Tomato zu bezeichnen.
