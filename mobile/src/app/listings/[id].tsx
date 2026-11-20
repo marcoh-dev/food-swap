@@ -5,31 +5,99 @@ import {
 	getDeletionLabel,
 	getEndDateLabel,
 } from "@food-swap/shared/dates";
-import { useLocalSearchParams } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
+import { useEffect } from "react";
 import { ActivityIndicator, Image, ScrollView, View } from "react-native";
+import { z } from "zod";
 
+import { LISTINGS_QUERY_KEY } from "@/api/listings";
+import { isNotFoundError } from "@/api/request";
 import { useAuth } from "@/components/AuthProvider";
 import { ListingImagePlaceholder } from "@/components/ListingImagePlaceholder";
+import { OfflineNotice } from "@/components/OfflineNotice";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
+import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListing } from "@/hooks/useListing";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { LISTING_STATUS_LABELS, LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
+import { HOME_ROUTE } from "@/lib/routes";
 
 export default function ListingDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const { data: listing } = useListing(id);
+	// Invalid IDs would get a 400 from the backend, which is retried like a server error.
+	const isValidId = z.uuid().safeParse(id).success;
+	const {
+		data: listing,
+		error,
+		isError,
+		isFetching,
+		refetch,
+	} = useListing(id, { enabled: isValidId });
+	const isOnline = useIsOnline();
+	const queryClient = useQueryClient();
 	const { isLoggedIn } = useAuth();
 	const { data: currentUser } = useCurrentUser({ enabled: isLoggedIn });
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const destructive = useThemeColor("--destructive");
 
+	const isNotFound = !isValidId || isNotFoundError(error);
+
+	useEffect(() => {
+		// The listing was deleted: reload the offers list so it's gone there too. Only the
+		// list itself (exact), otherwise this query would be refetched and fail again.
+		if (isNotFoundError(error)) {
+			void queryClient.invalidateQueries({ queryKey: LISTINGS_QUERY_KEY, exact: true });
+		}
+	}, [error, queryClient]);
+
+	if (isNotFound) {
+		return <ListingNotFound />;
+	}
+
+	const offlineNotice = !isOnline && (
+		<OfflineNotice
+			message={
+				listing
+					? "Das Angebot wird aktualisiert, sobald du wieder online bist."
+					: "Das Angebot wird geladen, sobald du wieder online bist."
+			}
+		/>
+	);
+	const errorNotice = isOnline && isError && (
+		<ServerErrorNotice
+			message={
+				listing
+					? "Das Angebot konnte nicht aktualisiert werden."
+					: "Das Angebot konnte nicht geladen werden."
+			}
+		>
+			<Button
+				variant="outline"
+				className="self-start"
+				disabled={isFetching}
+				onPress={() => void refetch()}
+			>
+				<Text>Erneut versuchen</Text>
+			</Button>
+		</ServerErrorNotice>
+	);
+
 	if (!listing) {
 		return (
-			<View className="flex-1 items-center justify-center bg-background">
-				<ActivityIndicator size="large" color={mutedForeground} />
+			<View className="flex-1 gap-4 bg-background p-6">
+				{offlineNotice}
+				{errorNotice}
+				{isOnline && !isError && (
+					<View className="flex-1 items-center justify-center">
+						<ActivityIndicator size="large" color={mutedForeground} />
+					</View>
+				)}
 			</View>
 		);
 	}
@@ -50,6 +118,13 @@ export default function ListingDetail() {
 			contentContainerClassName="pb-6"
 			contentInsetAdjustmentBehavior="automatic"
 		>
+			{(offlineNotice || errorNotice) && (
+				<View className="gap-4 px-6 py-4">
+					{offlineNotice}
+					{errorNotice}
+				</View>
+			)}
+
 			<View className="aspect-square w-full bg-muted">
 				{listing.image ? (
 					<Image
@@ -177,6 +252,21 @@ function MetaRow({
 			<Text variant="muted" className="flex-1">
 				{children}
 			</Text>
+		</View>
+	);
+}
+
+function ListingNotFound() {
+	const router = useRouter();
+
+	return (
+		// No Screen here: its top padding includes the status bar, which the header already covers.
+		<View className="flex-1 gap-4 bg-background p-6">
+			<Text variant="h2">Angebot nicht gefunden</Text>
+			<Text variant="muted">Dieses Angebot gibt es nicht oder nicht mehr.</Text>
+			<Button className="self-start" onPress={() => router.dismissTo(HOME_ROUTE)}>
+				<Text>Zu den Angeboten</Text>
+			</Button>
 		</View>
 	);
 }
