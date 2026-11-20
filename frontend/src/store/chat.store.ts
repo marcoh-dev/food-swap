@@ -37,6 +37,7 @@ const initialState: ChatState = {
 	chatsError: null,
 	unreadCount: 0,
 	openChatId: null,
+	tabVisible: true,
 	conversation: null,
 	conversationError: null,
 };
@@ -52,13 +53,13 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 	}
 
 	function receiveMessage(message: ChatMessage) {
-		const { openChatId, conversation, chats, userId } = get();
-		const isOpen = openChatId === message.chatId;
+		const { openChatId, tabVisible, conversation, chats, userId } = get();
+		// The user sees messages in the open chat while the tab is visible, so they count as read right away
+		const isSeen = tabVisible && openChatId === message.chatId;
 		const fromOther = message.senderId !== userId;
 
-		// The user sees messages in the open chat, so they count as read right away
 		if (fromOther) {
-			if (isOpen) markRead(message.chatId);
+			if (isSeen) markRead(message.chatId);
 			else void get().loadUnreadCount();
 		}
 
@@ -88,7 +89,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 					...chat,
 					lastMessage: message.content,
 					lastMessageAt: message.createdAt,
-					unread: fromOther && !isOpen,
+					unread: fromOther && !isSeen,
 				},
 				...chats.filter((item) => item.id !== chat.id),
 			],
@@ -129,6 +130,17 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		onDisconnect: () => set({ connected: false }),
 
 		receiveMessage,
+
+		setTabVisible: (visible) => {
+			set({ tabVisible: visible });
+
+			const { openChatId, conversation, chats } = get();
+			if (!visible || !openChatId || conversation?.id !== openChatId) return;
+
+			// Messages that arrived while the tab was hidden are read once the user sees the chat
+			const chat = chats?.find((item) => item.id === openChatId);
+			if (!chats || chat?.unread) markRead(openChatId);
+		},
 
 		onChatRead: (chatId) => {
 			set((state) => ({
@@ -186,7 +198,7 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 						: chat,
 				conversationError: null,
 			});
-			markRead(chatId);
+			if (get().tabVisible) markRead(chatId);
 		},
 
 		closeChat: () => {
