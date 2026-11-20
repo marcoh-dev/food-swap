@@ -140,11 +140,9 @@ export default function Listings() {
 					)}
 				>
 					{heading}
-
-					<Carousel />
-
 					{offlineNotice}
 					{errorNotice}
+					<Carousel />
 					<Text variant="muted">
 						{data.pages[0]?.meta.total}{" "}
 						{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
