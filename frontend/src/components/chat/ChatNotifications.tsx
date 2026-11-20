@@ -1,24 +1,16 @@
 "use client";
 
-import type { ChatListItem, ChatMessage } from "@food-swap/shared/types";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-import { getChatsAction } from "@/app/actions";
 import {
 	dismissPermissionPrompt,
-	notificationsEnabled,
 	PERMISSION_TOAST_ID,
 	setNotificationsTurnedOff,
 	shouldAskForPermission,
 } from "@/lib/notifications";
-import { socket } from "@/socket";
-import { useChatStore } from "@/store/chat.store";
 
 export function ChatNotifications() {
-	const router = useRouter();
-
 	useEffect(() => {
 		if (!shouldAskForPermission()) return;
 
@@ -42,40 +34,6 @@ export function ChatNotifications() {
 			},
 		});
 	}, []);
-
-	useEffect(() => {
-		async function notify(message: ChatMessage) {
-			if (!notificationsEnabled()) return;
-
-			const { userId, conversation, chats } = useChatStore.getState();
-			if (message.senderId === userId) return;
-			if (!document.hidden && conversation?.id === message.chatId) return;
-
-			const findChat = (list?: ChatListItem[] | null) =>
-				list?.find((item) => item.id === message.chatId);
-			const chat = findChat(chats) ?? findChat((await getChatsAction()).data);
-
-			const notification = new Notification(
-				`Neue Nachricht von ${chat?.otherName ?? "Gelöschtes Konto"}`,
-				{
-					body: `${chat?.listingTitle ?? "Gelöschtes Angebot"}: ${message.content}`,
-					tag: message.chatId,
-				},
-			);
-
-			notification.onclick = () => {
-				window.focus();
-				router.push(`/chats?chat=${message.chatId}`);
-				notification.close();
-			};
-		}
-
-		socket.on("newMessage", notify);
-
-		return () => {
-			socket.off("newMessage", notify);
-		};
-	}, [router]);
 
 	return null;
 }

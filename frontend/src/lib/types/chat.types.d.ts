@@ -11,8 +11,13 @@ export type ChatState = {
 };
 
 export type ChatActions = {
-	connect: (token: string, userId: string) => void;
-	disconnect: () => void;
+	setUserId: (userId: string) => void;
+	reset: () => void;
+	onConnect: () => void;
+	onDisconnect: () => void;
+	receiveMessage: (message: ChatMessage) => void;
+	onChatRead: (chatId: string) => void;
+	onChatRemoved: (chatId: string) => void;
 	loadChats: () => Promise<void>;
 	loadUnreadCount: () => Promise<void>;
 	openChat: (chatId: string) => Promise<void>;

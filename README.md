@@ -81,7 +81,7 @@ Things that only one app needs stay in that app (e.g. `frontend/src/lib/types`, 
 The web chat gets its data in two ways:
 
 - **Loading and sending** go through server actions (`frontend/src/app/actions.ts`). They run on the Next.js server, read the login token from the `auth_token` cookie and call the backend's REST API (`/chats`).
-- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with the same token. The backend puts each user in their own room (`user:<id>`) and sends three events:
+- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with the same token, through `connectChat` in `frontend/src/lib/chatEvents.ts`, which registers all socket listeners in one place. The backend puts each user in their own room (`user:<id>`) and sends three events:
 
     | Event         | Sent when                                                 | Effect in the browser                                                               |
     | ------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -89,9 +89,9 @@ The web chat gets its data in two ways:
     | `chatRead`    | a user opened a chat (only to that user, e.g. other tabs) | the chat is no longer marked unread, unread count updates                           |
     | `chatRemoved` | a user deleted a chat (only to that user)                 | the chat disappears from the list and closes if it's open                           |
 
-The Zustand store (`frontend/src/store/chat.store.ts`) holds the chat list, the unread count and the open chat. The components only read from it and call its actions. After a reconnect, the store reloads the unread count, the chat list and the open chat, because events sent while offline are lost.
+The Zustand store (`frontend/src/store/chat.store.ts`) holds the chat list, the unread count and the open chat. It has no socket code: the listeners call its actions, and the components only read from it and call its actions. After a reconnect, the store reloads the unread count, the chat list and the open chat, because events sent while offline are lost.
 
-Browser notifications (`ChatNotifications`, helpers in `frontend/src/lib/notifications.ts`) also listen to `newMessage`. They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
+Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `ChatNotifications` only asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
 
 ### Environment variables
 

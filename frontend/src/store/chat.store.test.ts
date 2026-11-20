@@ -1,5 +1,5 @@
 import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
 	getChatAction,
@@ -8,16 +8,18 @@ import {
 	markChatReadAction,
 	replyToChatAction,
 } from "@/app/actions";
+import { connectChat } from "@/lib/chatEvents";
 import type { ActionResult } from "@/lib/types/common.types";
 import { useChatStore } from "@/store/chat.store";
 
-// Collects the store's socket listeners, so the tests can send events
+// Collects the socket listeners from connectChat, so the tests can send events
 const listeners = vi.hoisted(() => new Map<string, (payload?: unknown) => void>());
 
 vi.mock("@/socket", () => ({
 	socket: {
 		on: (event: string, listener: (payload?: unknown) => void) =>
 			listeners.set(event, listener),
+		off: (event: string) => listeners.delete(event),
 		connect: vi.fn(),
 		disconnect: vi.fn(),
 	},
@@ -89,14 +91,17 @@ function chatIds() {
 	return useChatStore.getState().chats?.map((chat) => chat.id);
 }
 
+let disconnect: () => void;
+
 beforeEach(() => {
-	useChatStore.getState().disconnect();
 	vi.clearAllMocks();
 	vi.mocked(getChatsAction).mockResolvedValue({ data: [] });
 	vi.mocked(getUnreadChatsCountAction).mockResolvedValue({ data: 0 });
 	vi.mocked(markChatReadAction).mockResolvedValue({ data: null });
-	useChatStore.setState({ userId: ME });
+	disconnect = connectChat({ token: "token", userId: ME, onNotificationClick: vi.fn() });
 });
+
+afterEach(() => disconnect());
 
 describe("newMessage", () => {
 	it("adds a message from the other user to the open chat and marks it read", async () => {

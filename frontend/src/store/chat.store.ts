@@ -12,7 +12,6 @@ import {
 } from "@/app/actions";
 import type { ChatActions, ChatState } from "@/lib/types/chat.types";
 import type { ActionResult } from "@/lib/types/common.types";
-import { socket } from "@/socket";
 
 async function call<T>(action: Promise<ActionResult<T>>): Promise<T> {
 	const result = await action.catch(() => {
@@ -108,48 +107,41 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
 		}
 	}
 
-	socket.on("connect", () => {
-		set({ connected: true });
-
-		void get().loadUnreadCount();
-		if (get().chats || get().chatsError) void get().loadChats();
-		if (openChatId) void get().openChat(openChatId);
-	});
-
-	socket.on("disconnect", () => set({ connected: false }));
-
-	socket.on("newMessage", (message: ChatMessage) => {
-		receiveMessage(message);
-	});
-
-	socket.on("chatRead", ({ chatId }: { chatId: string }) => {
-		set((state) => ({
-			chats:
-				state.chats?.map((item) =>
-					item.id === chatId ? { ...item, unread: false } : item,
-				) ?? null,
-		}));
-		void get().loadUnreadCount();
-	});
-
-	socket.on("chatRemoved", ({ chatId }: { chatId: string }) => {
-		removeChat(chatId);
-		void get().loadUnreadCount();
-	});
-
 	return {
 		...initialState,
 
-		connect: (token, userId) => {
-			set({ userId });
-			socket.auth = { token };
-			socket.connect();
-		},
+		setUserId: (userId) => set({ userId }),
 
-		disconnect: () => {
-			socket.disconnect();
+		reset: () => {
 			openChatId = null;
 			set(initialState);
+		},
+
+		onConnect: () => {
+			set({ connected: true });
+
+			void get().loadUnreadCount();
+			if (get().chats || get().chatsError) void get().loadChats();
+			if (openChatId) void get().openChat(openChatId);
+		},
+
+		onDisconnect: () => set({ connected: false }),
+
+		receiveMessage,
+
+		onChatRead: (chatId) => {
+			set((state) => ({
+				chats:
+					state.chats?.map((item) =>
+						item.id === chatId ? { ...item, unread: false } : item,
+					) ?? null,
+			}));
+			void get().loadUnreadCount();
+		},
+
+		onChatRemoved: (chatId) => {
+			removeChat(chatId);
+			void get().loadUnreadCount();
 		},
 
 		loadChats: async () => {
