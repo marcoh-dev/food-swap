@@ -1,17 +1,21 @@
-// Listings end at 23:59 Berlin time on their last day, so days are counted in
-// Berlin time on the server, in every browser and in the app.
+/**
+ * Listings end at 23:59 Berlin time on their last day, so days are counted in
+ * Berlin time on the server, in every browser and in the app.
+ */
 export const TIME_ZONE = "Europe/Berlin";
 
-// Listings ending within this many days get an "ends soon" badge.
+/** Listings ending within this many days get an "ends soon" badge. */
 export const ENDING_SOON_DAYS = 7;
 
-// Ended listings are deleted this many days after their end day (same rule as
-// the backend cleanup in listings.service.ts).
+/**
+ * Ended listings are deleted this many days after their end day (same rule as
+ * the backend cleanup in listings.service.ts).
+ */
 export const DELETE_AFTER_DAYS = 28;
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
-// The Berlin calendar day of a point in time as "YYYY-MM-DD".
+/** The Berlin calendar day of a point in time as "YYYY-MM-DD". */
 export function getBerlinDay(date: Date = new Date()): string {
 	const parts = new Intl.DateTimeFormat("de-DE", {
 		timeZone: TIME_ZONE,
@@ -24,7 +28,7 @@ export function getBerlinDay(date: Date = new Date()): string {
 	return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
-// The Berlin time of a point in time as "HH:MM".
+/** The Berlin time of a point in time as "HH:MM". */
 export function formatTime(isoDate: string): string {
 	const date = new Date(isoDate);
 
@@ -42,7 +46,7 @@ function toUtcTime(day: string): number {
 	return Date.UTC(year, month - 1, date);
 }
 
-// Calendar days from today until the Berlin day of isoDate (0 = today, negative = past).
+/** Calendar days from today until the Berlin day of isoDate (0 = today, negative = past). */
 export function getDaysUntil(isoDate: string, now: Date = new Date()): number {
 	const endDay = getBerlinDay(new Date(isoDate));
 	const today = getBerlinDay(now);
@@ -50,7 +54,7 @@ export function getDaysUntil(isoDate: string, now: Date = new Date()): number {
 	return Math.round((toUtcTime(endDay) - toUtcTime(today)) / MILLISECONDS_PER_DAY);
 }
 
-// Shifts a "YYYY-MM-DD" day by days and/or months.
+/** Shifts a "YYYY-MM-DD" day by days and/or months. */
 export function shiftDay(day: string, { days = 0, months = 0 }): string {
 	const [year, month, date] = day.split("-").map(Number) as [number, number, number];
 	const shifted = new Date(Date.UTC(year, month - 1 + months, date + days));
@@ -63,7 +67,7 @@ function formatDayWithoutYear(day: string): string {
 	return `${date}.${month}.`;
 }
 
-// The Berlin date of a point in time as "DD.MM.YYYY".
+/** The Berlin date of a point in time as "DD.MM.YYYY". */
 export function formatDate(isoDate: string): string {
 	const date = new Date(isoDate);
 
@@ -77,7 +81,7 @@ export function formatDate(isoDate: string): string {
 	});
 }
 
-// "heute, 14:05", "gestern, 14:05" or "18.11." for older dates.
+/** "heute, 14:05", "gestern, 14:05" or "18.11." for older dates. */
 export function formatListingDate(
 	isoDate: string | null | undefined,
 	now: Date = new Date(),
@@ -106,7 +110,7 @@ export function formatListingDate(
 	});
 }
 
-// "Abgelaufen", "Läuft heute ab", "Noch 3 Tage" or "Bis …" further ahead.
+/** "Abgelaufen", "Läuft heute ab", "Noch 3 Tage" or "Bis …" further ahead. */
 export function getEndDateLabel(
 	daysLeft: number,
 	endDate: string,
@@ -129,7 +133,7 @@ function getDeletionDay(endDate: string): string {
 	return shiftDay(getBerlinDay(new Date(endDate)), { days: DELETE_AFTER_DAYS + 1 });
 }
 
-// "Wird am 19.12. gelöscht" once a listing has ended, otherwise null.
+/** "Wird am 19.12. gelöscht" once a listing has ended, otherwise null. */
 export function getDeletionLabel(endDate: string, now: Date = new Date()): string | null {
 	if (!isExpired(endDate, now)) return null;
 
