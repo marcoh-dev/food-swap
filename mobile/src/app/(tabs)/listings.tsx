@@ -57,7 +57,12 @@ export default function Listings() {
 					: "Die Angebote konnten nicht geladen werden."
 			}
 		>
-			<Button variant="outline" disabled={isFetching} onPress={() => void refetch()}>
+			<Button
+				variant="outline"
+				className="self-start"
+				disabled={isFetching}
+				onPress={() => void refetch()}
+			>
 				<Text>Erneut versuchen</Text>
 			</Button>
 		</Notice>
@@ -69,7 +74,9 @@ export default function Listings() {
 				{heading}
 				{offlineNotice}
 				{isPending && isOnline && (
-					<ActivityIndicator color={mutedForeground} className="self-start" />
+					<View className="flex-1 items-center justify-center">
+						<ActivityIndicator size="large" color={mutedForeground} />
+					</View>
 				)}
 				{errorNotice}
 			</Screen>
