@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, RefreshControl, ScrollView, View } from "react-native";
+import { ActivityIndicator, Image, Platform, RefreshControl, ScrollView, View } from "react-native";
 import { z } from "zod";
 
 import { LISTINGS_QUERY_KEY } from "@/api/listings";
@@ -129,7 +129,8 @@ export default function ListingDetail() {
 	return (
 		<ScrollView
 			className="bg-background"
-			contentContainerClassName="pb-6"
+			// iOS adds the bottom inset itself (contentInsetAdjustmentBehavior), Android draws behind the navigation bar.
+			contentContainerClassName={Platform.OS === "android" ? "pb-safe-offset-6" : "pb-6"}
 			contentInsetAdjustmentBehavior="automatic"
 			refreshControl={
 				<RefreshControl
