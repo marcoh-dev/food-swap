@@ -37,6 +37,11 @@ export class ChatsGateway implements OnGatewayConnection {
 		return this.jwtService.sign(payload, { expiresIn: "60s" });
 	}
 
+	/** Ends the user's open chat connections, e.g. after logging out everywhere. */
+	disconnectUser(userId: string) {
+		this.server.in(this.userRoom(userId)).disconnectSockets();
+	}
+
 	notifyNewMessage(participantIds: Array<string | null>, message: MessageResponseDto) {
 		const rooms = participantIds
 			.filter((id): id is string => id !== null)

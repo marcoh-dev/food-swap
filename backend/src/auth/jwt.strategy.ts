@@ -31,6 +31,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 			throw new UnauthorizedException("User no longer exists");
 		}
 
+		// JWT times are in seconds, so tokens from the same second as the logout still pass
+		const loggedOutAt = user.loggedOutEverywhereAt?.getTime();
+		if (loggedOutAt && (payload.iat ?? 0) < Math.floor(loggedOutAt / 1000)) {
+			throw new UnauthorizedException("Logged out everywhere");
+		}
+
 		return {
 			id: user.id,
 			username: user.username,

@@ -54,6 +54,12 @@ export class AuthController {
 		return this.authService.logout(refresh_token);
 	}
 
+	@Post("logout-all")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	logoutEverywhere(@Request() req: AuthenticatedRequest) {
+		return this.authService.logoutEverywhere(req.user.id);
+	}
+
 	@Get("me")
 	@SerializeOptions({ type: CurrentUserResponseDto })
 	getMe(@Request() req: AuthenticatedRequest) {

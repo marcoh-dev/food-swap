@@ -39,6 +39,10 @@ export class User {
 	@OneToMany(() => Listing, (listing) => listing.owner)
 	listings!: Listing[];
 
+	/** Access tokens issued before this moment are rejected ("log out everywhere"). */
+	@Column({ type: "timestamptz", nullable: true })
+	loggedOutEverywhereAt!: Date | null;
+
 	@CreateDateColumn({ type: "timestamptz" })
 	createdAt!: Date;
 

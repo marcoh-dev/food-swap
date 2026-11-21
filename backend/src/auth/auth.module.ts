@@ -9,14 +9,19 @@ import { AuthService } from "./auth.service";
 import { RefreshToken } from "./entities/refreshToken.entity";
 import { JwtStrategy } from "./jwt.strategy";
 import { LocalStrategy } from "./local.strategy";
+import { ChatsModule } from "../chats/chats.module";
+import { User } from "../users/entities/user.entity";
 import { UsersModule } from "../users/users.module";
 
 @Module({
 	imports: [
 		UsersModule,
+		ChatsModule,
 		PassportModule,
-		TypeOrmModule.forFeature([RefreshToken]),
+		TypeOrmModule.forFeature([RefreshToken, User]),
 		JwtModule.registerAsync({
+			// Global, so the chat gateway can create and check socket tickets without importing this module
+			global: true,
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
 				secret: configService.getOrThrow<string>("JWT_SECRET"),

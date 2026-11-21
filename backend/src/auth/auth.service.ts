@@ -6,6 +6,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { LessThan, MoreThan, Repository } from "typeorm";
 
 import { RefreshToken } from "./entities/refreshToken.entity";
+import { ChatsGateway } from "../chats/chats.gateway";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 
@@ -23,6 +24,9 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 		@InjectRepository(RefreshToken)
 		private readonly refreshTokens: Repository<RefreshToken>,
+		@InjectRepository(User)
+		private readonly users: Repository<User>,
+		private readonly chatsGateway: ChatsGateway,
 	) {}
 
 	async validateUser(username: string, password: string) {
@@ -67,6 +71,16 @@ export class AuthService {
 	/** Makes the refresh token unusable; unknown tokens are ignored. */
 	async logout(refreshToken: string) {
 		await this.refreshTokens.delete({ tokenHash: hashToken(refreshToken) });
+	}
+
+	/**
+	 * Logs the user out on all devices: access tokens issued so far stop working, refresh tokens
+	 * are deleted and open chat connections are closed.
+	 */
+	async logoutEverywhere(userId: string) {
+		await this.users.update(userId, { loggedOutEverywhereAt: new Date() });
+		await this.refreshTokens.delete({ userId });
+		this.chatsGateway.disconnectUser(userId);
 	}
 
 	private async createRefreshToken(userId: string) {
