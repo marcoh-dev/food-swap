@@ -91,6 +91,14 @@ Login and registration return two tokens:
 - **Mobile:** both tokens are in SecureStore. When a request gets a 401, `mobile/src/api/request.ts` renews the tokens once and repeats the request; requests that fail at the same time share one renewal. If the renewal fails, the app logs out.
 - **Chat socket:** the socket doesn't accept access tokens. `POST /chats/socket-ticket` returns a ticket that is valid for 60 seconds and only works for the socket handshake; the web app fetches a new one through a server action on every connection attempt.
 
+### Rate limits
+
+The backend limits requests per IP (`backend/src/common/rateLimits.ts`) and answers `429` above a limit: login 20 per 15 minutes, registration 10 per hour, everything else 300 per minute.
+
+- Per IP, not per username, so nobody can lock out another user by spamming their username.
+- Website requests come from the Next.js server, so it forwards the user's IP in `X-Client-IP` together with `INTERNAL_API_SECRET`; the backend ignores the header without the secret.
+- Only HMACs of the IPs are kept, in memory and only for the time window. Blocks are logged (`[RateLimit]`) without the IP.
+
 ### Chat data flow (web)
 
 The web chat gets its data in two ways:
@@ -112,14 +120,15 @@ Browser notifications are also shown from the `newMessage` listener in `chatEven
 
 **`backend/.env`**
 
-| Variable            | Local                                                         | Live                                                               |
-| ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `DATABASE_URL`      | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?sslmode=verify-full`                |
-| `TEST_DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                           |
-| `PORT`              | `3000`                                                        | set by the hosting provider                                        |
-| `JWT_SECRET`        | any string                                                    | long random string, never the local one                            |
-| `CLEANUP_SECRET`    | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret |
-| `SEED_PASSWORD`     | password of the local mock users, e.g. `'Local-Mock-1!'`      | not used, the live mock password goes into `backend/.env.live`     |
+| Variable              | Local                                                         | Live                                                               |
+| --------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `DATABASE_URL`        | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?sslmode=verify-full`                |
+| `TEST_DATABASE_URL`   | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                           |
+| `PORT`                | `3000`                                                        | set by the hosting provider                                        |
+| `JWT_SECRET`          | any string                                                    | long random string, never the local one                            |
+| `CLEANUP_SECRET`      | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret |
+| `SEED_PASSWORD`       | password of the local mock users, e.g. `'Local-Mock-1!'`      | not used, the live mock password goes into `backend/.env.live`     |
+| `INTERNAL_API_SECRET` | any string, the same as in `frontend/.env`                    | long random string, the same as on Vercel                          |
 
 **`backend/.env.live`** (only read by commands with `live` in their name)
 
@@ -136,9 +145,10 @@ Browser notifications are also shown from the `newMessage` listener in `chatEven
 
 **`frontend/.env`**
 
-| Variable                       | Local                   | Live             |
-| ------------------------------ | ----------------------- | ---------------- |
-| `NEXT_PUBLIC_FOODSWAP_API_URL` | `http://localhost:3000` | live backend URL |
+| Variable                       | Local                         | Live                                                       |
+| ------------------------------ | ----------------------------- | ---------------------------------------------------------- |
+| `NEXT_PUBLIC_FOODSWAP_API_URL` | `http://localhost:3000`       | live backend URL                                           |
+| `INTERNAL_API_SECRET`          | the same as in `backend/.env` | the same as on Render; never prefix it with `NEXT_PUBLIC_` |
 
 **`mobile/.env.local`**
 
@@ -147,6 +157,8 @@ Browser notifications are also shown from the `newMessage` listener in `chatEven
 | `EXPO_PUBLIC_API_URL` | `http://<your computer's network IP>:3000`, not localhost | live backend URL |
 
 The phone can't reach `localhost`. Find your computer's network IP under System Settings → Wi-Fi → Details. With the live URL, the first request can take up to a minute while Render wakes up. Expo builds the value into the app, so restart with `pnpm mobile --clear` after changing it. If it is missing or invalid, the app shows a configuration error.
+
+Generate long random strings with `openssl rand -base64 32 | tr '+/' '-_' | tr -d '='`. The mobile app never gets `INTERNAL_API_SECRET`: anything in an app can be read by unpacking it.
 
 Never commit `.env` files, only `.env.example`. When you add a variable, add it to `.env.example` and to the hosting dashboards too.
 

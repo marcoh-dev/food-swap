@@ -1,7 +1,7 @@
 "use server";
 
 import { getBerlinDay } from "@food-swap/shared/dates";
-import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
+import { LOGIN_FAILED_MESSAGE, LOGIN_RATE_LIMITED_MESSAGE } from "@food-swap/shared/messages";
 import {
 	loginSchema,
 	type LoginValues,
@@ -57,6 +57,12 @@ export async function registerAction(
 
 	const authData = await registerUser(result.data);
 
+	if (authData.statusCode === 429) {
+		return {
+			error: "Zu viele Registrierungen von diesem Gerät. Bitte versuche es später erneut.",
+		};
+	}
+
 	if (authData.statusCode === 409) {
 		return { fieldErrors: { username: ["Dieser Benutzername ist bereits vergeben."] } };
 	}
@@ -78,6 +84,10 @@ export async function loginAction(values: LoginValues, redirectTo?: string): Pro
 	if (!result.success) return { fieldErrors: z.flattenError(result.error).fieldErrors };
 
 	const authData = await loginUser(result.data);
+
+	if (authData.statusCode === 429) {
+		return { error: LOGIN_RATE_LIMITED_MESSAGE };
+	}
 
 	if (!authData.access_token) {
 		return { error: LOGIN_FAILED_MESSAGE };

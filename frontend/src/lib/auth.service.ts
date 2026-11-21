@@ -1,9 +1,10 @@
 import type { AuthResponse, RegistrationResponse, UserCredentials } from "@food-swap/shared/types";
 
+import { clientIpHeaders } from "./clientIp";
 import { fetchAPI } from "./fetchAPI";
 
 export async function loginUser({ username, password }: UserCredentials): Promise<AuthResponse> {
-	const response = await fetch(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/auth/login`, {
+	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + `/auth/login`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -33,12 +34,16 @@ export async function registerUser({
 
 /**
  * Exchanges a refresh token for new tokens. Returns `null` if the backend rejects the
- * refresh token and throws if the backend can't be reached.
+ * refresh token and throws if the backend can't be reached. Called from `proxy.ts`, which
+ * passes the browser's request headers (`fetchAPI` can't read them there).
  */
-export async function renewTokens(refreshToken: string): Promise<AuthResponse | null> {
+export async function renewTokens(
+	refreshToken: string,
+	requestHeaders: Headers,
+): Promise<AuthResponse | null> {
 	const response = await fetch(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/auth/refresh", {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": "application/json", ...clientIpHeaders(requestHeaders) },
 		body: JSON.stringify({ refresh_token: refreshToken }),
 	});
 
@@ -50,7 +55,7 @@ export async function renewTokens(refreshToken: string): Promise<AuthResponse | 
 
 /** Makes the refresh token unusable in the backend; errors are ignored, since it expires anyway. */
 export async function revokeRefreshToken(refreshToken: string): Promise<void> {
-	await fetch(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/auth/logout", {
+	await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/auth/logout", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ refresh_token: refreshToken }),

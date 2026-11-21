@@ -6,6 +6,7 @@ import { App } from "supertest/types";
 import { DataSource } from "typeorm";
 
 import { AppModule } from "../src/app.module";
+import { resetRateLimits } from "./setup/rate-limits";
 import { RefreshToken } from "../src/auth/entities/refreshToken.entity";
 import { ChatsGateway } from "../src/chats/chats.gateway";
 import { User } from "../src/users/entities/user.entity";
@@ -42,6 +43,7 @@ describe("Auth tokens (integration)", () => {
 	});
 
 	beforeEach(async () => {
+		resetRateLimits(app);
 		await dataSource.query('TRUNCATE "messages", "chats", "listings", "users" CASCADE');
 	});
 

@@ -18,6 +18,10 @@ export function isUnauthorizedError(error: unknown) {
 	return error instanceof RequestError && error.status === 401;
 }
 
+export function isRateLimitedError(error: unknown) {
+	return error instanceof RequestError && error.status === 429;
+}
+
 let renewing: Promise<boolean> | null = null;
 
 // Several requests can fail with 401 at the same time; they share one renewal, because each

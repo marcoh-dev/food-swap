@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { ScheduleModule } from "@nestjs/schedule";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AppController } from "./app.controller";
@@ -14,6 +15,8 @@ import { Category } from "./categories/entities/category.entity";
 import { ChatsModule } from "./chats/chats.module";
 import { Chat } from "./chats/entities/chat.entity";
 import { Message } from "./chats/entities/message.entity";
+import { ClientIpThrottlerGuard } from "./common/guards/clientIpThrottler.guard";
+import { GENERAL_LIMIT } from "./common/rateLimits";
 import { Listing } from "./listings/entities/listing.entity";
 import { ListingsModule } from "./listings/listings.module";
 import { Place } from "./places/entities/place.entity";
@@ -41,6 +44,7 @@ import { UsersModule } from "./users/users.module";
 			}),
 		}),
 		ScheduleModule.forRoot(),
+		ThrottlerModule.forRoot({ throttlers: [GENERAL_LIMIT] }),
 		AuthModule,
 		UsersModule,
 		ListingsModule,
@@ -50,6 +54,11 @@ import { UsersModule } from "./users/users.module";
 		PlacesModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+	providers: [
+		AppService,
+		// Rate limits first, so failed logins and requests without a login count too
+		{ provide: APP_GUARD, useClass: ClientIpThrottlerGuard },
+		{ provide: APP_GUARD, useClass: JwtAuthGuard },
+	],
 })
 export class AppModule {}

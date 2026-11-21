@@ -7,6 +7,7 @@ import { App } from "supertest/types";
 import { DataSource } from "typeorm";
 
 import { AppModule } from "../src/app.module";
+import { resetRateLimits } from "./setup/rate-limits";
 import { ChatsGateway } from "../src/chats/chats.gateway";
 import { User } from "../src/users/entities/user.entity";
 
@@ -52,6 +53,7 @@ describe("Chat socket tickets (integration)", () => {
 	});
 
 	beforeEach(async () => {
+		resetRateLimits(app);
 		await dataSource.query('TRUNCATE "messages", "chats", "listings", "users" CASCADE');
 		const response = await api()
 			.post("/auth/register")
