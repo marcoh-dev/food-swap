@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-export const AUTH_COOKIE = "auth_token";
+import { AUTH_COOKIE } from "@/lib/authCookies";
 
 export async function fetchAPI(path: string, options: RequestInit = {}) {
 	const cookieStore = await cookies();

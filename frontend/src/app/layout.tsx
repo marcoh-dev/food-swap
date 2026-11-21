@@ -15,7 +15,7 @@ import { SkipLink } from "@/components/shared/SkipLink";
 import Toast from "@/components/shared/Toast";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { AUTH_COOKIE } from "@/lib/fetchAPI";
+import { AUTH_COOKIE } from "@/lib/authCookies";
 import { getCurrentUser } from "@/lib/users.service";
 
 import "./globals.css";

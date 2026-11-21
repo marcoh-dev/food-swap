@@ -30,3 +30,29 @@ export async function registerUser({
 
 	return registrationData;
 }
+
+/**
+ * Exchanges a refresh token for new tokens. Returns `null` if the backend rejects the
+ * refresh token and throws if the backend can't be reached.
+ */
+export async function renewTokens(refreshToken: string): Promise<AuthResponse | null> {
+	const response = await fetch(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/auth/refresh", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ refresh_token: refreshToken }),
+	});
+
+	if (response.status === 401) return null;
+	if (!response.ok) throw new Error(`Token refresh failed with status ${response.status}`);
+
+	return response.json();
+}
+
+/** Makes the refresh token unusable in the backend; errors are ignored, since it expires anyway. */
+export async function revokeRefreshToken(refreshToken: string): Promise<void> {
+	await fetch(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/auth/logout", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ refresh_token: refreshToken }),
+	}).catch(() => undefined);
+}
