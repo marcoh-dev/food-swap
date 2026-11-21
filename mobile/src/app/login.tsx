@@ -1,11 +1,11 @@
-import { LOGIN_FAILED_MESSAGE } from "@food-swap/shared/messages";
+import { LOGIN_FAILED_MESSAGE, LOGIN_RATE_LIMITED_MESSAGE } from "@food-swap/shared/messages";
 import { loginSchema, type LoginValues } from "@food-swap/shared/schemas/user";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { AccessibilityInfo, ScrollView } from "react-native";
 import { z } from "zod";
 
-import { isUnauthorizedError } from "@/api/request";
+import { isRateLimitedError, isUnauthorizedError } from "@/api/request";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { TextField } from "@/components/TextField";
@@ -25,11 +25,18 @@ export default function Login() {
 	const [values, setValues] = useState<LoginValues>({ username: "", password: "" });
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
+	// Errors the user can do something about; anything else shows the server error notice
+	const loginErrorMessage = isUnauthorizedError(login.error)
+		? LOGIN_FAILED_MESSAGE
+		: isRateLimitedError(login.error)
+			? LOGIN_RATE_LIMITED_MESSAGE
+			: null;
+
 	useEffect(() => {
-		if (isUnauthorizedError(login.error)) {
-			AccessibilityInfo.announceForAccessibility(LOGIN_FAILED_MESSAGE);
+		if (loginErrorMessage) {
+			AccessibilityInfo.announceForAccessibility(loginErrorMessage);
 		}
-	}, [login.error]);
+	}, [loginErrorMessage]);
 
 	function update(field: keyof LoginValues, value: string) {
 		setValues((previous) => ({ ...previous, [field]: value }));
@@ -71,7 +78,7 @@ export default function Login() {
 			{!isOnline && (
 				<OfflineNotice message="Du kannst dich anmelden, sobald du wieder online bist." />
 			)}
-			{isOnline && login.isError && !isUnauthorizedError(login.error) && (
+			{isOnline && login.isError && !loginErrorMessage && (
 				<ServerErrorNotice message="Die Anmeldung hat nicht geklappt. Bitte versuche es später erneut." />
 			)}
 			<TextField
@@ -97,9 +104,9 @@ export default function Login() {
 				returnKeyType="go"
 				onSubmitEditing={handleSubmit}
 			/>
-			{isUnauthorizedError(login.error) && (
+			{loginErrorMessage && (
 				<Text className="text-destructive" accessibilityRole="alert">
-					{LOGIN_FAILED_MESSAGE}
+					{loginErrorMessage}
 				</Text>
 			)}
 			<Button disabled={!isOnline || login.isPending} onPress={handleSubmit}>
