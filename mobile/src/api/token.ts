@@ -1,15 +1,25 @@
+import type { AuthResponse } from "@food-swap/shared/types";
 import * as SecureStore from "expo-secure-store";
 
-const TOKEN_KEY = "access_token";
+const ACCESS_TOKEN_KEY = "access_token";
+const REFRESH_TOKEN_KEY = "refresh_token";
+
+export type AuthTokens = Pick<AuthResponse, "access_token" | "refresh_token">;
 
 export function getToken() {
-	return SecureStore.getItemAsync(TOKEN_KEY);
+	return SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
 }
 
-export function saveToken(token: string) {
-	return SecureStore.setItemAsync(TOKEN_KEY, token);
+export function getRefreshToken() {
+	return SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
 }
 
-export function deleteToken() {
-	return SecureStore.deleteItemAsync(TOKEN_KEY);
+export async function saveTokens({ access_token, refresh_token }: AuthTokens) {
+	await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, access_token);
+	await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refresh_token);
+}
+
+export async function deleteTokens() {
+	await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+	await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
 }
