@@ -1,6 +1,6 @@
-import { ExecutionContext, Inject, Injectable } from "@nestjs/common";
+import { ExecutionContext, Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { ThrottlerGuard } from "@nestjs/throttler";
+import { ThrottlerGuard, type ThrottlerLimitDetail } from "@nestjs/throttler";
 import type { Request } from "express";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
@@ -22,6 +22,9 @@ export class ClientIpThrottlerGuard extends ThrottlerGuard {
 	private readonly configService!: ConfigService;
 
 	private secret = "";
+	private readonly blockLogger = new Logger("RateLimit");
+	// Until when a blocked source was logged, so an attack doesn't flood the logs
+	private readonly loggedUntil = new Map<string, number>();
 
 	override async onModuleInit() {
 		this.secret = this.configService.getOrThrow<string>("INTERNAL_API_SECRET");
@@ -39,6 +42,30 @@ export class ClientIpThrottlerGuard extends ThrottlerGuard {
 			sameSecret(sentSecret, this.secret);
 
 		return Promise.resolve(rateLimitAddress(fromOurServer ? clientIp : (req.ip ?? "")));
+	}
+
+	/**
+	 * Logs the first blocked request of a source per time window, so blocks show up in the Render
+	 * logs. Only the start of the HMAC key identifies the source, never the IP.
+	 */
+	protected override async throwThrottlingException(
+		context: ExecutionContext,
+		detail: ThrottlerLimitDetail,
+	): Promise<void> {
+		const now = Date.now();
+		if ((this.loggedUntil.get(detail.key) ?? 0) < now) {
+			for (const [key, until] of this.loggedUntil) {
+				if (until < now) this.loggedUntil.delete(key);
+			}
+			this.loggedUntil.set(detail.key, now + detail.ttl);
+
+			const { method, path } = context.switchToHttp().getRequest<Request>();
+			this.blockLogger.warn(
+				`Blocked ${method} ${path}: more than ${detail.limit} requests in ${detail.ttl / 60_000} min (source ${detail.key.slice(0, 8)})`,
+			);
+		}
+
+		await super.throwThrottlingException(context, detail);
 	}
 
 	// The package hashes the key with plain SHA-256, which can be traced back to an IP by trying

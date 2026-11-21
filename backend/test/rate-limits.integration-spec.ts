@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { ThrottlerStorage, type ThrottlerStorageService } from "@nestjs/throttler";
 import { createHash } from "node:crypto";
@@ -107,6 +107,23 @@ describe("Rate limits (integration)", () => {
 
 		await login("2001:db8:1:2:ffff::1", PASSWORD).expect(429);
 		await login("2001:db8:1:3::1", PASSWORD).expect(201);
+	});
+
+	it("logs a block once per source and time window, without the IP", async () => {
+		// An IP no other test uses: the guard remembers which sources it already logged
+		const warn = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
+		for (let attempt = 0; attempt < LOGIN_LIMIT.limit; attempt++) {
+			await login("203.0.113.99").expect(401);
+		}
+
+		await login("203.0.113.99").expect(429);
+		await login("203.0.113.99").expect(429);
+
+		expect(warn).toHaveBeenCalledTimes(1);
+		const [message] = warn.mock.calls[0] as [string];
+		expect(message).toContain("Blocked POST /auth/login");
+		expect(message).not.toContain("203.0.113.99");
+		warn.mockRestore();
 	});
 
 	it("stores neither the IP nor a plain hash of it", async () => {
