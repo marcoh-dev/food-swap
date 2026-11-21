@@ -8,7 +8,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { ActivityIndicator, Image, Platform, RefreshControl, ScrollView, View } from "react-native";
 import { z } from "zod";
 
@@ -103,7 +103,7 @@ export default function ListingDetail() {
 
 	if (!listing) {
 		return (
-			<View className="flex-1 gap-4 bg-background p-6">
+			<StateScreen>
 				{offlineNotice}
 				{errorNotice}
 				{isOnline && !isError && (
@@ -111,7 +111,7 @@ export default function ListingDetail() {
 						<ActivityIndicator size="large" color={mutedForeground} />
 					</View>
 				)}
-			</View>
+			</StateScreen>
 		);
 	}
 
@@ -296,13 +296,26 @@ function ListingNotFound() {
 	const router = useRouter();
 
 	return (
-		// No Screen here: its top padding includes the status bar, which the header already covers.
-		<View className="flex-1 gap-4 bg-background p-6">
+		<StateScreen>
 			<Text variant="h2">Angebot nicht gefunden</Text>
 			<Text variant="muted">Dieses Angebot gibt es nicht oder nicht mehr.</Text>
 			<Button className="self-start" onPress={() => router.dismissTo(HOME_ROUTE)}>
 				<Text>Zu den Angeboten</Text>
 			</Button>
-		</View>
+		</StateScreen>
+	);
+}
+
+// The iOS header is transparent and only a scroll view moves its content below it
+// (contentInsetAdjustmentBehavior), like the detail itself. A plain View would start behind the header.
+function StateScreen({ children }: { children: ReactNode }) {
+	return (
+		<ScrollView
+			className="bg-background"
+			contentContainerClassName="grow gap-4 p-6"
+			contentInsetAdjustmentBehavior="automatic"
+		>
+			{children}
+		</ScrollView>
 	);
 }
