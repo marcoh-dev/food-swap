@@ -20,6 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(payload: Payload) {
+		// Socket tickets are signed with the same secret but are only for the chat connection
+		if (payload.purpose) {
+			throw new UnauthorizedException("Not an access token");
+		}
+
 		const user = await this.usersService.findById(payload.sub);
 
 		if (!user) {

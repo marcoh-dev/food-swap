@@ -3,6 +3,7 @@ import type {
 	ChatListItem,
 	ChatMessage,
 	ListingChatStatus,
+	SocketTicketResponse,
 } from "@food-swap/shared/types";
 
 import { fetchAPI } from "./fetchAPI";
@@ -100,4 +101,16 @@ export async function deleteChat(chatId: string): Promise<void> {
 		method: "DELETE",
 	});
 	await throwIfFailed(response);
+}
+
+export async function getSocketTicket(): Promise<string> {
+	const response = await fetchAPI(
+		process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/chats/socket-ticket",
+		{
+			method: "POST",
+		},
+	);
+	await throwIfFailed(response);
+	const { ticket } = (await response.json()) as SocketTicketResponse;
+	return ticket;
 }

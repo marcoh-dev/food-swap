@@ -76,12 +76,27 @@ Styling uses NativeWind 5, which is still a release candidate. `nativewind` and 
 
 Things that only one app needs stay in that app (e.g. `frontend/src/lib/types`, `frontend/src/lib/schemas`, fonts and text sizes in `frontend/src/app/globals.css`); more can move to `shared` once both apps need it. The package has no build step: it exports its TypeScript files directly, Metro handles them, and Next.js compiles them through `transpilePackages` in `next.config.ts`. Inside `shared` there is no `@/` alias, so it uses relative imports. New files need an entry in `exports` in `shared/package.json`.
 
+### Login and tokens
+
+Login and registration return two tokens:
+
+| Token         | Lifetime   | Sent with                           | Can be revoked                                       |
+| ------------- | ---------- | ----------------------------------- | ---------------------------------------------------- |
+| Access token  | 15 minutes | every API request (`Authorization`) | no, it's only checked by its signature               |
+| Refresh token | 30 days    | only `POST /auth/refresh`           | yes, it's stored (as a SHA-256 hash) in the database |
+
+`POST /auth/refresh` exchanges a refresh token for a new pair. The old refresh token keeps working for 60 more seconds, because several requests can renew with the same token at the same time; after that it expires. `POST /auth/logout` deletes the refresh token, and deleting an account deletes all of its refresh tokens. So users are only logged out after 30 days without using the app or the site.
+
+- **Web:** both tokens are in httpOnly cookies (`auth_token`, `refresh_token`), so the browser's JavaScript can't read them. The access cookie ends after 14 minutes, a minute before the token. When it's gone, `frontend/src/proxy.ts` renews both tokens before the request and passes the new access token on to that request. Pages and server actions read the access cookie as before (`fetchAPI`).
+- **Mobile:** both tokens are in SecureStore. When a request gets a 401, `mobile/src/api/request.ts` renews the tokens once and repeats the request; requests that fail at the same time share one renewal. If the renewal fails, the app logs out.
+- **Chat socket:** the socket doesn't accept access tokens. `POST /chats/socket-ticket` returns a ticket that is valid for 60 seconds and only works for the socket handshake; the web app fetches a new one through a server action on every connection attempt.
+
 ### Chat data flow (web)
 
 The web chat gets its data in two ways:
 
 - **Loading and sending** go through server actions (`frontend/src/app/chats/actions.ts`). They run on the Next.js server, read the login token from the `auth_token` cookie and call the backend's REST API (`/chats`).
-- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with the same token, through `connectChat` in `frontend/src/lib/chatEvents.ts`, which registers all socket listeners in one place. The backend puts each user in their own room (`user:<id>`) and sends three events:
+- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with a ticket that is valid for one minute (fetched through a server action on every connection attempt, so the login token never reaches the browser), through `connectChat` in `frontend/src/lib/chatEvents.ts`, which registers all socket listeners in one place. The backend puts each user in their own room (`user:<id>`) and sends three events:
 
     | Event         | Sent when                                                 | Effect in the browser                                                               |
     | ------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -259,7 +274,7 @@ CI runs `pnpm check`, the unit tests, the integration tests and the build on eve
 
 ### API requests with Bruno
 
-`backend/bruno` is a [Bruno](https://www.usebruno.com/) collection with requests for every endpoint. Open the folder in Bruno and pick an environment (`local` or `live-server`). Run `auth/Login` (or `auth/Register`) first: it stores the token that the other requests use. `listings/Clean up Listings` uses `CLEANUP_SECRET` from `backend/bruno/.env` instead, which has to match the one in `backend/.env`.
+`backend/bruno` is a [Bruno](https://www.usebruno.com/) collection with requests for every endpoint. Open the folder in Bruno and pick an environment (`local` or `live-server`). Run `auth/Login` (or `auth/Register`) first: it stores the access token that the other requests use and the refresh token for `auth/Refresh` and `auth/Logout`. The access token expires after 15 minutes; run `auth/Refresh` (or `auth/Login`) again then. `listings/Clean up Listings` uses `CLEANUP_SECRET` from `backend/bruno/.env` instead, which has to match the one in `backend/.env`.
 
 ## Deployment
 

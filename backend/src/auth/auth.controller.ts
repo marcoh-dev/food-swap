@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Post, Request, SerializeOptions, UseGuards } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Post,
+	Request,
+	SerializeOptions,
+	UseGuards,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
+import { RefreshTokenDto } from "./dtos/refreshToken.dto";
 import type { AuthenticatedRequest } from "./login.types";
 import { Public } from "../common/decorators/public.decorator";
 import { CreateUserDto } from "../users/dtos/createUser.dto";
@@ -28,6 +39,19 @@ export class AuthController {
 	@Post("login")
 	login(@Request() req: AuthenticatedRequest, @Body() _loginDto: LoginDto) {
 		return this.authService.login(req.user);
+	}
+
+	@Public()
+	@Post("refresh")
+	refresh(@Body() { refresh_token }: RefreshTokenDto) {
+		return this.authService.refresh(refresh_token);
+	}
+
+	@Public()
+	@Post("logout")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	logout(@Body() { refresh_token }: RefreshTokenDto) {
+		return this.authService.logout(refresh_token);
 	}
 
 	@Get("me")

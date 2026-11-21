@@ -1,12 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, use, useCallback, useEffect, useState } from "react";
 
+import { logout } from "@/api/auth";
 import { isUnauthorizedError } from "@/api/request";
-import { deleteToken, getToken, saveToken } from "@/api/token";
+import { type AuthTokens, deleteTokens, getRefreshToken, getToken, saveTokens } from "@/api/token";
 
 type AuthContextValue = {
 	isLoggedIn: boolean;
-	logIn: (token: string) => Promise<void>;
+	logIn: (tokens: AuthTokens) => Promise<void>;
 	logOut: () => Promise<void>;
 };
 
@@ -23,9 +24,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	const logOut = useCallback(async () => {
-		await deleteToken();
+		const refreshToken = await getRefreshToken();
+		await deleteTokens();
 		setToken(null);
 		await queryClient.resetQueries();
+
+		// Not awaited and errors ignored: the user is logged out either way, the token expires later
+		if (refreshToken) void logout(refreshToken).catch(() => undefined);
 	}, [queryClient]);
 
 	useEffect(
@@ -42,9 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		[queryClient, logOut],
 	);
 
-	async function logIn(newToken: string) {
-		await saveToken(newToken);
-		setToken(newToken);
+	async function logIn(tokens: AuthTokens) {
+		await saveTokens(tokens);
+		setToken(tokens.access_token);
 	}
 
 	if (token === undefined) {

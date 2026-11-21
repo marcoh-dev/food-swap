@@ -8,6 +8,7 @@ import {
 	deleteChat,
 	getChat,
 	getChats,
+	getSocketTicket,
 	getUnreadChatsCount,
 	markChatRead,
 	replyToChat,
@@ -127,6 +128,16 @@ export async function deleteChatAction(chatId: string): Promise<ActionResult<nul
 				error,
 				"Der Chat konnte nicht gelöscht werden. Versuche es nochmal.",
 			),
+		};
+	}
+}
+
+export async function getSocketTicketAction(): Promise<ActionResult<string>> {
+	try {
+		return { data: await getSocketTicket() };
+	} catch (error) {
+		return {
+			error: chatErrorMessage(error, "Der Chat konnte nicht verbunden werden."),
 		};
 	}
 }

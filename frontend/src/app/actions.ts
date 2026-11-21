@@ -16,8 +16,8 @@ import { cookies } from "next/headers";
 import { notFound, redirect, unauthorized } from "next/navigation";
 import { z } from "zod";
 
-import { loginUser, registerUser } from "@/lib/auth.service";
-import { AUTH_COOKIE } from "@/lib/fetchAPI";
+import { loginUser, registerUser, revokeRefreshToken } from "@/lib/auth.service";
+import { AUTH_COOKIE, deleteAuthCookies, REFRESH_COOKIE, setAuthCookies } from "@/lib/authCookies";
 import {
 	createListing,
 	deleteListing,
@@ -48,18 +48,6 @@ function withToast(target: string, toast: string): string {
 	return `${target}${separator}toast=${toast}`;
 }
 
-async function setAuthCookie(token: string) {
-	const cookieStore = await cookies();
-
-	cookieStore.set(AUTH_COOKIE, token, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "lax",
-		path: "/",
-		maxAge: 60 * 60,
-	});
-}
-
 export async function registerAction(
 	values: RegistrationValues,
 	redirectTo?: string,
@@ -73,11 +61,14 @@ export async function registerAction(
 		return { fieldErrors: { username: ["Dieser Benutzername ist bereits vergeben."] } };
 	}
 
-	if (!authData.access_token) {
+	if (!authData.access_token || !authData.refresh_token) {
 		return { error: "Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben." };
 	}
 
-	await setAuthCookie(authData.access_token);
+	setAuthCookies(await cookies(), {
+		access_token: authData.access_token,
+		refresh_token: authData.refresh_token,
+	});
 
 	redirect(withToast(getRedirectTarget(redirectTo), "registered"));
 }
@@ -92,7 +83,7 @@ export async function loginAction(values: LoginValues, redirectTo?: string): Pro
 		return { error: LOGIN_FAILED_MESSAGE };
 	}
 
-	await setAuthCookie(authData.access_token);
+	setAuthCookies(await cookies(), authData);
 
 	redirect(getRedirectTarget(redirectTo));
 }
@@ -129,8 +120,8 @@ export async function deleteUserAction() {
 		redirect(`/users/${currentUser.id}?toast=user-delete-error`);
 	}
 
-	const cookieStore = await cookies();
-	cookieStore.delete(AUTH_COOKIE);
+	// The backend deleted the refresh tokens together with the account
+	deleteAuthCookies(await cookies());
 
 	redirect("/");
 }
@@ -138,7 +129,9 @@ export async function deleteUserAction() {
 export async function logoutAction() {
 	const cookieStore = await cookies();
 
-	cookieStore.delete(AUTH_COOKIE);
+	const refreshToken = cookieStore.get(REFRESH_COOKIE)?.value;
+	if (refreshToken) await revokeRefreshToken(refreshToken);
+	deleteAuthCookies(cookieStore);
 
 	redirect("/");
 }

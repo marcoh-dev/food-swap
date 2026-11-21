@@ -1,0 +1,16 @@
+info:
+  name: Socket Ticket
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseURL}}/chats/socket-ticket"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

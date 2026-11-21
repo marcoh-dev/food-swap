@@ -11,6 +11,7 @@ import {
 	Request,
 } from "@nestjs/common";
 
+import { ChatsGateway } from "./chats.gateway";
 import { ChatsService } from "./chats.service";
 import type { AuthenticatedRequest } from "../auth/login.types";
 import { SendMessageDto } from "./dtos/sendMessage.dto";
@@ -18,11 +19,19 @@ import { StartChatDto } from "./dtos/startChat.dto";
 
 @Controller("chats")
 export class ChatsController {
-	constructor(private readonly chatsService: ChatsService) {}
+	constructor(
+		private readonly chatsService: ChatsService,
+		private readonly chatsGateway: ChatsGateway,
+	) {}
 
 	@Get()
 	findAll(@Request() req: AuthenticatedRequest) {
 		return this.chatsService.findAll(req.user);
+	}
+
+	@Post("socket-ticket")
+	createSocketTicket(@Request() req: AuthenticatedRequest) {
+		return { ticket: this.chatsGateway.createTicket(req.user.id) };
 	}
 
 	@Get("unread-count")
