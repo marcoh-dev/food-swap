@@ -102,6 +102,7 @@ function setTabHidden(hidden: boolean) {
 }
 
 let disconnect: () => void;
+const onSessionEnded = vi.fn();
 
 beforeEach(() => {
 	vi.clearAllMocks();
@@ -109,7 +110,7 @@ beforeEach(() => {
 	vi.mocked(getUnreadChatsCountAction).mockResolvedValue({ data: 0 });
 	vi.mocked(markChatReadAction).mockResolvedValue({ data: null });
 	fakeDocument.hidden = false;
-	disconnect = connectChat({ userId: ME, onNotificationClick: vi.fn() });
+	disconnect = connectChat({ userId: ME, onNotificationClick: vi.fn(), onSessionEnded });
 });
 
 afterEach(() => disconnect());
@@ -298,6 +299,22 @@ describe("chatRemoved", () => {
 		const { openChatId, conversationError } = useChatStore.getState();
 		expect(openChatId).toBeNull();
 		expect(conversationError).toBe("Dieser Chat wurde gelöscht.");
+	});
+});
+
+describe("server disconnect", () => {
+	it("reports the end of the session once when the server ends the connection", () => {
+		emit("disconnect", "io server disconnect");
+		emit("disconnect", "io server disconnect");
+
+		expect(onSessionEnded).toHaveBeenCalledTimes(1);
+		expect(useChatStore.getState().connected).toBe(false);
+	});
+
+	it("doesn't report it when the connection drops for other reasons", () => {
+		emit("disconnect", "transport close");
+
+		expect(onSessionEnded).not.toHaveBeenCalled();
 	});
 });
 
