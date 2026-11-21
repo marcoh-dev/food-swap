@@ -13,6 +13,10 @@ export function logout(refreshToken: string) {
 	return postWithoutResponse("/auth/logout", { refresh_token: refreshToken });
 }
 
+export function logoutEverywhere() {
+	return postWithoutResponse("/auth/logout-all", {});
+}
+
 export function fetchCurrentUser(signal: AbortSignal) {
 	return get<CurrentUser>("/auth/me", signal);
 }
