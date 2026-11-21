@@ -11,6 +11,9 @@ import { resetRateLimits } from "./setup/rate-limits";
 import { GENERAL_LIMIT, LOGIN_LIMIT, REGISTRATION_LIMIT } from "../src/common/rateLimits";
 
 const PASSWORD = "Tomate123!";
+
+// Some tests send 20+ logins; checking passwords (bcrypt) is slow on CI, so 5 seconds aren't enough
+jest.setTimeout(30_000);
 const SECRET = process.env.INTERNAL_API_SECRET ?? "";
 
 describe("Rate limits (integration)", () => {
