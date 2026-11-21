@@ -5,6 +5,14 @@ export const toastMessages: Record<string, { type: ToastType; message: string }>
 		type: "success",
 		message: "Registrierung erfolgreich! Willkommen bei FoodSwap.",
 	},
+	"logged-out-everywhere": {
+		type: "success",
+		message: "Du wurdest auf allen Geräten abgemeldet.",
+	},
+	"logout-everywhere-error": {
+		type: "error",
+		message: "Abmelden auf allen Geräten hat nicht geklappt. Bitte versuche es nochmal.",
+	},
 	"user-delete-error": {
 		type: "error",
 		message: "Dein Account konnte nicht gelöscht werden.",

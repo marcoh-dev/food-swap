@@ -56,3 +56,10 @@ export async function revokeRefreshToken(refreshToken: string): Promise<void> {
 		body: JSON.stringify({ refresh_token: refreshToken }),
 	}).catch(() => undefined);
 }
+
+export async function logoutEverywhere(): Promise<void> {
+	const response = await fetchAPI(process.env.NEXT_PUBLIC_FOODSWAP_API_URL + "/auth/logout-all", {
+		method: "POST",
+	});
+	if (!response.ok) throw new Error(`Logout everywhere failed with status ${response.status}`);
+}

@@ -16,6 +16,7 @@ import { FieldDescription } from "@/components/ui/field";
 import { NotificationSetting } from "@/components/user/NotificationSetting";
 import { ProfileEditCollapsible } from "@/components/user/ProfileEditCollapsible";
 import { UserDelete } from "@/components/user/UserDelete";
+import { UserLogoutEverywhere } from "@/components/user/UserLogoutEverywhere";
 import { UserUpdate } from "@/components/user/UserUpdate";
 import { getCategories } from "@/lib/categories.service";
 import { LISTING_VIEW_CLASSES } from "@/lib/constants/listing.constants";
@@ -140,6 +141,12 @@ export default async function UserPage({ params, searchParams }: PageProps<"/use
 							/>
 							<div className="border-t pt-4">
 								<NotificationSetting />
+							</div>
+							<div className="flex items-center justify-between gap-4 border-t pt-4">
+								<p className="text-sm text-muted-foreground">
+									Auf allen Geräten abmelden.
+								</p>
+								<UserLogoutEverywhere />
 							</div>
 							<div className="flex items-center justify-between gap-4 border-t pt-4">
 								<p className="text-sm text-muted-foreground">FoodSwap verlassen?</p>
