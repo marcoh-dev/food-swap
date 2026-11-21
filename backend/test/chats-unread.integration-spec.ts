@@ -5,6 +5,7 @@ import { App } from "supertest/types";
 import { DataSource, IsNull, Not } from "typeorm";
 
 import { AppModule } from "../src/app.module";
+import { resetRateLimits } from "./setup/rate-limits";
 import { Listing, ListingType } from "../src/listings/entities/listing.entity";
 import { Place } from "../src/places/entities/place.entity";
 import { User } from "../src/users/entities/user.entity";
@@ -75,6 +76,7 @@ describe("Unread chats (integration)", () => {
 	});
 
 	beforeEach(async () => {
+		resetRateLimits(app);
 		await dataSource.query('TRUNCATE "messages", "chats", "listings", "users" CASCADE');
 		a = await register("user_a");
 		b = await register("user_b");

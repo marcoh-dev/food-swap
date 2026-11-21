@@ -10,12 +10,14 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { Throttle } from "@nestjs/throttler";
 
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokenDto } from "./dtos/refreshToken.dto";
 import type { AuthenticatedRequest } from "./login.types";
 import { Public } from "../common/decorators/public.decorator";
+import { LOGIN_LIMIT, REGISTRATION_LIMIT } from "../common/rateLimits";
 import { CreateUserDto } from "../users/dtos/createUser.dto";
 import { CurrentUserResponseDto } from "../users/dtos/currentUserResponse.dto";
 import { UsersService } from "../users/users.service";
@@ -28,6 +30,7 @@ export class AuthController {
 	) {}
 
 	@Public()
+	@Throttle({ default: REGISTRATION_LIMIT })
 	@Post("register")
 	async register(@Body() userPayload: CreateUserDto) {
 		const user = await this.usersService.createUser(userPayload);
@@ -35,6 +38,7 @@ export class AuthController {
 	}
 
 	@Public()
+	@Throttle({ default: LOGIN_LIMIT })
 	@UseGuards(AuthGuard("local"))
 	@Post("login")
 	login(@Request() req: AuthenticatedRequest, @Body() _loginDto: LoginDto) {
