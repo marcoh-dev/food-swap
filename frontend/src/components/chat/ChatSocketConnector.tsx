@@ -18,6 +18,8 @@ export function ChatSocketConnector({ userId }: ChatSocketConnectorProps) {
 		return connectChat({
 			userId,
 			onNotificationClick: (chatId) => router.push(`/chats?chat=${chatId}`),
+			// Renders the page and the header again, so they show the logged-out state
+			onSessionEnded: () => router.refresh(),
 		});
 	}, [userId, router]);
 

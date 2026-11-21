@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
+import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Profile() {
@@ -23,6 +24,7 @@ function ProfileContent() {
 	const { logOut } = useAuth();
 	const { data: user, isPending, isError, isFetching, refetch } = useCurrentUser();
 	const isOnline = useIsOnline();
+	const logoutEverywhere = useLogoutEverywhere();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const isLoading = !user && isPending && isOnline;
 
@@ -72,9 +74,27 @@ function ProfileContent() {
 				</View>
 			) : null}
 			{!isLoading && (
-				<Button variant="outline" onPress={() => void logOut()}>
-					<Text>Abmelden</Text>
-				</Button>
+				<>
+					<Button variant="outline" onPress={() => void logOut()}>
+						<Text>Abmelden</Text>
+					</Button>
+					<View className="gap-2">
+						<Button
+							variant="outline"
+							disabled={!isOnline || logoutEverywhere.isPending}
+							onPress={() => logoutEverywhere.mutate()}
+						>
+							<Text>Überall abmelden</Text>
+						</Button>
+						<Text variant="muted">Auf allen Geräten abmelden.</Text>
+						{logoutEverywhere.isError && (
+							<Text className="text-destructive">
+								Abmelden auf allen Geräten hat nicht geklappt. Bitte versuche es
+								nochmal.
+							</Text>
+						)}
+					</View>
+				</>
 			)}
 		</Screen>
 	);

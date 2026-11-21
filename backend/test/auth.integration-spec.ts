@@ -7,6 +7,7 @@ import { DataSource } from "typeorm";
 
 import { AppModule } from "../src/app.module";
 import { RefreshToken } from "../src/auth/entities/refreshToken.entity";
+import { ChatsGateway } from "../src/chats/chats.gateway";
 import { User } from "../src/users/entities/user.entity";
 
 const PASSWORD = "Tomate123!";
@@ -144,6 +145,42 @@ describe("Auth tokens (integration)", () => {
 		await api().post("/auth/logout").send({ refresh_token }).expect(204);
 
 		await refresh(refresh_token).expect(401);
+	});
+
+	it("logs out everywhere: old access and refresh tokens stop working, a new login works", async () => {
+		const first = await register("user_a");
+		const second = (
+			await api()
+				.post("/auth/login")
+				.send({ username: "user_a", password: PASSWORD })
+				.expect(201)
+		).body as Tokens;
+		const disconnectUser = jest.spyOn(app.get(ChatsGateway), "disconnectUser");
+		// Tokens only know the second they were issued; tokens from the logout's second still pass
+		await new Promise((resolve) => setTimeout(resolve, 1100));
+
+		await api()
+			.post("/auth/logout-all")
+			.auth(first.access_token, { type: "bearer" })
+			.expect(204);
+
+		for (const tokens of [first, second]) {
+			await api().get("/auth/me").auth(tokens.access_token, { type: "bearer" }).expect(401);
+			await refresh(tokens.refresh_token).expect(401);
+		}
+		const user = await dataSource.getRepository(User).findOneByOrFail({ username: "user_a" });
+		expect(disconnectUser).toHaveBeenCalledWith(user.id);
+
+		const response = await api()
+			.post("/auth/login")
+			.send({ username: "user_a", password: PASSWORD })
+			.expect(201);
+		const { access_token } = response.body as Tokens;
+		await api().get("/auth/me").auth(access_token, { type: "bearer" }).expect(200);
+	});
+
+	it("needs a login to log out everywhere", async () => {
+		await api().post("/auth/logout-all").expect(401);
 	});
 
 	it("deletes the refresh tokens together with the user", async () => {

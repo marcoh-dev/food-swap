@@ -8,6 +8,8 @@ import { useChatStore } from "@/store/chat.store";
 type ConnectChatOptions = {
 	userId: string;
 	onNotificationClick: (chatId: string) => void;
+	/** Called when the server ends the connection because the login is no longer valid. */
+	onSessionEnded: () => void;
 };
 
 // Only for messages from others, and not for the open chat while the tab is visible
@@ -42,7 +44,7 @@ async function showNotification(message: ChatMessage, onClick: (chatId: string) 
  * Connects the chat socket and forwards its events to the chat store and the browser
  * notifications. Returns a function that disconnects and resets the store.
  */
-export function connectChat({ userId, onNotificationClick }: ConnectChatOptions) {
+export function connectChat({ userId, onNotificationClick, onSessionEnded }: ConnectChatOptions) {
 	const store = useChatStore.getState();
 
 	function onNewMessage(message: ChatMessage) {
@@ -58,6 +60,20 @@ export function connectChat({ userId, onNotificationClick }: ConnectChatOptions)
 		store.onChatRemoved(chatId);
 	}
 
+	let sessionEnded = false;
+
+	function onDisconnect(reason: string) {
+		store.onDisconnect();
+
+		// The server only ends a connection itself when the login is no longer valid, e.g. after
+		// "log out everywhere" on another device. Only once, so a server that keeps rejecting
+		// the ticket can't cause a refresh loop.
+		if (reason === "io server disconnect" && !sessionEnded) {
+			sessionEnded = true;
+			onSessionEnded();
+		}
+	}
+
 	function onVisibilityChange() {
 		store.setTabVisible(!document.hidden);
 	}
@@ -67,7 +83,7 @@ export function connectChat({ userId, onNotificationClick }: ConnectChatOptions)
 	document.addEventListener("visibilitychange", onVisibilityChange);
 
 	socket.on("connect", store.onConnect);
-	socket.on("disconnect", store.onDisconnect);
+	socket.on("disconnect", onDisconnect);
 	socket.on("newMessage", onNewMessage);
 	socket.on("chatRead", onChatRead);
 	socket.on("chatRemoved", onChatRemoved);
@@ -82,7 +98,7 @@ export function connectChat({ userId, onNotificationClick }: ConnectChatOptions)
 
 	return () => {
 		socket.off("connect", store.onConnect);
-		socket.off("disconnect", store.onDisconnect);
+		socket.off("disconnect", onDisconnect);
 		socket.off("newMessage", onNewMessage);
 		socket.off("chatRead", onChatRead);
 		socket.off("chatRemoved", onChatRemoved);

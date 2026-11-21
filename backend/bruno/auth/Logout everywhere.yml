@@ -1,0 +1,16 @@
+info:
+  name: Logout everywhere
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/logout-all"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

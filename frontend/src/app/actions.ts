@@ -16,7 +16,7 @@ import { cookies } from "next/headers";
 import { notFound, redirect, unauthorized } from "next/navigation";
 import { z } from "zod";
 
-import { loginUser, registerUser, revokeRefreshToken } from "@/lib/auth.service";
+import { loginUser, logoutEverywhere, registerUser, revokeRefreshToken } from "@/lib/auth.service";
 import { AUTH_COOKIE, deleteAuthCookies, REFRESH_COOKIE, setAuthCookies } from "@/lib/authCookies";
 import {
 	createListing,
@@ -134,6 +134,22 @@ export async function logoutAction() {
 	deleteAuthCookies(cookieStore);
 
 	redirect("/");
+}
+
+export async function logoutEverywhereAction() {
+	const currentUser = await getCurrentUser();
+	if (!currentUser) unauthorized();
+
+	try {
+		await logoutEverywhere();
+	} catch {
+		redirect(withToast(`/users/${currentUser.id}`, "logout-everywhere-error"));
+	}
+
+	// The backend already deleted the refresh tokens of all devices
+	deleteAuthCookies(await cookies());
+
+	redirect(withToast("/", "logged-out-everywhere"));
 }
 
 export async function isAuthenticated(): Promise<boolean> {
