@@ -1,5 +1,7 @@
 import type { Place } from "@food-swap/shared/types";
 
+import { fetchAPI } from "./fetchAPI";
+
 // Place suggestions are cached without expiry. Bump this whenever the place data
 // or the search in backend/src/places/places.service.ts changes.
 const PLACES_CACHE_VERSION = "3";
@@ -36,7 +38,7 @@ export async function getPlaceBySlug(slug: string): Promise<Place | null> {
 }
 
 export async function findNearestPlace(lat: number, lng: number): Promise<Place> {
-	const response = await fetch(`${process.env.NEXT_PUBLIC_FOODSWAP_API_URL}/places/nearest`, {
+	const response = await fetchAPI(`${process.env.NEXT_PUBLIC_FOODSWAP_API_URL}/places/nearest`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ lat, lng }),

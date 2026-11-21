@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
 
 	let tokens;
 	try {
-		tokens = await renewTokens(refreshToken);
+		tokens = await renewTokens(refreshToken, request.headers);
 	} catch {
 		// Backend not reachable: this request runs logged out, the refresh token may work next time
 		return NextResponse.next();
