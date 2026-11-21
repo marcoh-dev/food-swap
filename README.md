@@ -81,7 +81,7 @@ Things that only one app needs stay in that app (e.g. `frontend/src/lib/types`, 
 The web chat gets its data in two ways:
 
 - **Loading and sending** go through server actions (`frontend/src/app/chats/actions.ts`). They run on the Next.js server, read the login token from the `auth_token` cookie and call the backend's REST API (`/chats`).
-- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with the same token, through `connectChat` in `frontend/src/lib/chatEvents.ts`, which registers all socket listeners in one place. The backend puts each user in their own room (`user:<id>`) and sends three events:
+- **Live updates** come through Socket.IO. `ChatSocketConnector` (in the root layout) connects the browser to the backend with a ticket that is valid for one minute (fetched through a server action on every connection attempt, so the login token never reaches the browser), through `connectChat` in `frontend/src/lib/chatEvents.ts`, which registers all socket listeners in one place. The backend puts each user in their own room (`user:<id>`) and sends three events:
 
     | Event         | Sent when                                                 | Effect in the browser                                                               |
     | ------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------- |

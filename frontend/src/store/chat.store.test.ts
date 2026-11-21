@@ -29,6 +29,7 @@ vi.mock("@/app/chats/actions", () => ({
 	deleteChatAction: vi.fn(),
 	getChatAction: vi.fn(),
 	getChatsAction: vi.fn(),
+	getSocketTicketAction: vi.fn(),
 	getUnreadChatsCountAction: vi.fn(),
 	markChatReadAction: vi.fn(),
 	replyToChatAction: vi.fn(),
@@ -108,7 +109,7 @@ beforeEach(() => {
 	vi.mocked(getUnreadChatsCountAction).mockResolvedValue({ data: 0 });
 	vi.mocked(markChatReadAction).mockResolvedValue({ data: null });
 	fakeDocument.hidden = false;
-	disconnect = connectChat({ token: "token", userId: ME, onNotificationClick: vi.fn() });
+	disconnect = connectChat({ userId: ME, onNotificationClick: vi.fn() });
 });
 
 afterEach(() => disconnect());

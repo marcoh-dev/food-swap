@@ -1,7 +1,6 @@
 import { cn } from "cn";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -15,7 +14,6 @@ import { SkipLink } from "@/components/shared/SkipLink";
 import Toast from "@/components/shared/Toast";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { AUTH_COOKIE } from "@/lib/authCookies";
 import { getCurrentUser } from "@/lib/users.service";
 
 import "./globals.css";
@@ -50,7 +48,6 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
 	// app/error.tsx does not catch errors here, so show the logged-out header instead
 	const currentUser = await getCurrentUser().catch(() => null);
-	const token = currentUser ? ((await cookies()).get(AUTH_COOKIE)?.value ?? null) : null;
 
 	return (
 		<html
@@ -66,7 +63,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 			<body className="text-body">
 				<SkipLink href="#main">Zum Inhalt springen</SkipLink>
 				<PageSkipLink />
-				<ChatSocketConnector token={token} userId={currentUser?.id ?? null} />
+				<ChatSocketConnector userId={currentUser?.id ?? null} />
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"

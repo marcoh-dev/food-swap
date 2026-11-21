@@ -4,6 +4,7 @@ import { instanceToPlain } from "class-transformer";
 import { Server, Socket } from "socket.io";
 
 import { MessageResponseDto } from "./dtos/messageResponse.dto";
+import type { Payload } from "../auth/login.types";
 
 @WebSocketGateway({
 	cors: {
@@ -25,6 +26,15 @@ export class ChatsGateway implements OnGatewayConnection {
 		}
 
 		await client.join(this.userRoom(userId));
+	}
+
+	/**
+	 * Creates a ticket for connecting to the chat socket. The browser only gets this ticket,
+	 * never the login token, and it's only valid for a minute.
+	 */
+	createTicket(userId: string) {
+		const payload: Payload = { sub: userId, purpose: "socket" };
+		return this.jwtService.sign(payload, { expiresIn: "60s" });
 	}
 
 	notifyNewMessage(participantIds: Array<string | null>, message: MessageResponseDto) {
@@ -49,11 +59,11 @@ export class ChatsGateway implements OnGatewayConnection {
 
 	private async getUserId(client: Socket): Promise<string | null> {
 		try {
-			const token: unknown = client.handshake.auth.token;
-			if (typeof token !== "string") return null;
+			const ticket: unknown = client.handshake.auth.ticket;
+			if (typeof ticket !== "string") return null;
 
-			const payload = await this.jwtService.verifyAsync<{ sub: string }>(token);
-			return payload.sub;
+			const payload = await this.jwtService.verifyAsync<Payload>(ticket);
+			return payload.purpose === "socket" ? payload.sub : null;
 		} catch {
 			return null;
 		}

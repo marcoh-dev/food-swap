@@ -24,6 +24,10 @@ export type ChatDetail = {
 	messages: ChatMessage[];
 };
 
+export type SocketTicketResponse = {
+	ticket: string;
+};
+
 export type ListingChatStatus = {
 	chatId: string | null;
 	hidden: boolean;

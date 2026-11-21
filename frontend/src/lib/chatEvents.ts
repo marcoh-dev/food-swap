@@ -1,12 +1,11 @@
 import type { ChatListItem, ChatMessage } from "@food-swap/shared/types";
 
-import { getChatsAction } from "@/app/chats/actions";
+import { getChatsAction, getSocketTicketAction } from "@/app/chats/actions";
 import { notificationsEnabled } from "@/lib/notifications";
 import { socket } from "@/socket";
 import { useChatStore } from "@/store/chat.store";
 
 type ConnectChatOptions = {
-	token: string;
 	userId: string;
 	onNotificationClick: (chatId: string) => void;
 };
@@ -43,7 +42,7 @@ async function showNotification(message: ChatMessage, onClick: (chatId: string) 
  * Connects the chat socket and forwards its events to the chat store and the browser
  * notifications. Returns a function that disconnects and resets the store.
  */
-export function connectChat({ token, userId, onNotificationClick }: ConnectChatOptions) {
+export function connectChat({ userId, onNotificationClick }: ConnectChatOptions) {
 	const store = useChatStore.getState();
 
 	function onNewMessage(message: ChatMessage) {
@@ -73,7 +72,12 @@ export function connectChat({ token, userId, onNotificationClick }: ConnectChatO
 	socket.on("chatRead", onChatRead);
 	socket.on("chatRemoved", onChatRemoved);
 
-	socket.auth = { token };
+	// A fresh ticket for every connection attempt, so reconnects still work after the old one expired
+	socket.auth = (send) => {
+		getSocketTicketAction()
+			.then((result) => send({ ticket: result.data }))
+			.catch(() => send({}));
+	};
 	socket.connect();
 
 	return () => {
