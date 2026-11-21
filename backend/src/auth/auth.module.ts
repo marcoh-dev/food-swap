@@ -21,7 +21,8 @@ import { UsersModule } from "../users/users.module";
 			useFactory: (configService: ConfigService) => ({
 				secret: configService.getOrThrow<string>("JWT_SECRET"),
 				signOptions: {
-					expiresIn: "1h",
+					// Short, because access tokens can't be revoked; the apps renew them with the refresh token
+					expiresIn: "15m",
 				},
 			}),
 		}),

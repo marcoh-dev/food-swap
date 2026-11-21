@@ -6,9 +6,9 @@ export const AUTH_COOKIE = "auth_token";
 /** Cookie with the refresh token; `proxy.ts` uses it to get a new access token. */
 export const REFRESH_COOKIE = "refresh_token";
 
-// The access token lives 1 hour. Its cookie ends a minute earlier, so the proxy renews it
+// The access token lives 15 minutes (backend). Its cookie ends a minute earlier, so the proxy renews it
 // before the backend could reject it during a request.
-const ACCESS_COOKIE_SECONDS = 59 * 60;
+const ACCESS_COOKIE_SECONDS = 14 * 60;
 const REFRESH_COOKIE_SECONDS = 30 * 24 * 60 * 60;
 
 type AuthTokens = Pick<AuthResponse, "access_token" | "refresh_token">;
