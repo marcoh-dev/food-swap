@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { registrationSchema } from "./user.schemas";
+import { profileSchema, registrationSchema } from "./user.schemas";
 
 // The first error message, as shown below the form field
 const firstError = (values: { username: string; password: string }) =>
@@ -25,5 +25,23 @@ describe("registrationSchema", () => {
 		expect(firstError({ username: "tomate", password: "Tomate123" })).toBe(
 			"Das Passwort muss mindestens ein Sonderzeichen enthalten.",
 		);
+	});
+
+	it("rejects a reserved username", () => {
+		expect(firstError({ username: "Admin_", password: "Tomate123!" })).toBe(
+			"Dieser Benutzername ist nicht verfügbar.",
+		);
+	});
+});
+
+describe("profileSchema", () => {
+	it("rejects a reserved profile name", () => {
+		const result = profileSchema.safeParse({
+			name: "FoodSwap Team",
+			placeId: "",
+			placeQuery: "",
+		});
+
+		expect(result.error?.issues[0]?.message).toBe("Dieser Name ist nicht verfügbar.");
 	});
 });

@@ -12,6 +12,7 @@ import { Repository } from "typeorm";
 import { CreateUserDto } from "./dtos/createUser.dto";
 import { UpdateUserDto } from "./dtos/updateUser.dto";
 import { User } from "./entities/user.entity";
+import { isReservedName } from "./reservedNames";
 import { Chat } from "../chats/entities/chat.entity";
 import { PlacesService } from "../places/places.service";
 
@@ -58,9 +59,9 @@ export class UsersService {
 
 	async createUser(userPayload: CreateUserDto): Promise<User> {
 		const { name, username, password } = userPayload;
-		const usernameExists = await this.findByUsername(username);
-		if (usernameExists) {
-			throw new ConflictException(`Username '${username}' is already taken.`);
+		// The same answer for taken and reserved names, so the reserved list can't be found out
+		if (isReservedName(username) || (await this.findByUsername(username))) {
+			throw new ConflictException("Dieser Benutzername ist nicht verfügbar.");
 		}
 
 		const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -91,6 +92,10 @@ export class UsersService {
 			!(await this.placesService.existsWithPostalCode(userPayload.placeId))
 		) {
 			throw new BadRequestException("Place does not exist or has no postal code.");
+		}
+
+		if (userPayload.name && isReservedName(userPayload.name)) {
+			throw new BadRequestException("Dieser Name ist nicht verfügbar.");
 		}
 
 		const { password, ...updates } = userPayload;

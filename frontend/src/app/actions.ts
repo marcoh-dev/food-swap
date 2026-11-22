@@ -1,7 +1,11 @@
 "use server";
 
 import { getBerlinDay } from "@food-swap/shared/dates";
-import { LOGIN_FAILED_MESSAGE, LOGIN_RATE_LIMITED_MESSAGE } from "@food-swap/shared/messages";
+import {
+	LOGIN_FAILED_MESSAGE,
+	LOGIN_RATE_LIMITED_MESSAGE,
+	USERNAME_UNAVAILABLE_MESSAGE,
+} from "@food-swap/shared/messages";
 import {
 	loginSchema,
 	type LoginValues,
@@ -64,7 +68,7 @@ export async function registerAction(
 	}
 
 	if (authData.statusCode === 409) {
-		return { fieldErrors: { username: ["Dieser Benutzername ist bereits vergeben."] } };
+		return { fieldErrors: { username: [USERNAME_UNAVAILABLE_MESSAGE] } };
 	}
 
 	if (!authData.access_token || !authData.refresh_token) {
