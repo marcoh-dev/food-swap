@@ -7,6 +7,12 @@ import {
 } from "../messages";
 import { isReservedName } from "../reservedNames";
 
+/**
+ * Letters (incl. ä, ö, ü, ß), digits, "_", "." and "-": no lookalike letters from other scripts
+ * (e.g. a Cyrillic "А" in "Аdmin"). The backend has a copy in createUser.dto.ts.
+ */
+export const USERNAME_PATTERN = /^[A-Za-z0-9äöüÄÖÜß_.-]+$/;
+
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
 	password: z.string().min(1, "Bitte gib ein Passwort ein."),
@@ -19,6 +25,10 @@ export const registrationSchema = z.object({
 		.min(1, { error: "Bitte gib einen Benutzernamen ein.", abort: true })
 		.min(5, "Der Benutzername muss mindestens 5 Zeichen lang sein.")
 		.max(20, "Der Benutzername darf höchstens 20 Zeichen lang sein.")
+		.regex(
+			USERNAME_PATTERN,
+			"Der Benutzername darf nur Buchstaben, Ziffern und _ . - enthalten.",
+		)
 		.refine((username) => !isReservedName(username), USERNAME_UNAVAILABLE_MESSAGE),
 	password: z
 		.string()

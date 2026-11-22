@@ -27,6 +27,21 @@ describe("registrationSchema", () => {
 		);
 	});
 
+	it("allows letters with umlauts, digits, _ . and -", () => {
+		expect(
+			registrationSchema.safeParse({ username: "Jürgen_K.-92", password: "Tomate123!" })
+				.success,
+		).toBe(true);
+	});
+
+	it("rejects spaces and letters from other scripts", () => {
+		for (const username of ["Anna Maria", "Аdmin"]) {
+			expect(firstError({ username, password: "Tomate123!" })).toBe(
+				"Der Benutzername darf nur Buchstaben, Ziffern und _ . - enthalten.",
+			);
+		}
+	});
+
 	it("rejects a reserved username", () => {
 		expect(firstError({ username: "Admin_", password: "Tomate123!" })).toBe(
 			"Dieser Benutzername ist nicht verfügbar.",
