@@ -29,6 +29,12 @@ describe("isReservedName", () => {
 		}
 	});
 
+	it("catches separators and spaces inside a reserved name", () => {
+		for (const name of ["Ad min", "A d m i n", "AD-MIN", "4d m1n"]) {
+			expect(isReservedName(name)).toBe(true);
+		}
+	});
+
 	it("rejects names that look like what the app shows for deleted accounts", () => {
 		expect(isReservedName("Gelöschtes Konto")).toBe(true);
 		expect(isReservedName("geloeschtes_konto")).toBe(true);

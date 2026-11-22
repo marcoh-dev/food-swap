@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import { registerAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { applyServerErrors } from "@/utils/form";
 
@@ -49,9 +49,14 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 									autoCorrect="off"
 									aria-invalid={fieldState.invalid}
 									aria-describedby={
-										fieldState.invalid ? "username-error" : undefined
+										fieldState.invalid
+											? "username-hint username-error"
+											: "username-hint"
 									}
 								/>
+								<FieldDescription id="username-hint">
+									Buchstaben, Ziffern, _ . und -
+								</FieldDescription>
 								<FieldError id="username-error" errors={[fieldState.error]} />
 							</Field>
 						)}

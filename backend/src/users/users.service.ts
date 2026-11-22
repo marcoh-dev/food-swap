@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
-import { Repository } from "typeorm";
+import { QueryFailedError, Repository } from "typeorm";
 
 import { CreateUserDto } from "./dtos/createUser.dto";
 import { UpdateUserDto } from "./dtos/updateUser.dto";
@@ -53,8 +53,12 @@ export class UsersService {
 		return user;
 	}
 
+	/** Finds a user regardless of case; there can only be one (unique index on `lower(username)`). */
 	findByUsername(username: string): Promise<User | null> {
-		return this.users.findOneBy({ username });
+		return this.users
+			.createQueryBuilder("user")
+			.where("lower(user.username) = lower(:username)", { username })
+			.getOne();
 	}
 
 	async createUser(userPayload: CreateUserDto): Promise<User> {
@@ -71,7 +75,18 @@ export class UsersService {
 			name: name ?? null,
 		});
 
-		return this.users.save(user);
+		try {
+			return await this.users.save(user);
+		} catch (error) {
+			// Two registrations with the same name at the same time: the unique index stops the second
+			if (
+				error instanceof QueryFailedError &&
+				(error.driverError as { code?: string }).code === "23505"
+			) {
+				throw new ConflictException("Dieser Benutzername ist nicht verfügbar.");
+			}
+			throw error;
+		}
 	}
 
 	async update(userId: string, userPayload: UpdateUserDto, currentUser: User) {
