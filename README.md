@@ -91,6 +91,10 @@ Login and registration return two tokens:
 - **Mobile:** both tokens are in SecureStore. When a request gets a 401, `mobile/src/api/request.ts` renews the tokens once and repeats the request; requests that fail at the same time share one renewal. If the renewal fails, the app logs out.
 - **Chat socket:** the socket doesn't accept access tokens. `POST /chats/socket-ticket` returns a ticket that is valid for 60 seconds and only works for the socket handshake; the web app fetches a new one through a server action on every connection attempt.
 
+### Usernames
+
+Usernames may contain letters (incl. ä, ö, ü, ß), digits, `_`, `.` and `-`, and are unique regardless of case (`Tomate` and `tomate` are the same; login works in any spelling, the name is shown as typed). Names that could be mistaken for the FoodSwap team or for something the app shows (e.g. `admin`, `support`, "Gelöschtes Konto", anything with "foodswap") can't be used as username or profile name; the list is in `shared/src/reservedNames.ts`, with a copy in `backend/src/users/reservedNames.ts` that a test keeps in sync.
+
 ### Rate limits
 
 The backend limits requests per IP (`backend/src/common/rateLimits.ts`) and answers `429` above a limit: login 20 per 15 minutes, registration 10 per hour, everything else 300 per minute.
