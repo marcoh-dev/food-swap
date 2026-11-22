@@ -3,11 +3,17 @@ import { IsOptional, IsString, Matches, MaxLength, MinLength } from "class-valid
 
 import { trimString } from "../../common/utils/trim-string";
 
+/** Copy of USERNAME_PATTERN in shared/src/schemas/user.schemas.ts; createUser.dto.spec.ts compares them. */
+export const USERNAME_PATTERN = /^[A-Za-z0-9äöüÄÖÜß_.-]+$/;
+
 export class CreateUserDto {
 	@IsString()
 	@MinLength(5)
 	@MaxLength(20)
 	@Transform(trimString)
+	@Matches(USERNAME_PATTERN, {
+		message: "Username may only contain letters, digits, _ . and -",
+	})
 	username!: string;
 
 	@IsString()

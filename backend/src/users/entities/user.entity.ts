@@ -2,6 +2,7 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	Index,
 	JoinColumn,
 	ManyToOne,
 	OneToMany,
@@ -13,6 +14,8 @@ import { Listing } from "../../listings/entities/listing.entity";
 import { Place } from "../../places/entities/place.entity";
 
 @Entity("users")
+// Created by a migration (lower() can't be expressed here); synchronize: false keeps TypeORM from dropping it
+@Index("IDX_users_username_lower", { synchronize: false })
 export class User {
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;

@@ -7,11 +7,12 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
-import { Repository } from "typeorm";
+import { QueryFailedError, Repository } from "typeorm";
 
 import { CreateUserDto } from "./dtos/createUser.dto";
 import { UpdateUserDto } from "./dtos/updateUser.dto";
 import { User } from "./entities/user.entity";
+import { isReservedName } from "./reservedNames";
 import { Chat } from "../chats/entities/chat.entity";
 import { PlacesService } from "../places/places.service";
 
@@ -52,15 +53,19 @@ export class UsersService {
 		return user;
 	}
 
+	/** Finds a user regardless of case; there can only be one (unique index on `lower(username)`). */
 	findByUsername(username: string): Promise<User | null> {
-		return this.users.findOneBy({ username });
+		return this.users
+			.createQueryBuilder("user")
+			.where("lower(user.username) = lower(:username)", { username })
+			.getOne();
 	}
 
 	async createUser(userPayload: CreateUserDto): Promise<User> {
 		const { name, username, password } = userPayload;
-		const usernameExists = await this.findByUsername(username);
-		if (usernameExists) {
-			throw new ConflictException(`Username '${username}' is already taken.`);
+		// The same answer for taken and reserved names, so the reserved list can't be found out
+		if (isReservedName(username) || (await this.findByUsername(username))) {
+			throw new ConflictException("Dieser Benutzername ist nicht verfügbar.");
 		}
 
 		const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -70,7 +75,18 @@ export class UsersService {
 			name: name ?? null,
 		});
 
-		return this.users.save(user);
+		try {
+			return await this.users.save(user);
+		} catch (error) {
+			// Two registrations with the same name at the same time: the unique index stops the second
+			if (
+				error instanceof QueryFailedError &&
+				(error.driverError as { code?: string }).code === "23505"
+			) {
+				throw new ConflictException("Dieser Benutzername ist nicht verfügbar.");
+			}
+			throw error;
+		}
 	}
 
 	async update(userId: string, userPayload: UpdateUserDto, currentUser: User) {
@@ -91,6 +107,10 @@ export class UsersService {
 			!(await this.placesService.existsWithPostalCode(userPayload.placeId))
 		) {
 			throw new BadRequestException("Place does not exist or has no postal code.");
+		}
+
+		if (userPayload.name && isReservedName(userPayload.name)) {
+			throw new BadRequestException("Dieser Name ist nicht verfügbar.");
 		}
 
 		const { password, ...updates } = userPayload;

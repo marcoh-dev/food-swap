@@ -1,6 +1,17 @@
 import { z } from "zod";
 
-import { MISSING_PLACE_MESSAGE } from "../messages";
+import {
+	MISSING_PLACE_MESSAGE,
+	NAME_UNAVAILABLE_MESSAGE,
+	USERNAME_UNAVAILABLE_MESSAGE,
+} from "../messages";
+import { isReservedName } from "../reservedNames";
+
+/**
+ * Letters (incl. ä, ö, ü, ß), digits, "_", "." and "-": no lookalike letters from other scripts
+ * (e.g. a Cyrillic "А" in "Аdmin"). The backend has a copy in createUser.dto.ts.
+ */
+export const USERNAME_PATTERN = /^[A-Za-z0-9äöüÄÖÜß_.-]+$/;
 
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
@@ -13,7 +24,12 @@ export const registrationSchema = z.object({
 		.trim()
 		.min(1, { error: "Bitte gib einen Benutzernamen ein.", abort: true })
 		.min(5, "Der Benutzername muss mindestens 5 Zeichen lang sein.")
-		.max(20, "Der Benutzername darf höchstens 20 Zeichen lang sein."),
+		.max(20, "Der Benutzername darf höchstens 20 Zeichen lang sein.")
+		.regex(
+			USERNAME_PATTERN,
+			"Der Benutzername darf nur Buchstaben, Ziffern und _ . - enthalten.",
+		)
+		.refine((username) => !isReservedName(username), USERNAME_UNAVAILABLE_MESSAGE),
 	password: z
 		.string()
 		.min(8, "Das Passwort muss mindestens 8 Zeichen lang sein.")
@@ -30,7 +46,8 @@ export const profileSchema = z
 			.string()
 			.trim()
 			.min(1, "Bitte gib einen Profilnamen ein.")
-			.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein."),
+			.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein.")
+			.refine((name) => !isReservedName(name), NAME_UNAVAILABLE_MESSAGE),
 		placeId: z.string(),
 		placeQuery: z.string(),
 	})
