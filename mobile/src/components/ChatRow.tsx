@@ -1,0 +1,52 @@
+import type { ChatListItem } from "@food-swap/shared/types";
+import { View } from "react-native";
+
+import { Text } from "@/components/ui/text";
+import { formatLastMessageTime } from "@/lib/date";
+import { cn } from "@/lib/utils";
+
+/** One chat in the Chats tab: other person, listing, last message, time and an unread dot. */
+export function ChatRow({ chat }: { chat: ChatListItem }) {
+	const name = chat.otherName ?? "Gelöschtes Konto";
+	const listingTitle = chat.listingTitle ?? "Gelöschtes Angebot";
+	const time = formatLastMessageTime(chat.lastMessageAt);
+
+	return (
+		<View
+			className="gap-0.5 border-b border-border px-6 py-3"
+			accessible
+			accessibilityLabel={[
+				chat.unread ? "Ungelesen" : null,
+				name,
+				listingTitle,
+				chat.lastMessage,
+				time,
+			]
+				.filter(Boolean)
+				.join(", ")}
+		>
+			<View className="flex-row items-baseline justify-between gap-2">
+				<View className="min-w-0 flex-1 flex-row items-center gap-1.5">
+					{chat.unread && <View className="size-2 rounded-full bg-primary" />}
+					<Text
+						className={cn("shrink font-medium", chat.unread && "font-bold")}
+						numberOfLines={1}
+					>
+						{name}
+					</Text>
+				</View>
+				<Text variant="muted" className="text-sm">
+					{time}
+				</Text>
+			</View>
+			<Text variant="muted" className="text-sm" numberOfLines={1}>
+				{listingTitle}
+			</Text>
+			{chat.lastMessage && (
+				<Text className={cn("text-sm", chat.unread && "font-bold")} numberOfLines={1}>
+					{chat.lastMessage}
+				</Text>
+			)}
+		</View>
+	);
+}
