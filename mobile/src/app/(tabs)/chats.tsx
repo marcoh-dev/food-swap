@@ -1,7 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
 
+import { CHATS_QUERY_KEY } from "@/api/chats";
 import { ChatRow } from "@/components/ChatRow";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { RequireLogin } from "@/components/RequireLogin";
@@ -24,6 +26,7 @@ export default function Chats() {
 }
 
 function ChatList() {
+	const queryClient = useQueryClient();
 	const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useChats();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
@@ -36,7 +39,8 @@ function ChatList() {
 		}
 
 		setIsRefreshing(true);
-		await refetch();
+		// The list and the unread count in the tab badge
+		await queryClient.refetchQueries({ queryKey: CHATS_QUERY_KEY, type: "active" });
 		setIsRefreshing(false);
 	}
 
