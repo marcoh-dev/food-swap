@@ -169,7 +169,8 @@ export function ChatMessages({
 			{showNewMessageButton && (
 				<Button
 					size="sm"
-					className="absolute bottom-3 self-center rounded-full"
+					// The border in the background colour sets it apart from own bubbles below it
+					className="absolute bottom-3 self-center rounded-full border border-background"
 					accessibilityHint="Springt zur neuesten Nachricht"
 					onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
 				>
