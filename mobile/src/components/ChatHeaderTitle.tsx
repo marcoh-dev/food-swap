@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
+import { cn } from "@/lib/utils";
 
 /** Header of a conversation: the other person and, below, the listing, which opens the listing. */
 export function ChatHeaderTitle({ chat }: { chat: ChatDetail | undefined }) {
@@ -17,7 +18,11 @@ export function ChatHeaderTitle({ chat }: { chat: ChatDetail | undefined }) {
 
 	return (
 		<View className="max-w-64 items-center">
-			<Text className="font-semibold" numberOfLines={1} accessibilityRole="header">
+			<Text
+				className={cn("font-semibold", !chat.otherName && "text-muted-foreground")}
+				numberOfLines={1}
+				accessibilityRole="header"
+			>
 				{chat.otherName ?? "Gelöschtes Konto"}
 			</Text>
 			{listingId ? (

@@ -3,10 +3,14 @@
 // `at` is "+N HH:mm" or "+N HH:mm:ss": N days after the listing was created,
 // in Berlin time. Both have read the whole chat, unless `unread` is set: then
 // the person who didn't send the last message hasn't read it yet.
+// `user: null` is a deleted account: its messages have no sender and nobody can
+// reply. `listingDeleted` leaves the chat without its listing (e.g. after the
+// nightly cleanup); the listing's dates still time the messages.
 export type MockChat = {
 	key: string;
 	listing: string;
-	user: string;
+	user: string | null;
+	listingDeleted?: boolean;
 	unread?: boolean;
 	messages: MockMessage[];
 };
@@ -318,6 +322,41 @@ export const mockChats: MockChat[] = [
 	},
 	// Jana's chats: more than a screen full, a few unread and one long chat.
 	// mock_gerda has no chats, to show the empty chat list
+	{
+		key: "jana-pumpkins-deleted",
+		listing: "jana-10",
+		user: null,
+		unread: true,
+		messages: [
+			{
+				from: "user",
+				at: "+2 17:00",
+				content: "Hallo, ich hätte gern einen Kürbis. Geht das noch diese Woche?",
+			},
+			{
+				from: "owner",
+				at: "+2 18:10",
+				content: "Hallo! Ja, Mittwoch oder Donnerstag nach 17 Uhr.",
+			},
+			{ from: "user", at: "+2 18:30", content: "Donnerstag passt. Bis dann!" },
+		],
+	},
+	{
+		key: "jana-zucchini-sepp",
+		listing: "jana-21",
+		user: "sepp",
+		listingDeleted: true,
+		unread: true,
+		messages: [
+			{
+				from: "user",
+				at: "+3 19:15",
+				content: "Servus Jana! Sind die Zucchini noch da? Ich würde Zucchinibrot backen.",
+			},
+			{ from: "owner", at: "+3 20:00", content: "Ja, aber nur noch zwei kleine." },
+			{ from: "user", at: "+3 20:05", content: "Reicht völlig, danke dir!" },
+		],
+	},
 	{
 		key: "jana-basil-ole",
 		listing: "jana-06",

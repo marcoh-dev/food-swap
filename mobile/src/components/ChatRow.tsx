@@ -30,7 +30,12 @@ export function ChatRow({ chat }: { chat: ChatListItem }) {
 				<View className="min-w-0 flex-1 flex-row items-center gap-1.5">
 					{chat.unread && <View className="size-2 rounded-full bg-primary" />}
 					<Text
-						className={cn("shrink font-medium", chat.unread && "font-bold")}
+						className={cn(
+							"shrink font-medium",
+							chat.unread && "font-bold",
+							// A deleted account isn't a person's name
+							!chat.otherName && "text-muted-foreground",
+						)}
 						numberOfLines={1}
 					>
 						{name}
