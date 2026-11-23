@@ -66,8 +66,9 @@ function ProfileContent() {
 					</Button>
 				</ServerErrorNotice>
 			)}
+
 			{profile ? (
-				<>
+				<View className="gap-4 rounded-xl border border-border bg-card p-4">
 					{/* public: GET /users/:id */}
 					<View className="gap-1">
 						<Text variant="h2">{profile.name ?? profile.username}</Text>
@@ -78,26 +79,21 @@ function ProfileContent() {
 					{/* private: GET /auth/me */}
 					{user && (
 						<>
-							<Text>
-								<Text className="text-muted-foreground">Benutzername: </Text>
-								{user.username}
-							</Text>
-							<Text>
-								<Text className="text-muted-foreground">Standort: </Text>
-								{user.place ? formatPlace(user.place) : "Kein Ort gewählt."}
-							</Text>
+							<ProfileField label="Benutzername" value={user.username} />
+							<ProfileField
+								label="Standort"
+								value={user.place ? formatPlace(user.place) : "Kein Ort gewählt."}
+							/>
 						</>
 					)}
-					<Text>
-						<Text className="text-muted-foreground">Registriert seit: </Text>
-						{formatDate(profile.createdAt)}
-					</Text>
-				</>
+					<ProfileField label="Registriert seit" value={formatDate(profile.createdAt)} />
+				</View>
 			) : isLoading ? (
 				<View className="flex-1 items-center justify-center">
 					<ActivityIndicator size="large" color={mutedForeground} />
 				</View>
 			) : null}
+
 			{!isLoading && (
 				<>
 					<Button variant="outline" onPress={() => void logOut()}>
@@ -122,5 +118,14 @@ function ProfileContent() {
 				</>
 			)}
 		</Screen>
+	);
+}
+
+function ProfileField({ label, value }: { label: string; value: string }) {
+	return (
+		<View className="gap-0.5">
+			<Text variant="muted">{label}</Text>
+			<Text>{value}</Text>
+		</View>
 	);
 }
