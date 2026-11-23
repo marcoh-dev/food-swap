@@ -19,14 +19,14 @@ export const SLIDES: SlideContent[] = [
 		id: "yearly-food-waste",
 		type: "facts",
 		title: "Wegwerfen\nist keine Lösung!",
-		body: "In Deutschland wirft jede Person pro Jahr durchschnittlich 75 kg Lebensmittel weg. Das sind ungefähr 600 Tomaten. Lasst mal mehr tauschen und verschenken.",
+		body: "In Deutschland wirft jede Person pro Jahr durchschnittlich 75 kg Lebensmittel weg. Das sind ungefähr 600 Tomaten. Lasst mal lieber tauschen und verschenken.",
 		source: "Quelle: Umweltbundesamt",
 	},
 	{
 		id: "mobile-app-release",
 		type: "news",
 		title: "Neues aus dem Beet",
-		body: "FoodSwap gibt's bald auch als Mobile App! 🎉 Mehr dazu bald.",
+		body: "FoodSwap gibt's bald auch als Mobile App! 🎉 Mehr dazu in Kürze.",
 		// image: "https://images.pexels.com/photos/8516717/pexels-photo-8516717.jpeg"
 	},
 	{

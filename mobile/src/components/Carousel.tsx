@@ -5,24 +5,38 @@ import Slide from "@/components/Slide";
 import { SLIDES } from "@/lib/slides";
 import { cn } from "@/lib/utils";
 
+const EDGE = 24;
+const GAP = 24;
+
 export default function Carousel() {
 	const [width, setWidth] = useState(0);
 	const [index, setIndex] = useState(0);
+
+	const slideWidth = Math.max(width - EDGE * 2, 0);
+	const interval = slideWidth + GAP;
 	return (
-		<View className="gap-2">
+		<View className="gap-1">
 			<FlatList
-				className="-mr-3"
+				className="-mx-6"
+				contentContainerStyle={{ paddingHorizontal: EDGE }}
 				data={SLIDES}
 				keyExtractor={(slide) => slide.id}
 				horizontal
-				pagingEnabled
 				showsHorizontalScrollIndicator={false}
+				snapToInterval={interval}
+				snapToAlignment="start"
+				decelerationRate="fast"
+				disableIntervalMomentum
+				ItemSeparatorComponent={() => <View style={{ width: GAP }} />}
 				onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-				onMomentumScrollEnd={(e) =>
-					setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
-				}
+				scrollEventThrottle={16}
+				onScroll={(e) => {
+					if (!interval) return;
+					const next = Math.round(e.nativeEvent.contentOffset.x / interval);
+					if (next !== index) setIndex(next);
+				}}
 				renderItem={({ item }) => (
-					<View style={{ width }} className="pr-3">
+					<View style={{ width: slideWidth }} className="pt-1 pb-4">
 						<Slide
 							title={item.title}
 							body={item.body}
@@ -37,8 +51,10 @@ export default function Carousel() {
 					<View
 						key={slide.id}
 						className={cn(
-							"h-2 w-2 rounded-full",
-							i === index ? "bg-foreground" : "bg-muted-foreground",
+							"h-1.5 w-1.5 rounded-full",
+							i === index
+								? "bg-input dark:bg-foreground"
+								: "bg-border dark:bg-muted-foreground",
 						)}
 					/>
 				))}

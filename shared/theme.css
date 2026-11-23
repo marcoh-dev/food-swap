@@ -25,6 +25,7 @@
 	--color-highlight-foreground: var(--highlight-foreground);
 	--color-highlight-muted-foreground: var(--highlight-muted-foreground);
 	--color-highlight-muted: var(--highlight-muted);
+	--color-highlight-border: var(--highlight-border);
 	--color-info: var(--info);
 
 	--color-border: var(--border);
@@ -89,6 +90,7 @@
 		--highlight-foreground: #f7f3eb;
 		--highlight-muted-foreground: #e6e0f7;
 		--highlight-muted: #6b55a0;
+		--highlight-border: #8470b8;
 		--info: #6ea2ea;
 		--border: #3e555e;
 		--input: #889398;
