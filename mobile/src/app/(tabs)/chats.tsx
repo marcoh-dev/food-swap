@@ -101,7 +101,7 @@ function ChatList() {
 	return (
 		<FlatList
 			className="bg-background"
-			contentContainerClassName="pb-6"
+			// No extra space below the last row: its own padding and border end the list
 			contentInsetAdjustmentBehavior="automatic"
 			data={data}
 			keyExtractor={({ id }) => id}
