@@ -86,6 +86,17 @@ export default function RootLayout() {
 									}}
 								/>
 								<Stack.Screen
+									name="chats/[id]"
+									options={{
+										headerShown: true,
+										title: "Chat",
+										headerBackButtonDisplayMode: "minimal",
+										// Not transparent: the inverted message list can't move its content below a
+										// transparent header the way other scroll views do
+										headerTransparent: false,
+									}}
+								/>
+								<Stack.Screen
 									name="login"
 									options={{
 										presentation: "modal",

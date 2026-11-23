@@ -1,10 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, Platform, RefreshControl, View } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	Platform,
+	Pressable,
+	RefreshControl,
+	View,
+} from "react-native";
 
 import { CHATS_QUERY_KEY } from "@/api/chats";
-import { ChatRow } from "@/components/ChatRow";
+import { ChatRow, chatRowLabel } from "@/components/ChatRow";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Screen } from "@/components/Screen";
@@ -39,8 +47,9 @@ function ChatList() {
 		}
 
 		setIsRefreshing(true);
-		// The list and the unread count in the tab badge
-		await queryClient.refetchQueries({ queryKey: CHATS_QUERY_KEY, type: "active" });
+		// Reloads the list and the badge; chats opened before are marked as outdated, so they
+		// reload when opened again instead of showing their cached messages
+		await queryClient.invalidateQueries({ queryKey: CHATS_QUERY_KEY });
 		setIsRefreshing(false);
 	}
 
@@ -132,7 +141,21 @@ function ChatList() {
 					progressBackgroundColor={card}
 				/>
 			}
-			renderItem={({ item }) => <ChatRow chat={item} />}
+			renderItem={({ item }) => (
+				<Link href={`/chats/${item.id}`} asChild>
+					<Pressable
+						accessibilityRole="button"
+						accessibilityLabel={chatRowLabel(item)}
+						accessibilityHint="Öffnet den Chat"
+					>
+						{({ pressed }) => (
+							<View className={cn(pressed && "opacity-70")}>
+								<ChatRow chat={item} />
+							</View>
+						)}
+					</Pressable>
+				</Link>
+			)}
 		/>
 	);
 }
