@@ -27,15 +27,7 @@ export function ListingChat({ listingId, ownerId, ownerName, status }: ListingCh
 	);
 
 	if (sent) {
-		return (
-			<ListingChatCard title={title}>
-				Nachricht gesendet. Alle deine Chats findest du{" "}
-				<Link href="/chats" className="underline">
-					hier
-				</Link>
-				.
-			</ListingChatCard>
-		);
+		return <ListingChatCard title={title}>Nachricht gesendet.</ListingChatCard>;
 	}
 
 	if (status.chatId && !status.hidden) {
