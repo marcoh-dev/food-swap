@@ -7,13 +7,17 @@ import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useSendReply } from "@/hooks/useSendReply";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { getChatDraft, setChatDraft } from "@/lib/chatDrafts";
 
 // The same limit as the web and the backend
 const MAX_LENGTH = 2000;
 
-/** Reply field at the bottom of a conversation; keeps the text if sending fails. */
+/**
+ * Reply field at the bottom of a conversation. Unsent text stays as a draft per chat (also after
+ * leaving the chat or a failed send) until it is sent.
+ */
 export function ChatReplyBar({ chatId }: { chatId: string }) {
-	const [content, setContent] = useState("");
+	const [content, setContent] = useState(() => getChatDraft(chatId));
 	const sendReply = useSendReply(chatId);
 	const isOnline = useIsOnline();
 	const primaryForeground = useThemeColor("--primary-foreground");
@@ -49,6 +53,7 @@ export function ChatReplyBar({ chatId }: { chatId: string }) {
 						value={content}
 						onChangeText={(value) => {
 							setContent(value);
+							setChatDraft(chatId, value);
 							if (sendReply.isError) sendReply.reset();
 						}}
 					/>

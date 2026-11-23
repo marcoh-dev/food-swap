@@ -4,6 +4,7 @@ import { createContext, type ReactNode, use, useCallback, useEffect, useState } 
 import { logout } from "@/api/auth";
 import { isUnauthorizedError } from "@/api/request";
 import { type AuthTokens, deleteTokens, getRefreshToken, getToken, saveTokens } from "@/api/token";
+import { clearChatDrafts } from "@/lib/chatDrafts";
 
 type AuthContextValue = {
 	isLoggedIn: boolean;
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		await deleteTokens();
 		setToken(null);
 		await queryClient.resetQueries();
+		clearChatDrafts();
 
 		// Not awaited and errors ignored: the user is logged out either way, the token expires later
 		if (refreshToken) void logout(refreshToken).catch(() => undefined);
