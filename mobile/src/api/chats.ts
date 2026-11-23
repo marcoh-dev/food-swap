@@ -1,4 +1,9 @@
-import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
+import type {
+	ChatDetail,
+	ChatListItem,
+	ChatMessage,
+	SocketTicketResponse,
+} from "@food-swap/shared/types";
 
 import { get, post, postWithoutResponse } from "@/api/request";
 
@@ -30,4 +35,9 @@ export function sendReply(chatId: string, content: string) {
 
 export function markChatRead(chatId: string) {
 	return postWithoutResponse(`/chats/${chatId}/read`, {});
+}
+
+/** A short-lived ticket for connecting to the chat socket (the socket never gets the login token). */
+export function fetchSocketTicket() {
+	return post<SocketTicketResponse>("/chats/socket-ticket", {});
 }
