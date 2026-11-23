@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { syncAppFocus } from "@/api/appFocus";
@@ -71,43 +72,51 @@ export default function RootLayout() {
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider value={theme}>
 				<SafeAreaProvider>
-					<StatusBar style="auto" />
-					{envError ? (
-						<EnvError message={envError} />
-					) : (
-						<AuthProvider>
-							<Stack screenOptions={{ headerShown: false }}>
-								<Stack.Screen
-									name="listings/[id]"
-									options={{
-										headerShown: true,
-										title: "Angebot",
-										headerBackButtonDisplayMode: "minimal",
-									}}
-								/>
-								<Stack.Screen
-									name="chats/[id]"
-									options={{
-										headerShown: true,
-										title: "Chat",
-										headerBackButtonDisplayMode: "minimal",
-										// Not transparent: the inverted message list can't move its content below a
-										// transparent header the way other scroll views do
-										headerTransparent: false,
-									}}
-								/>
-								<Stack.Screen
-									name="login"
-									options={{
-										presentation: "modal",
-										headerShown: true,
-										title: "Anmelden",
-										headerLeft: () => <CloseButton />,
-									}}
-								/>
-							</Stack>
-						</AuthProvider>
-					)}
+					{/* The app is edge to edge (Expo SDK 58); without these, the provider adds its own
+					    bars at the top and bottom on Android */}
+					<KeyboardProvider
+						statusBarTranslucent
+						navigationBarTranslucent
+						preserveEdgeToEdge
+					>
+						<StatusBar style="auto" />
+						{envError ? (
+							<EnvError message={envError} />
+						) : (
+							<AuthProvider>
+								<Stack screenOptions={{ headerShown: false }}>
+									<Stack.Screen
+										name="listings/[id]"
+										options={{
+											headerShown: true,
+											title: "Angebot",
+											headerBackButtonDisplayMode: "minimal",
+										}}
+									/>
+									<Stack.Screen
+										name="chats/[id]"
+										options={{
+											headerShown: true,
+											title: "Chat",
+											headerBackButtonDisplayMode: "minimal",
+											// Not transparent: the inverted message list can't move its content below a
+											// transparent header the way other scroll views do
+											headerTransparent: false,
+										}}
+									/>
+									<Stack.Screen
+										name="login"
+										options={{
+											presentation: "modal",
+											headerShown: true,
+											title: "Anmelden",
+											headerLeft: () => <CloseButton />,
+										}}
+									/>
+								</Stack>
+							</AuthProvider>
+						)}
+					</KeyboardProvider>
 				</SafeAreaProvider>
 			</ThemeProvider>
 		</QueryClientProvider>

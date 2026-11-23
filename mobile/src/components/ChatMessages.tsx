@@ -69,8 +69,12 @@ export function ChatMessages({ messages, currentUserId, otherName }: ChatMessage
 									own ? "bg-primary" : "bg-muted",
 								)}
 							>
+								{/* 16 px like common messenger apps, smaller than the app's body text */}
 								<Text
-									className={own ? "text-primary-foreground" : "text-foreground"}
+									className={cn(
+										"text-base",
+										own ? "text-primary-foreground" : "text-foreground",
+									)}
 								>
 									{item.content}
 								</Text>

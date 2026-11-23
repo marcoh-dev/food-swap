@@ -8,6 +8,8 @@ import { CHAT_LIST_QUERY_KEY } from "@/api/chats";
 import { isNotFoundError } from "@/api/request";
 import { ChatHeaderTitle } from "@/components/ChatHeaderTitle";
 import { ChatMessages } from "@/components/ChatMessages";
+import { ChatReplyBar } from "@/components/ChatReplyBar";
+import { KeyboardAwareView } from "@/components/KeyboardAwareView";
 import { Notice } from "@/components/Notice";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { RequireLogin } from "@/components/RequireLogin";
@@ -113,7 +115,7 @@ function Conversation() {
 	}
 
 	return (
-		<View className="flex-1 bg-background">
+		<KeyboardAwareView>
 			{header}
 			{(offlineNotice || errorNotice) && (
 				<View className="gap-4 px-4 pt-4">
@@ -126,7 +128,9 @@ function Conversation() {
 				currentUserId={currentUser?.id}
 				otherName={chat.otherName ?? "Gelöschtes Konto"}
 			/>
-			{!chat.canReply && (
+			{chat.canReply ? (
+				<ChatReplyBar chatId={chat.id} />
+			) : (
 				<View className="border-t border-border px-4 pt-4 pb-safe-offset-4">
 					<Notice
 						icon={{ ios: "info.circle", android: "info" }}
@@ -135,7 +139,7 @@ function Conversation() {
 					/>
 				</View>
 			)}
-		</View>
+		</KeyboardAwareView>
 	);
 }
 
