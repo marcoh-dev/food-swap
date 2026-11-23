@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { Stack, useIsFocused, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { z } from "zod";
 
@@ -19,7 +19,9 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useChat } from "@/hooks/useChat";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useIsAppActive } from "@/hooks/useIsAppActive";
 import { useIsOnline } from "@/hooks/useIsOnline";
+import { useMarkChatRead } from "@/hooks/useMarkChatRead";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ChatScreen() {
@@ -48,6 +50,24 @@ function Conversation() {
 	const isOnline = useIsOnline();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const isNotFound = !isValidId || isNotFoundError(error);
+	const isFocused = useIsFocused();
+	const isAppActive = useIsAppActive();
+	const [atNewest, setAtNewest] = useState(true);
+	const { mutate: markChatRead } = useMarkChatRead();
+	const markedMessageId = useRef<string | null>(null);
+	const newest = chat?.messages.at(-1);
+
+	// A chat counts as read only when its newest message is actually on screen: this screen is
+	// shown, the app is in the foreground and the user hasn't scrolled up into older messages
+	useEffect(() => {
+		if (!newest || !isFocused || !isAppActive || !atNewest || !isOnline) return;
+		// Own messages never make a chat unread; each message is marked only once
+		if (newest.senderId === currentUser?.id || markedMessageId.current === newest.id) return;
+
+		markedMessageId.current = newest.id;
+		// On an error it's tried again with the next change (e.g. back online)
+		markChatRead(newest.chatId, { onError: () => (markedMessageId.current = null) });
+	}, [newest, isFocused, isAppActive, atNewest, isOnline, currentUser?.id, markChatRead]);
 
 	// A deleted chat should also disappear from the list when going back
 	useEffect(() => {
@@ -127,6 +147,7 @@ function Conversation() {
 				messages={chat.messages}
 				currentUserId={currentUser?.id}
 				otherName={chat.otherName ?? "Gelöschtes Konto"}
+				onAtNewestChange={setAtNewest}
 			/>
 			{chat.canReply ? (
 				<ChatReplyBar chatId={chat.id} />

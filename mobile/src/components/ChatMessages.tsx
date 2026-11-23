@@ -10,7 +10,12 @@ type ChatMessagesProps = {
 	messages: ChatMessage[];
 	currentUserId: string | undefined;
 	otherName: string;
+	/** Called when the user scrolls away from the newest message or back to it. */
+	onAtNewestChange: (atNewest: boolean) => void;
 };
+
+// How close to the newest message still counts as "at the newest message", in px
+const AT_NEWEST_THRESHOLD = 40;
 
 // Day and minute in Berlin time, to group messages sent in the same minute
 function sentMinute(message: ChatMessage) {
@@ -21,7 +26,12 @@ function sentMinute(message: ChatMessage) {
  * The messages of a chat, grouped by day. Consecutive messages of the same person within the same
  * minute show the time only once, below the last of them; each message keeps its own bubble.
  */
-export function ChatMessages({ messages, currentUserId, otherName }: ChatMessagesProps) {
+export function ChatMessages({
+	messages,
+	currentUserId,
+	otherName,
+	onAtNewestChange,
+}: ChatMessagesProps) {
 	// An inverted list starts at the bottom, where a chat is read, and new messages appear there
 	const newestFirst = useMemo(() => [...messages].reverse(), [messages]);
 
@@ -31,6 +41,11 @@ export function ChatMessages({ messages, currentUserId, otherName }: ChatMessage
 			className="flex-1"
 			contentContainerClassName="px-4 py-4"
 			data={newestFirst}
+			// Inverted: an offset of 0 is the bottom, where the newest message is
+			onScroll={(event) =>
+				onAtNewestChange(event.nativeEvent.contentOffset.y <= AT_NEWEST_THRESHOLD)
+			}
+			scrollEventThrottle={100}
 			keyExtractor={({ id }) => id}
 			renderItem={({ item, index }) => {
 				const older = newestFirst[index + 1];
