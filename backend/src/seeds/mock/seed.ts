@@ -53,11 +53,12 @@ function registeredAtOf(user: MockUser, now: Date): Date {
 }
 
 function sentAtOf(listing: MockListing, at: string, now: Date): Date {
-	const match = /^\+(\d+) (\d{2}:\d{2})$/.exec(at);
+	const match = /^\+(\d+) (\d{2}:\d{2})(:\d{2})?$/.exec(at);
 	if (!match) throw new Error(`Invalid message time "${at}"`);
 
 	const day = shiftDay(createdAtOf(listing, now).slice(0, 10), { days: Number(match[1]) });
-	return berlinTime(`${day} ${match[2]}`);
+	const seconds = match[3] ? `${match[3]}.000` : "";
+	return berlinTime(`${day} ${match[2]}${seconds}`);
 }
 
 function check(condition: boolean, message: string): void {
@@ -310,12 +311,27 @@ async function seed(): Promise<void> {
 			const ownerId = userIds.get(listing.owner);
 			const userId = userIds.get(chat.user);
 			const sentAt = chat.messages.map((message) => sentAtOf(listing, message.at, now));
+			const lastMessageAt = sentAt.at(-1);
+			// The sender of the last message has read it; the other person only if not `unread`
+			const lastFromOwner = chat.messages.at(-1)!.from === "owner";
+			const otherReadAt = chat.unread ? null : lastMessageAt;
+			const ownerLastReadAt = lastFromOwner ? lastMessageAt : otherReadAt;
+			const userLastReadAt = lastFromOwner ? otherReadAt : lastMessageAt;
 
 			await manager.query(
-				`INSERT INTO "chats" ("id", "listingId", "ownerId", "userId", "deletedByOwner", "deletedByUser", "lastMessageAt", "createdAt")
-        VALUES ($1, $2, $3, $4, false, false, $5, $6)
-        ON CONFLICT ("id") DO UPDATE SET "listingId" = $2, "ownerId" = $3, "userId" = $4, "deletedByOwner" = false, "deletedByUser" = false, "lastMessageAt" = $5, "createdAt" = $6`,
-				[chatId, listingIds.get(chat.listing), ownerId, userId, sentAt.at(-1), sentAt[0]],
+				`INSERT INTO "chats" ("id", "listingId", "ownerId", "userId", "deletedByOwner", "deletedByUser", "lastMessageAt", "createdAt", "ownerLastReadAt", "userLastReadAt")
+        VALUES ($1, $2, $3, $4, false, false, $5, $6, $7, $8)
+        ON CONFLICT ("id") DO UPDATE SET "listingId" = $2, "ownerId" = $3, "userId" = $4, "deletedByOwner" = false, "deletedByUser" = false, "lastMessageAt" = $5, "createdAt" = $6, "ownerLastReadAt" = $7, "userLastReadAt" = $8`,
+				[
+					chatId,
+					listingIds.get(chat.listing),
+					ownerId,
+					userId,
+					lastMessageAt,
+					sentAt[0],
+					ownerLastReadAt,
+					userLastReadAt,
+				],
 			);
 
 			for (const [index, message] of chat.messages.entries()) {
