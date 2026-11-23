@@ -55,7 +55,7 @@ export default function TabLayout() {
 				listeners={requireLogin("/chats")}
 			>
 				<NativeTabs.Trigger.Icon sf="bubble" md="chat_bubble" />
-				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>Chats</NativeTabs.Trigger.Label>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="me" disabled={!isLoggedIn} listeners={requireLogin("/me")}>
 				<NativeTabs.Trigger.Icon sf="person" md="person" />
