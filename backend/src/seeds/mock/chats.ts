@@ -323,6 +323,24 @@ export const mockChats: MockChat[] = [
 	// Jana's chats: more than a screen full, a few unread and one long chat.
 	// mock_gerda has no chats, to show the empty chat list
 	{
+		key: "friederike-jam-jana",
+		listing: "friederike-01",
+		user: "jana",
+		messages: [
+			{
+				from: "user",
+				at: "+2 09:30",
+				content:
+					"Hallo Friederike! Holunderblüte und Rhabarber zusammen habe ich noch nie probiert, das klingt wunderbar. Ich bin am Samstag ohnehin bei Ole in Himmelpforten und könnte auf dem Rückweg zwei Gläser abholen, wenn das für dich passt.",
+			},
+			{
+				from: "owner",
+				at: "+2 11:05",
+				content: "Gern, Samstag bin ich den ganzen Tag zu Hause. Grüß Ole von mir!",
+			},
+		],
+	},
+	{
 		key: "jana-pumpkins-deleted",
 		listing: "jana-10",
 		user: null,
