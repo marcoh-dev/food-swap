@@ -1,5 +1,6 @@
 import type { ChatListItem, ChatMessage, ServerToClientEvents } from "@food-swap/shared/types";
-import { focusManager, type QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
+import { AppState } from "react-native";
 import { io, type Socket } from "socket.io-client";
 
 import { CURRENT_USER_QUERY_KEY, fetchCurrentUser } from "@/api/auth";
@@ -103,18 +104,19 @@ export function connectChatSocket(queryClient: QueryClient, onSessionEnded: () =
 	socket.on("chatRead", ({ chatId }) => setUnread(chatId, false));
 	socket.on("chatRemoved", onChatRemoved);
 
-	// Without push notifications (#176), a connection in the background has no use
-	const unsubscribeFocus = focusManager.subscribe((isFocused) => {
-		if (isFocused) {
+	// Without push notifications (#176), a connection in the background has no use. Only
+	// "background" disconnects: iOS is briefly "inactive", e.g. for Control Center or the app switcher
+	const subscription = AppState.addEventListener("change", (state) => {
+		if (state === "active") {
 			socket.connect();
-		} else {
+		} else if (state === "background") {
 			socket.disconnect();
 		}
 	});
-	if (focusManager.isFocused()) socket.connect();
+	if (AppState.currentState !== "background") socket.connect();
 
 	return () => {
-		unsubscribeFocus();
+		subscription.remove();
 		socket.disconnect();
 	};
 }

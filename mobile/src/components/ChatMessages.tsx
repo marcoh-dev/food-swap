@@ -50,10 +50,23 @@ export function ChatMessages({
 		newest.id !== newestWhenScrolledAway &&
 		newest.senderId !== currentUserId;
 
+	// The list keeps its position when messages arrive, so after sending while scrolled up, jump
+	// down to show the own message. The jump waits for the new message's layout: on Android, keeping
+	// the position runs after it and would undo an earlier jump.
+	const lastNewestId = useRef(newest?.id);
+
 	return (
 		<View className="flex-1">
 			<FlatList
 				ref={listRef}
+				onContentSizeChange={() => {
+					if (!newest || newest.id === lastNewestId.current) return;
+
+					lastNewestId.current = newest.id;
+					if (newest.senderId === currentUserId) {
+						listRef.current?.scrollToOffset({ offset: 0, animated: true });
+					}
+				}}
 				inverted
 				className="flex-1"
 				contentContainerClassName="px-4 py-4"
