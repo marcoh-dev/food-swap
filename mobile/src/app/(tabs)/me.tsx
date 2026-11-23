@@ -1,3 +1,4 @@
+import { formatDate } from "@food-swap/shared/dates";
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
@@ -11,6 +12,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useUser } from "@/hooks/useUser";
 
 export default function Profile() {
 	return (
@@ -23,26 +25,29 @@ export default function Profile() {
 function ProfileContent() {
 	const { logOut } = useAuth();
 	const { data: user, isPending, isError, isFetching, refetch } = useCurrentUser();
+	const profileQuery = useUser(user?.id);
+	const profile = profileQuery.data;
 	const isOnline = useIsOnline();
 	const logoutEverywhere = useLogoutEverywhere();
 	const mutedForeground = useThemeColor("--muted-foreground");
-	const isLoading = !user && isPending && isOnline;
+const isLoading = !profile && isOnline && (isPending || (!!user && profileQuery.isPending));
+	const hasError = isError || profileQuery.isError;
 
 	return (
 		<Screen>
 			{!isOnline && (
 				<OfflineNotice
 					message={
-						user
+						profile
 							? "Dein Profil wird aktualisiert, sobald du wieder online bist."
 							: "Dein Profil wird geladen, sobald du wieder online bist."
 					}
 				/>
 			)}
-			{isOnline && isError && (
+			{isOnline && hasError && (
 				<ServerErrorNotice
 					message={
-						user
+						profile
 							? "Dein Profil konnte nicht aktualisiert werden."
 							: "Dein Profil konnte nicht geladen werden."
 					}
@@ -50,22 +55,35 @@ function ProfileContent() {
 					<Button
 						variant="outline"
 						className="self-start"
-						disabled={isFetching}
-						onPress={() => void refetch()}
+						disabled={isFetching || profileQuery.isFetching}
+						onPress={() => {
+							void refetch();
+							void profileQuery.refetch();
+						}}
 					>
 						<Text>Erneut versuchen</Text>
 					</Button>
 				</ServerErrorNotice>
 			)}
-			{user ? (
+			{profile ? (
 				<>
+					{/* public: GET /users/:id */}
 					<View className="gap-1">
-						<Text variant="h2">{user.name ?? user.username}</Text>
-						{user.name ? null : <Text variant="muted">Kein Profilname vergeben.</Text>}
+						<Text variant="h2">{profile.name ?? profile.username}</Text>
+						{profile.name ? null : (
+							<Text variant="muted">Kein Profilname vergeben.</Text>
+						)}
 					</View>
+					{/* private: GET /auth/me */}
+					{user && (
+						<Text>
+							<Text className="text-muted-foreground">Benutzername: </Text>
+							{user.username}
+						</Text>
+					)}
 					<Text>
-						<Text className="text-muted-foreground">Benutzername: </Text>
-						{user.username}
+						<Text className="text-muted-foreground">Registriert seit: </Text>
+						{formatDate(profile.createdAt)}
 					</Text>
 				</>
 			) : isLoading ? (
