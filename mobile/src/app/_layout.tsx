@@ -94,6 +94,15 @@ export default function RootLayout() {
 										headerLeft: () => <CloseButton />,
 									}}
 								/>
+								<Stack.Screen
+									name="profile/edit"
+									options={{
+										presentation: "modal",
+										headerShown: true,
+										title: "Profil bearbeiten",
+										headerLeft: () => <CloseButton />,
+									}}
+								/>
 							</Stack>
 						</AuthProvider>
 					)}

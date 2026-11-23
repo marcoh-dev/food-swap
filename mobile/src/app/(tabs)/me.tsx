@@ -1,5 +1,7 @@
 import { formatDate } from "@food-swap/shared/dates";
 import { formatPlace } from "@food-swap/shared/places";
+import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
@@ -24,12 +26,14 @@ export default function Profile() {
 }
 
 function ProfileContent() {
+	const router = useRouter();
 	const { logOut } = useAuth();
 	const { data: user, isPending, isError, isFetching, refetch } = useCurrentUser();
 	const profileQuery = useUser(user?.id);
 	const profile = profileQuery.data;
 	const isOnline = useIsOnline();
 	const logoutEverywhere = useLogoutEverywhere();
+	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const isLoading = !profile && isOnline && (isPending || (!!user && profileQuery.isPending));
 	const hasError = isError || profileQuery.isError;
@@ -70,11 +74,25 @@ function ProfileContent() {
 			{profile ? (
 				<View className="gap-4 rounded-xl border border-border bg-card p-4">
 					{/* public: GET /users/:id */}
-					<View className="gap-1">
-						<Text variant="h2">{profile.name ?? profile.username}</Text>
-						{profile.name ? null : (
-							<Text variant="muted">Kein Profilname vergeben.</Text>
-						)}
+					<View className="flex-row items-start justify-between gap-3">
+						<View className="flex-1 gap-1">
+							<Text variant="h2">{profile.name ?? profile.username}</Text>
+							{profile.name ? null : (
+								<Text variant="muted">Kein Profilname vergeben.</Text>
+							)}
+						</View>
+						<Button
+							variant="outline"
+							size="icon"
+							accessibilityLabel="Profil bearbeiten"
+							onPress={() => {router.push("/profile/edit")}}
+						>
+							<SymbolView
+								name={{ ios: "pencil", android: "edit" }}
+								size={18}
+								tintColor={foreground}
+							/>
+						</Button>
 					</View>
 					{/* private: GET /auth/me */}
 					{user && (

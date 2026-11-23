@@ -98,3 +98,11 @@ export async function postWithoutResponse(path: string, body: unknown): Promise<
 		body: JSON.stringify(body),
 	});
 }
+
+export async function patchWithoutResponse(path: string, body: unknown): Promise<void> {
+	await send(path, {
+		method: "PATCH",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(body),
+	});
+}
