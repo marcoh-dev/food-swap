@@ -53,11 +53,12 @@ function registeredAtOf(user: MockUser, now: Date): Date {
 }
 
 function sentAtOf(listing: MockListing, at: string, now: Date): Date {
-	const match = /^\+(\d+) (\d{2}:\d{2})$/.exec(at);
+	const match = /^\+(\d+) (\d{2}:\d{2})(:\d{2})?$/.exec(at);
 	if (!match) throw new Error(`Invalid message time "${at}"`);
 
 	const day = shiftDay(createdAtOf(listing, now).slice(0, 10), { days: Number(match[1]) });
-	return berlinTime(`${day} ${match[2]}`);
+	const seconds = match[3] ? `${match[3]}.000` : "";
+	return berlinTime(`${day} ${match[2]}${seconds}`);
 }
 
 function check(condition: boolean, message: string): void {
@@ -179,12 +180,16 @@ function validate(now: Date, places: Places, categories: Lookup, tags: Lookup): 
 	for (const chat of mockChats) {
 		const where = `Chat ${chat.key}`;
 		const listing = listings.get(chat.listing);
-		const user = users.get(chat.user);
+		const user = chat.user === null ? null : users.get(chat.user);
 
 		check(!chatKeys.has(chat.key), `${where}: duplicate key`);
 		chatKeys.add(chat.key);
 		check(listing !== undefined, `${where}: unknown listing`);
 		check(user !== undefined, `${where}: unknown user`);
+		check(
+			chat.user !== null || chat.messages.some((message) => message.from === "user"),
+			`${where}: a deleted user needs a message`,
+		);
 		check(listing!.owner !== chat.user, `${where}: owner cannot chat with themself`);
 		check(
 			!participants.has(`${chat.listing}:${chat.user}`),
@@ -209,7 +214,8 @@ function validate(now: Date, places: Places, categories: Lookup, tags: Lookup): 
 			previous = sentAt;
 		}
 		check(
-			registeredAtOf(user!, now) < sentAtOf(listing!, chat.messages[0]!.at, now),
+			user === null ||
+				registeredAtOf(user!, now) < sentAtOf(listing!, chat.messages[0]!.at, now),
 			`${where}: user wrote before registering`,
 		);
 	}
@@ -308,14 +314,31 @@ async function seed(): Promise<void> {
 			const chatId = mockId("chat", chat.key);
 			const listing = mockListings.find(({ key }) => key === chat.listing)!;
 			const ownerId = userIds.get(listing.owner);
-			const userId = userIds.get(chat.user);
+			// A deleted account or listing leaves the chat without it, like the foreign keys do
+			const userId = chat.user === null ? null : userIds.get(chat.user);
+			const listingId = chat.listingDeleted ? null : listingIds.get(chat.listing);
 			const sentAt = chat.messages.map((message) => sentAtOf(listing, message.at, now));
+			const lastMessageAt = sentAt.at(-1);
+			// The sender of the last message has read it; the other person only if not `unread`
+			const lastFromOwner = chat.messages.at(-1)!.from === "owner";
+			const otherReadAt = chat.unread ? null : lastMessageAt;
+			const ownerLastReadAt = lastFromOwner ? lastMessageAt : otherReadAt;
+			const userLastReadAt = lastFromOwner ? otherReadAt : lastMessageAt;
 
 			await manager.query(
-				`INSERT INTO "chats" ("id", "listingId", "ownerId", "userId", "deletedByOwner", "deletedByUser", "lastMessageAt", "createdAt")
-        VALUES ($1, $2, $3, $4, false, false, $5, $6)
-        ON CONFLICT ("id") DO UPDATE SET "listingId" = $2, "ownerId" = $3, "userId" = $4, "deletedByOwner" = false, "deletedByUser" = false, "lastMessageAt" = $5, "createdAt" = $6`,
-				[chatId, listingIds.get(chat.listing), ownerId, userId, sentAt.at(-1), sentAt[0]],
+				`INSERT INTO "chats" ("id", "listingId", "ownerId", "userId", "deletedByOwner", "deletedByUser", "lastMessageAt", "createdAt", "ownerLastReadAt", "userLastReadAt")
+        VALUES ($1, $2, $3, $4, false, false, $5, $6, $7, $8)
+        ON CONFLICT ("id") DO UPDATE SET "listingId" = $2, "ownerId" = $3, "userId" = $4, "deletedByOwner" = false, "deletedByUser" = false, "lastMessageAt" = $5, "createdAt" = $6, "ownerLastReadAt" = $7, "userLastReadAt" = $8`,
+				[
+					chatId,
+					listingId,
+					ownerId,
+					userId,
+					lastMessageAt,
+					sentAt[0],
+					ownerLastReadAt,
+					userLastReadAt,
+				],
 			);
 
 			for (const [index, message] of chat.messages.entries()) {

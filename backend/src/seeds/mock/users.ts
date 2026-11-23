@@ -75,6 +75,14 @@ export const mockUsers: MockUser[] = [
 		createdAt: "today-170 23:12",
 	},
 	{
+		// A long name, to check how the app and the web shorten it
+		key: "friederike",
+		username: "mock_friederike",
+		name: "Friederike Annemarie von Kleinschmidt-Overbeck-Rosenthal",
+		place: "21709-himmelpforten",
+		createdAt: "today-200 18:40",
+	},
+	{
 		key: "sepp",
 		username: "mock_sepp",
 		name: "Sepp Hofmann",

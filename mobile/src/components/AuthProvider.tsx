@@ -4,6 +4,8 @@ import { createContext, type ReactNode, use, useCallback, useEffect, useState } 
 import { logout } from "@/api/auth";
 import { isUnauthorizedError } from "@/api/request";
 import { type AuthTokens, deleteTokens, getRefreshToken, getToken, saveTokens } from "@/api/token";
+import { clearChatDrafts } from "@/lib/chatDrafts";
+import { connectChatSocket } from "@/lib/chatSocket";
 
 type AuthContextValue = {
 	isLoggedIn: boolean;
@@ -16,6 +18,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const queryClient = useQueryClient();
 	const [token, setToken] = useState<string | null>();
+	const isLoggedIn = Boolean(token);
 
 	useEffect(() => {
 		getToken()
@@ -28,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		await deleteTokens();
 		setToken(null);
 		await queryClient.resetQueries();
+		clearChatDrafts();
 
 		// Not awaited and errors ignored: the user is logged out either way, the token expires later
 		if (refreshToken) void logout(refreshToken).catch(() => undefined);
@@ -47,6 +51,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		[queryClient, logOut],
 	);
 
+	// Live chat updates while logged in
+	useEffect(() => {
+		if (!isLoggedIn) return;
+
+		return connectChatSocket(queryClient, () => void logOut());
+	}, [isLoggedIn, queryClient, logOut]);
+
 	async function logIn(tokens: AuthTokens) {
 		await saveTokens(tokens);
 		setToken(tokens.access_token);
@@ -56,9 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		return null;
 	}
 
-	return (
-		<AuthContext value={{ isLoggedIn: token !== null, logIn, logOut }}>{children}</AuthContext>
-	);
+	return <AuthContext value={{ isLoggedIn, logIn, logOut }}>{children}</AuthContext>;
 }
 
 export function useAuth() {

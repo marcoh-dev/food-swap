@@ -85,11 +85,11 @@ Login and registration return two tokens:
 | Access token  | 15 minutes | every API request (`Authorization`) | no, it's only checked by its signature               |
 | Refresh token | 30 days    | only `POST /auth/refresh`           | yes, it's stored (as a SHA-256 hash) in the database |
 
-`POST /auth/refresh` exchanges a refresh token for a new pair. The old refresh token keeps working for 60 more seconds, because several requests can renew with the same token at the same time; after that it expires. `POST /auth/logout` deletes the refresh token, and deleting an account deletes all of its refresh tokens. `POST /auth/logout-all` ("Überall abmelden") deletes all refresh tokens of the user, closes their chat connections and stores the time in `users.loggedOutEverywhereAt`; access tokens issued before it are rejected, so other devices are logged out on their next request. Open browser tabs notice it right away: when the server closes their chat connection, they reload the page data and show the logged-out state. So users are only logged out after 30 days without using the app or the site.
+`POST /auth/refresh` exchanges a refresh token for a new pair. The old refresh token keeps working for 60 more seconds, because several requests can renew with the same token at the same time; after that it expires. `POST /auth/logout` deletes the refresh token, and deleting an account deletes all of its refresh tokens. `POST /auth/logout-all` ("Überall abmelden") deletes all refresh tokens of the user, closes their chat connections and stores the time in `users.loggedOutEverywhereAt`; access tokens issued before it are rejected, so other devices are logged out on their next request. Open browser tabs and the app notice it right away: when the server closes their chat connection, the tabs reload the page data and show the logged-out state, and the app logs out. So users are only logged out after 30 days without using the app or the site.
 
 - **Web:** both tokens are in httpOnly cookies (`auth_token`, `refresh_token`), so the browser's JavaScript can't read them. The access cookie ends after 14 minutes, a minute before the token. When it's gone, `frontend/src/proxy.ts` renews both tokens before the request and passes the new access token on to that request. Pages and server actions read the access cookie as before (`fetchAPI`).
 - **Mobile:** both tokens are in SecureStore. When a request gets a 401, `mobile/src/api/request.ts` renews the tokens once and repeats the request; requests that fail at the same time share one renewal. If the renewal fails, the app logs out.
-- **Chat socket:** the socket doesn't accept access tokens. `POST /chats/socket-ticket` returns a ticket that is valid for 60 seconds and only works for the socket handshake; the web app fetches a new one through a server action on every connection attempt.
+- **Chat socket:** the socket doesn't accept access tokens. `POST /chats/socket-ticket` returns a ticket that is valid for 60 seconds and only works for the socket handshake; the web app fetches a new one through a server action and the mobile app through a normal request on every connection attempt.
 
 ### Usernames
 
@@ -119,6 +119,15 @@ The web chat gets its data in two ways:
 The Zustand store (`frontend/src/store/chat.store.ts`) holds the chat list, the unread count and the open chat. It has no socket code: the listeners call its actions, and the components only read from it and call its actions. After a reconnect, the store reloads the unread count, the chat list and the open chat, because events sent while offline are lost.
 
 Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `NotificationPermissionPrompt` asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
+
+### Chat data flow (app)
+
+The app keeps all chat data in the TanStack Query cache, under keys starting with `["chats"]` (`mobile/src/api/chats.ts`): the list, the unread count (the badge on the Chats tab) and each open conversation.
+
+- **Loading and sending** go straight to the REST API with the login token (`mobile/src/api/request.ts`).
+- **Live updates** come through Socket.IO. `connectChatSocket` (`mobile/src/lib/chatSocket.ts`, started by `AuthProvider` while logged in) gets the same three events as the web and writes them into the cache with `setQueryData`, so all screens update without reloading; `mobile/src/lib/chatCache.ts` adds a message only once, because your own messages arrive both as the answer to sending and over the socket. The socket is only connected while the app is in the foreground; after every reconnect, all `["chats"]` queries are reloaded, because events sent meanwhile are lost. If the server ends the connection because the login is no longer valid, the app logs out.
+- **Marking as read:** an open chat is marked read only when its newest message is from the other person and visible: the screen is shown, the app is in the foreground, the user is online and scrolled to the newest message (`mobile/src/app/chats/[id].tsx`).
+- **Drafts:** unsent text is kept per chat in memory (`mobile/src/lib/chatDrafts.ts`) until it's sent successfully, also after leaving the chat or a failed send; it's gone after closing the app or logging out.
 
 ### Environment variables
 
@@ -198,9 +207,11 @@ Place suggestions are cached by the frontend server without expiry. Whenever the
 
 ### Mock data
 
-The seed adds 10 mock users (usernames start with `mock_`) with their listings and chats. All mock users get the password from `SEED_PASSWORD`: 8–64 characters with an uppercase and a lowercase letter, a number and a special character. Running the seed again updates the mock data instead of duplicating it and brings back listings the cleanup deleted. Data that wasn't created by the seed stays untouched.
+The seed adds 11 mock users (usernames start with `mock_`) with their listings and chats. All mock users get the password from `SEED_PASSWORD`: 8–64 characters with an uppercase and a lowercase letter, a number and a special character. Running the seed again updates the mock data instead of duplicating it and brings back listings the cleanup deleted. Data that wasn't created by the seed stays untouched.
 
 All mock dates are relative to the day the seed runs, so running it again moves them to the current date: some listings ended in the last weeks, every day of the next six weeks has listings ending (several each for today up to in 7 days), the rest end within the next months. Four listings ended 28–29 days ago, so the nightly cleanup deletes them, which shows that it works. Mock users registered 4 to 18 months ago, and chat messages are timed relative to their listing. The date formats are explained at the top of `backend/src/seeds/mock/listings.ts`.
+
+For testing the chats, `mock_gerda` has no chats, and `mock_jana` has 24: six are unread, one is with a deleted account, one about a deleted listing, one with `mock_friederike` (a very long name and listing title), and the one with `mock_ole` about the basil has 77 messages over several days, often several in the same minute. Running the seed again marks the chats as read or unread as in `backend/src/seeds/mock/chats.ts`.
 
 **Local database** (uses `SEED_PASSWORD` from `backend/.env`):
 

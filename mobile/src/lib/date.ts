@@ -1,4 +1,4 @@
-import { formatTime, getBerlinDay, TIME_ZONE } from "@food-swap/shared/dates";
+import { formatDate, formatTime, getBerlinDay, TIME_ZONE } from "@food-swap/shared/dates";
 
 // "14:05 Uhr" today, "18.11., 22:10 Uhr" on another day.
 export function formatLoadedAt(time: number): string {
@@ -13,4 +13,11 @@ export function formatLoadedAt(time: number): string {
 		timeZone: TIME_ZONE,
 	});
 	return `${day}, ${clock}`;
+}
+
+/** Time of the last chat message: "14:05" today, otherwise the date ("21.11.2026"), like the web. */
+export function formatLastMessageTime(isoDate: string): string {
+	return getBerlinDay(new Date(isoDate)) === getBerlinDay()
+		? formatTime(isoDate)
+		: formatDate(isoDate);
 }

@@ -2669,6 +2669,22 @@ export const mockListings: MockListing[] = [
 		image: pexelsImage(11170935),
 	},
 
+	// Friederike, Himmelpforten: a long title, to check how the app and the web shorten it
+	{
+		key: "friederike-01",
+		owner: "friederike",
+		place: "21709-himmelpforten",
+		title: "Selbstgemachte Holunderblüten-Rhabarber-Marmelade mit Vanille und Zitronenmelisse, sechs Gläser",
+		description:
+			"Im Frühjahr viel zu viel eingekocht. Die Gläser sind 250 ml groß und noch bis nächstes Jahr haltbar.",
+		category: "selbstgemachtes",
+		type: "giveaway",
+		tags: ["vegan"],
+		createdAt: "today-20 10:00",
+		end: "+60",
+		status: "active",
+	},
+
 	// Sepp, Möhrendorf and Erlangen
 	{
 		key: "sepp-01",
