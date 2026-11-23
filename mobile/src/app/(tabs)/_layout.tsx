@@ -3,14 +3,19 @@ import { NativeTabs } from "expo-router/native-tabs";
 
 import { useAuth } from "@/components/AuthProvider";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useUnreadChatsCount } from "@/hooks/useUnreadChatsCount";
 import type { AccountTab } from "@/lib/routes";
 
 export default function TabLayout() {
 	const tabActive = useThemeColor("--tab-active");
 	const card = useThemeColor("--card");
 	const accent = useThemeColor("--accent");
+	const primary = useThemeColor("--primary");
+	const primaryForeground = useThemeColor("--primary-foreground");
 	const router = useRouter();
 	const { isLoggedIn } = useAuth();
+	const { data: unreadChats = 0 } = useUnreadChatsCount({ enabled: isLoggedIn });
+	const showBadge = isLoggedIn && unreadChats > 0;
 
 	function requireLogin(tab: AccountTab) {
 		return {
@@ -27,6 +32,8 @@ export default function TabLayout() {
 			tintColor={tabActive}
 			backgroundColor={card}
 			indicatorColor={accent}
+			badgeBackgroundColor={primary}
+			badgeTextColor={primaryForeground}
 			minimizeBehavior="onScrollDown"
 			labelVisibilityMode="labeled"
 		>
@@ -55,7 +62,11 @@ export default function TabLayout() {
 				listeners={requireLogin("/chats")}
 			>
 				<NativeTabs.Trigger.Icon sf="bubble" md="chat_bubble" />
-				<NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>Chats</NativeTabs.Trigger.Label>
+				{/* Without text the badge isn't shown; `hidden` alone left a "0" badge visible */}
+				<NativeTabs.Trigger.Badge hidden={!showBadge}>
+					{showBadge ? String(unreadChats) : undefined}
+				</NativeTabs.Trigger.Badge>
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name="me" disabled={!isLoggedIn} listeners={requireLogin("/me")}>
 				<NativeTabs.Trigger.Icon sf="person" md="person" />

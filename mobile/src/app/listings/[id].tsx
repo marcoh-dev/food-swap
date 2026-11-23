@@ -9,7 +9,7 @@ import { formatPlace } from "@food-swap/shared/places";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { type ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Platform, RefreshControl, ScrollView, View } from "react-native";
 import { z } from "zod";
 
@@ -19,6 +19,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { ListingImagePlaceholder } from "@/components/ListingImagePlaceholder";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
+import { StateScreen } from "@/components/StateScreen";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -304,19 +305,5 @@ function ListingNotFound() {
 				<Text>Zu den Angeboten</Text>
 			</Button>
 		</StateScreen>
-	);
-}
-
-// The iOS header is transparent and only a scroll view moves its content below it
-// (contentInsetAdjustmentBehavior), like the detail itself. A plain View would start behind the header.
-function StateScreen({ children }: { children: ReactNode }) {
-	return (
-		<ScrollView
-			className="bg-background"
-			contentContainerClassName="grow gap-4 p-6"
-			contentInsetAdjustmentBehavior="automatic"
-		>
-			{children}
-		</ScrollView>
 	);
 }

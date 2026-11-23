@@ -85,7 +85,9 @@ function ProfileContent() {
 							variant="outline"
 							size="icon"
 							accessibilityLabel="Profil bearbeiten"
-							onPress={() => {router.push("/profile/edit")}}
+							onPress={() => {
+								router.push("/profile/edit");
+							}}
 						>
 							<SymbolView
 								name={{ ios: "pencil", android: "edit" }}
