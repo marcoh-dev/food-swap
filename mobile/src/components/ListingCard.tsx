@@ -4,6 +4,7 @@ import {
 	getEndDateLabel,
 	TIME_ZONE,
 } from "@food-swap/shared/dates";
+import { formatPlace } from "@food-swap/shared/places";
 import type { ListingResponse } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
 import { Image, ScrollView, Text, View } from "react-native";
@@ -100,7 +101,7 @@ export default function ListingCard({
 							tintColor={mutedForeground}
 						/>
 						<Text className="text-xs text-muted-foreground" numberOfLines={1}>
-							{place.postalCode ? `${place.postalCode} ${place.name}` : place.name}
+							{formatPlace(place)}
 						</Text>
 					</View>
 
