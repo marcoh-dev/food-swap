@@ -1,4 +1,5 @@
 import { formatDate } from "@food-swap/shared/dates";
+import { formatPlace } from "@food-swap/shared/places";
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
@@ -30,7 +31,7 @@ function ProfileContent() {
 	const isOnline = useIsOnline();
 	const logoutEverywhere = useLogoutEverywhere();
 	const mutedForeground = useThemeColor("--muted-foreground");
-const isLoading = !profile && isOnline && (isPending || (!!user && profileQuery.isPending));
+	const isLoading = !profile && isOnline && (isPending || (!!user && profileQuery.isPending));
 	const hasError = isError || profileQuery.isError;
 
 	return (
@@ -76,10 +77,16 @@ const isLoading = !profile && isOnline && (isPending || (!!user && profileQuery.
 					</View>
 					{/* private: GET /auth/me */}
 					{user && (
-						<Text>
-							<Text className="text-muted-foreground">Benutzername: </Text>
-							{user.username}
-						</Text>
+						<>
+							<Text>
+								<Text className="text-muted-foreground">Benutzername: </Text>
+								{user.username}
+							</Text>
+							<Text>
+								<Text className="text-muted-foreground">Standort: </Text>
+								{user.place ? formatPlace(user.place) : "Kein Ort gewählt."}
+							</Text>
+						</>
 					)}
 					<Text>
 						<Text className="text-muted-foreground">Registriert seit: </Text>
