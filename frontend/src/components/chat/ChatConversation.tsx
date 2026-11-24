@@ -2,10 +2,10 @@
 
 import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
 import { formatDate, formatTime } from "@food-swap/shared/dates";
-import type { ChatDetail } from "@food-swap/shared/types";
+import type { ChatDetail, ChatMessage } from "@food-swap/shared/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "cn";
-import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
+import { ArrowDownIcon, ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
@@ -264,10 +264,57 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 						})}
 					</MessageScrollerContent>
 				</MessagesViewport>
-				<MessageScrollerButton />
+				<ScrollToNewestButton newest={lastMessage} currentUserId={currentUserId} />
 				<AtNewestReporter />
 			</MessageScroller>
 		</MessageScrollerProvider>
+	);
+}
+
+// The scroller's button to the newest message: an arrow while scrolled up, and "Neue Nachricht"
+// like in the app when the other person wrote since the user scrolled away
+function ScrollToNewestButton({
+	newest,
+	currentUserId,
+}: {
+	newest: ChatMessage | undefined;
+	currentUserId: string;
+}) {
+	const { end: canScrollToEnd } = useMessageScrollerScrollable();
+	const [scrolledAway, setScrolledAway] = useState(canScrollToEnd);
+	// The newest message when the user scrolled away; anything newer arrived meanwhile
+	const [newestWhenScrolledAway, setNewestWhenScrolledAway] = useState(newest?.id);
+
+	// Updated while rendering, so the label is right in the same render
+	if (canScrollToEnd !== scrolledAway) {
+		setScrolledAway(canScrollToEnd);
+		setNewestWhenScrolledAway(newest?.id);
+	}
+
+	const hasNewMessage =
+		canScrollToEnd &&
+		newest !== undefined &&
+		newest.id !== newestWhenScrolledAway &&
+		newest.senderId !== currentUserId;
+
+	if (!hasNewMessage) {
+		return (
+			<MessageScrollerButton
+				// The same shape as "Neue Nachricht", more subtle
+				className="rounded-full border-background bg-muted hover:bg-muted/80"
+			/>
+		);
+	}
+
+	return (
+		<MessageScrollerButton
+			size="sm"
+			// Like in the app: in the primary colour, with a border that sets it apart from own bubbles
+			className="w-auto rounded-full border-background bg-primary px-3 text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground"
+		>
+			<ArrowDownIcon />
+			Neue Nachricht
+		</MessageScrollerButton>
 	);
 }
 
