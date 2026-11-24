@@ -1,13 +1,21 @@
 import type { ChatDetail } from "@food-swap/shared/types";
 import { useRouter } from "expo-router";
-import { Pressable, View } from "react-native";
+import { Platform, Pressable, useWindowDimensions, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 
-/** Header of a conversation: the other person and, below, the listing, which opens the listing. */
+// Android: room for the back button and the delete button on each side, so a long title ends
+// before the delete button
+const HEADER_BUTTON_SPACE = 72;
+
+/**
+ * Header of a conversation: the other person and, below, the listing, which opens the listing.
+ * Left-aligned next to the back button on Android, centred on iOS, like each platform's messengers.
+ */
 export function ChatHeaderTitle({ chat }: { chat: ChatDetail | undefined }) {
 	const router = useRouter();
+	const { width } = useWindowDimensions();
 
 	if (!chat) {
 		return <Text className="font-semibold">Chat</Text>;
@@ -17,7 +25,14 @@ export function ChatHeaderTitle({ chat }: { chat: ChatDetail | undefined }) {
 	const listingTitle = chat.listingTitle ?? "Gelöschtes Angebot";
 
 	return (
-		<View className="max-w-64 items-center">
+		<View
+			className={Platform.OS === "android" ? "items-start" : "max-w-64 items-center"}
+			style={
+				Platform.OS === "android"
+					? { maxWidth: width - 2 * HEADER_BUTTON_SPACE }
+					: undefined
+			}
+		>
 			<Text
 				className={cn("font-semibold", !chat.otherName && "text-muted-foreground")}
 				numberOfLines={1}

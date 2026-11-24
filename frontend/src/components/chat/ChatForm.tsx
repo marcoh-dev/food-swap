@@ -65,7 +65,8 @@ export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: Cha
 					aria-describedby={error ? "chat-form-error" : undefined}
 					maxLength={MAX_LENGTH}
 					rows={1}
-					className="max-h-40 min-h-8 resize-none py-1.5"
+					// The same size as the messages; at 16 px, iPhones don't zoom in when typing
+					className="max-h-40 min-h-8 resize-none py-1.5 text-base sm:text-sm md:text-sm"
 				/>
 				<Button type="submit" size="icon" disabled={sending} aria-label="Senden">
 					{sending ? <Spinner /> : <SendHorizontalIcon />}

@@ -73,7 +73,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 						onClick={() => onSelect(chat.id)}
 						aria-current={chat.id === selectedChatId ? "true" : undefined}
 						className={cn(
-							"grid w-full gap-0.5 border-b px-4 py-3 text-left text-xs transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2",
+							"grid w-full gap-0.5 border-b px-4 py-3 text-left text-sm transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2",
 							chat.id === selectedChatId && "bg-muted",
 						)}
 					>
@@ -89,11 +89,17 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 										<span className="sr-only">Ungelesen:</span>
 									</span>
 								)}
-								<span className="truncate">
+								<span
+									className={cn(
+										"truncate",
+										// A deleted account isn't a person's name
+										!chat.otherName && "text-muted-foreground",
+									)}
+								>
 									{chat.otherName ?? "Gelöschtes Konto"}
 								</span>
 							</span>
-							<span className="shrink-0 text-muted-foreground">
+							<span className="shrink-0 text-xs text-muted-foreground">
 								{formatShortDate(chat.lastMessageAt)}
 							</span>
 						</span>

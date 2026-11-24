@@ -1,3 +1,4 @@
+import { formatPlace } from "@food-swap/shared/places";
 import type { SortOption } from "@food-swap/shared/types";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -24,7 +25,6 @@ import { getListings } from "@/lib/listings.service";
 import { getPlaceBySlug } from "@/lib/places.service";
 import { getTags } from "@/lib/tags.service";
 import { parsePage } from "@/utils/pagination";
-import { formatPlace } from "@/utils/place";
 
 export const metadata: Metadata = { title: pageTitles.listings };
 

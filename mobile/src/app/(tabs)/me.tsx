@@ -1,3 +1,7 @@
+import { formatDate } from "@food-swap/shared/dates";
+import { formatPlace } from "@food-swap/shared/places";
+import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
@@ -11,6 +15,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useUser } from "@/hooks/useUser";
 
 export default function Profile() {
 	return (
@@ -21,28 +26,33 @@ export default function Profile() {
 }
 
 function ProfileContent() {
+	const router = useRouter();
 	const { logOut } = useAuth();
 	const { data: user, isPending, isError, isFetching, refetch } = useCurrentUser();
+	const profileQuery = useUser(user?.id);
+	const profile = profileQuery.data;
 	const isOnline = useIsOnline();
 	const logoutEverywhere = useLogoutEverywhere();
+	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
-	const isLoading = !user && isPending && isOnline;
+	const isLoading = !profile && isOnline && (isPending || (!!user && profileQuery.isPending));
+	const hasError = isError || profileQuery.isError;
 
 	return (
 		<Screen>
 			{!isOnline && (
 				<OfflineNotice
 					message={
-						user
+						profile
 							? "Dein Profil wird aktualisiert, sobald du wieder online bist."
 							: "Dein Profil wird geladen, sobald du wieder online bist."
 					}
 				/>
 			)}
-			{isOnline && isError && (
+			{isOnline && hasError && (
 				<ServerErrorNotice
 					message={
-						user
+						profile
 							? "Dein Profil konnte nicht aktualisiert werden."
 							: "Dein Profil konnte nicht geladen werden."
 					}
@@ -50,29 +60,70 @@ function ProfileContent() {
 					<Button
 						variant="outline"
 						className="self-start"
-						disabled={isFetching}
-						onPress={() => void refetch()}
+						disabled={isFetching || profileQuery.isFetching}
+						onPress={() => {
+							void refetch();
+							void profileQuery.refetch();
+						}}
 					>
 						<Text>Erneut versuchen</Text>
 					</Button>
 				</ServerErrorNotice>
 			)}
-			{user ? (
-				<>
-					<View className="gap-1">
-						<Text variant="h2">{user.name ?? user.username}</Text>
-						{user.name ? null : <Text variant="muted">Kein Profilname vergeben.</Text>}
+
+			{profile ? (
+				<View className="gap-4 rounded-xl border border-border bg-card p-4">
+					{/* public: GET /users/:id */}
+					<View className="flex-row items-start justify-between gap-3">
+						<View className="flex-1 gap-1">
+							<Text variant="h2" numberOfLines={2}>
+								{profile.name ?? profile.username}
+							</Text>
+							{profile.name ? null : (
+								<Text variant="muted">Kein Profilname vergeben.</Text>
+							)}
+						</View>
+						<Button
+							variant="outline"
+							size="icon"
+							className="dark:bg-card-button"
+							accessibilityLabel="Profil bearbeiten"
+							onPress={() => {
+								router.push("/profile/edit");
+							}}
+						>
+							<SymbolView
+								name={{ ios: "pencil", android: "edit" }}
+								size={18}
+								tintColor={foreground}
+							/>
+						</Button>
 					</View>
-					<Text>
-						<Text className="text-muted-foreground">Benutzername: </Text>
-						{user.username}
-					</Text>
-				</>
+					<View className="gap-2.5">
+						{/* private: GET /auth/me */}
+						{user && (
+							<>
+								<ProfileField label="Benutzername" value={user.username} />
+								<ProfileField
+									label="Standort"
+									value={
+										user.place ? formatPlace(user.place) : "Kein Ort gewählt."
+									}
+								/>
+							</>
+						)}
+						<ProfileField
+							label="Registriert seit"
+							value={formatDate(profile.createdAt)}
+						/>
+					</View>
+				</View>
 			) : isLoading ? (
 				<View className="flex-1 items-center justify-center">
 					<ActivityIndicator size="large" color={mutedForeground} />
 				</View>
 			) : null}
+
 			{!isLoading && (
 				<>
 					<Button variant="outline" onPress={() => void logOut()}>
@@ -97,5 +148,18 @@ function ProfileContent() {
 				</>
 			)}
 		</Screen>
+	);
+}
+
+function ProfileField({ label, value }: { label: string; value: string }) {
+	return (
+		<View className="flex-row">
+			<Text variant="muted" className="w-26">
+				{label}:
+			</Text>
+			<Text className="flex-1 text-body-small" android_hyphenationFrequency="normal">
+				{value}
+			</Text>
+		</View>
 	);
 }

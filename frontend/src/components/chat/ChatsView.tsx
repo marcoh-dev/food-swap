@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { useChatStore } from "@/store/chat.store";
+import { useChats } from "@/lib/chatQueries";
 
 import { ChatConversation } from "./ChatConversation";
 import { ChatList } from "./ChatList";
@@ -18,16 +18,10 @@ type ChatsViewProps = {
 
 export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 	const router = useRouter();
-	const chats = useChatStore((state) => state.chats);
-	const chatsError = useChatStore((state) => state.chatsError);
-	const loadChats = useChatStore((state) => state.loadChats);
+	const { data: chats = null, error, refetch } = useChats();
 
 	const headingRef = useRef<HTMLHeadingElement>(null);
 	const previousChatId = useRef(selectedChatId);
-
-	useEffect(() => {
-		void loadChats();
-	}, [loadChats]);
 
 	useEffect(() => {
 		const closedChatId = previousChatId.current;
@@ -61,10 +55,10 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 				<div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
 					<ChatList
 						chats={chats}
-						error={chatsError}
+						error={error?.message ?? null}
 						selectedChatId={selectedChatId}
 						onSelect={selectChat}
-						onRetry={() => void loadChats()}
+						onRetry={() => void refetch()}
 					/>
 				</div>
 			</aside>

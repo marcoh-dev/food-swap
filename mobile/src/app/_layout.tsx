@@ -99,6 +99,8 @@ export default function RootLayout() {
 											headerShown: true,
 											title: "Chat",
 											headerBackButtonDisplayMode: "minimal",
+											// Android: next to the back button like Android messengers; iOS centres it
+											headerTitleAlign: "left",
 											// Not transparent: the inverted message list can't move its content below a
 											// transparent header the way other scroll views do
 											headerTransparent: false,
@@ -111,6 +113,17 @@ export default function RootLayout() {
 											headerShown: true,
 											title: "Anmelden",
 											headerLeft: () => <CloseButton />,
+										}}
+									/>
+									<Stack.Screen
+										name="profile/edit"
+										options={{
+											presentation: "modal",
+											headerShown: true,
+											title: "Profil bearbeiten",
+											headerLeft: () => <CloseButton />,
+											// Not transparent: on iOS, focusing a field scrolled it under a transparent header
+											headerTransparent: false,
 										}}
 									/>
 								</Stack>

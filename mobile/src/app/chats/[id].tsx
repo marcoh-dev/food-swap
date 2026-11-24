@@ -1,10 +1,10 @@
+import { CHAT_LIST_QUERY_KEY } from "@food-swap/shared/chat-cache";
 import { useQueryClient } from "@tanstack/react-query";
 import { Stack, useIsFocused, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
 import { z } from "zod";
 
-import { CHAT_LIST_QUERY_KEY } from "@/api/chats";
 import { isNotFoundError } from "@/api/request";
 import { ChatHeaderTitle } from "@/components/ChatHeaderTitle";
 import { ChatMessages } from "@/components/ChatMessages";

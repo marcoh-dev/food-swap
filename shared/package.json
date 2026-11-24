@@ -4,12 +4,15 @@
 	"exports": {
 		"./theme.css": "./theme.css",
 		"./types": "./src/types/index.ts",
+		"./chat-cache": "./src/chatCache.ts",
+		"./chat-messages": "./src/chatMessages.ts",
 		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts",
 		"./schemas/listing": "./src/schemas/listing.schemas.ts",
 		"./assets/*": "./assets/*",
-		"./endDate": "./src/endDate.ts"
+		"./endDate": "./src/endDate.ts",
+		"./places": "./src/places.ts"
 	},
 	"scripts": {
 		"lint": "eslint .",
@@ -19,6 +22,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
+		"@tanstack/query-core": "^5.107.1",
 		"eslint": "^9.39.5",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-import": "^2.32.0",

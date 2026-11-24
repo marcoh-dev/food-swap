@@ -1,7 +1,7 @@
+import { addMessageToCache } from "@food-swap/shared/chat-cache";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { sendReply } from "@/api/chats";
-import { addMessageToCache } from "@/lib/chatCache";
 import { setChatDraft } from "@/lib/chatDrafts";
 
 export function useSendReply(chatId: string) {

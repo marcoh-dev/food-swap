@@ -1,7 +1,10 @@
 "use client";
 
+import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
 import { formatDate, formatTime } from "@food-swap/shared/dates";
 import type { ChatDetail } from "@food-swap/shared/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "cn";
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -32,6 +35,7 @@ import {
 	useMessageScroller,
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
+import { errorTextOf, markChatRead, useChat, useDeleteChat, useSendReply } from "@/lib/chatQueries";
 import { useChatStore } from "@/store/chat.store";
 import { isSameDay } from "@/utils/date";
 
@@ -50,20 +54,28 @@ export function ChatConversation({
 	onBack,
 	onDeleted,
 }: ChatConversationProps) {
-	const conversation = useChatStore((state) => state.conversation);
-	const error = useChatStore((state) => state.conversationError);
-	const openChat = useChatStore((state) => state.openChat);
-	const closeChat = useChatStore((state) => state.closeChat);
-	const sendReply = useChatStore((state) => state.sendReply);
+	const queryClient = useQueryClient();
+	const setOpenChatId = useChatStore((state) => state.setOpenChatId);
+	// Deleted in this or another tab while it's open: not loaded again
+	const removed = useChatStore((state) => state.removedChatId === chatId);
+	const { data, error: loadError } = useChat(chatId, { enabled: !removed });
+	const sendReply = useSendReply(chatId);
 
 	useEffect(() => {
-		void openChat(chatId);
-		return () => closeChat();
-	}, [chatId, openChat, closeChat]);
+		setOpenChatId(chatId);
+		return () => setOpenChatId(null);
+	}, [chatId, setOpenChatId]);
 
-	const chat = conversation?.id === chatId ? conversation : null;
+	const chat = removed ? null : (data ?? null);
+	const error = removed ? "Dieser Chat wurde gelöscht." : (loadError?.message ?? null);
 	const isLoaded = chat !== null;
 	const headingRef = useRef<HTMLHeadingElement>(null);
+
+	// Opening a chat in a visible tab marks it as read; in a hidden tab, that happens when the
+	// tab becomes visible (lib/chatEvents.ts)
+	useEffect(() => {
+		if (isLoaded && useChatStore.getState().tabVisible) void markChatRead(queryClient, chatId);
+	}, [isLoaded, chatId, queryClient]);
 
 	useEffect(() => {
 		if (isLoaded) headingRef.current?.focus();
@@ -85,7 +97,11 @@ export function ChatConversation({
 					<h2
 						ref={headingRef}
 						tabIndex={-1}
-						className="truncate text-sm font-semibold outline-none"
+						className={cn(
+							"truncate text-sm font-semibold outline-none",
+							// A deleted account isn't a person's name
+							chat && !chat.otherName && "text-muted-foreground",
+						)}
 					>
 						{chat ? (chat.otherName ?? "Gelöschtes Konto") : " "}
 					</h2>
@@ -109,7 +125,9 @@ export function ChatConversation({
 					<ChatMessages chat={chat} currentUserId={currentUserId} />
 					<footer className="border-t p-2 md:p-4">
 						{chat.canReply ? (
-							<ChatForm onSend={sendReply} />
+							<ChatForm
+								onSend={(content) => errorTextOf(sendReply.mutateAsync(content))}
+							/>
 						) : (
 							<Alert>
 								<CircleAlertIcon />
@@ -153,15 +171,34 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 			</p>
 			<MessageScroller className="flex-1">
 				<MessagesViewport>
-					<MessageScrollerContent className="gap-3 p-4">
+					<MessageScrollerContent className="gap-0 p-4">
 						{chat.messages.map((message, index) => {
 							const own = message.senderId === currentUserId;
 							const previous = chat.messages[index - 1];
+							const next = chat.messages[index + 1];
 							const newDay =
 								!previous || !isSameDay(previous.createdAt, message.createdAt);
+							// Same person in the same minute, like in the app: one time below the last
+							const startsGroup = !previous || !isSameMessageGroup(previous, message);
+							const showTime = !next || !isSameMessageGroup(message, next);
 
 							return (
-								<MessageScrollerItem key={message.id} messageId={message.id}>
+								<MessageScrollerItem
+									key={message.id}
+									messageId={message.id}
+									className={cn(
+										// Off-screen messages are drawn right away: with the scroller's assumed
+										// height of 10rem, scrolling up jumped whenever a message was drawn
+										"[content-visibility:visible]",
+										// Spacing like in the app: close within a group, more to the other person
+										previous &&
+											(!startsGroup
+												? "pt-0.5"
+												: previous.senderId === message.senderId
+													? "pt-3"
+													: "pt-5"),
+									)}
+								>
 									{newDay && (
 										<Marker variant="separator" className="mb-3">
 											<MarkerContent>
@@ -170,20 +207,41 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 										</Marker>
 									)}
 									<Message align={own ? "end" : "start"}>
-										<MessageContent>
+										<MessageContent className="gap-1">
 											<Bubble
 												variant={own ? "default" : "muted"}
 												align={own ? "end" : "start"}
 											>
-												<BubbleContent className="whitespace-pre-wrap">
+												<BubbleContent
+													className={cn(
+														// 16 px on phones like the app, 14 px from sm on
+														"rounded-[1rem] text-base whitespace-pre-wrap sm:text-sm",
+														// On the sender's side, like in the app: the last bubble of a
+														// group is square at the bottom; where bubbles of a group
+														// meet, the corners are only slightly rounded
+														own
+															? showTime
+																? "rounded-br-none"
+																: "rounded-br-[0.25rem]"
+															: showTime
+																? "rounded-bl-none"
+																: "rounded-bl-[0.25rem]",
+														!startsGroup &&
+															(own
+																? "rounded-tr-[0.25rem]"
+																: "rounded-tl-[0.25rem]"),
+													)}
+												>
 													{message.content}
 												</BubbleContent>
 											</Bubble>
-											<MessageFooter>
-												<time dateTime={message.createdAt}>
-													{formatTime(message.createdAt)}
-												</time>
-											</MessageFooter>
+											{showTime && (
+												<MessageFooter>
+													<time dateTime={message.createdAt}>
+														{formatTime(message.createdAt)}
+													</time>
+												</MessageFooter>
+											)}
 										</MessageContent>
 									</Message>
 								</MessageScrollerItem>
@@ -226,7 +284,7 @@ function MessagesViewport({ children }: { children: ReactNode }) {
 }
 
 function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: () => void }) {
-	const deleteChat = useChatStore((state) => state.deleteChat);
+	const deleteChat = useDeleteChat();
 	const [open, setOpen] = useState(false);
 	const [deleting, setDeleting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -234,7 +292,7 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 	async function handleDelete() {
 		setDeleting(true);
 		setError(null);
-		const deleteError = await deleteChat(chatId);
+		const deleteError = await errorTextOf(deleteChat.mutateAsync(chatId));
 		setDeleting(false);
 
 		if (deleteError) {
