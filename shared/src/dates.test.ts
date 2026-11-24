@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { formatTime, getBerlinDay, getDaysUntil, getDeletionLabel, getEndDateLabel } from "./dates";
+import {
+	formatChatListTime,
+	formatDayLabel,
+	formatTime,
+	getBerlinDay,
+	getDaysUntil,
+	getDeletionLabel,
+	getEndDateLabel,
+} from "./dates";
 
 // Ends on 20.11.2026 at 23:59:59.999 Berlin time
 const END_DATE = "2026-11-20T22:59:59.999Z";
@@ -69,5 +77,34 @@ describe("getDeletionLabel", () => {
 		expect(getDeletionLabel(END_DATE, new Date("2026-11-21T12:00:00Z"))).toBe(
 			"Wird am 19.12. gelöscht",
 		);
+	});
+});
+
+// 25.11.2026, 10:00 Berlin time
+const NOW = new Date("2026-11-25T09:00:00Z");
+
+describe("formatDayLabel", () => {
+	it("says Heute and Gestern by the Berlin day", () => {
+		expect(formatDayLabel("2026-11-25T08:00:00Z", NOW)).toBe("Heute");
+		expect(formatDayLabel("2026-11-24T08:00:00Z", NOW)).toBe("Gestern");
+	});
+
+	it("shows the date for older days", () => {
+		expect(formatDayLabel("2026-11-23T08:00:00Z", NOW)).toBe("23.11.2026");
+	});
+
+	it("counts days at midnight in Berlin, not in UTC", () => {
+		// 23:30 UTC on the 24th is already 00:30 on the 25th in Berlin
+		expect(formatDayLabel("2026-11-24T23:30:00Z", NOW)).toBe("Heute");
+		// 22:30 UTC on the 23rd is 23:30 on the 23rd in Berlin
+		expect(formatDayLabel("2026-11-23T22:30:00Z", NOW)).toBe("23.11.2026");
+	});
+});
+
+describe("formatChatListTime", () => {
+	it("shows the time today, Gestern yesterday and the date before", () => {
+		expect(formatChatListTime("2026-11-25T08:05:00Z", NOW)).toBe("09:05");
+		expect(formatChatListTime("2026-11-24T08:05:00Z", NOW)).toBe("Gestern");
+		expect(formatChatListTime("2026-11-20T08:05:00Z", NOW)).toBe("20.11.2026");
 	});
 });
