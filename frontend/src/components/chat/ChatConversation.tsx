@@ -187,6 +187,9 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 									key={message.id}
 									messageId={message.id}
 									className={cn(
+										// Off-screen messages are drawn right away: with the scroller's assumed
+										// height of 10rem, scrolling up jumped whenever a message was drawn
+										"[content-visibility:visible]",
 										// Spacing like in the app: close within a group, more to the other person
 										previous &&
 											(!startsGroup
