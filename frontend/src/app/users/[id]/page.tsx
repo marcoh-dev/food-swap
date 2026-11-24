@@ -1,4 +1,5 @@
 import { formatDate, isExpired } from "@food-swap/shared/dates";
+import { formatPlace } from "@food-swap/shared/places";
 import type { SortOption } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { PencilIcon } from "lucide-react";
@@ -25,7 +26,6 @@ import { getUserListings } from "@/lib/listings.service";
 import { getTags } from "@/lib/tags.service";
 import { getCurrentUser, getUserById } from "@/lib/users.service";
 import { parsePage } from "@/utils/pagination";
-import { formatPlace } from "@/utils/place";
 
 export async function generateMetadata({ params }: PageProps<"/users/[id]">): Promise<Metadata> {
 	const { id } = await params;

@@ -39,11 +39,19 @@
 	--text-body-s--letter-spacing: 0.02em;
 }
 
+@theme inline {
+	--color-card-button: var(--card-button);
+}
+
 :root {
 	--tab-active: var(--secondary);
+	--card-button: var(--background);
 
 	@variant dark {
 		--tab-active: var(--foreground);
+		/* Outline buttons on cards. The web uses bg-input/30 there, which doesn't show on mobile,
+		so dark mode uses the mixed color: --input at 30% over --card */
+		--card-button: #485a61;
 	}
 }
 

@@ -71,6 +71,7 @@ Styling uses NativeWind 5, which is still a release candidate. `nativewind` and 
 | `@food-swap/shared/types`        | API types: the shapes the backend sends and receives (`ListingResponse`, `User`, `CurrentUser`, …)                                                      |
 | `@food-swap/shared/schemas/user` | zod schemas for login, registration and profile, with their validation messages                                                                         |
 | `@food-swap/shared/dates`        | dates and times in Berlin time (`getDaysUntil`, `getBerlinDay`, `formatTime`, `formatDate`), the "ends soon" limit and the end date and deletion labels |
+| `@food-swap/shared/places`       | places as text: `formatPlace` shows a place as "PLZ Ort" (e.g. `22765 Hamburg`), or just the name if it has no postal code                              |
 | `@food-swap/shared/messages`     | texts used by both apps (e.g. the login error)                                                                                                          |
 | `@food-swap/shared/assets/*`     | images both apps use (e.g. `listing-placeholder.svg`, the logo shown for listings without an image)                                                     |
 

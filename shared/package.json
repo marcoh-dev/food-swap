@@ -9,7 +9,8 @@
 		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts",
-		"./assets/*": "./assets/*"
+		"./assets/*": "./assets/*",
+		"./places": "./src/places.ts"
 	},
 	"scripts": {
 		"lint": "eslint .",
