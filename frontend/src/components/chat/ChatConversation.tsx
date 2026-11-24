@@ -207,7 +207,8 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 											>
 												<BubbleContent
 													className={cn(
-														"rounded-[1rem] whitespace-pre-wrap",
+														// 16 px on phones like the app, 14 px from sm on
+														"rounded-[1rem] text-base whitespace-pre-wrap sm:text-sm",
 														// On the sender's side, like in the app: the last bubble of a
 														// group is square at the bottom; where bubbles of a group
 														// meet, the corners are only slightly rounded
