@@ -266,6 +266,7 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 				</MessagesViewport>
 				<ScrollToNewestButton newest={lastMessage} currentUserId={currentUserId} />
 				<AtNewestReporter />
+				<ScrollToOwnMessage newest={lastMessage} currentUserId={currentUserId} />
 			</MessageScroller>
 		</MessageScrollerProvider>
 	);
@@ -316,6 +317,30 @@ function ScrollToNewestButton({
 			Neue Nachricht
 		</MessageScrollerButton>
 	);
+}
+
+// Like in the app: after sending while scrolled up, the chat scrolls down to show the own
+// message (at the bottom, the scroller follows new messages anyway)
+function ScrollToOwnMessage({
+	newest,
+	currentUserId,
+}: {
+	newest: ChatMessage | undefined;
+	currentUserId: string;
+}) {
+	const { scrollToEnd } = useMessageScroller();
+	const lastNewestId = useRef(newest?.id);
+
+	useEffect(() => {
+		if (!newest || newest.id === lastNewestId.current) return;
+
+		lastNewestId.current = newest.id;
+		// Smooth scrolling isn't possible here: the scroller adjusts its position itself when a
+		// message is added and turns it into a jump
+		if (newest.senderId === currentUserId) scrollToEnd();
+	}, [newest, currentUserId, scrollToEnd]);
+
+	return null;
 }
 
 // Tells the chat store whether the chat is scrolled to its newest message, i.e. can't scroll
