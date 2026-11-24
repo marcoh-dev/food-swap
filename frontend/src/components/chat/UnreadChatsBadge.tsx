@@ -3,14 +3,14 @@
 import { cn } from "cn";
 
 import { Badge } from "@/components/ui/badge";
-import { useChatStore } from "@/store/chat.store";
+import { useUnreadChatsCount } from "@/lib/chatQueries";
 
 export function formatUnreadCount(count: number): string {
 	return count > 9 ? "9+" : String(count);
 }
 
 export function UnreadChatsBadge({ className }: { className?: string }) {
-	const unreadCount = useChatStore((state) => state.unreadCount);
+	const { data: unreadCount = 0 } = useUnreadChatsCount();
 
 	if (unreadCount === 0) return null;
 
