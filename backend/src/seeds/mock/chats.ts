@@ -17,21 +17,27 @@ export type MockChat = {
 
 type MockMessage = { from: "user" | "owner"; at: string; content: string };
 
-type Session = { day: number; start: string; lines: [MockMessage["from"], string][] };
+// A line can say how many minutes after the previous one it was sent
+type Line = [from: MockMessage["from"], content: string, minutesLater?: number];
+
+type Session = { day: number; start: string; lines: Line[] };
 
 const SAME_SENDER_GAP_IN_S = 10;
 const REPLY_GAP_IN_S = 2 * 60;
 
 // Turns a long conversation into messages: each session is one chat on one
 // day. Consecutive lines of the same person follow 10 seconds apart (so they
-// are usually sent in the same minute), answers two minutes later.
+// are usually sent in the same minute), answers two minutes later, unless a
+// line sets its own gap in minutes.
 function conversation(sessions: Session[]): MockMessage[] {
 	return sessions.flatMap(({ day, start, lines }) => {
 		const [hours, minutes] = start.split(":").map(Number) as [number, number];
 		let seconds = (hours * 60 + minutes) * 60;
 
-		return lines.map(([from, content], index) => {
-			if (index > 0) {
+		return lines.map(([from, content, minutesLater], index) => {
+			if (minutesLater !== undefined) {
+				seconds += minutesLater * 60;
+			} else if (index > 0) {
 				seconds += lines[index - 1]![0] === from ? SAME_SENDER_GAP_IN_S : REPLY_GAP_IN_S;
 			}
 			const time = [seconds / 3600, (seconds / 60) % 60, seconds % 60]
@@ -396,6 +402,7 @@ export const mockChats: MockChat[] = [
 					["owner", "Freitag ginge besser."],
 					["user", "Freitag nach 17 Uhr?"],
 					["owner", "Perfekt."],
+					["owner", "Bring bitte einen Karton mit, damit der Topf nicht umfällt.", 5],
 				],
 			},
 			{
@@ -429,10 +436,11 @@ export const mockChats: MockChat[] = [
 					["user", "Wie viele Pflanzen sind es denn?"],
 					["owner", "Ehrlich gesagt … ungefähr 30."],
 					["owner", "Tomaten, Kräuter, die Chilis, die Physalis."],
-					["owner", "Und die Zitrone, die ist schon 1,5 Meter hoch."],
+					["owner", "Und die Zitrone, die ist schon 1,5 Meter hoch.", 3],
 					["user", "Ich sehe schon, ich fahre zweimal."],
 					["owner", "Sorry 🙈"],
 					["user", "Alles gut, das wird lustig."],
+					["user", "Ich habe nachgemessen: Die Zitrone passt, wenn wir sie hinlegen.", 6],
 				],
 			},
 			{
@@ -451,6 +459,7 @@ export const mockChats: MockChat[] = [
 					["owner", "Eine hat sich schon beschwert."],
 					["owner", "Eine andere hat gefragt, ob sie Tomaten haben kann."],
 					["user", "Siehst du, so findet man Freunde."],
+					["user", "Grüß die Tomaten-Nachbarin von mir 😄", 4],
 				],
 			},
 			{
@@ -557,6 +566,12 @@ export const mockChats: MockChat[] = [
 				from: "owner",
 				at: "+8 09:15:30",
 				content: "Aber Hamburg ist ein Stück weg. Kommst du mal in die Gegend?",
+			},
+			// Same sender later: two messages in one minute, then one on its own
+			{
+				from: "owner",
+				at: "+8 09:40",
+				content: "Ich fahre Ende des Monats nach Lüneburg, da könnten wir uns treffen.",
 			},
 		],
 	},
@@ -711,6 +726,13 @@ export const mockChats: MockChat[] = [
 			{ from: "owner", at: "+4 17:30", content: "Gern! Wann passt es dir?" },
 			{ from: "user", at: "+4 17:32", content: "Donnerstag nach der Arbeit, so um 18 Uhr?" },
 			{ from: "owner", at: "+4 17:33", content: "Passt, klingel einfach bei Petersen." },
+			// Same sender a few minutes later: a separate group with its own time
+			{
+				from: "owner",
+				at: "+4 17:41",
+				content:
+					"Ich habe übrigens noch Bienenwachs übrig, falls du welches für die Salbe brauchst.",
+			},
 		],
 	},
 	{
@@ -727,6 +749,11 @@ export const mockChats: MockChat[] = [
 				from: "owner",
 				at: "+0 19:30",
 				content: "Ein paar sind noch da, ich lege sie zur Seite.",
+			},
+			{
+				from: "owner",
+				at: "+0 19:52",
+				content: "Habe gerade nachgeschaut: Es sind sogar noch zwei Handvoll gelbe.",
 			},
 		],
 	},

@@ -213,7 +213,7 @@ The seed adds 11 mock users (usernames start with `mock_`) with their listings a
 
 All mock dates are relative to the day the seed runs, so running it again moves them to the current date: some listings ended in the last weeks, every day of the next six weeks has listings ending (several each for today up to in 7 days), the rest end within the next months. Four listings ended 28–29 days ago, so the nightly cleanup deletes them, which shows that it works. Mock users registered 4 to 18 months ago, and chat messages are timed relative to their listing. The date formats are explained at the top of `backend/src/seeds/mock/listings.ts`.
 
-For testing the chats, `mock_gerda` has no chats, and `mock_jana` has 24: six are unread, one is with a deleted account, one about a deleted listing, one with `mock_friederike` (a very long name and listing title), and the one with `mock_ole` about the basil has 77 messages over several days, often several in the same minute. Running the seed again marks the chats as read or unread as in `backend/src/seeds/mock/chats.ts`.
+For testing the chats, `mock_gerda` has no chats, and `mock_jana` has 24: six are unread, one is with a deleted account, one about a deleted listing, one with `mock_friederike` (a very long name and listing title), and the one with `mock_ole` about the basil has 80 messages over several days, often several in the same minute and sometimes several from the same person a few minutes apart. Running the seed again marks the chats as read or unread as in `backend/src/seeds/mock/chats.ts`.
 
 **Local database** (uses `SEED_PASSWORD` from `backend/.env`):
 
