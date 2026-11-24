@@ -122,12 +122,14 @@ Browser notifications are also shown from the `newMessage` listener in `chatEven
 
 ### Chat data flow (app)
 
-The app keeps all chat data in the TanStack Query cache, under keys starting with `["chats"]` (`mobile/src/api/chats.ts`): the list, the unread count (the badge on the Chats tab) and each open conversation.
+The app keeps all chat data in the TanStack Query cache, under keys starting with `["chats"]` (`mobile/src/api/chats.ts`): the list, the unread count (the badge on the Chats tab), each open conversation and, per listing, whether you already have a chat about it.
 
 - **Loading and sending** go straight to the REST API with the login token (`mobile/src/api/request.ts`).
 - **Live updates** come through Socket.IO. `connectChatSocket` (`mobile/src/lib/chatSocket.ts`, started by `AuthProvider` while logged in) gets the same three events as the web and writes them into the cache with `setQueryData`, so all screens update without reloading; `mobile/src/lib/chatCache.ts` adds a message only once, because your own messages arrive both as the answer to sending and over the socket. The socket is only connected while the app is in the foreground; after every reconnect, all `["chats"]` queries are reloaded, because events sent meanwhile are lost. If the server ends the connection because the login is no longer valid, the app logs out.
 - **Marking as read:** an open chat is marked read only when its newest message is from the other person and visible: the screen is shown, the app is in the foreground, the user is online and scrolled to the newest message (`mobile/src/app/chats/[id].tsx`).
-- **Drafts:** unsent text is kept per chat in memory (`mobile/src/lib/chatDrafts.ts`) until it's sent successfully, also after leaving the chat or a failed send; it's gone after closing the app or logging out.
+- **Starting a chat:** the message card on another person's listing (`mobile/src/components/ListingChatCard.tsx`) asks `GET /chats/listing/:listingId` whether you already have a chat there. Without one, or if you deleted it, the first message goes to `POST /chats`, which also brings back a deleted chat. With a chat, "Zum Chat" opens it on top of the Chats tab, so back leads to the chat list.
+- **Deleting a chat** (header button in the conversation) hides it only for you (`DELETE /chats/:id`); the other person keeps it until they delete it too. The app removes it from the cached list and goes to the Chats tab; the socket's `chatRemoved` event does the same on your other devices and reloads the listing cards.
+- **Drafts:** unsent text is kept in memory (`mobile/src/lib/chatDrafts.ts`), per chat and per listing for a first message, until it's sent successfully, also after leaving the screen or a failed send; it's gone after closing the app or logging out.
 
 ### Environment variables
 
