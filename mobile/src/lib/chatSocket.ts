@@ -1,20 +1,22 @@
-import type { ChatListItem, ChatMessage, ServerToClientEvents } from "@food-swap/shared/types";
+import {
+	addMessageToCache,
+	CHAT_LIST_QUERY_KEY,
+	chatQueryKey,
+	CHATS_QUERY_KEY,
+	isChatInCache,
+	removeChatFromCache,
+	setChatUnreadInCache,
+	UNREAD_CHATS_COUNT_QUERY_KEY,
+} from "@food-swap/shared/chat-cache";
+import type { ChatMessage, ServerToClientEvents } from "@food-swap/shared/types";
 import type { QueryClient } from "@tanstack/react-query";
 import { AppState } from "react-native";
 import { io, type Socket } from "socket.io-client";
 
 import { CURRENT_USER_QUERY_KEY, fetchCurrentUser } from "@/api/auth";
-import {
-	CHAT_LIST_QUERY_KEY,
-	chatQueryKey,
-	CHATS_QUERY_KEY,
-	fetchSocketTicket,
-	LISTING_CHATS_QUERY_KEY,
-	UNREAD_CHATS_COUNT_QUERY_KEY,
-} from "@/api/chats";
+import { fetchSocketTicket, LISTING_CHATS_QUERY_KEY } from "@/api/chats";
 import { isUnauthorizedError } from "@/api/request";
 import { getEnv } from "@/env";
-import { addMessageToCache } from "@/lib/chatCache";
 
 /**
  * Connects the chat socket and updates the cached chat queries with its events. The socket is
@@ -33,9 +35,7 @@ export function connectChatSocket(queryClient: QueryClient, onSessionEnded: () =
 	let sessionEnded = false;
 
 	function setUnread(chatId: string, unread: boolean) {
-		queryClient.setQueryData<ChatListItem[]>(CHAT_LIST_QUERY_KEY, (chats) =>
-			chats?.map((chat) => (chat.id === chatId ? { ...chat, unread } : chat)),
-		);
+		setChatUnreadInCache(queryClient, chatId, unread);
 		// The backend knows how many chats are still unread
 		void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
 	}
@@ -47,9 +47,7 @@ export function connectChatSocket(queryClient: QueryClient, onSessionEnded: () =
 				queryFn: ({ signal }) => fetchCurrentUser(signal),
 			});
 			const fromOthers = message.senderId !== user.id;
-			const inList = queryClient
-				.getQueryData<ChatListItem[]>(CHAT_LIST_QUERY_KEY)
-				?.some((chat) => chat.id === message.chatId);
+			const inList = isChatInCache(queryClient, message.chatId);
 
 			addMessageToCache(queryClient, message, { unread: fromOthers });
 			// A new chat, or one the user deleted and the other person wrote again, isn't in the list
@@ -67,9 +65,7 @@ export function connectChatSocket(queryClient: QueryClient, onSessionEnded: () =
 	}
 
 	function onChatRemoved({ chatId }: { chatId: string }) {
-		queryClient.setQueryData<ChatListItem[]>(CHAT_LIST_QUERY_KEY, (chats) =>
-			chats?.filter((chat) => chat.id !== chatId),
-		);
+		removeChatFromCache(queryClient, chatId);
 		void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
 		// An open conversation reloads and shows "Chat nicht gefunden"
 		void queryClient.invalidateQueries({ queryKey: chatQueryKey(chatId) });

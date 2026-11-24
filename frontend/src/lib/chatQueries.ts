@@ -1,3 +1,12 @@
+import {
+	addMessageToCache,
+	CHAT_LIST_QUERY_KEY,
+	chatQueryKey,
+	isChatInCache,
+	removeChatFromCache,
+	setChatUnreadInCache,
+	UNREAD_CHATS_COUNT_QUERY_KEY,
+} from "@food-swap/shared/chat-cache";
 import { type QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -9,16 +18,7 @@ import {
 	replyToChatAction,
 	startChatAction,
 } from "@/app/chats/actions";
-import {
-	addMessageToCache,
-	CHAT_LIST_QUERY_KEY,
-	chatQueryKey,
-	fromAction,
-	isChatInCache,
-	removeChatFromCache,
-	setChatUnreadInCache,
-	UNREAD_CHATS_COUNT_QUERY_KEY,
-} from "@/lib/chatCache";
+import { fromAction } from "@/lib/fromAction";
 import { useChatStore } from "@/store/chat.store";
 
 /** The chat list of the logged-in user, newest message first. */

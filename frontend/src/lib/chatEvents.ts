@@ -1,7 +1,3 @@
-import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
-import type { QueryClient } from "@tanstack/react-query";
-
-import { getChatsAction, getSocketTicketAction } from "@/app/chats/actions";
 import {
 	addMessageToCache,
 	CHAT_LIST_QUERY_KEY,
@@ -11,7 +7,11 @@ import {
 	removeChatFromCache,
 	setChatUnreadInCache,
 	UNREAD_CHATS_COUNT_QUERY_KEY,
-} from "@/lib/chatCache";
+} from "@food-swap/shared/chat-cache";
+import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
+import type { QueryClient } from "@tanstack/react-query";
+
+import { getChatsAction, getSocketTicketAction } from "@/app/chats/actions";
 import { markChatRead } from "@/lib/chatQueries";
 import { notificationsEnabled } from "@/lib/notifications";
 import { socket } from "@/socket";

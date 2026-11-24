@@ -1,3 +1,4 @@
+import { CHATS_QUERY_KEY } from "@food-swap/shared/chat-cache";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { SymbolView } from "expo-symbols";
@@ -11,7 +12,6 @@ import {
 	View,
 } from "react-native";
 
-import { CHATS_QUERY_KEY } from "@/api/chats";
 import { ChatRow, chatRowLabel } from "@/components/ChatRow";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { RequireLogin } from "@/components/RequireLogin";

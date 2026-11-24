@@ -1,14 +1,14 @@
-import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
-import { QueryClient } from "@tanstack/react-query";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-import { getChatsAction, markChatReadAction } from "@/app/chats/actions";
 import {
 	addMessageToCache,
 	CHAT_LIST_QUERY_KEY,
 	chatQueryKey,
 	UNREAD_CHATS_COUNT_QUERY_KEY,
-} from "@/lib/chatCache";
+} from "@food-swap/shared/chat-cache";
+import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
+import { QueryClient } from "@tanstack/react-query";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { getChatsAction, markChatReadAction } from "@/app/chats/actions";
 import { connectChat } from "@/lib/chatEvents";
 import { useChatStore } from "@/store/chat.store";
 

@@ -1,6 +1,7 @@
+import { CHAT_LIST_QUERY_KEY } from "@food-swap/shared/chat-cache";
 import { useQuery } from "@tanstack/react-query";
 
-import { CHAT_LIST_QUERY_KEY, fetchChats } from "@/api/chats";
+import { fetchChats } from "@/api/chats";
 
 /** The logged-in user's chats, newest message first (sorted by the backend). */
 export function useChats() {

@@ -1,7 +1,9 @@
-import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
-import type { QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/query-core";
 
-import type { ActionResult } from "@/lib/types/common.types";
+import type { ChatDetail, ChatListItem, ChatMessage } from "./types";
+
+// TanStack Query cache keys and updates for the chat, the same in the app and on the web.
+// Only types come from TanStack (query-core), so this package doesn't depend on it at runtime.
 
 /** Prefix of all chat queries, e.g. to reload everything after the socket reconnected. */
 export const CHATS_QUERY_KEY = ["chats"];
@@ -10,22 +12,6 @@ export const UNREAD_CHATS_COUNT_QUERY_KEY = [...CHATS_QUERY_KEY, "unread-count"]
 
 export function chatQueryKey(chatId: string) {
 	return [...CHATS_QUERY_KEY, "detail", chatId];
-}
-
-/**
- * Returns the data of a server action, or throws its error text, so TanStack Query treats it as
- * an error. The actions turn backend errors into texts; this adds the one for when they can't run.
- */
-export async function fromAction<T>(action: Promise<ActionResult<T>>): Promise<T> {
-	let result: ActionResult<T>;
-	try {
-		result = await action;
-	} catch {
-		throw new Error("Der Server ist nicht erreichbar. Versuche es später nochmal.");
-	}
-
-	if (result.error !== undefined) throw new Error(result.error);
-	return result.data;
 }
 
 /**

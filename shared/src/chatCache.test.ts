@@ -1,16 +1,15 @@
-import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/query-core";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
 	addMessageToCache,
 	CHAT_LIST_QUERY_KEY,
 	chatQueryKey,
-	fromAction,
 	isChatInCache,
 	removeChatFromCache,
 	setChatUnreadInCache,
-} from "@/lib/chatCache";
+} from "./chatCache";
+import type { ChatDetail, ChatListItem, ChatMessage } from "./types";
 
 function listItem(id: string, unread = false): ChatListItem {
 	return {
@@ -51,24 +50,6 @@ const chat = (id: string) => queryClient.getQueryData<ChatDetail>(chatQueryKey(i
 
 beforeEach(() => {
 	queryClient = new QueryClient();
-});
-
-describe("fromAction", () => {
-	it("returns the data of a successful action", async () => {
-		await expect(fromAction(Promise.resolve({ data: 3 }))).resolves.toBe(3);
-	});
-
-	it("throws the action's error text", async () => {
-		await expect(fromAction(Promise.resolve({ error: "Chat nicht gefunden" }))).rejects.toThrow(
-			"Chat nicht gefunden",
-		);
-	});
-
-	it("throws a text when the action can't run", async () => {
-		await expect(fromAction(Promise.reject(new Error("fetch failed")))).rejects.toThrow(
-			"Der Server ist nicht erreichbar. Versuche es später nochmal.",
-		);
-	});
 });
 
 describe("addMessageToCache", () => {
