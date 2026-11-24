@@ -1,8 +1,8 @@
 ---
-name: User Story
-about: A new user story for the backlog
+name: User story (Web)
+about: A new user story for the website (Food Swap Website board)
 title: ""
-labels: []
+labels: [web]
 assignees: []
 ---
 
