@@ -10,6 +10,7 @@ import { NotificationPermissionPrompt } from "@/components/chat/NotificationPerm
 import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
 import BurgerMenu from "@/components/menu/BurgerMenu";
 import { PageSkipLink } from "@/components/shared/PageSkipLink";
+import { QueryProvider } from "@/components/shared/QueryProvider";
 import { SkipLink } from "@/components/shared/SkipLink";
 import Toast from "@/components/shared/Toast";
 import { Toaster } from "@/components/ui/sonner";
@@ -61,49 +62,51 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 			suppressHydrationWarning
 		>
 			<body className="text-body">
-				<SkipLink href="#main">Zum Inhalt springen</SkipLink>
-				<PageSkipLink />
-				<ChatSocketConnector userId={currentUser?.id ?? null} />
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<header className="sticky top-0 z-50 h-header border-b bg-background/85 text-foreground backdrop-blur-md">
-						<div className="mx-auto flex h-full w-full max-w-7xl flex-row items-center justify-between p-3 sm:p-[1em]">
-							<Link
-								href="/"
-								aria-label="FoodSwap – Startseite"
-								className="flex items-center gap-5 text-h1 no-underline"
-							>
-								<Image
-									src="/icon.svg"
-									alt=""
-									width="50"
-									height="44"
-									loading="eager"
-									className="block"
-								/>
-								FoodSwap
-							</Link>
-							<BurgerMenu />
-						</div>
-					</header>
-					<main id="main" className="mx-auto w-full max-w-7xl p-3 sm:p-[1em]">
-						{children}
-					</main>
-					<Toaster />
-					{currentUser && (
-						<>
-							<NotificationPermissionPrompt />
-							<UnreadChatsTitle />
-						</>
-					)}
-					<Suspense>
-						<Toast />
-					</Suspense>
-				</ThemeProvider>
+				<QueryProvider>
+					<SkipLink href="#main">Zum Inhalt springen</SkipLink>
+					<PageSkipLink />
+					<ChatSocketConnector userId={currentUser?.id ?? null} />
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<header className="sticky top-0 z-50 h-header border-b bg-background/85 text-foreground backdrop-blur-md">
+							<div className="mx-auto flex h-full w-full max-w-7xl flex-row items-center justify-between p-3 sm:p-[1em]">
+								<Link
+									href="/"
+									aria-label="FoodSwap – Startseite"
+									className="flex items-center gap-5 text-h1 no-underline"
+								>
+									<Image
+										src="/icon.svg"
+										alt=""
+										width="50"
+										height="44"
+										loading="eager"
+										className="block"
+									/>
+									FoodSwap
+								</Link>
+								<BurgerMenu />
+							</div>
+						</header>
+						<main id="main" className="mx-auto w-full max-w-7xl p-3 sm:p-[1em]">
+							{children}
+						</main>
+						<Toaster />
+						{currentUser && (
+							<>
+								<NotificationPermissionPrompt />
+								<UnreadChatsTitle />
+							</>
+						)}
+						<Suspense>
+							<Toast />
+						</Suspense>
+					</ThemeProvider>
+				</QueryProvider>
 			</body>
 		</html>
 	);
