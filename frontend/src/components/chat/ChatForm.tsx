@@ -1,24 +1,53 @@
 "use client";
 
 import { SendHorizontalIcon } from "lucide-react";
-import { type KeyboardEvent, type SubmitEvent, useState } from "react";
+import { type KeyboardEvent, type SubmitEvent, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { getChatDraft, setChatDraft } from "@/lib/chatDrafts";
 
 type ChatFormProps = {
 	/** Returns the error text to show, or `null` if the message was sent. */
 	onSend: (content: string) => Promise<string | null>;
 	placeholder?: string;
+	/** Keeps unsent text under this key until it's sent (chat id, or `listingDraftKey`). */
+	draftKey?: string;
 };
 
 const MAX_LENGTH = 2000;
 
-export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: ChatFormProps) {
-	const [content, setContent] = useState("");
+// The server renders the page without the browser's sessionStorage; during hydration this is
+// false like on the server, afterwards true, so the draft appears without a mismatch
+function subscribeNever() {
+	return () => {};
+}
+
+function useIsBrowser() {
+	return useSyncExternalStore(
+		subscribeNever,
+		() => true,
+		() => false,
+	);
+}
+
+export function ChatForm({
+	onSend,
+	placeholder = "Nachricht schreiben…",
+	draftKey,
+}: ChatFormProps) {
+	const isBrowser = useIsBrowser();
+	// What the user typed; until then, the saved draft
+	const [typed, setTyped] = useState<string | null>(null);
+	const content = typed ?? (isBrowser && draftKey ? getChatDraft(draftKey) : "");
 	const [error, setError] = useState<string | null>(null);
 	const [sending, setSending] = useState(false);
+
+	function changeContent(value: string) {
+		setTyped(value);
+		if (draftKey) setChatDraft(draftKey, value);
+	}
 
 	async function send() {
 		const trimmed = content.trim();
@@ -34,7 +63,7 @@ export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: Cha
 		setSending(false);
 
 		if (sendError) setError(sendError);
-		else setContent("");
+		else changeContent("");
 	}
 
 	function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -55,7 +84,7 @@ export function ChatForm({ onSend, placeholder = "Nachricht schreiben…" }: Cha
 				<Textarea
 					value={content}
 					onChange={(event) => {
-						setContent(event.target.value);
+						changeContent(event.target.value);
 						if (error) setError(null);
 					}}
 					onKeyDown={handleKeyDown}

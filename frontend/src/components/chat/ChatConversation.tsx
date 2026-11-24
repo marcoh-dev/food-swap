@@ -127,6 +127,7 @@ export function ChatConversation({
 						{chat.canReply ? (
 							<ChatForm
 								onSend={(content) => errorTextOf(sendReply.mutateAsync(content))}
+								draftKey={chat.id}
 							/>
 						) : (
 							<Alert>
