@@ -1,5 +1,5 @@
 import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
-import { formatDate, formatTime, getBerlinDay } from "@food-swap/shared/dates";
+import { formatDayLabel, formatTime, getBerlinDay } from "@food-swap/shared/dates";
 import type { ChatMessage } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
 import { useMemo, useRef, useState } from "react";
@@ -108,9 +108,14 @@ export function ChatMessages({
 							)}
 						>
 							{newDay && (
-								<Text variant="muted" className="self-center pt-2 pb-3 text-xs">
-									{formatDate(item.createdAt)}
-								</Text>
+								// A line on both sides of the day, like on the web
+								<View className="flex-row items-center gap-2 pt-2 pb-3">
+									<View className="h-px flex-1 bg-border" />
+									<Text variant="muted" className="text-xs">
+										{formatDayLabel(item.createdAt)}
+									</Text>
+									<View className="h-px flex-1 bg-border" />
+								</View>
 							)}
 							<View
 								className={cn(
