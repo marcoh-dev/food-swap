@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Stack, useIsFocused, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Alert, View } from "react-native";
 import { z } from "zod";
 
 import { CHAT_LIST_QUERY_KEY } from "@/api/chats";
@@ -9,6 +9,7 @@ import { isNotFoundError } from "@/api/request";
 import { ChatHeaderTitle } from "@/components/ChatHeaderTitle";
 import { ChatMessages } from "@/components/ChatMessages";
 import { ChatReplyBar } from "@/components/ChatReplyBar";
+import { DeleteChatButton } from "@/components/DeleteChatButton";
 import { KeyboardAwareView } from "@/components/KeyboardAwareView";
 import { Notice } from "@/components/Notice";
 import { OfflineNotice } from "@/components/OfflineNotice";
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useChat } from "@/hooks/useChat";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useDeleteChat } from "@/hooks/useDeleteChat";
 import { useIsAppActive } from "@/hooks/useIsAppActive";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useMarkChatRead } from "@/hooks/useMarkChatRead";
@@ -35,7 +37,9 @@ export default function ChatScreen() {
 function Conversation() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const queryClient = useQueryClient();
+	const router = useRouter();
 	const isValidId = z.uuid().safeParse(id).success;
+	const deleteChat = useDeleteChat();
 	const {
 		data: chat,
 		isPending,
@@ -44,7 +48,8 @@ function Conversation() {
 		error,
 		refetch,
 	} = useChat(id, {
-		enabled: isValidId,
+		// After deleting, the chat isn't loaded again while the screen closes ("not found")
+		enabled: isValidId && !deleteChat.isSuccess,
 	});
 	const { data: currentUser } = useCurrentUser();
 	const isOnline = useIsOnline();
@@ -76,8 +81,28 @@ function Conversation() {
 		}
 	}, [error, queryClient]);
 
+	function removeChat(chatId: string) {
+		deleteChat.mutate(chatId, {
+			onSuccess: () => router.dismissTo("/chats"),
+			onError: () =>
+				Alert.alert("Der Chat konnte nicht gelöscht werden.", "Versuche es nochmal."),
+		});
+	}
+
 	const header = (
-		<Stack.Screen options={{ headerTitle: () => <ChatHeaderTitle chat={chat} /> }} />
+		<Stack.Screen
+			options={{
+				headerTitle: () => <ChatHeaderTitle chat={chat} />,
+				headerRight: chat
+					? () => (
+							<DeleteChatButton
+								onDelete={() => removeChat(chat.id)}
+								disabled={!isOnline || deleteChat.isPending}
+							/>
+						)
+					: undefined,
+			}}
+		/>
 	);
 
 	if (isNotFound) {
