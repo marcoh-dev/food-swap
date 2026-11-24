@@ -147,7 +147,8 @@ export function ChatMessages({
 									</Text>
 								</View>
 								{showTime && (
-									<Text variant="muted" className="text-xs">
+									// Indented like the bubble's text, like on the web
+									<Text variant="muted" className="px-3 text-xs">
 										{time}
 									</Text>
 								)}
