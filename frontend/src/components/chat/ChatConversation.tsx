@@ -1,7 +1,7 @@
 "use client";
 
 import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
-import { formatDate, formatTime } from "@food-swap/shared/dates";
+import { formatDayLabel, formatTime } from "@food-swap/shared/dates";
 import type { ChatDetail, ChatMessage } from "@food-swap/shared/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "cn";
@@ -217,7 +217,7 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 									{newDay && (
 										<Marker variant="separator" className="mb-3">
 											<MarkerContent>
-												{formatDate(message.createdAt)}
+												{formatDayLabel(message.createdAt)}
 											</MarkerContent>
 										</Marker>
 									)}

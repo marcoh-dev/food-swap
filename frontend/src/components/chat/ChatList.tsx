@@ -1,5 +1,6 @@
 "use client";
 
+import { formatChatListTime } from "@food-swap/shared/dates";
 import type { ChatListItem } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { CircleAlertIcon, MessagesSquareIcon } from "lucide-react";
@@ -14,7 +15,6 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatShortDate } from "@/utils/date";
 
 type ChatListProps = {
 	chats: ChatListItem[] | null;
@@ -100,7 +100,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 								</span>
 							</span>
 							<span className="shrink-0 text-xs text-muted-foreground">
-								{formatShortDate(chat.lastMessageAt)}
+								{formatChatListTime(chat.lastMessageAt)}
 							</span>
 						</span>
 						<span className="truncate text-muted-foreground">

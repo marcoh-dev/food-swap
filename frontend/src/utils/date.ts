@@ -1,11 +1,7 @@
-import { formatDate, formatTime, getBerlinDay, shiftDay } from "@food-swap/shared/dates";
+import { getBerlinDay, shiftDay } from "@food-swap/shared/dates";
 
 import { endDateRules } from "@/lib/constants/listing.constants";
 import type { EndDateResult, ParsedEndDate } from "@/lib/types/listing.types";
-
-function getCurrentIsoDate(): string {
-	return new Date().toISOString();
-}
 
 // Formats a "YYYY-MM-DD" day like formatDate, without a time zone shift.
 export function formatDay(day: string): string {
@@ -30,10 +26,6 @@ export function formatIsoDate(date: Date): string {
 
 export function isSameDay(a: string, b: string): boolean {
 	return getBerlinDay(new Date(a)) === getBerlinDay(new Date(b));
-}
-
-export function formatShortDate(isoDate: string): string {
-	return isSameDay(isoDate, getCurrentIsoDate()) ? formatTime(isoDate) : formatDate(isoDate);
 }
 
 export function getDefaultEndDay(now: Date = new Date()): string {
