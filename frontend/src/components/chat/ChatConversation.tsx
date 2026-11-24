@@ -1,8 +1,10 @@
 "use client";
 
+import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
 import { formatDate, formatTime } from "@food-swap/shared/dates";
 import type { ChatDetail } from "@food-swap/shared/types";
 import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "cn";
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -165,15 +167,31 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 			</p>
 			<MessageScroller className="flex-1">
 				<MessagesViewport>
-					<MessageScrollerContent className="gap-3 p-4">
+					<MessageScrollerContent className="gap-0 p-4">
 						{chat.messages.map((message, index) => {
 							const own = message.senderId === currentUserId;
 							const previous = chat.messages[index - 1];
+							const next = chat.messages[index + 1];
 							const newDay =
 								!previous || !isSameDay(previous.createdAt, message.createdAt);
+							// Same person in the same minute, like in the app: one time below the last
+							const startsGroup = !previous || !isSameMessageGroup(previous, message);
+							const showTime = !next || !isSameMessageGroup(message, next);
 
 							return (
-								<MessageScrollerItem key={message.id} messageId={message.id}>
+								<MessageScrollerItem
+									key={message.id}
+									messageId={message.id}
+									className={cn(
+										// Spacing like in the app: close within a group, more to the other person
+										previous &&
+											(!startsGroup
+												? "pt-0.5"
+												: previous.senderId === message.senderId
+													? "pt-3"
+													: "pt-5"),
+									)}
+								>
 									{newDay && (
 										<Marker variant="separator" className="mb-3">
 											<MarkerContent>
@@ -182,20 +200,40 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 										</Marker>
 									)}
 									<Message align={own ? "end" : "start"}>
-										<MessageContent>
+										<MessageContent className="gap-1">
 											<Bubble
 												variant={own ? "default" : "muted"}
 												align={own ? "end" : "start"}
 											>
-												<BubbleContent className="whitespace-pre-wrap">
+												<BubbleContent
+													className={cn(
+														"rounded-[1rem] whitespace-pre-wrap",
+														// On the sender's side, like in the app: the last bubble of a
+														// group is square at the bottom; where bubbles of a group
+														// meet, the corners are only slightly rounded
+														own
+															? showTime
+																? "rounded-br-none"
+																: "rounded-br-[0.25rem]"
+															: showTime
+																? "rounded-bl-none"
+																: "rounded-bl-[0.25rem]",
+														!startsGroup &&
+															(own
+																? "rounded-tr-[0.25rem]"
+																: "rounded-tl-[0.25rem]"),
+													)}
+												>
 													{message.content}
 												</BubbleContent>
 											</Bubble>
-											<MessageFooter>
-												<time dateTime={message.createdAt}>
-													{formatTime(message.createdAt)}
-												</time>
-											</MessageFooter>
+											{showTime && (
+												<MessageFooter>
+													<time dateTime={message.createdAt}>
+														{formatTime(message.createdAt)}
+													</time>
+												</MessageFooter>
+											)}
 										</MessageContent>
 									</Message>
 								</MessageScrollerItem>
