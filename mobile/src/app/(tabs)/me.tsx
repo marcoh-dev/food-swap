@@ -76,7 +76,9 @@ function ProfileContent() {
 					{/* public: GET /users/:id */}
 					<View className="flex-row items-start justify-between gap-3">
 						<View className="flex-1 gap-1">
-							<Text variant="h2">{profile.name ?? profile.username}</Text>
+							<Text variant="h2" numberOfLines={2}>
+								{profile.name ?? profile.username}
+							</Text>
 							{profile.name ? null : (
 								<Text variant="muted">Kein Profilname vergeben.</Text>
 							)}
@@ -84,6 +86,7 @@ function ProfileContent() {
 						<Button
 							variant="outline"
 							size="icon"
+							className="dark:bg-card-button"
 							accessibilityLabel="Profil bearbeiten"
 							onPress={() => {
 								router.push("/profile/edit");
@@ -96,17 +99,24 @@ function ProfileContent() {
 							/>
 						</Button>
 					</View>
-					{/* private: GET /auth/me */}
-					{user && (
-						<>
-							<ProfileField label="Benutzername" value={user.username} />
-							<ProfileField
-								label="Standort"
-								value={user.place ? formatPlace(user.place) : "Kein Ort gewählt."}
-							/>
-						</>
-					)}
-					<ProfileField label="Registriert seit" value={formatDate(profile.createdAt)} />
+					<View className="gap-2.5">
+						{/* private: GET /auth/me */}
+						{user && (
+							<>
+								<ProfileField label="Benutzername" value={user.username} />
+								<ProfileField
+									label="Standort"
+									value={
+										user.place ? formatPlace(user.place) : "Kein Ort gewählt."
+									}
+								/>
+							</>
+						)}
+						<ProfileField
+							label="Registriert seit"
+							value={formatDate(profile.createdAt)}
+						/>
+					</View>
 				</View>
 			) : isLoading ? (
 				<View className="flex-1 items-center justify-center">
@@ -143,9 +153,13 @@ function ProfileContent() {
 
 function ProfileField({ label, value }: { label: string; value: string }) {
 	return (
-		<View className="gap-0.5">
-			<Text variant="muted">{label}</Text>
-			<Text>{value}</Text>
+		<View className="flex-row">
+			<Text variant="muted" className="w-26">
+				{label}:
+			</Text>
+			<Text className="flex-1 text-body-small" android_hyphenationFrequency="normal">
+				{value}
+			</Text>
 		</View>
 	);
 }

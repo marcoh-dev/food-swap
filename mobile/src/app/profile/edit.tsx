@@ -61,7 +61,7 @@ function ProfileEditContent() {
 			contentContainerClassName="gap-4 p-6"
 			contentInsetAdjustmentBehavior="automatic"
 			keyboardShouldPersistTaps="handled"
-            bottomOffset={160}
+			bottomOffset={160}
 		>
 			{!isOnline && (
 				<OfflineNotice message="Du kannst dein Profil bearbeiten, sobald du wieder online bist." />
