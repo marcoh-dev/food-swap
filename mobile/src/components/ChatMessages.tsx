@@ -1,3 +1,4 @@
+import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
 import { formatDate, formatTime, getBerlinDay } from "@food-swap/shared/dates";
 import type { ChatMessage } from "@food-swap/shared/types";
 import { SymbolView } from "expo-symbols";
@@ -19,11 +20,6 @@ type ChatMessagesProps = {
 
 // How close to the newest message still counts as "at the newest message", in px
 const AT_NEWEST_THRESHOLD = 40;
-
-// Day and minute in Berlin time, to group messages sent in the same minute
-function sentMinute(message: ChatMessage) {
-	return `${getBerlinDay(new Date(message.createdAt))} ${formatTime(message.createdAt)}`;
-}
 
 /**
  * The messages of a chat, grouped by day. Consecutive messages of the same person within the same
@@ -96,14 +92,8 @@ export function ChatMessages({
 						!older ||
 						getBerlinDay(new Date(older.createdAt)) !==
 							getBerlinDay(new Date(item.createdAt));
-					const startsGroup =
-						!older ||
-						older.senderId !== item.senderId ||
-						sentMinute(older) !== sentMinute(item);
-					const showTime =
-						!newer ||
-						newer.senderId !== item.senderId ||
-						sentMinute(newer) !== sentMinute(item);
+					const startsGroup = !older || !isSameMessageGroup(older, item);
+					const showTime = !newer || !isSameMessageGroup(item, newer);
 					const time = formatTime(item.createdAt);
 
 					return (
@@ -157,7 +147,8 @@ export function ChatMessages({
 									</Text>
 								</View>
 								{showTime && (
-									<Text variant="muted" className="text-xs">
+									// Indented like the bubble's text, like on the web
+									<Text variant="muted" className="px-3 text-xs">
 										{time}
 									</Text>
 								)}

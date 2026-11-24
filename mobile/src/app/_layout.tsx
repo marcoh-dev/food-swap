@@ -122,6 +122,8 @@ export default function RootLayout() {
 											headerShown: true,
 											title: "Profil bearbeiten",
 											headerLeft: () => <CloseButton />,
+											// Not transparent: on iOS, focusing a field scrolled it under a transparent header
+											headerTransparent: false,
 										}}
 									/>
 								</Stack>

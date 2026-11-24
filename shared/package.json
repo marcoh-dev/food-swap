@@ -5,6 +5,7 @@
 		"./theme.css": "./theme.css",
 		"./types": "./src/types/index.ts",
 		"./chat-cache": "./src/chatCache.ts",
+		"./chat-messages": "./src/chatMessages.ts",
 		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts",

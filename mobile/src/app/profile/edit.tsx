@@ -3,7 +3,7 @@ import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/use
 import type { CurrentUser, Place, User } from "@food-swap/shared/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Keyboard, View } from "react-native";
+import { ActivityIndicator, Alert, Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { z } from "zod";
 
@@ -15,6 +15,7 @@ import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useDeleteAccount } from "@/hooks/useDeleteAccount";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
@@ -55,6 +56,7 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 	const [place, setPlace] = useState<Place | null>(user.place ?? null);
 	const [placeQuery, setPlaceQuery] = useState(user.place ? formatPlace(user.place) : "");
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+	const deleteAccount = useDeleteAccount({ onDeleted: () => router.back() });
 
 	function handleSubmit() {
 		if (!isOnline) return;
@@ -68,6 +70,21 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 		updateProfile.mutate(
 			{ name: result.data.name, placeId: result.data.placeId || null },
 			{ onSuccess: () => router.back() },
+		);
+	}
+
+	function confirmDeleteAccount() {
+		Alert.alert(
+			"Konto wirklich löschen?",
+			"Dieser Schritt kann nicht rückgängig gemacht werden.",
+			[
+				{ text: "Abbrechen", style: "cancel" },
+				{
+					text: "Endgültig löschen",
+					style: "destructive",
+					onPress: () => deleteAccount.mutate(user.id),
+				},
+			],
 		);
 	}
 
@@ -118,6 +135,26 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 			<Button disabled={!isOnline || updateProfile.isPending} onPress={handleSubmit}>
 				<Text>Speichern</Text>
 			</Button>
+			<View className="mt-10 gap-2 border-t border-border pt-4">
+				<View className="flex-row items-center justify-between gap-3">
+					<Text variant="muted" className="flex-1">
+						FoodSwap verlassen?
+					</Text>
+					<Button
+						variant="ghost"
+						size="sm"
+						disabled={!isOnline || deleteAccount.isPending}
+						onPress={confirmDeleteAccount}
+					>
+						<Text>Konto löschen</Text>
+					</Button>
+				</View>
+				{deleteAccount.isError && (
+					<Text className="text-destructive">
+						Dein Konto konnte nicht gelöscht werden. Bitte versuche es später noch mal.
+					</Text>
+				)}
+			</View>
 		</KeyboardAwareScrollView>
 	);
 }
