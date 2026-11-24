@@ -9,6 +9,7 @@ import {
 	chatQueryKey,
 	CHATS_QUERY_KEY,
 	fetchSocketTicket,
+	LISTING_CHATS_QUERY_KEY,
 	UNREAD_CHATS_COUNT_QUERY_KEY,
 } from "@/api/chats";
 import { isUnauthorizedError } from "@/api/request";
@@ -51,8 +52,12 @@ export function connectChatSocket(queryClient: QueryClient, onSessionEnded: () =
 				?.some((chat) => chat.id === message.chatId);
 
 			addMessageToCache(queryClient, message, { unread: fromOthers });
-			// A new chat isn't in the list yet
-			if (!inList) void queryClient.invalidateQueries({ queryKey: CHAT_LIST_QUERY_KEY });
+			// A new chat, or one the user deleted and the other person wrote again, isn't in the list
+			// yet; a listing's message card should then link to it instead of offering to continue it
+			if (!inList) {
+				void queryClient.invalidateQueries({ queryKey: CHAT_LIST_QUERY_KEY });
+				void queryClient.invalidateQueries({ queryKey: LISTING_CHATS_QUERY_KEY });
+			}
 			if (fromOthers) {
 				void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
 			}
@@ -68,6 +73,8 @@ export function connectChatSocket(queryClient: QueryClient, onSessionEnded: () =
 		void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
 		// An open conversation reloads and shows "Chat nicht gefunden"
 		void queryClient.invalidateQueries({ queryKey: chatQueryKey(chatId) });
+		// A listing's message card offers to continue the chat (the event doesn't say which listing)
+		void queryClient.invalidateQueries({ queryKey: LISTING_CHATS_QUERY_KEY });
 	}
 
 	function onConnect() {
