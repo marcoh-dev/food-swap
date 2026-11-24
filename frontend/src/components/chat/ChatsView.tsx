@@ -37,7 +37,9 @@ export function ChatsView({ currentUserId, selectedChatId }: ChatsViewProps) {
 	}
 
 	return (
-		<div className="grid h-[calc(100svh-5.625rem-2em)] overflow-hidden rounded-xl border md:grid-cols-[minmax(16rem,20rem)_1fr]">
+		// Columns with a minimum width of 0: otherwise they grow with long names and texts, and the
+		// list scrolls sideways instead of cutting them off with "…"
+		<div className="grid h-[calc(100svh-5.625rem-2em)] grid-cols-1 overflow-hidden rounded-xl border md:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)]">
 			<aside
 				aria-label="Deine Chats"
 				className={cn(
