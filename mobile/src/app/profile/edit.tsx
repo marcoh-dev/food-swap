@@ -1,9 +1,9 @@
 import { formatPlace } from "@food-swap/shared/places";
 import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
-import type { Place } from "@food-swap/shared/types";
+import type { CurrentUser, Place, User } from "@food-swap/shared/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Keyboard } from "react-native";
+import { ActivityIndicator, Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { z } from "zod";
 
@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { useUser } from "@/hooks/useUser";
 
@@ -30,18 +31,33 @@ export default function ProfileEdit() {
 }
 
 function ProfileEditContent() {
-	const router = useRouter();
-	const isOnline = useIsOnline();
 	const { data: user } = useCurrentUser();
 	const { data: profile } = useUser(user?.id);
-	const updateProfile = useUpdateProfile(user?.id ?? "");
-	const [name, setName] = useState(profile?.name ?? "");
-	const [place, setPlace] = useState<Place | null>(user?.place ?? null);
-	const [placeQuery, setPlaceQuery] = useState(user?.place ? formatPlace(user.place) : "");
+	const mutedForeground = useThemeColor("--muted-foreground");
+
+	if (!user || !profile) {
+		return (
+			<View className="flex-1 items-center justify-center bg-background">
+				<ActivityIndicator size="large" color={mutedForeground} />
+			</View>
+		);
+	}
+
+	// Mounted only with loaded data, so the form starts with the saved values
+	return <ProfileEditForm user={user} profile={profile} />;
+}
+
+function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }) {
+	const router = useRouter();
+	const isOnline = useIsOnline();
+	const updateProfile = useUpdateProfile(user.id);
+	const [name, setName] = useState(profile.name ?? "");
+	const [place, setPlace] = useState<Place | null>(user.place ?? null);
+	const [placeQuery, setPlaceQuery] = useState(user.place ? formatPlace(user.place) : "");
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
 	function handleSubmit() {
-		if (!isOnline || !user) return;
+		if (!isOnline) return;
 
 		const result = profileSchema.safeParse({ name, placeId: place?.id ?? "", placeQuery });
 		if (!result.success) {
