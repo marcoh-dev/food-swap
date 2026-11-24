@@ -125,18 +125,28 @@ beforeEach(() => {
 afterEach(() => disconnect());
 
 describe("newMessage", () => {
-	it("adds a message from the other user to the open chat and marks it read", async () => {
+	it("adds a message from the other user to the open chat and keeps it read", () => {
 		queryClient.setQueryData(CHAT_LIST_QUERY_KEY, [chatItem("chat-1"), chatItem("chat-2")]);
 		openChat("chat-2", chatDetail("chat-2"));
 
 		const incoming = message("chat-2", OTHER);
 		emit("newMessage", incoming);
-		await flush();
 
 		expect(conversation("chat-2")?.messages).toEqual([incoming]);
-		expect(markChatReadAction).toHaveBeenCalledWith("chat-2");
 		expect(chatIds()).toEqual(["chat-2", "chat-1"]);
 		expect(chats()?.[0]).toMatchObject({ lastMessage: incoming.content, unread: false });
+		expect(isOutdated(UNREAD_CHATS_COUNT_QUERY_KEY)).toBe(false);
+	});
+
+	it("marks a message in the open chat as unread while it's scrolled up", () => {
+		queryClient.setQueryData(CHAT_LIST_QUERY_KEY, [chatItem("chat-1")]);
+		openChat("chat-1", chatDetail("chat-1"));
+		useChatStore.getState().setAtNewest(false);
+
+		emit("newMessage", message("chat-1", OTHER));
+
+		expect(chats()?.[0]?.unread).toBe(true);
+		expect(isOutdated(UNREAD_CHATS_COUNT_QUERY_KEY)).toBe(true);
 	});
 
 	it("marks another chat as unread, moves it to the top and reloads the unread count", async () => {
@@ -171,15 +181,13 @@ describe("newMessage", () => {
 		expect(markChatReadAction).not.toHaveBeenCalled();
 	});
 
-	it("counts a chat that is still loading as open", async () => {
+	it("counts a chat that is still loading as open", () => {
 		queryClient.setQueryData(CHAT_LIST_QUERY_KEY, [chatItem("chat-1"), chatItem("chat-2")]);
 		openChat("chat-2");
 
 		emit("newMessage", message("chat-2", OTHER));
-		await flush();
 
 		expect(chats()?.[0]?.unread).toBe(false);
-		expect(markChatReadAction).toHaveBeenCalledWith("chat-2");
 	});
 
 	it("shows an own reply only once when the socket sends it back", () => {
@@ -208,26 +216,13 @@ describe("hidden tab", () => {
 		expect(markChatReadAction).not.toHaveBeenCalled();
 	});
 
-	it("marks the open chat as read when the tab becomes visible again", async () => {
-		queryClient.setQueryData(CHAT_LIST_QUERY_KEY, [chatItem("chat-1")]);
+	it("only notes the tab's visibility; marking read happens in the conversation", () => {
 		openChat("chat-1", chatDetail("chat-1"));
 		setTabHidden(true);
-		emit("newMessage", message("chat-1", OTHER));
-		await flush();
-
-		setTabHidden(false);
-		await flush();
-
-		expect(markChatReadAction).toHaveBeenCalledWith("chat-1");
-		expect(chats()?.[0]?.unread).toBe(false);
-	});
-
-	it("doesn't mark a chat as read when the tab becomes visible while it's still loading", () => {
-		setTabHidden(true);
-		openChat("chat-1");
 
 		setTabHidden(false);
 
+		expect(useChatStore.getState().tabVisible).toBe(true);
 		expect(markChatReadAction).not.toHaveBeenCalled();
 	});
 });
@@ -300,7 +295,7 @@ describe("reconnect", () => {
 		expect(isOutdated(CHAT_LIST_QUERY_KEY)).toBe(false);
 	});
 
-	it("reloads all chat data and marks the open chat read after reconnecting", async () => {
+	it("reloads all chat data after reconnecting", () => {
 		queryClient.setQueryData(CHAT_LIST_QUERY_KEY, [chatItem("chat-1")]);
 		openChat("chat-1", chatDetail("chat-1"));
 		emit("connect");
@@ -311,9 +306,6 @@ describe("reconnect", () => {
 		expect(isOutdated(CHAT_LIST_QUERY_KEY)).toBe(true);
 		expect(isOutdated(chatQueryKey("chat-1"))).toBe(true);
 		expect(isOutdated(UNREAD_CHATS_COUNT_QUERY_KEY)).toBe(true);
-
-		await flush();
-		expect(markChatReadAction).toHaveBeenCalledWith("chat-1");
 	});
 });
 

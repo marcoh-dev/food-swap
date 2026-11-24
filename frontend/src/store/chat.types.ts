@@ -9,15 +9,21 @@ export type ChatState = {
 	removedChatId: string | null;
 	/** Whether the browser tab is visible; messages in a hidden tab stay unread. */
 	tabVisible: boolean;
+	/** Whether the open chat is scrolled to its newest message; above it, new messages stay unread. */
+	atNewest: boolean;
 };
 
 export type ChatActions = {
 	setConnected: (connected: boolean) => void;
 	setUserId: (userId: string) => void;
-	/** Also forgets a removed chat, so a chat that comes back can be opened again. */
+	/**
+	 * Also forgets a removed chat, so a chat that comes back can be opened again; a chat opens at
+	 * its newest message.
+	 */
 	setOpenChatId: (chatId: string | null) => void;
 	setRemovedChatId: (chatId: string) => void;
 	setTabVisible: (visible: boolean) => void;
+	setAtNewest: (atNewest: boolean) => void;
 	/** Clears everything, e.g. on logout. */
 	reset: () => void;
 };
