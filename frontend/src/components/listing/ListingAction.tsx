@@ -1,6 +1,7 @@
 "use client";
 
 import { getBerlinDay } from "@food-swap/shared/dates";
+import type { ListingFormValues } from "@food-swap/shared/schemas/listing";
 import type { Category, ListingResponse, ListingStatus, Tag } from "@food-swap/shared/types";
 import { PencilIcon } from "lucide-react";
 import Link from "next/link";
@@ -19,7 +20,6 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import type { ListingFormValues } from "@/lib/schemas/listing.schemas";
 
 import ListingStatusMenu from "./ListingStatusMenu";
 

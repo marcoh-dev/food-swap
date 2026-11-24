@@ -7,6 +7,7 @@
 		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts",
+		"./schemas/listing": "./src/schemas/listing.schemas.ts",
 		"./assets/*": "./assets/*",
 		"./endDate": "./src/endDate.ts"
 	},

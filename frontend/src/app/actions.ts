@@ -6,6 +6,7 @@ import {
 	LOGIN_RATE_LIMITED_MESSAGE,
 	USERNAME_UNAVAILABLE_MESSAGE,
 } from "@food-swap/shared/messages";
+import { createListingSchema, type ListingFormValues } from "@food-swap/shared/schemas/listing";
 import {
 	loginSchema,
 	type LoginValues,
@@ -30,7 +31,6 @@ import {
 	updateListingStatus,
 } from "@/lib/listings.service";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
-import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 
