@@ -32,8 +32,13 @@ export function ListingChat({ listingId, ownerId, ownerName, status }: ListingCh
 
 	if (status.chatId && !status.hidden) {
 		return (
-			<ListingChatCard title={title}>
-				Du hast {ownerName} bereits geschrieben.{" "}
+			<ListingChatCard
+				title={
+					<>
+						Chat mit <Link href={`/users/${ownerId}`}>{ownerName}</Link>
+					</>
+				}
+			>
 				<Link href={`/chats?chat=${status.chatId}`} className="underline">
 					Zum Chat
 				</Link>
@@ -51,12 +56,12 @@ export function ListingChat({ listingId, ownerId, ownerName, status }: ListingCh
 						if (!error) setSent(true);
 						return error;
 					}}
-					placeholder={`Schreib ${ownerName}…`}
+					placeholder="Nachricht schreiben…"
 				/>
 			}
 		>
 			{status.chatId
-				? `Setze deinen früheren Chat mit ${ownerName} fort.`
+				? "Setze deinen früheren Chat fort."
 				: "Frag nach dem Angebot oder vereinbare die Übergabe."}
 		</ListingChatCard>
 	);
