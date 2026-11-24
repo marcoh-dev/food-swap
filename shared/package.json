@@ -7,7 +7,8 @@
 		"./dates": "./src/dates.ts",
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts",
-		"./assets/*": "./assets/*"
+		"./assets/*": "./assets/*",
+		"./endDate": "./src/endDate.ts"
 	},
 	"scripts": {
 		"lint": "eslint .",

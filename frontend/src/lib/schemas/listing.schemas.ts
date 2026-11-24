@@ -1,7 +1,6 @@
+import { validateEndDate } from "@food-swap/shared/endDate";
 import { MISSING_PLACE_MESSAGE } from "@food-swap/shared/messages";
 import { z } from "zod";
-
-import { validateEndDate } from "@/utils/date";
 
 const imageUrlSchema = z.url({ protocol: /^https?$/ });
 
