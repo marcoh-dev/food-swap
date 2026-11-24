@@ -2,6 +2,7 @@
 
 import { formatDate, formatTime } from "@food-swap/shared/dates";
 import type { ChatDetail } from "@food-swap/shared/types";
+import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -32,6 +33,7 @@ import {
 	useMessageScroller,
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
+import { errorTextOf, markChatRead, useChat, useDeleteChat, useSendReply } from "@/lib/chatQueries";
 import { useChatStore } from "@/store/chat.store";
 import { isSameDay } from "@/utils/date";
 
@@ -50,20 +52,28 @@ export function ChatConversation({
 	onBack,
 	onDeleted,
 }: ChatConversationProps) {
-	const conversation = useChatStore((state) => state.conversation);
-	const error = useChatStore((state) => state.conversationError);
-	const openChat = useChatStore((state) => state.openChat);
-	const closeChat = useChatStore((state) => state.closeChat);
-	const sendReply = useChatStore((state) => state.sendReply);
+	const queryClient = useQueryClient();
+	const setOpenChatId = useChatStore((state) => state.setOpenChatId);
+	// Deleted in this or another tab while it's open: not loaded again
+	const removed = useChatStore((state) => state.removedChatId === chatId);
+	const { data, error: loadError } = useChat(chatId, { enabled: !removed });
+	const sendReply = useSendReply(chatId);
 
 	useEffect(() => {
-		void openChat(chatId);
-		return () => closeChat();
-	}, [chatId, openChat, closeChat]);
+		setOpenChatId(chatId);
+		return () => setOpenChatId(null);
+	}, [chatId, setOpenChatId]);
 
-	const chat = conversation?.id === chatId ? conversation : null;
+	const chat = removed ? null : (data ?? null);
+	const error = removed ? "Dieser Chat wurde gelöscht." : (loadError?.message ?? null);
 	const isLoaded = chat !== null;
 	const headingRef = useRef<HTMLHeadingElement>(null);
+
+	// Opening a chat in a visible tab marks it as read; in a hidden tab, that happens when the
+	// tab becomes visible (lib/chatEvents.ts)
+	useEffect(() => {
+		if (isLoaded && useChatStore.getState().tabVisible) void markChatRead(queryClient, chatId);
+	}, [isLoaded, chatId, queryClient]);
 
 	useEffect(() => {
 		if (isLoaded) headingRef.current?.focus();
@@ -109,7 +119,9 @@ export function ChatConversation({
 					<ChatMessages chat={chat} currentUserId={currentUserId} />
 					<footer className="border-t p-2 md:p-4">
 						{chat.canReply ? (
-							<ChatForm onSend={sendReply} />
+							<ChatForm
+								onSend={(content) => errorTextOf(sendReply.mutateAsync(content))}
+							/>
 						) : (
 							<Alert>
 								<CircleAlertIcon />
@@ -226,7 +238,7 @@ function MessagesViewport({ children }: { children: ReactNode }) {
 }
 
 function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: () => void }) {
-	const deleteChat = useChatStore((state) => state.deleteChat);
+	const deleteChat = useDeleteChat();
 	const [open, setOpen] = useState(false);
 	const [deleting, setDeleting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -234,7 +246,7 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 	async function handleDelete() {
 		setDeleting(true);
 		setError(null);
-		const deleteError = await deleteChat(chatId);
+		const deleteError = await errorTextOf(deleteChat.mutateAsync(chatId));
 		setDeleting(false);
 
 		if (deleteError) {

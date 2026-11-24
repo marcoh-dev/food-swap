@@ -1,7 +1,8 @@
+import { CHAT_LIST_QUERY_KEY } from "@food-swap/shared/chat-cache";
 import type { ListingChatStatus } from "@food-swap/shared/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { CHAT_LIST_QUERY_KEY, listingChatQueryKey, startChat } from "@/api/chats";
+import { listingChatQueryKey, startChat } from "@/api/chats";
 import { listingDraftKey, setChatDraft } from "@/lib/chatDrafts";
 
 export function useStartChat(listingId: string) {
