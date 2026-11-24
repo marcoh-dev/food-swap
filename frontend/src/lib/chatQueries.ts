@@ -89,18 +89,19 @@ export function useDeleteChat() {
 }
 
 /**
- * Marks a chat as read and updates the list and the unread count. On an error the chat stays
- * unread until it's opened again.
+ * Marks a chat as read and updates the list and the unread count. Returns whether it worked;
+ * on an error the chat stays unread.
  */
-export async function markChatRead(queryClient: QueryClient, chatId: string) {
+export async function markChatRead(queryClient: QueryClient, chatId: string): Promise<boolean> {
 	try {
 		await fromAction(markChatReadAction(chatId));
 	} catch {
-		return;
+		return false;
 	}
 
 	setChatUnreadInCache(queryClient, chatId, false);
 	void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
+	return true;
 }
 
 /** For forms that show an error text: waits for a mutation and returns its error text or `null`. */

@@ -117,7 +117,10 @@ The web chat keeps its data in the TanStack Query cache, like the app, with the 
     | `chatRead`    | a user opened a chat (only to that user, e.g. other tabs) | the chat is no longer marked unread, unread count updates                           |
     | `chatRemoved` | a user deleted a chat (only to that user)                 | the chat disappears from the list and closes if it's open                           |
 
-After a reconnect, all `["chats"]` queries are reloaded, because events sent while offline are lost; logging out removes them from the cache. A small Zustand store (`frontend/src/store/chat.store.ts`) only holds what isn't chat data: the logged-in user, which chat is open and whether the tab is visible. A message in the open chat of a visible tab counts as read; in a hidden tab, the chat is marked read once the tab becomes visible again.
+After a reconnect, all `["chats"]` queries are reloaded, because events sent while offline are lost; logging out removes them from the cache. A small Zustand store (`frontend/src/store/chat.store.ts`) only holds what isn't chat data: the logged-in user, which chat is open, whether it's scrolled to its newest message and whether the tab is visible.
+
+- **Marking as read:** like in the app, an open chat is marked read only when its newest message is from the other person and seen: the tab is visible and the chat is scrolled to the newest message (`ChatConversation`). A message that arrives while the user is scrolled up or the tab is hidden keeps the chat unread until then; while scrolled up, the button at the bottom shows "Neue Nachricht" and scrolls down. Sending a message while scrolled up scrolls down to it.
+- **Drafts:** unsent text is kept per chat, and per listing for a first message, in the tab's `sessionStorage` (`frontend/src/lib/chatDrafts.ts`) until it's sent successfully, also after switching chats, a failed send or a reload; logging out removes them.
 
 Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `NotificationPermissionPrompt` asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
 
