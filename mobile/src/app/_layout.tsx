@@ -99,6 +99,8 @@ export default function RootLayout() {
 											headerShown: true,
 											title: "Chat",
 											headerBackButtonDisplayMode: "minimal",
+											// Android: next to the back button like Android messengers; iOS centres it
+											headerTitleAlign: "left",
 											// Not transparent: the inverted message list can't move its content below a
 											// transparent header the way other scroll views do
 											headerTransparent: false,
