@@ -2,14 +2,14 @@
 
 import { useEffect } from "react";
 
-import { useChatStore } from "@/store/chat.store";
+import { useUnreadChatsCount } from "@/lib/chatQueries";
 
 import { formatUnreadCount } from "./UnreadChatsBadge";
 
 const PREFIX = /^\(\d+\+?\) /;
 
 export function UnreadChatsTitle() {
-	const unreadCount = useChatStore((state) => state.unreadCount);
+	const { data: unreadCount = 0 } = useUnreadChatsCount();
 
 	useEffect(() => {
 		const prefix = unreadCount > 0 ? `(${formatUnreadCount(unreadCount)}) ` : "";

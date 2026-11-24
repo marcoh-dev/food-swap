@@ -1,13 +1,11 @@
-import type { ChatListItem } from "@food-swap/shared/types";
+import {
+	chatQueryKey,
+	removeChatFromCache,
+	UNREAD_CHATS_COUNT_QUERY_KEY,
+} from "@food-swap/shared/chat-cache";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import {
-	CHAT_LIST_QUERY_KEY,
-	chatQueryKey,
-	deleteChat,
-	LISTING_CHATS_QUERY_KEY,
-	UNREAD_CHATS_COUNT_QUERY_KEY,
-} from "@/api/chats";
+import { deleteChat, LISTING_CHATS_QUERY_KEY } from "@/api/chats";
 import { setChatDraft } from "@/lib/chatDrafts";
 
 export function useDeleteChat() {
@@ -16,9 +14,7 @@ export function useDeleteChat() {
 	return useMutation({
 		mutationFn: deleteChat,
 		onSuccess: (_result, chatId) => {
-			queryClient.setQueryData<ChatListItem[]>(CHAT_LIST_QUERY_KEY, (chats) =>
-				chats?.filter((chat) => chat.id !== chatId),
-			);
+			removeChatFromCache(queryClient, chatId);
 			// Only marked as outdated: refetching it now would fail while the screen closes
 			void queryClient.invalidateQueries({
 				queryKey: chatQueryKey(chatId),

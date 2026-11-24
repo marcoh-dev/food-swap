@@ -1,3 +1,4 @@
+import { CHATS_QUERY_KEY } from "@food-swap/shared/chat-cache";
 import type {
 	ChatDetail,
 	ChatListItem,
@@ -7,15 +8,6 @@ import type {
 } from "@food-swap/shared/types";
 
 import { del, get, post, postWithoutResponse } from "@/api/request";
-
-/** Prefix of all chat queries, e.g. to refetch everything after the socket reconnected. */
-export const CHATS_QUERY_KEY = ["chats"];
-export const CHAT_LIST_QUERY_KEY = [...CHATS_QUERY_KEY, "list"];
-export const UNREAD_CHATS_COUNT_QUERY_KEY = [...CHATS_QUERY_KEY, "unread-count"];
-
-export function chatQueryKey(chatId: string) {
-	return [...CHATS_QUERY_KEY, "detail", chatId];
-}
 
 /** Prefix of the queries whether the current user has a chat about a listing. */
 export const LISTING_CHATS_QUERY_KEY = [...CHATS_QUERY_KEY, "listing"];

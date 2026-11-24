@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useChatStore } from "@/store/chat.store";
+import { errorTextOf, useStartChat } from "@/lib/chatQueries";
 
 import { ChatForm } from "./ChatForm";
 
@@ -17,7 +17,7 @@ type ListingChatProps = {
 };
 
 export function ListingChat({ listingId, ownerId, ownerName, status }: ListingChatProps) {
-	const startChat = useChatStore((state) => state.startChat);
+	const startChat = useStartChat();
 	const [sent, setSent] = useState(false);
 
 	const title = (
@@ -52,7 +52,9 @@ export function ListingChat({ listingId, ownerId, ownerName, status }: ListingCh
 			form={
 				<ChatForm
 					onSend={async (content) => {
-						const error = await startChat(listingId, content);
+						const error = await errorTextOf(
+							startChat.mutateAsync({ listingId, content }),
+						);
 						if (!error) setSent(true);
 						return error;
 					}}
