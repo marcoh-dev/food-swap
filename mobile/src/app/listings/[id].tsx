@@ -5,6 +5,7 @@ import {
 	getDeletionLabel,
 	getEndDateLabel,
 } from "@food-swap/shared/dates";
+import { formatPlace } from "@food-swap/shared/places";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
@@ -235,7 +236,7 @@ export default function ListingDetail() {
 						icon={{ ios: "mappin", android: "location_on" }}
 						color={mutedForeground}
 					>
-						{place.postalCode ? `${place.postalCode} ${place.name}` : place.name}
+						{formatPlace(place)}
 					</MetaRow>
 					<MetaRow
 						icon={{ ios: "calendar", android: "calendar_today" }}

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPlace } from "@food-swap/shared/places";
 import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
 import type { Place } from "@food-swap/shared/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { applyServerErrors } from "@/utils/form";
-import { formatPlace } from "@/utils/place";
 
 import { useCloseProfileEdit } from "./ProfileEditCollapsible";
 

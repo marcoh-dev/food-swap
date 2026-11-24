@@ -115,6 +115,17 @@ export default function RootLayout() {
 											headerLeft: () => <CloseButton />,
 										}}
 									/>
+									<Stack.Screen
+										name="profile/edit"
+										options={{
+											presentation: "modal",
+											headerShown: true,
+											title: "Profil bearbeiten",
+											headerLeft: () => <CloseButton />,
+											// Not transparent: on iOS, focusing a field scrolled it under a transparent header
+											headerTransparent: false,
+										}}
+									/>
 								</Stack>
 							</AuthProvider>
 						)}

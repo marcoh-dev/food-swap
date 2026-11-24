@@ -4,6 +4,7 @@ import {
 	getDeletionLabel,
 	getEndDateLabel,
 } from "@food-swap/shared/dates";
+import { formatPlace } from "@food-swap/shared/places";
 import type { ListingResponse } from "@food-swap/shared/types";
 import { cn } from "cn";
 import {
@@ -15,7 +16,7 @@ import {
 	TimerIcon,
 } from "lucide-react";
 
-import { formatDistance, formatPlace } from "@/utils/place";
+import { formatDistance } from "@/utils/place";
 
 import ListingDate from "./ListingDate";
 
