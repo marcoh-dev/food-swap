@@ -263,8 +263,8 @@ function DeleteChatButton({ chatId, onDeleted }: { chatId: string; onDeleted: ()
 				<AlertDialogHeader>
 					<AlertDialogTitle>Diesen Chat löschen?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Der Chat verschwindet nur für dich. Schreibt die andere Person erneut,
-						erscheint er wieder.
+						Der Chat verschwindet aus deiner Liste. Die andere Person behält ihn, bis
+						sie ihn auch löscht.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				{error && (

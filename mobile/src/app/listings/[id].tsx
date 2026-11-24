@@ -10,12 +10,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Platform, RefreshControl, ScrollView, View } from "react-native";
+import { ActivityIndicator, Image, Platform, RefreshControl, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
+import { listingChatQueryKey } from "@/api/chats";
 import { LISTINGS_QUERY_KEY } from "@/api/listings";
 import { isNotFoundError } from "@/api/request";
 import { useAuth } from "@/components/AuthProvider";
+import { ListingChatCard } from "@/components/ListingChatCard";
 import { ListingImagePlaceholder } from "@/components/ListingImagePlaceholder";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
@@ -49,6 +53,8 @@ export default function ListingDetail() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const destructive = useThemeColor("--destructive");
 	const card = useThemeColor("--card");
+	const background = useThemeColor("--background");
+	const insets = useSafeAreaInsets();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	async function refresh() {
@@ -57,7 +63,11 @@ export default function ListingDetail() {
 		}
 
 		setIsRefreshing(true);
-		await refetch();
+		// Also whether the user has a chat about it (e.g. started or deleted on the web)
+		await Promise.all([
+			refetch(),
+			queryClient.invalidateQueries({ queryKey: listingChatQueryKey(id) }),
+		]);
 		setIsRefreshing(false);
 	}
 
@@ -129,11 +139,20 @@ export default function ListingDetail() {
 
 	// The scroll view must be the screen's first view, like on the tabs (iOS insets).
 	return (
-		<ScrollView
-			className="bg-background"
+		// Scrolls a focused text field (the message card) above the keyboard. A component from
+		// another library, so it takes styles instead of className
+		<KeyboardAwareScrollView
+			style={{ backgroundColor: background }}
 			// iOS adds the bottom inset itself (contentInsetAdjustmentBehavior), Android draws behind the navigation bar.
-			contentContainerClassName={Platform.OS === "android" ? "pb-safe-offset-6" : "pb-6"}
+			contentContainerStyle={{
+				paddingBottom: Platform.OS === "android" ? insets.bottom + 24 : 24,
+			}}
 			contentInsetAdjustmentBehavior="automatic"
+			// Taps on buttons (e.g. sending a message) work while the keyboard is open
+			keyboardShouldPersistTaps="handled"
+			bottomOffset={16}
+			// The keyboard covers the bottom inset, which the padding above already keeps room for
+			extraKeyboardSpace={-insets.bottom}
 			refreshControl={
 				<RefreshControl
 					refreshing={isRefreshing}
@@ -257,6 +276,10 @@ export default function ListingDetail() {
 
 				<Text variant="muted">Angeboten von {ownerName}</Text>
 
+				{isLoggedIn && currentUser && !isOwner && (
+					<ListingChatCard listingId={listing.id} ownerName={ownerName} />
+				)}
+
 				{!isLoggedIn && (
 					<View className="gap-3 rounded-lg bg-muted p-4">
 						<Text>Melde dich an, um {ownerName} zu schreiben.</Text>
@@ -271,7 +294,7 @@ export default function ListingDetail() {
 					</View>
 				)}
 			</View>
-		</ScrollView>
+		</KeyboardAwareScrollView>
 	);
 }
 
