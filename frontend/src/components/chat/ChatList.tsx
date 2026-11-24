@@ -89,7 +89,13 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 										<span className="sr-only">Ungelesen:</span>
 									</span>
 								)}
-								<span className="truncate">
+								<span
+									className={cn(
+										"truncate",
+										// A deleted account isn't a person's name
+										!chat.otherName && "text-muted-foreground",
+									)}
+								>
 									{chat.otherName ?? "Gelöschtes Konto"}
 								</span>
 							</span>

@@ -97,7 +97,11 @@ export function ChatConversation({
 					<h2
 						ref={headingRef}
 						tabIndex={-1}
-						className="truncate text-sm font-semibold outline-none"
+						className={cn(
+							"truncate text-sm font-semibold outline-none",
+							// A deleted account isn't a person's name
+							chat && !chat.otherName && "text-muted-foreground",
+						)}
 					>
 						{chat ? (chat.otherName ?? "Gelöschtes Konto") : " "}
 					</h2>
