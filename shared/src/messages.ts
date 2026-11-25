@@ -11,3 +11,7 @@ export const NAME_UNAVAILABLE_MESSAGE = "Dieser Name ist nicht verfügbar.";
 /** Shown when the backend blocks further login attempts from this IP for a while (429). */
 export const LOGIN_RATE_LIMITED_MESSAGE =
 	"Zu viele Anmeldeversuche. Bitte warte ein paar Minuten und versuche es dann erneut.";
+
+/** Shown when the backend blocks further registrations from this IP for a while (429). */
+export const REGISTRATION_RATE_LIMITED_MESSAGE =
+	"Zu viele Registrierungen von diesem Gerät. Bitte versuche es später erneut.";

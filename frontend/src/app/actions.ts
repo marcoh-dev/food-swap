@@ -4,6 +4,7 @@ import { getBerlinDay } from "@food-swap/shared/dates";
 import {
 	LOGIN_FAILED_MESSAGE,
 	LOGIN_RATE_LIMITED_MESSAGE,
+	REGISTRATION_RATE_LIMITED_MESSAGE,
 	USERNAME_UNAVAILABLE_MESSAGE,
 } from "@food-swap/shared/messages";
 import {
@@ -51,7 +52,7 @@ export async function registerAction(
 
 	if (authData.statusCode === 429) {
 		return {
-			error: "Zu viele Registrierungen von diesem Gerät. Bitte versuche es später erneut.",
+			error: REGISTRATION_RATE_LIMITED_MESSAGE,
 		};
 	}
 
