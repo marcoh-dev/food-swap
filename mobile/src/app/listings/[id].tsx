@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { listingChatQueryKey } from "@/api/chats";
-import { LISTINGS_QUERY_KEY } from "@/api/listings";
+import { LISTINGS_LIST_QUERY_KEY } from "@/api/listings";
 import { isNotFoundError } from "@/api/request";
 import { useAuth } from "@/components/AuthProvider";
 import { ListingChatCard } from "@/components/ListingChatCard";
@@ -76,10 +76,10 @@ export default function ListingDetail() {
 	const isNotFound = !isValidId || isNotFoundError(error);
 
 	useEffect(() => {
-		// The listing was deleted: reload the offers list so it's gone there too. Only the
-		// list itself (exact), otherwise this query would be refetched and fail again.
+		// The listing was deleted: reload the offers lists so it's gone there too. Only the
+		// lists, not this listing, otherwise this query would be refetched and fail again.
 		if (isNotFoundError(error)) {
-			void queryClient.invalidateQueries({ queryKey: LISTINGS_QUERY_KEY, exact: true });
+			void queryClient.invalidateQueries({ queryKey: LISTINGS_LIST_QUERY_KEY });
 		}
 	}, [error, queryClient]);
 

@@ -1,4 +1,4 @@
-import type { ListingResponse } from "@food-swap/shared/types";
+import type { ListingResponse, SortOption } from "@food-swap/shared/types";
 import { Link } from "expo-router";
 import { useRef, useState } from "react";
 import {
@@ -26,6 +26,7 @@ import { LISTING_STATUS_LABELS } from "@/lib/listing";
 import { cn } from "@/lib/utils";
 
 export default function Listings() {
+	const [sort, setSort] = useState<SortOption>("newest");
 	const {
 		data,
 		dataUpdatedAt,
@@ -37,7 +38,7 @@ export default function Listings() {
 		hasNextPage,
 		isFetchingNextPage,
 		isFetchNextPageError,
-	} = useListings();
+	} = useListings(sort);
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();

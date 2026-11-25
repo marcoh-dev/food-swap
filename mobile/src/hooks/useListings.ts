@@ -1,11 +1,12 @@
+import type { SortOption } from "@food-swap/shared/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { fetchListings, LISTINGS_QUERY_KEY } from "@/api/listings";
+import { fetchListings, LISTINGS_LIST_QUERY_KEY } from "@/api/listings";
 
-export function useListings() {
+export function useListings(sort: SortOption) {
 	return useInfiniteQuery({
-		queryKey: LISTINGS_QUERY_KEY,
-		queryFn: ({ signal, pageParam }) => fetchListings(pageParam, signal),
+		queryKey: [...LISTINGS_LIST_QUERY_KEY, sort],
+		queryFn: ({ pageParam, signal }) => fetchListings(pageParam, sort, signal),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) =>
 			lastPage.meta.page < lastPage.meta.totalPages ? lastPage.meta.page + 1 : undefined,
