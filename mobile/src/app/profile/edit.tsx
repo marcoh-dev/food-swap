@@ -17,6 +17,7 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDeleteAccount } from "@/hooks/useDeleteAccount";
 import { useIsOnline } from "@/hooks/useIsOnline";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { useUser } from "@/hooks/useUser";
@@ -51,6 +52,7 @@ function ProfileEditContent() {
 function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }) {
 	const router = useRouter();
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const updateProfile = useUpdateProfile(user.id);
 	const [name, setName] = useState(profile.name ?? "");
 	const [place, setPlace] = useState<Place | null>(user.place ?? null);
@@ -96,7 +98,7 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 			keyboardShouldPersistTaps="handled"
 			bottomOffset={160}
 		>
-			{!isOnline && (
+			{showOfflineNotice && (
 				<OfflineNotice message="Du kannst dein Profil bearbeiten, sobald du wieder online bist." />
 			)}
 			{isOnline && updateProfile.isError && (

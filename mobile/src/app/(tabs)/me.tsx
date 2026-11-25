@@ -14,6 +14,7 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUser } from "@/hooks/useUser";
 
@@ -32,6 +33,7 @@ function ProfileContent() {
 	const profileQuery = useUser(user?.id);
 	const profile = profileQuery.data;
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const logoutEverywhere = useLogoutEverywhere();
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
@@ -40,7 +42,7 @@ function ProfileContent() {
 
 	return (
 		<Screen>
-			{!isOnline && (
+			{showOfflineNotice && (
 				<OfflineNotice
 					message={
 						profile
