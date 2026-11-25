@@ -30,22 +30,10 @@ import {
 	updateListingStatus,
 } from "@/lib/listings.service";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
+import { getRedirectTarget } from "@/lib/redirectTarget";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
-
-function getRedirectTarget(target: unknown): string {
-	if (
-		typeof target !== "string" ||
-		!target.startsWith("/") ||
-		target.startsWith("//") ||
-		target.startsWith("/\\")
-	) {
-		return "/";
-	}
-
-	return target;
-}
 
 function withToast(target: string, toast: string): string {
 	const separator = target.includes("?") ? "&" : "?";
