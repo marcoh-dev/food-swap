@@ -40,7 +40,7 @@ export default function Carousel() {
 				}}
 				// Only once the width is known: at width 0, the text would wrap after every letter and its
 				// measured height would make all slides far too tall
-				renderItem={({ item }) =>
+				renderItem={({ item, index: slideIndex }) =>
 					slideWidth > 0 ? (
 						<View style={{ width: slideWidth }} className="pt-1 pb-4">
 							<Slide
@@ -49,6 +49,8 @@ export default function Carousel() {
 								source={item.source}
 								image={item.image}
 								height={slideHeight}
+								position={slideIndex + 1}
+								total={SLIDES.length}
 								onTextHeight={(textHeight) => {
 									const needed = Math.ceil(textHeight + SLIDE_PADDING_HEIGHT);
 									setSlideHeight((current) => Math.max(current, needed));

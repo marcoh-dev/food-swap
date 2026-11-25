@@ -14,11 +14,32 @@ type Props = {
 	height?: number;
 	/** Reports the height the text needs, independent of `height`, so measuring can't loop. */
 	onTextHeight?: (height: number) => void;
+	/** The slide's place in the carousel, read out by screen readers ("Karte 2 von 5"). */
+	position: number;
+	total: number;
 };
 
-export default function Slide({ title, body, source, image, height, onTextHeight }: Props) {
+export default function Slide({
+	title,
+	body,
+	source,
+	image,
+	height,
+	onTextHeight,
+	position,
+	total,
+}: Props) {
+	// One element for screen readers, with the position first, so it's clear there are more cards
+	const label = [`Karte ${position} von ${total}`, title.replace(/\n/g, " "), body, source]
+		.filter(Boolean)
+		.join(". ");
+
 	return (
-		<View className="rounded-2xl bg-highlight-muted shadow-md shadow-black/25 dark:border dark:border-highlight-border">
+		<View
+			className="rounded-2xl bg-highlight-muted shadow-md shadow-black/25 dark:border dark:border-highlight-border"
+			accessible
+			accessibilityLabel={label}
+		>
 			<View
 				className="overflow-hidden rounded-2xl px-2 py-2"
 				style={{ height: height ?? MIN_SLIDE_HEIGHT }}
