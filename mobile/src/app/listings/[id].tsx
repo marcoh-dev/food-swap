@@ -30,6 +30,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListing } from "@/hooks/useListing";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { formatLoadedAt } from "@/lib/date";
 import { LISTING_STATUS_LABELS, LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
 import { HOME_ROUTE } from "@/lib/routes";
 
@@ -39,9 +40,11 @@ export default function ListingDetail() {
 	const isValidId = z.uuid().safeParse(id).success;
 	const {
 		data: listing,
+		dataUpdatedAt,
 		error,
 		isError,
 		isFetching,
+		isPlaceholderData,
 		refetch,
 	} = useListing(id, { enabled: isValidId });
 	const isOnline = useIsOnline();
@@ -120,6 +123,10 @@ export default function ListingDetail() {
 		);
 	}
 
+	// Shown from the offers list while the listing itself hasn't loaded: as old as the list
+	const loadedAt = isPlaceholderData
+		? queryClient.getQueryState(LISTINGS_QUERY_KEY)?.dataUpdatedAt
+		: dataUpdatedAt;
 	const daysLeft = getDaysUntil(listing.endDate);
 	const isExpired = daysLeft < 0;
 	const isUnavailable = isExpired || listing.status === "deactivated";
@@ -292,7 +299,10 @@ export default function ListingDetail() {
 					)}
 				</View>
 			</KeyboardAwareScrollView>
-			<OfflineBanner header="native" />
+			<OfflineBanner
+				header="native"
+				detail={loadedAt ? `Stand ${formatLoadedAt(loadedAt)}` : undefined}
+			/>
 		</View>
 	);
 }
