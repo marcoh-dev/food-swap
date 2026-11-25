@@ -81,7 +81,6 @@ export function connectChat({
 	}
 
 	function onConnect() {
-		store.setConnected(true);
 		// Events sent while the connection was down are lost, so everything is reloaded (only
 		// what is shown; the rest reloads when it's used again)
 		if (connectedBefore) void queryClient.invalidateQueries({ queryKey: CHATS_QUERY_KEY });
@@ -89,8 +88,6 @@ export function connectChat({
 	}
 
 	function onDisconnect(reason: string) {
-		store.setConnected(false);
-
 		// The server only ends a connection itself when the login is no longer valid, e.g. after
 		// "log out everywhere" on another device. Only once, so a server that keeps rejecting
 		// the ticket can't cause a refresh loop.

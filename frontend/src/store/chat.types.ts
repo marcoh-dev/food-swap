@@ -1,6 +1,4 @@
 export type ChatState = {
-	/** Whether the socket is connected; not shown anywhere yet. */
-	connected: boolean;
 	/** The logged-in user, to tell own messages from others; `null` while logged out. */
 	userId: string | null;
 	/** The chat that is open, also while it's still loading. */
@@ -14,7 +12,6 @@ export type ChatState = {
 };
 
 export type ChatActions = {
-	setConnected: (connected: boolean) => void;
 	setUserId: (userId: string) => void;
 	/**
 	 * Also forgets a removed chat, so a chat that comes back can be opened again; a chat opens at

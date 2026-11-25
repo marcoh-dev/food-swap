@@ -3,7 +3,6 @@ import { create } from "zustand";
 import type { ChatActions, ChatState } from "@/store/chat.types";
 
 const initialState: ChatState = {
-	connected: false,
 	userId: null,
 	openChatId: null,
 	removedChatId: null,
@@ -18,7 +17,6 @@ const initialState: ChatState = {
  */
 export const useChatStore = create<ChatState & ChatActions>()((set) => ({
 	...initialState,
-	setConnected: (connected) => set({ connected }),
 	setUserId: (userId) => set({ userId }),
 	setOpenChatId: (openChatId) => set({ openChatId, removedChatId: null, atNewest: true }),
 	setRemovedChatId: (removedChatId) => set({ removedChatId }),
