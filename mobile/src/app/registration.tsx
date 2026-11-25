@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useRegister } from "@/hooks/useRegister";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { isAccountTab } from "@/lib/routes";
 
 type FieldErrors = Partial<Record<keyof RegistrationValues, string[]>>;
@@ -32,6 +33,7 @@ export default function Registration() {
 	const { redirect } = useLocalSearchParams();
 	const registration = useRegister();
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const [values, setValues] = useState<RegistrationValues>({ username: "", password: "" });
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
@@ -90,7 +92,7 @@ export default function Registration() {
 			keyboardShouldPersistTaps="handled"
 		>
 			<Text variant="h2">Erstelle ein Konto und tausche deine Ernte.</Text>
-			{!isOnline && (
+			{showOfflineNotice && (
 				<OfflineNotice message="Du kannst dich registrieren, sobald du wieder online bist." />
 			)}
 			{isOnline && serverError && (

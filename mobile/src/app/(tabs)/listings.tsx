@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListings } from "@/hooks/useListings";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
 import { LISTING_STATUS_LABELS } from "@/lib/listing";
@@ -41,6 +42,7 @@ export default function Listings() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const listRef = useRef<FlatList<ListingResponse>>(null);
 
@@ -61,7 +63,7 @@ export default function Listings() {
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
-	const offlineNotice = !isOnline && (
+	const offlineNotice = showOfflineNotice && (
 		<OfflineNotice
 			message={
 				data

@@ -29,6 +29,7 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListing } from "@/hooks/useListing";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { LISTING_STATUS_LABELS, LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
 import { HOME_ROUTE } from "@/lib/routes";
@@ -45,6 +46,7 @@ export default function ListingDetail() {
 		refetch,
 	} = useListing(id, { enabled: isValidId });
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const { isLoggedIn } = useAuth();
@@ -85,7 +87,7 @@ export default function ListingDetail() {
 		return <ListingNotFound />;
 	}
 
-	const offlineNotice = !isOnline && (
+	const offlineNotice = showOfflineNotice && (
 		<OfflineNotice
 			message={
 				listing
