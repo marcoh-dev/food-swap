@@ -20,13 +20,13 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
-		"@tanstack/query-core": "^5.107.1",
+		"@tanstack/query-core": "^5.108.4",
 		"eslint": "^9.39.5",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-import": "^2.32.0",
 		"typescript": "~6.0.3",
 		"typescript-eslint": "^8.74.0",
-		"vitest": "^5.1.0"
+		"vitest": "^5.1.1"
 	},
 	"dependencies": {
 		"zod": "^4.6.7"

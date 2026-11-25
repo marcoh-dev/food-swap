@@ -1,14 +1,14 @@
 {
 	"name": "food-swap",
 	"private": true,
-	"packageManager": "pnpm@12.18.0",
+	"packageManager": "pnpm@12.23.0",
 	"engines": {
 		"node": "24.x"
 	},
 	"devEngines": {
 		"packageManager": {
 			"name": "pnpm",
-			"version": "^12.18.0",
+			"version": "^12.23.0",
 			"onFail": "download"
 		}
 	},
@@ -28,6 +28,6 @@
 	},
 	"devDependencies": {
 		"concurrently": "^10.0.7",
-		"prettier": "^3.9.10"
+		"prettier": "^3.10.1"
 	}
 }
