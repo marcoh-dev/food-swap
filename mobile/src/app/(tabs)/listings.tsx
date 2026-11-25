@@ -199,7 +199,7 @@ export default function Listings() {
 					</Link>
 				)}
 			/>
-			<OfflineBanner detail={data && `Stand ${formatLoadedAt(dataUpdatedAt)}`} />
+			<OfflineBanner loadedAt={data && dataUpdatedAt} />
 		</View>
 	);
 }

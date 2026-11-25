@@ -8,10 +8,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { useShowOfflineBanner } from "@/hooks/useShowOfflineBanner";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { formatLoadedAt } from "@/lib/date";
 
 type Props = {
-	/** Shown after "Offline", e.g. how old the shown data is ("Stand 14:05 Uhr"). */
-	detail?: string;
+	/** When the shown data was loaded, shown as "Offline · Stand 14:05 Uhr"; without it just "Offline". */
+	loadedAt?: number;
 	/**
 	 * The screen's native header, if it has one: `native` for the default header (transparent on
 	 * iOS, so the pill goes below it), `opaque` for one with `headerTransparent: false`. Without a
@@ -32,13 +33,14 @@ export function OfflineBanner(props: Props) {
 	return show ? <Pill {...props} /> : null;
 }
 
-function Pill({ detail, header }: Props) {
+function Pill({ loadedAt, header }: Props) {
 	const insets = useSafeAreaInsets();
 	const headerHeight = useContext(HeaderHeightContext) ?? 0;
 	let top = 0;
 	if (!header) top = insets.top;
 	else if (header === "native" && Platform.OS === "ios") top = headerHeight;
 	const iconColor = useThemeColor("--info");
+	const detail = loadedAt ? `Stand ${formatLoadedAt(loadedAt)}` : undefined;
 	const text = detail ? `Offline · ${detail}` : "Offline";
 	const label = detail ? `Du bist offline. ${detail}` : "Du bist offline";
 

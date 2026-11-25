@@ -148,7 +148,7 @@ function ChatList() {
 					</Link>
 				)}
 			/>
-			<OfflineBanner detail={`Stand ${formatLoadedAt(dataUpdatedAt)}`} />
+			<OfflineBanner loadedAt={dataUpdatedAt} />
 		</View>
 	);
 }

@@ -25,7 +25,6 @@ import { useIsAppActive } from "@/hooks/useIsAppActive";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useMarkChatRead } from "@/hooks/useMarkChatRead";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { formatLoadedAt } from "@/lib/date";
 
 export default function ChatScreen() {
 	return (
@@ -173,7 +172,7 @@ function Conversation() {
 					/>
 				</View>
 			)}
-			<OfflineBanner header="opaque" detail={`Stand ${formatLoadedAt(dataUpdatedAt)}`} />
+			<OfflineBanner header="opaque" loadedAt={dataUpdatedAt} />
 		</KeyboardAwareView>
 	);
 }

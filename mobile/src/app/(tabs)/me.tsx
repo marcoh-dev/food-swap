@@ -16,7 +16,6 @@ import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUser } from "@/hooks/useUser";
-import { formatLoadedAt } from "@/lib/date";
 
 export default function Profile() {
 	return (
@@ -139,9 +138,7 @@ function ProfileContent() {
 					</View>
 				</>
 			)}
-			<OfflineBanner
-				detail={profile && `Stand ${formatLoadedAt(profileQuery.dataUpdatedAt)}`}
-			/>
+			<OfflineBanner loadedAt={profile && profileQuery.dataUpdatedAt} />
 		</Screen>
 	);
 }

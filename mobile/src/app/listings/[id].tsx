@@ -30,7 +30,6 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListing } from "@/hooks/useListing";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { formatLoadedAt } from "@/lib/date";
 import { LISTING_STATUS_LABELS, LISTING_TYPE_ICONS, LISTING_TYPE_LABELS } from "@/lib/listing";
 import { HOME_ROUTE } from "@/lib/routes";
 
@@ -299,10 +298,7 @@ export default function ListingDetail() {
 					)}
 				</View>
 			</KeyboardAwareScrollView>
-			<OfflineBanner
-				header="native"
-				detail={loadedAt ? `Stand ${formatLoadedAt(loadedAt)}` : undefined}
-			/>
+			<OfflineBanner header="native" loadedAt={loadedAt} />
 		</View>
 	);
 }
