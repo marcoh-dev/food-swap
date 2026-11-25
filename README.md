@@ -42,12 +42,12 @@ cp backend/.env.example backend/.env
 cp backend/bruno/.env.example backend/bruno/.env
 cp frontend/.env.example frontend/.env
 cp mobile/.env.example mobile/.env.local
-docker compose up -d --wait
+pnpm db:up
 pnpm --filter backend migration:run
 pnpm dev
 ```
 
-The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d --wait` starts a local PostgreSQL with PostGIS on port 5432 and waits until it is ready (`docker compose down` stops it, the data is kept).
+The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `pnpm db:up` starts a local PostgreSQL with PostGIS on port 5432 in Docker and waits until it is ready; `pnpm dev` does that too before it starts. `pnpm db:down` stops it (the data is kept). `pnpm db:reset` deletes the local database and creates it again with the migrations (categories, tags and places, no users or listings); `pnpm db:reset:mock` does the same and adds the mock data.
 
 ### Mobile app
 
@@ -241,7 +241,10 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 
 | Command                                                          | What it does                                                                      |
 | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `pnpm dev`                                                       | starts backend and frontend                                                       |
+| `pnpm dev`                                                       | starts the local database, backend and frontend                                   |
+| `pnpm db:up` / `pnpm db:down`                                    | starts / stops the local database (the data is kept)                              |
+| `pnpm db:reset`                                                  | deletes the local database and creates it again with the migrations               |
+| `pnpm db:reset:mock`                                             | like `db:reset`, plus the mock data                                               |
 | `pnpm mobile`                                                    | starts the Expo dev server for the mobile app                                     |
 | `pnpm sync`                                                      | updates `main`, dependencies, local database and migrations                       |
 | `pnpm sync:branch`                                               | merges `main` into the current branch (without committing) and updates everything |
@@ -301,7 +304,7 @@ pnpm --filter backend test:integration
 git commit
 ```
 
-`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `docker compose up -d --wait`, `pnpm --filter backend migration:run`, `pnpm check` and the tests before committing.
+`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `pnpm db:up`, `pnpm --filter backend migration:run`, `pnpm check` and the tests before committing.
 
 CI runs `pnpm check`, the unit tests, the integration tests and the build on every pull request to `main`.
 
