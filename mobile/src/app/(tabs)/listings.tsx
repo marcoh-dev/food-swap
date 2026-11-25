@@ -31,7 +31,7 @@ export default function Listings() {
 		isPending,
 		isError,
 		isFetching,
-		refetch,
+		reload,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
@@ -49,7 +49,7 @@ export default function Listings() {
 		}
 
 		setIsRefreshing(true);
-		await refetch();
+		await reload();
 		setIsRefreshing(false);
 	}
 
@@ -81,7 +81,7 @@ export default function Listings() {
 				variant="outline"
 				className="self-start"
 				disabled={isFetching}
-				onPress={() => void refetch()}
+				onPress={() => void reload()}
 			>
 				<Text>Erneut versuchen</Text>
 			</Button>
