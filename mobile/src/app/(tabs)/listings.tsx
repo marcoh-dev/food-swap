@@ -115,12 +115,13 @@ export default function Listings() {
 			<Screen>
 				{heading}
 				{offlineNotice}
+				{errorNotice}
+				<Carousel />
 				{isPending && isOnline && (
 					<View className="flex-1 items-center justify-center">
 						<ActivityIndicator size="large" color={mutedForeground} />
 					</View>
 				)}
-				{errorNotice}
 			</Screen>
 		);
 	}
