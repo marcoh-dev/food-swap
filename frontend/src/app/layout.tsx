@@ -15,6 +15,7 @@ import { SkipLink } from "@/components/shared/SkipLink";
 import Toast from "@/components/shared/Toast";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { AuthSync } from "@/components/user/AuthSync";
 import { getCurrentUser } from "@/lib/users.service";
 
 import "./globals.css";
@@ -66,6 +67,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					<SkipLink href="#main">Zum Inhalt springen</SkipLink>
 					<PageSkipLink />
 					<ChatSocketConnector userId={currentUser?.id ?? null} />
+					<AuthSync userId={currentUser?.id ?? null} />
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
