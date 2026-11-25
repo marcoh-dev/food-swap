@@ -32,6 +32,7 @@ export default function Listings() {
 		isError,
 		isFetching,
 		reload,
+		listings,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
@@ -130,7 +131,7 @@ export default function Listings() {
 			className="bg-background"
 			contentContainerClassName="gap-3 pb-6"
 			contentInsetAdjustmentBehavior="automatic"
-			data={data.pages.flatMap((page) => page.data)}
+			data={listings}
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
 			onEndReached={loadMore}
