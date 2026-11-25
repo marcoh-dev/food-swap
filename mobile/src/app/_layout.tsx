@@ -118,6 +118,15 @@ export default function RootLayout() {
 										}}
 									/>
 									<Stack.Screen
+										name="registration"
+										options={{
+											presentation: "modal",
+											headerShown: true,
+											title: "Registrieren",
+											headerLeft: () => <CloseButton />,
+										}}
+									/>
+									<Stack.Screen
 										name="profile/edit"
 										options={{
 											presentation: "modal",

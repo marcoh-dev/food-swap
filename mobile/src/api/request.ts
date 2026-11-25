@@ -18,6 +18,11 @@ export function isUnauthorizedError(error: unknown) {
 	return error instanceof RequestError && error.status === 401;
 }
 
+/** The username is already taken (409), when registering. */
+export function isConflictError(error: unknown) {
+	return error instanceof RequestError && error.status === 409;
+}
+
 export function isRateLimitedError(error: unknown) {
 	return error instanceof RequestError && error.status === 429;
 }

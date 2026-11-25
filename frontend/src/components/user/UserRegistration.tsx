@@ -1,6 +1,11 @@
 "use client";
 
-import { registrationSchema, type RegistrationValues } from "@food-swap/shared/schemas/user";
+import {
+	PASSWORD_HINT,
+	registrationSchema,
+	type RegistrationValues,
+	USERNAME_HINT,
+} from "@food-swap/shared/schemas/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
@@ -11,7 +16,7 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import { Input } from "@/components/ui/input";
 import { applyServerErrors } from "@/utils/form";
 
-import PinInput from "./PinInput";
+import PasswordInput from "./PasswordInput";
 
 export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 	const form = useForm<RegistrationValues>({
@@ -55,7 +60,7 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 									}
 								/>
 								<FieldDescription id="username-hint">
-									Buchstaben, Ziffern, _ . und -
+									{USERNAME_HINT}
 								</FieldDescription>
 								<FieldError id="username-error" errors={[fieldState.error]} />
 							</Field>
@@ -67,7 +72,7 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor="password">Passwort</FieldLabel>
-								<PinInput
+								<PasswordInput
 									{...field}
 									id="password"
 									autoComplete="new-password"
@@ -75,9 +80,14 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 									required
 									aria-invalid={fieldState.invalid}
 									aria-describedby={
-										fieldState.invalid ? "password-error" : undefined
+										fieldState.invalid
+											? "password-hint password-error"
+											: "password-hint"
 									}
 								/>
+								<FieldDescription id="password-hint">
+									{PASSWORD_HINT}
+								</FieldDescription>
 								<FieldError id="password-error" errors={[fieldState.error]} />
 							</Field>
 						)}

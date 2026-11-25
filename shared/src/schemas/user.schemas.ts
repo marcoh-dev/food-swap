@@ -13,6 +13,21 @@ import { isReservedName } from "../reservedNames";
  */
 export const USERNAME_PATTERN = /^[A-Za-z0-9äöüÄÖÜß_.-]+$/;
 
+// Limits of a new account; the backend has a copy in createUser.dto.ts
+export const USERNAME_MIN_LENGTH = 5;
+export const USERNAME_MAX_LENGTH = 20;
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 64;
+
+/** Shown below the username field when registering: the rules of `registrationSchema`. */
+export const USERNAME_HINT = `${USERNAME_MIN_LENGTH} bis ${USERNAME_MAX_LENGTH} Zeichen. Erlaubt sind Buchstaben, Ziffern und _ . -`;
+
+/**
+ * Shown below the password field when registering: the rules of `registrationSchema`. The
+ * maximum is left out, hardly anyone reaches it, and the error message names it.
+ */
+export const PASSWORD_HINT = `Mindestens ${PASSWORD_MIN_LENGTH} Zeichen mit Groß- und Kleinbuchstaben, einer Zahl und einem Sonderzeichen.`;
+
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
 	password: z.string().min(1, "Bitte gib ein Passwort ein."),
@@ -23,8 +38,14 @@ export const registrationSchema = z.object({
 		.string()
 		.trim()
 		.min(1, { error: "Bitte gib einen Benutzernamen ein.", abort: true })
-		.min(5, "Der Benutzername muss mindestens 5 Zeichen lang sein.")
-		.max(20, "Der Benutzername darf höchstens 20 Zeichen lang sein.")
+		.min(
+			USERNAME_MIN_LENGTH,
+			`Der Benutzername muss mindestens ${USERNAME_MIN_LENGTH} Zeichen lang sein.`,
+		)
+		.max(
+			USERNAME_MAX_LENGTH,
+			`Der Benutzername darf höchstens ${USERNAME_MAX_LENGTH} Zeichen lang sein.`,
+		)
 		.regex(
 			USERNAME_PATTERN,
 			"Der Benutzername darf nur Buchstaben, Ziffern und _ . - enthalten.",
@@ -32,8 +53,14 @@ export const registrationSchema = z.object({
 		.refine((username) => !isReservedName(username), USERNAME_UNAVAILABLE_MESSAGE),
 	password: z
 		.string()
-		.min(8, "Das Passwort muss mindestens 8 Zeichen lang sein.")
-		.max(64, "Das Passwort darf höchstens 64 Zeichen lang sein.")
+		.min(
+			PASSWORD_MIN_LENGTH,
+			`Das Passwort muss mindestens ${PASSWORD_MIN_LENGTH} Zeichen lang sein.`,
+		)
+		.max(
+			PASSWORD_MAX_LENGTH,
+			`Das Passwort darf höchstens ${PASSWORD_MAX_LENGTH} Zeichen lang sein.`,
+		)
 		.regex(/[A-Z]/, "Das Passwort muss mindestens einen Großbuchstaben enthalten.")
 		.regex(/[a-z]/, "Das Passwort muss mindestens einen Kleinbuchstaben enthalten.")
 		.regex(/[0-9]/, "Das Passwort muss mindestens eine Zahl enthalten.")

@@ -15,7 +15,8 @@ type Props = React.ComponentProps<typeof InputGroupInput> & {
 	name: string;
 };
 
-export default function PinInput({ id, name, autoComplete = "off", ...props }: Props) {
+/** A password field with a button that shows or hides the password. */
+export default function PasswordInput({ id, name, autoComplete = "off", ...props }: Props) {
 	const [isVisible, setIsVisible] = useState(false);
 
 	function handleToggleVisibility() {
@@ -38,7 +39,7 @@ export default function PinInput({ id, name, autoComplete = "off", ...props }: P
 					type="button"
 					size="icon-xs"
 					onClick={handleToggleVisibility}
-					aria-label={isVisible ? "PIN verbergen" : "PIN anzeigen"}
+					aria-label={isVisible ? "Passwort verbergen" : "Passwort anzeigen"}
 					aria-pressed={isVisible}
 				>
 					{isVisible ? <EyeOffIcon /> : <EyeIcon />}
