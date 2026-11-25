@@ -12,14 +12,11 @@ type Props = TextInputProps & {
 	accessory?: ReactNode;
 };
 
-/** A text input with a label above it and an optional description and error text. */
+/** A text input with a label above it, and an optional description and error text below it. */
 export function TextField({ label, description, error, accessory, ...props }: Props) {
 	return (
 		<View className="gap-2">
-			<View className="gap-1">
-				<Text variant="small">{label}</Text>
-				{description ? <Text variant="muted">{description}</Text> : null}
-			</View>
+			<Text variant="small">{label}</Text>
 			<View className="justify-center">
 				<Input
 					accessibilityLabel={label}
@@ -30,6 +27,8 @@ export function TextField({ label, description, error, accessory, ...props }: Pr
 				/>
 				{accessory ? <View className="absolute right-0">{accessory}</View> : null}
 			</View>
+			{/* Below the field like on the web; the screen reader reads it with the field (hint) */}
+			{description ? <Text variant="muted">{description}</Text> : null}
 			{error ? <Text className="text-body-small text-destructive">{error}</Text> : null}
 		</View>
 	);
