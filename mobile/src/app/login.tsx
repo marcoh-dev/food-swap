@@ -2,7 +2,7 @@ import { LOGIN_FAILED_MESSAGE, LOGIN_RATE_LIMITED_MESSAGE } from "@food-swap/sha
 import { loginSchema, type LoginValues } from "@food-swap/shared/schemas/user";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { AccessibilityInfo, ScrollView } from "react-native";
+import { AccessibilityInfo, Pressable, ScrollView, View } from "react-native";
 import { z } from "zod";
 
 import { isRateLimitedError, isUnauthorizedError } from "@/api/request";
@@ -112,6 +112,26 @@ export default function Login() {
 			<Button disabled={!isOnline || login.isPending} onPress={handleSubmit}>
 				<Text>Anmelden</Text>
 			</Button>
+			{/* The link is its own element: a larger tap target, and its underline doesn't depend on
+			    how text nested in another text is styled */}
+			<View className="flex-row flex-wrap items-baseline">
+				<Text className="text-body-small">{"Neu bei FoodSwap? Hier geht's zur "}</Text>
+				<Pressable
+					accessibilityRole="link"
+					hitSlop={8}
+					// Replaces this modal, so closing the registration leads back to where the user came from
+					onPress={() =>
+						router.replace(
+							isAccountTab(redirect)
+								? `/registration?redirect=${redirect}`
+								: "/registration",
+						)
+					}
+				>
+					<Text className="text-body-small underline">Registrierung</Text>
+				</Pressable>
+				<Text className="text-body-small">.</Text>
+			</View>
 		</ScrollView>
 	);
 }
