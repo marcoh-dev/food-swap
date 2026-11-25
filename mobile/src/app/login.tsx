@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogin } from "@/hooks/useLogin";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { isAccountTab } from "@/lib/routes";
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>;
@@ -24,6 +25,7 @@ export default function Login() {
 	const { redirect } = useLocalSearchParams();
 	const login = useLogin();
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const [values, setValues] = useState<LoginValues>({ username: "", password: "" });
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
@@ -77,7 +79,7 @@ export default function Login() {
 			keyboardShouldPersistTaps="handled"
 		>
 			<Text variant="h2">Schön, dass du da bist!</Text>
-			{!isOnline && (
+			{showOfflineNotice && (
 				<OfflineNotice message="Du kannst dich anmelden, sobald du wieder online bist." />
 			)}
 			{isOnline && login.isError && !loginErrorMessage && (

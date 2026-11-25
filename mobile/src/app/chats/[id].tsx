@@ -24,6 +24,7 @@ import { useDeleteChat } from "@/hooks/useDeleteChat";
 import { useIsAppActive } from "@/hooks/useIsAppActive";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useMarkChatRead } from "@/hooks/useMarkChatRead";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ChatScreen() {
@@ -53,6 +54,7 @@ function Conversation() {
 	});
 	const { data: currentUser } = useCurrentUser();
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const isNotFound = !isValidId || isNotFoundError(error);
 	const isFocused = useIsFocused();
@@ -114,7 +116,7 @@ function Conversation() {
 		);
 	}
 
-	const offlineNotice = !isOnline && (
+	const offlineNotice = showOfflineNotice && (
 		<OfflineNotice
 			message={
 				chat
