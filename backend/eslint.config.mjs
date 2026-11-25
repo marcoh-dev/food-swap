@@ -12,7 +12,7 @@ export default defineConfig([
 	{
 		plugins: { import: importPlugin },
 		languageOptions: {
-			globals: { ...globals.node, ...globals.jest },
+			globals: { ...globals.node, ...globals.vitest },
 			sourceType: "commonjs",
 			parserOptions: {
 				projectService: true,

@@ -20,11 +20,9 @@
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
 		"lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
 		"typecheck": "tsc --noEmit",
-		"test": "jest",
-		"test:watch": "jest --watch",
-		"test:cov": "jest --coverage",
-		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-integration.json",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:integration": "vitest run --config vitest.config.integration.ts",
 		"typeorm": "typeorm-ts-node-commonjs -d ./src/data-source.ts",
 		"migration:generate": "typeorm-ts-node-commonjs -d ./src/data-source.ts migration:generate",
 		"migration:run": "pnpm typeorm migration:run",
@@ -69,7 +67,6 @@
 		"@nestjs/testing": "^12.6.0",
 		"@types/bcrypt": "^6.0.0",
 		"@types/express": "^5.0.6",
-		"@types/jest": "^30.0.0",
 		"@types/node": "^24.19.2",
 		"@types/passport-jwt": "^4.0.1",
 		"@types/passport-local": "^1.0.38",
@@ -78,31 +75,13 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-import": "^2.32.0",
 		"globals": "^17.14.0",
-		"jest": "^30.5.2",
 		"prettier": "^3.10.1",
 		"supertest": "^7.3.2",
-		"ts-jest": "^29.4.15",
 		"ts-loader": "^9.6.2",
 		"ts-node": "^10.9.2",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "~6.0.3",
-		"typescript-eslint": "^8.74.0"
-	},
-	"jest": {
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"ts"
-		],
-		"rootDir": "src",
-		"testRegex": ".*\\.spec\\.ts$",
-		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
-		},
-		"collectCoverageFrom": [
-			"**/*.(t|j)s"
-		],
-		"coverageDirectory": "../coverage",
-		"testEnvironment": "node"
+		"typescript-eslint": "^8.74.0",
+		"vitest": "^5.1.1"
 	}
 }

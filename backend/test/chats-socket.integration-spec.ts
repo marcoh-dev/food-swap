@@ -31,8 +31,8 @@ describe("Chat socket tickets (integration)", () => {
 
 	// Connects a fake socket client with the given handshake data; returns whether it joined its room
 	const connect = async (auth: Record<string, unknown>) => {
-		const join = jest.fn();
-		const disconnect = jest.fn();
+		const join = vi.fn();
+		const disconnect = vi.fn();
 		const client = { handshake: { auth }, join, disconnect } as unknown as Socket;
 
 		await app.get(ChatsGateway).handleConnection(client);
