@@ -145,6 +145,9 @@ export default function Listings() {
 			extraData={dataUpdatedAt}
 			onEndReached={loadMore}
 			ref={listRef}
+			// Keeps the listings in place when a notice above them appears or disappears (e.g. going
+			// offline while scrolled down); at the top, the list stays at the top so the notice shows
+			maintainVisibleContentPosition={{ minIndexForVisible: 0, autoscrollToTopThreshold: 40 }}
 			ListHeaderComponent={
 				<View
 					className={cn(
