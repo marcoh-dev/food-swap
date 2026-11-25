@@ -13,7 +13,6 @@ import {
 import Carousel from "@/components/Carousel";
 import ListingCard from "@/components/ListingCard";
 import { OfflineNotice } from "@/components/OfflineNotice";
-import { Screen } from "@/components/Screen";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -110,30 +109,16 @@ export default function Listings() {
 		);
 	}
 
-	if (!data) {
-		return (
-			<Screen>
-				{heading}
-				{offlineNotice}
-				{errorNotice}
-				<Carousel />
-				{isPending && isOnline && (
-					<View className="flex-1 items-center justify-center">
-						<ActivityIndicator size="large" color={mutedForeground} />
-					</View>
-				)}
-			</Screen>
-		);
-	}
-
 	// The list must be the screen's first view: iOS native tabs only find a scroll
 	// view along the first children (tab bar minimising, bottom inset, scroll to top).
+	// It's also there while nothing has loaded yet, so the header with the carousel
+	// stays in place when the offers arrive.
 	return (
 		<FlatList
 			className="bg-background"
 			contentContainerClassName="gap-3 pb-6"
 			contentInsetAdjustmentBehavior="automatic"
-			data={data.pages.flatMap((page) => page.data)}
+			data={data?.pages.flatMap((page) => page.data) ?? []}
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
 			onEndReached={loadMore}
@@ -150,11 +135,18 @@ export default function Listings() {
 					{offlineNotice}
 					{errorNotice}
 					<Carousel />
-					<Text variant="muted">
-						{data.pages[0]?.meta.total}{" "}
-						{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
-					</Text>
+					{data && (
+						<Text variant="muted">
+							{data.pages[0]?.meta.total}{" "}
+							{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
+						</Text>
+					)}
 				</View>
+			}
+			ListEmptyComponent={
+				isPending && isOnline ? (
+					<ActivityIndicator size="large" color={mutedForeground} className="py-12" />
+				) : undefined
 			}
 			ListFooterComponent={footer}
 			refreshControl={
