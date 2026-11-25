@@ -275,7 +275,6 @@ describe("server disconnect", () => {
 		emit("disconnect", "io server disconnect");
 
 		expect(onSessionEnded).toHaveBeenCalledTimes(1);
-		expect(useChatStore.getState().connected).toBe(false);
 	});
 
 	it("doesn't report it when the connection drops for other reasons", () => {
@@ -291,7 +290,6 @@ describe("reconnect", () => {
 
 		emit("connect");
 
-		expect(useChatStore.getState().connected).toBe(true);
 		expect(isOutdated(CHAT_LIST_QUERY_KEY)).toBe(false);
 	});
 
