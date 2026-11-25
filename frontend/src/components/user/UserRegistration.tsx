@@ -16,7 +16,7 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import { Input } from "@/components/ui/input";
 import { applyServerErrors } from "@/utils/form";
 
-import PinInput from "./PinInput";
+import PasswordInput from "./PasswordInput";
 
 export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 	const form = useForm<RegistrationValues>({
@@ -72,7 +72,7 @@ export function UserRegistration({ redirectTo }: { redirectTo?: string }) {
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor="password">Passwort</FieldLabel>
-								<PinInput
+								<PasswordInput
 									{...field}
 									id="password"
 									autoComplete="new-password"
