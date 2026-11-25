@@ -90,7 +90,14 @@ export default function Listings() {
 	);
 
 	let footer;
-	if (isFetchingNextPage) {
+	if (!isOnline && hasNextPage) {
+		// Offline, loading the next page waits (TanStack pauses it) and continues once back online
+		footer = (
+			<Text variant="muted" className="px-6 py-4 text-center">
+				Weitere Angebote werden geladen, sobald du wieder online bist.
+			</Text>
+		);
+	} else if (isFetchingNextPage) {
 		footer = <ActivityIndicator color={mutedForeground} className="self-center py-4" />;
 	} else if (isFetchNextPageError) {
 		footer = (
