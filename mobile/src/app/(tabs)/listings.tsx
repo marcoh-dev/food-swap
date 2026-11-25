@@ -32,7 +32,8 @@ export default function Listings() {
 		isPending,
 		isError,
 		isFetching,
-		refetch,
+		reload,
+		listings,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
@@ -51,7 +52,7 @@ export default function Listings() {
 		}
 
 		setIsRefreshing(true);
-		await refetch();
+		await reload();
 		setIsRefreshing(false);
 	}
 
@@ -83,17 +84,20 @@ export default function Listings() {
 				variant="outline"
 				className="self-start"
 				disabled={isFetching}
-				onPress={() => void refetch()}
+				onPress={() => void reload()}
 			>
 				<Text>Erneut versuchen</Text>
 			</Button>
 		</ServerErrorNotice>
 	);
 
+	// While there are more pages, the end of the list keeps a box for the spinner (or the offline
+	// text) of the same height: a quick swipe to the end shows it right away, and the list doesn't
+	// grow or jump when loading starts or the connection changes
+	const footerBox = "min-h-20 justify-center px-6";
+
 	let footer;
-	if (isFetchingNextPage) {
-		footer = <ActivityIndicator color={mutedForeground} className="self-center py-4" />;
-	} else if (isFetchNextPageError) {
+	if (isFetchNextPageError) {
 		footer = (
 			// iOS: scrollToEnd ignores the space the system adds for the tab bar, so we add it here
 			<View
@@ -106,6 +110,21 @@ export default function Listings() {
 				<Button variant="outline" onPress={() => void fetchNextPage()}>
 					<Text>Erneut versuchen</Text>
 				</Button>
+			</View>
+		);
+	} else if (hasNextPage && !isOnline) {
+		// Offline, loading the next page waits (TanStack pauses it) and continues once back online
+		footer = (
+			<View className={footerBox}>
+				<Text variant="muted" className="text-center">
+					Weitere Angebote werden geladen, sobald du wieder online bist.
+				</Text>
+			</View>
+		);
+	} else if (hasNextPage) {
+		footer = (
+			<View className={footerBox}>
+				<ActivityIndicator color={mutedForeground} />
 			</View>
 		);
 	}
@@ -132,11 +151,14 @@ export default function Listings() {
 			className="bg-background"
 			contentContainerClassName="gap-3 pb-6"
 			contentInsetAdjustmentBehavior="automatic"
-			data={data.pages.flatMap((page) => page.data)}
+			data={listings}
 			keyExtractor={({ id }) => id}
 			extraData={dataUpdatedAt}
 			onEndReached={loadMore}
 			ref={listRef}
+			// Keeps the listings in place when a notice above them appears or disappears (e.g. going
+			// offline while scrolled down); at the top, the list stays at the top so the notice shows
+			maintainVisibleContentPosition={{ minIndexForVisible: 0, autoscrollToTopThreshold: 40 }}
 			ListHeaderComponent={
 				<View
 					className={cn(
