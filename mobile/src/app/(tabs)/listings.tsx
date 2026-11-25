@@ -12,13 +12,12 @@ import {
 
 import Carousel from "@/components/Carousel";
 import ListingCard from "@/components/ListingCard";
-import { OfflineNotice } from "@/components/OfflineNotice";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useListings } from "@/hooks/useListings";
-import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
 import { LISTING_STATUS_LABELS } from "@/lib/listing";
@@ -41,7 +40,6 @@ export default function Listings() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
-	const showOfflineNotice = useShowOfflineNotice();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const listRef = useRef<FlatList<ListingResponse>>(null);
 
@@ -62,15 +60,6 @@ export default function Listings() {
 	}
 
 	const heading = <Text variant="h1">Food Swap</Text>;
-	const offlineNotice = showOfflineNotice && (
-		<OfflineNotice
-			message={
-				data
-					? `Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}. Die Angebote werden aktualisiert, sobald du wieder online bist.`
-					: "Die Angebote werden geladen, sobald du wieder online bist."
-			}
-		/>
-	);
 	const errorNotice = isOnline && isError && !isFetchNextPageError && (
 		<ServerErrorNotice
 			message={
@@ -128,84 +117,89 @@ export default function Listings() {
 		);
 	}
 
-	// The list must be the screen's first view: iOS native tabs only find a scroll
+	// The list must be the screen's first child: iOS native tabs only find a scroll
 	// view along the first children (tab bar minimising, bottom inset, scroll to top).
 	// It's also there while nothing has loaded yet, so the header with the carousel
 	// stays in place when the offers arrive.
 	return (
-		<FlatList
-			className="bg-background"
-			contentContainerClassName="gap-3 pb-6"
-			contentInsetAdjustmentBehavior="automatic"
-			data={listings}
-			keyExtractor={({ id }) => id}
-			extraData={dataUpdatedAt}
-			onEndReached={loadMore}
-			ref={listRef}
-			// Keeps the listings in place when a notice above them appears or disappears (e.g. going
-			// offline while scrolled down); at the top, the list stays at the top so the notice shows
-			maintainVisibleContentPosition={{ minIndexForVisible: 0, autoscrollToTopThreshold: 40 }}
-			ListHeaderComponent={
-				<View
-					className={cn(
-						"gap-4 px-6 pb-1",
-						// iOS adds the status bar inset itself (contentInsetAdjustmentBehavior)
-						Platform.OS === "android" ? "pt-safe-offset-6" : "pt-6",
-					)}
-				>
-					{heading}
-					{offlineNotice}
-					{errorNotice}
-					<Carousel />
-					{data && (
-						<Text variant="muted">
-							{data.pages[0]?.meta.total}{" "}
-							{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
-						</Text>
-					)}
-				</View>
-			}
-			ListEmptyComponent={
-				isPending && isOnline ? (
-					<ActivityIndicator size="large" color={mutedForeground} className="py-12" />
-				) : undefined
-			}
-			ListFooterComponent={footer}
-			refreshControl={
-				<RefreshControl
-					refreshing={isRefreshing}
-					onRefresh={refresh}
-					tintColor={mutedForeground}
-					colors={mutedForeground ? [mutedForeground] : undefined}
-					progressBackgroundColor={card}
-				/>
-			}
-			renderItem={({ item }) => (
-				<Link href={`/listings/${item.id}`} asChild>
-					<Pressable
-						accessibilityRole="button"
-						accessibilityLabel={item.title}
-						accessibilityHint="Öffnet das Angebot"
-					>
-						{({ pressed }) => (
-							<View className={cn(pressed && "opacity-70")}>
-								<ListingCard
-									title={item.title}
-									image={item.image}
-									place={item.place}
-									type={item.type}
-									category={item.category}
-									tags={item.tags}
-									createdAt={item.createdAt}
-									endDate={item.endDate}
-									statusLabel={LISTING_STATUS_LABELS[item.status]}
-									now={dataUpdatedAt}
-								/>
-							</View>
+		<View className="flex-1 bg-background">
+			<FlatList
+				className="bg-background"
+				contentContainerClassName="gap-3 pb-6"
+				contentInsetAdjustmentBehavior="automatic"
+				data={listings}
+				keyExtractor={({ id }) => id}
+				extraData={dataUpdatedAt}
+				onEndReached={loadMore}
+				ref={listRef}
+				// Keeps the listings in place when a notice above them appears or disappears (e.g. the server
+				// error notice while scrolled down); at the top, the list stays at the top so the notice shows
+				maintainVisibleContentPosition={{
+					minIndexForVisible: 0,
+					autoscrollToTopThreshold: 40,
+				}}
+				ListHeaderComponent={
+					<View
+						className={cn(
+							"gap-4 px-6 pb-1",
+							// iOS adds the status bar inset itself (contentInsetAdjustmentBehavior)
+							Platform.OS === "android" ? "pt-safe-offset-6" : "pt-6",
 						)}
-					</Pressable>
-				</Link>
-			)}
-		/>
+					>
+						{heading}
+						{errorNotice}
+						<Carousel />
+						{data && (
+							<Text variant="muted">
+								{data.pages[0]?.meta.total}{" "}
+								{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
+							</Text>
+						)}
+					</View>
+				}
+				ListEmptyComponent={
+					isPending && isOnline ? (
+						<ActivityIndicator size="large" color={mutedForeground} className="py-12" />
+					) : undefined
+				}
+				ListFooterComponent={footer}
+				refreshControl={
+					<RefreshControl
+						refreshing={isRefreshing}
+						onRefresh={refresh}
+						tintColor={mutedForeground}
+						colors={mutedForeground ? [mutedForeground] : undefined}
+						progressBackgroundColor={card}
+					/>
+				}
+				renderItem={({ item }) => (
+					<Link href={`/listings/${item.id}`} asChild>
+						<Pressable
+							accessibilityRole="button"
+							accessibilityLabel={item.title}
+							accessibilityHint="Öffnet das Angebot"
+						>
+							{({ pressed }) => (
+								<View className={cn(pressed && "opacity-70")}>
+									<ListingCard
+										title={item.title}
+										image={item.image}
+										place={item.place}
+										type={item.type}
+										category={item.category}
+										tags={item.tags}
+										createdAt={item.createdAt}
+										endDate={item.endDate}
+										statusLabel={LISTING_STATUS_LABELS[item.status]}
+										now={dataUpdatedAt}
+									/>
+								</View>
+							)}
+						</Pressable>
+					</Link>
+				)}
+			/>
+			<OfflineBanner detail={data && `Stand ${formatLoadedAt(dataUpdatedAt)}`} />
+		</View>
 	);
 }
