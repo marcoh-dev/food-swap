@@ -10,10 +10,11 @@ import {
 } from "@food-swap/shared/schemas/user";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { AccessibilityInfo, Pressable, ScrollView, View } from "react-native";
+import { AccessibilityInfo, ScrollView } from "react-native";
 import { z } from "zod";
 
 import { isConflictError, isRateLimitedError } from "@/api/request";
+import { AuthSwitchLink } from "@/components/AuthSwitchLink";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { PasswordField } from "@/components/PasswordField";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
@@ -127,26 +128,11 @@ export default function Registration() {
 			<Button disabled={!isOnline || registration.isPending} onPress={handleSubmit}>
 				<Text>Registrieren</Text>
 			</Button>
-			{/* The link is its own element: a larger tap target, and its underline doesn't depend on
-			    how text nested in another text is styled */}
-			<View className="flex-row flex-wrap items-baseline">
-				<Text className="text-body-small">
-					{"Du hast schon ein Konto? Hier geht's zum "}
-				</Text>
-				<Pressable
-					accessibilityRole="link"
-					hitSlop={8}
-					// Replaces this modal, so closing the login leads back to where the user came from
-					onPress={() =>
-						router.replace(
-							isAccountTab(redirect) ? `/login?redirect=${redirect}` : "/login",
-						)
-					}
-				>
-					<Text className="text-body-small underline">Login</Text>
-				</Pressable>
-				<Text className="text-body-small">.</Text>
-			</View>
+			<AuthSwitchLink
+				text="Du hast schon ein Konto? Hier geht's zum"
+				linkText="Login"
+				to="/login"
+			/>
 		</ScrollView>
 	);
 }
