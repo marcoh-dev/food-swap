@@ -12,7 +12,7 @@ import { ChatReplyBar } from "@/components/ChatReplyBar";
 import { DeleteChatButton } from "@/components/DeleteChatButton";
 import { KeyboardAwareView } from "@/components/KeyboardAwareView";
 import { Notice } from "@/components/Notice";
-import { OfflineNotice } from "@/components/OfflineNotice";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { RequireLogin } from "@/components/RequireLogin";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { StateScreen } from "@/components/StateScreen";
@@ -24,7 +24,6 @@ import { useDeleteChat } from "@/hooks/useDeleteChat";
 import { useIsAppActive } from "@/hooks/useIsAppActive";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useMarkChatRead } from "@/hooks/useMarkChatRead";
-import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ChatScreen() {
@@ -54,7 +53,6 @@ function Conversation() {
 	});
 	const { data: currentUser } = useCurrentUser();
 	const isOnline = useIsOnline();
-	const showOfflineNotice = useShowOfflineNotice();
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const isNotFound = !isValidId || isNotFoundError(error);
 	const isFocused = useIsFocused();
@@ -116,15 +114,6 @@ function Conversation() {
 		);
 	}
 
-	const offlineNotice = showOfflineNotice && (
-		<OfflineNotice
-			message={
-				chat
-					? "Neue Nachrichten erscheinen, sobald du wieder online bist."
-					: "Der Chat wird geladen, sobald du wieder online bist."
-			}
-		/>
-	);
 	const errorNotice = isOnline && isError && (
 		<ServerErrorNotice
 			message={
@@ -146,10 +135,9 @@ function Conversation() {
 
 	if (!chat) {
 		return (
-			<>
+			<View className="flex-1 bg-background">
 				{header}
 				<StateScreen>
-					{offlineNotice}
 					{errorNotice}
 					{isPending && isOnline && (
 						<View className="flex-1 items-center justify-center">
@@ -157,19 +145,15 @@ function Conversation() {
 						</View>
 					)}
 				</StateScreen>
-			</>
+				<OfflineBanner header="opaque" />
+			</View>
 		);
 	}
 
 	return (
 		<KeyboardAwareView>
 			{header}
-			{(offlineNotice || errorNotice) && (
-				<View className="gap-4 px-4 pt-4">
-					{offlineNotice}
-					{errorNotice}
-				</View>
-			)}
+			{errorNotice && <View className="px-4 pt-4">{errorNotice}</View>}
 			<ChatMessages
 				messages={chat.messages}
 				currentUserId={currentUser?.id}
@@ -187,6 +171,7 @@ function Conversation() {
 					/>
 				</View>
 			)}
+			<OfflineBanner header="opaque" />
 		</KeyboardAwareView>
 	);
 }
