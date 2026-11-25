@@ -6,7 +6,7 @@ import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui/text";
-import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
+import { useShowOfflineBanner } from "@/hooks/useShowOfflineBanner";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 type Props = {
@@ -27,7 +27,7 @@ type Props = {
  * fills the screen.
  */
 export function OfflineBanner(props: Props) {
-	const show = useShowOfflineNotice();
+	const show = useShowOfflineBanner();
 
 	return show ? <Pill {...props} /> : null;
 }
