@@ -78,7 +78,7 @@ describe("Deleting expired listings (integration)", () => {
 	});
 
 	afterEach(() => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -161,7 +161,7 @@ describe("Deleting expired listings (integration)", () => {
 	});
 
 	it("logs how many listings it deleted", async () => {
-		const log = jest.spyOn(Logger.prototype, "log");
+		const log = vi.spyOn(Logger.prototype, "log");
 		// Two are due, the third one ends later and is not
 		await createListing(END_DAY);
 		await createListing(END_DAY);
@@ -184,10 +184,10 @@ describe("Deleting expired listings (integration)", () => {
 
 	it("still starts the backend when the startup cleanup fails", async () => {
 		// A failing cleanup is logged, but must not stop the app
-		jest.spyOn(listingsService, "deleteExpired").mockRejectedValue(
+		vi.spyOn(listingsService, "deleteExpired").mockRejectedValue(
 			new Error("Database unavailable"),
 		);
-		const logError = jest.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+		const logError = vi.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
 
 		await expect(listingsService.onApplicationBootstrap()).resolves.toBe(undefined);
 		expect(logError).toHaveBeenCalledWith(
@@ -201,7 +201,7 @@ describe("Deleting expired listings (integration)", () => {
 
 		it("deletes overdue listings with the cleanup secret", async () => {
 			// This is the request the nightly GitHub workflow sends
-			const log = jest.spyOn(Logger.prototype, "log");
+			const log = vi.spyOn(Logger.prototype, "log");
 			const listing = await createListing(overdueDay());
 
 			await cleanup()
@@ -232,7 +232,7 @@ describe("Deleting expired listings (integration)", () => {
 
 		it("rejects all requests when no cleanup secret is configured", async () => {
 			// A missing secret must not mean "no protection"
-			jest.spyOn(app.get(ConfigService), "get").mockReturnValue(undefined);
+			vi.spyOn(app.get(ConfigService), "get").mockReturnValue(undefined);
 			const listing = await createListing(overdueDay());
 
 			await cleanup().set("Authorization", `Bearer ${CLEANUP_SECRET}`).expect(401);

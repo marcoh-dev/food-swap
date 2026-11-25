@@ -284,10 +284,10 @@ In VS Code, open the repository folder itself (not a parent folder), so `.vscode
 
 ### Tests
 
-- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend and in `shared` (Vitest). `pnpm test` runs them, and so does CI.
+- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend, `*.test.ts` in the frontend and in `shared`, all run with Vitest (the app will use Jest with `jest-expo`, see #236). `pnpm test` runs them, and so does CI.
 - **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and need a database: locally the Docker database, in CI a Postgres service.
 
-`pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
+`pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The config is `backend/vitest.config.integration.ts`; the test files run one after another because they share the database.
 
 ### Updating a feature branch
 

@@ -20,6 +20,6 @@
 		"noUncheckedIndexedAccess": true,
 		"forceConsistentCasingInFileNames": true,
 		"noFallthroughCasesInSwitch": true,
-		"types": ["node", "jest"]
+		"types": ["node", "vitest/globals"]
 	}
 }
