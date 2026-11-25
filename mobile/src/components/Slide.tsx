@@ -1,9 +1,9 @@
 import { Image, Text, View } from "react-native";
 
-// The slide's height without text: its padding around the text block (py-2)
+/** The slide's height without text: its padding around the text block (py-2). */
 export const SLIDE_PADDING_HEIGHT = 16;
-// At least as tall as before (216 px, h-54)
-export const MIN_SLIDE_HEIGHT = 216;
+/** The slides' height in the first frame, until their text is measured (the former `h-54`). */
+export const INITIAL_SLIDE_HEIGHT = 216;
 
 type Props = {
 	title: string;
@@ -42,7 +42,7 @@ export default function Slide({
 		>
 			<View
 				className="overflow-hidden rounded-2xl px-2 py-2"
-				style={{ height: height ?? MIN_SLIDE_HEIGHT }}
+				style={{ height: height ?? INITIAL_SLIDE_HEIGHT }}
 			>
 				{image ? (
 					<>

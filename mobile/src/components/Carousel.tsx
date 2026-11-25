@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FlatList, View } from "react-native";
 
-import Slide, { MIN_SLIDE_HEIGHT, SLIDE_PADDING_HEIGHT } from "@/components/Slide";
+import Slide, { INITIAL_SLIDE_HEIGHT, SLIDE_PADDING_HEIGHT } from "@/components/Slide";
 import { SLIDES } from "@/lib/slides";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ export default function Carousel() {
 	const [index, setIndex] = useState(0);
 	// All slides as tall as the one with the most text (it grows with larger font sizes). Measured
 	// from the text, which doesn't depend on the slide's height, so measuring can't feed back.
-	const [slideHeight, setSlideHeight] = useState(MIN_SLIDE_HEIGHT);
+	const [slideHeight, setSlideHeight] = useState<number>();
 
 	const slideWidth = Math.max(width - EDGE * 2, 0);
 	const interval = slideWidth + GAP;
@@ -48,12 +48,12 @@ export default function Carousel() {
 								body={item.body}
 								source={item.source}
 								image={item.image}
-								height={slideHeight}
+								height={slideHeight ?? INITIAL_SLIDE_HEIGHT}
 								position={slideIndex + 1}
 								total={SLIDES.length}
 								onTextHeight={(textHeight) => {
 									const needed = Math.ceil(textHeight + SLIDE_PADDING_HEIGHT);
-									setSlideHeight((current) => Math.max(current, needed));
+									setSlideHeight((current) => Math.max(current ?? 0, needed));
 								}}
 							/>
 						</View>
