@@ -14,6 +14,8 @@ import { Spinner } from "@/components/ui/spinner";
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_MS = 150;
+// Shorter waits would only make the list flicker while typing
+const DIM_AFTER_MS = 300;
 const COORDINATE_DECIMALS = 3;
 const LOCATION_TIMEOUT_MS = 15000;
 const LOCATION_ERROR = "Standort konnte nicht ermittelt werden. Bitte gib einen Ort ein.";
@@ -95,6 +97,9 @@ export default function PlaceCombobox({
 	const trimmedQuery = query.trim();
 	const canSearch = !selectedPlace && trimmedQuery.length >= MIN_QUERY_LENGTH;
 	const isLoaded = result.query === trimmedQuery;
+	// The text whose search has taken longer than DIM_AFTER_MS; fast answers don't dim the list
+	const [slowQuery, setSlowQuery] = useState<string | null>(null);
+	const dimResults = !isLoaded && slowQuery === trimmedQuery;
 	const showList = isOpen && canSearch && (isLoaded || result.places.length > 0);
 	const hasOptions = showList && result.places.length > 0;
 	const activePlace = hasOptions ? result.places[activeIndex] : undefined;
@@ -135,6 +140,13 @@ export default function PlaceCombobox({
 		form.addEventListener("formdata", applyFirstSuggestion);
 		return () => form.removeEventListener("formdata", applyFirstSuggestion);
 	}, [firstSuggestion, name, valueKey]);
+
+	useEffect(() => {
+		if (isLoaded) return;
+
+		const timeout = setTimeout(() => setSlowQuery(trimmedQuery), DIM_AFTER_MS);
+		return () => clearTimeout(timeout);
+	}, [isLoaded, trimmedQuery]);
 
 	useEffect(() => clearLocationRequest, []);
 
@@ -333,7 +345,11 @@ export default function PlaceCombobox({
 							id={listId}
 							role="listbox"
 							aria-label={label ?? "Orte"}
-							className="no-scrollbar max-h-72 overflow-y-auto"
+							// Results for an earlier text stay visible, dimmed when the new ones take a while
+							className={cn(
+								"no-scrollbar max-h-72 overflow-y-auto",
+								dimResults && "opacity-50",
+							)}
 						>
 							{result.places.map((place, index) => (
 								<li
