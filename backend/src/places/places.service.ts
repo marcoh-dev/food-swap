@@ -4,10 +4,14 @@ import { IsNull, Not, Repository } from "typeorm";
 
 import { Place } from "./entities/place.entity";
 
-const SUGGESTION_LIMIT = 10;
+// As many as fit between the field and the keyboard in the app, and in the web list without scrolling
+const SUGGESTION_LIMIT = 5;
 const MIN_TYPO_LENGTH = 4;
 const MAX_TYPO_LENGTH = 8;
 const ANY_CHARACTER = "\u0000";
+// A similar name only counts if the text is at most this much longer: trigram similarity counts
+// each three-letter piece once, so "Hamxxxxxxxx" would otherwise stay similar to "Hamm" forever
+const MAX_EXTRA_LENGTH = 2;
 
 const RESPONSE_COLUMNS = `"id", "country_code" AS "countryCode", "postal_code" AS "postalCode", "name", "slug", "city", "county", "state"`;
 
@@ -20,6 +24,17 @@ const POSTAL_CODE_QUERY = `
 
 const ALT_NAME = `lower(replace(replace(replace(replace("name", 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'), 'ß', 'ss'))`;
 const DISTRICT = `(CASE WHEN "name" <> "city" THEN substr("name", length("city") + 2) END)`;
+
+// "20038 Ham": postal codes starting with the digits, narrowed down by names starting with the
+// text (several places can share a postal code, e.g. villages). The field shows a picked place
+// like this (formatPlace), so editing it sends such a query.
+const POSTAL_CODE_NAME_QUERY = `
+  SELECT ${RESPONSE_COLUMNS}
+  FROM "places"
+  WHERE "postal_code" LIKE $1 || '%'
+    AND ("name" ILIKE $2 || '%' OR ${ALT_NAME} LIKE lower($2) || '%' OR ${DISTRICT} ILIKE $2 || '%')
+  ORDER BY "postal_code", ("name" <> "city") DESC, "name"
+  LIMIT $3`;
 
 const NEAREST_QUERY = `
   SELECT ${RESPONSE_COLUMNS}
@@ -36,7 +51,9 @@ const NAME_QUERY = `
       AND (
         "name" ILIKE $1 || '%' OR ${ALT_NAME} LIKE lower($1) || '%' OR ${DISTRICT} ILIKE $1 || '%'
         OR ($3::text IS NOT NULL AND ("name" ~* $3 OR ${ALT_NAME} ~ $3 OR ${DISTRICT} ~* $3))
-        OR "name" % $1 OR ${ALT_NAME} % lower($1) OR ${DISTRICT} % $1
+        OR ("name" % $1 AND length($1) <= length("name") + ${MAX_EXTRA_LENGTH})
+        OR (${ALT_NAME} % lower($1) AND length($1) <= length(${ALT_NAME}) + ${MAX_EXTRA_LENGTH})
+        OR (${DISTRICT} % $1 AND length($1) <= length(${DISTRICT}) + ${MAX_EXTRA_LENGTH})
       )
   ),
   "scored" AS (
@@ -94,6 +111,11 @@ export class PlacesService {
 	search(query: string, withPostalCode: boolean): Promise<Place[]> {
 		if (/^\d+$/.test(query)) {
 			return this.places.query(POSTAL_CODE_QUERY, [query, SUGGESTION_LIMIT]);
+		}
+		const postalCodeAndName = /^(\d+)\s+(.+)$/.exec(query);
+		if (postalCodeAndName) {
+			const [, postalCode, name] = postalCodeAndName;
+			return this.places.query(POSTAL_CODE_NAME_QUERY, [postalCode, name, SUGGESTION_LIMIT]);
 		}
 		return this.places.query(NAME_QUERY, [
 			query,

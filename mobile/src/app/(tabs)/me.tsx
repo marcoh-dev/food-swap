@@ -5,7 +5,7 @@ import { SymbolView } from "expo-symbols";
 import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
-import { OfflineNotice } from "@/components/OfflineNotice";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Screen } from "@/components/Screen";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
@@ -14,7 +14,6 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
-import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUser } from "@/hooks/useUser";
 
@@ -33,7 +32,6 @@ function ProfileContent() {
 	const profileQuery = useUser(user?.id);
 	const profile = profileQuery.data;
 	const isOnline = useIsOnline();
-	const showOfflineNotice = useShowOfflineNotice();
 	const logoutEverywhere = useLogoutEverywhere();
 	const foreground = useThemeColor("--foreground");
 	const mutedForeground = useThemeColor("--muted-foreground");
@@ -42,15 +40,6 @@ function ProfileContent() {
 
 	return (
 		<Screen>
-			{showOfflineNotice && (
-				<OfflineNotice
-					message={
-						profile
-							? "Dein Profil wird aktualisiert, sobald du wieder online bist."
-							: "Dein Profil wird geladen, sobald du wieder online bist."
-					}
-				/>
-			)}
 			{isOnline && hasError && (
 				<ServerErrorNotice
 					message={
@@ -149,6 +138,7 @@ function ProfileContent() {
 					</View>
 				</>
 			)}
+			<OfflineBanner loadedAt={profile && profileQuery.dataUpdatedAt} />
 		</Screen>
 	);
 }

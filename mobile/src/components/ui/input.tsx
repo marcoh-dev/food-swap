@@ -1,9 +1,10 @@
-import { Platform, TextInput, type TextInputProps } from "react-native";
+import type { Ref } from "react";
+import { Platform, TextInput, type TextInputInstance, type TextInputProps } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { cn } from "@/lib/utils";
 
-type InputProps = TextInputProps & { invalid?: boolean };
+type InputProps = TextInputProps & { invalid?: boolean; ref?: Ref<TextInputInstance> };
 
 function Input({ className, invalid, ...props }: InputProps) {
 	const mutedForeground = useThemeColor("--muted-foreground");
