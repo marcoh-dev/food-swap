@@ -63,15 +63,19 @@ export function UserUpdate({
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor="name">Profilname</FieldLabel>
-								<FieldDescription>{PROFILE_NAME_HINT}</FieldDescription>
 								<Input
 									{...field}
 									id="name"
 									type="text"
-									placeholder="z. B. Tomato "
+									placeholder="z. B. Tomato"
 									aria-invalid={fieldState.invalid}
-									aria-describedby={fieldState.invalid ? "name-error" : undefined}
+									aria-describedby={
+										fieldState.invalid ? "name-hint name-error" : "name-hint"
+									}
 								/>
+								<FieldDescription id="name-hint">
+									{PROFILE_NAME_HINT}
+								</FieldDescription>
 								<FieldError id="name-error" errors={[fieldState.error]} />
 							</Field>
 						)}
@@ -82,10 +86,6 @@ export function UserUpdate({
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor="placeId">Ort</FieldLabel>
-								<FieldDescription>
-									Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich
-									sichtbar.
-								</FieldDescription>
 								<PlaceCombobox
 									ref={field.ref}
 									id="placeId"
@@ -95,11 +95,17 @@ export function UserUpdate({
 									withPostalCode
 									aria-invalid={fieldState.invalid}
 									aria-describedby={
-										fieldState.invalid ? "placeId-error" : undefined
+										fieldState.invalid
+											? "placeId-hint placeId-error"
+											: "placeId-hint"
 									}
 									onPlaceChange={(place) => field.onChange(place?.id ?? "")}
 									onQueryChange={handlePlaceQueryChange}
 								/>
+								<FieldDescription id="placeId-hint">
+									Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich
+									sichtbar.
+								</FieldDescription>
 								<FieldError id="placeId-error" errors={[fieldState.error]} />
 							</Field>
 						)}
