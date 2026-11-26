@@ -49,7 +49,8 @@ function optionId(listId: string, place: Place) {
 	return `${listId}-${place.id}`;
 }
 
-function resultsMessage(count: number) {
+function resultsMessage(count: number, error?: string) {
+	if (error) return error;
 	if (count === 0) return "Keinen Ort gefunden";
 	return count === 1 ? "1 Ort gefunden" : `${count} Orte gefunden`;
 }
@@ -84,7 +85,8 @@ export default function PlaceCombobox({
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLocating, setIsLocating] = useState(false);
 	const [locationError, setLocationError] = useState<string | null>(null);
-	const [result, setResult] = useState<{ query: string; places: Place[] }>({
+	// `error`: the search failed, which is different from finding nothing
+	const [result, setResult] = useState<{ query: string; places: Place[]; error?: string }>({
 		query: "",
 		places: [],
 	});
@@ -111,7 +113,7 @@ export default function PlaceCombobox({
 		const timeout = setTimeout(async () => {
 			const response = await searchPlacesAction(trimmedQuery, withPostalCode);
 			if (!isCurrent) return;
-			setResult({ query: trimmedQuery, places: response.data ?? [] });
+			setResult({ query: trimmedQuery, places: response.data ?? [], error: response.error });
 			setActiveIndex(0);
 		}, DEBOUNCE_MS);
 
@@ -302,7 +304,9 @@ export default function PlaceCombobox({
 					}}
 				>
 					{result.places.length === 0 ? (
-						<p className="py-6 text-center text-xs">Keinen Ort gefunden</p>
+						<p className="py-6 text-center text-xs">
+							{resultsMessage(0, result.error)}
+						</p>
 					) : (
 						<ul
 							id={listId}
@@ -340,7 +344,7 @@ export default function PlaceCombobox({
 				Mindestens {MIN_QUERY_LENGTH} Zeichen eingeben, dann einen Ort aus der Liste wählen.
 			</span>
 			<span role="status" className="sr-only">
-				{canSearch && isLoaded ? resultsMessage(result.places.length) : ""}
+				{canSearch && isLoaded ? resultsMessage(result.places.length, result.error) : ""}
 			</span>
 			{locationError && (
 				<p role="alert" className="mt-1 text-xs text-destructive">
