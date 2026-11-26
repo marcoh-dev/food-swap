@@ -126,6 +126,9 @@ export default function Listings() {
 				keyExtractor={({ id }) => id}
 				extraData={dataUpdatedAt}
 				onEndReached={loadMore}
+				// Loads the next page one screen height before the end (default: half), so a fast swipe
+				// rarely reaches the spinner
+				onEndReachedThreshold={1}
 				// Keeps the listings in place when a notice above them appears or disappears (e.g. the server
 				// error notice while scrolled down); at the top, the list stays at the top so the notice shows
 				maintainVisibleContentPosition={{
