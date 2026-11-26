@@ -15,6 +15,7 @@ import ListingCard from "@/components/ListingCard";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { Screen } from "@/components/Screen";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
+import { SortingMenu } from "@/components/SortingMenu";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
@@ -36,6 +37,7 @@ export default function Listings() {
 		refetch,
 		fetchNextPage,
 		hasNextPage,
+		isPlaceholderData,
 		isFetchingNextPage,
 		isFetchNextPageError,
 	} = useListings(sort);
@@ -57,7 +59,8 @@ export default function Listings() {
 	}
 
 	function loadMore() {
-		if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
+		// While the previous sort's list is still shown, its pages don't belong to the new sort
+		if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isPlaceholderData) {
 			void fetchNextPage();
 		}
 	}
@@ -150,10 +153,15 @@ export default function Listings() {
 					{offlineNotice}
 					{errorNotice}
 					<Carousel />
-					<Text variant="muted">
-						{data.pages[0]?.meta.total}{" "}
-						{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
-					</Text>
+					<View className="mt-2 flex-row items-end justify-between gap-2">
+						<Text variant="muted">
+							{data.pages[0]?.meta.total}{" "}
+							{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
+						</Text>
+						<View className="flex-row items-center gap-2">
+							<SortingMenu sort={sort} onSortChange={setSort} />
+						</View>
+					</View>
 				</View>
 			}
 			ListFooterComponent={footer}

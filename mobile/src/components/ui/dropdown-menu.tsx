@@ -1,4 +1,5 @@
 import * as DropdownMenuPrimitive from "@rn-primitives/dropdown-menu";
+import { SymbolView } from "expo-symbols";
 import * as React from "react";
 import { Platform, type StyleProp, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { FadeIn, ReduceMotion } from "react-native-reanimated";
@@ -6,6 +7,7 @@ import { FullWindowOverlay as RNFullWindowOverlay } from "react-native-screens";
 
 import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
 import { TextClassContext } from "@/components/ui/text";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { cn } from "@/lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
@@ -120,11 +122,12 @@ function DropdownMenuRadioItem({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
 	children?: React.ReactNode;
 }) {
+	const popoverForeground = useThemeColor("--popover-foreground");
 	return (
 		<TextClassContext.Provider value="text-sm text-popover-foreground select-none group-active:text-accent-foreground">
 			<DropdownMenuPrimitive.RadioItem
 				className={cn(
-					"group relative flex flex-row items-center gap-2 rounded-sm py-2 pr-2 pl-8 active:bg-accent sm:py-1.5",
+					"group relative flex flex-row items-center gap-2 rounded-sm py-2 pr-8 pl-2 active:bg-accent sm:py-1.5",
 					Platform.select({
 						web: "cursor-default outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none",
 					}),
@@ -133,9 +136,13 @@ function DropdownMenuRadioItem({
 				)}
 				{...props}
 			>
-				<View className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+				<View className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
 					<DropdownMenuPrimitive.ItemIndicator>
-						<View className="h-2 w-2 rounded-full bg-foreground" />
+						<SymbolView
+							name={{ ios: "checkmark", android: "check" }}
+							size={14}
+							tintColor={popoverForeground}
+						/>
 					</DropdownMenuPrimitive.ItemIndicator>
 				</View>
 				<>{children}</>
