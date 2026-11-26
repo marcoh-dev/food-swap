@@ -4,7 +4,7 @@ import { fetchAPI } from "./fetchAPI";
 
 // Place suggestions are cached without expiry. Bump this whenever the place data
 // or the search in backend/src/places/places.service.ts changes.
-const PLACES_CACHE_VERSION = "3";
+const PLACES_CACHE_VERSION = "4";
 
 export async function searchPlaces(query: string, withPostalCode = false): Promise<Place[]> {
 	const params = new URLSearchParams({ q: query });
