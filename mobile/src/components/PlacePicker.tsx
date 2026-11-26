@@ -33,7 +33,7 @@ export function PlacePicker({
 }: Props) {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const inputRef = useRef<TextInputInstance>(null);
-	const search = usePlaceSearch(query, { enabled: !selectedPlace });
+	const { search, isOutdated } = usePlaceSearch(query, { enabled: !selectedPlace });
 	const canSearch = !selectedPlace && query.trim().length >= MIN_PLACE_QUERY_LENGTH;
 	const places = search.data ?? [];
 
@@ -47,7 +47,7 @@ export function PlacePicker({
 			<View
 				className={cn(
 					"overflow-hidden rounded-md border border-border",
-					search.isOutdated && "opacity-50",
+					isOutdated && "opacity-50",
 				)}
 			>
 				{places.map((place, index) => (
@@ -69,7 +69,7 @@ export function PlacePicker({
 	} else if (search.fetchStatus === "paused") {
 		// Offline, TanStack pauses the search and continues it once back online
 		results = <Text variant="muted">Orte werden gesucht, sobald du wieder online bist.</Text>;
-	} else if (search.isPending || search.isOutdated) {
+	} else if (search.isPending || isOutdated) {
 		// "Nothing found" only for the current text, not for an earlier one
 		results = <ActivityIndicator color={mutedForeground} />;
 	} else {

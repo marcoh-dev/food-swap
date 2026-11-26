@@ -9,6 +9,7 @@ const DEBOUNCE_MS = 150;
 /**
  * Searches places once the user stops typing for a moment. `isOutdated`: the results belong to an
  * earlier text (still waiting for the pause, or the previous results are shown while loading).
+ * `search` is returned as is, not spread: TanStack only re-renders for the properties that are read.
  */
 export function usePlaceSearch(query: string, { enabled = true } = {}) {
 	const trimmedQuery = query.trim();
@@ -26,5 +27,5 @@ export function usePlaceSearch(query: string, { enabled = true } = {}) {
 		placeholderData: keepPreviousData,
 	});
 
-	return { ...search, isOutdated: debouncedQuery !== trimmedQuery || search.isPlaceholderData };
+	return { search, isOutdated: debouncedQuery !== trimmedQuery || search.isPlaceholderData };
 }
