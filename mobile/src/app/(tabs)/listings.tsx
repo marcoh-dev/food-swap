@@ -1,6 +1,5 @@
-import type { ListingResponse } from "@food-swap/shared/types";
 import { Link } from "expo-router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -41,7 +40,6 @@ export default function Listings() {
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
 	const [isRefreshing, setIsRefreshing] = useState(false);
-	const listRef = useRef<FlatList<ListingResponse>>(null);
 
 	async function refresh() {
 		if (!isOnline) {
@@ -79,19 +77,16 @@ export default function Listings() {
 		</ServerErrorNotice>
 	);
 
-	// While there are more pages, the end of the list keeps a box for the spinner (or the offline
-	// text) of the same height: a quick swipe to the end shows it right away, and the list doesn't
-	// grow or jump when loading starts or the connection changes
-	const footerBox = "min-h-20 justify-center px-6";
+	// While there are more pages, the end of the list keeps a box for the spinner (or the offline or
+	// error text) of the same height: a quick swipe to the end shows it right away, and the list
+	// doesn't grow or jump when loading starts, fails or the connection changes
+	const footerBox = "min-h-28 justify-center gap-3 px-6";
 
 	let footer;
-	if (isFetchNextPageError) {
+	// While trying again, the spinner shows instead
+	if (isFetchNextPageError && !isFetchingNextPage) {
 		footer = (
-			// iOS: scrollToEnd ignores the space the system adds for the tab bar, so we add it here
-			<View
-				className={cn("gap-4 px-6 py-6", Platform.OS === "ios" && "pb-24")}
-				onLayout={() => listRef.current?.scrollToEnd({ animated: true })}
-			>
+			<View className={footerBox}>
 				<Text variant="muted" className="text-center">
 					Weitere Angebote konnten nicht geladen werden.
 				</Text>
@@ -131,7 +126,6 @@ export default function Listings() {
 				keyExtractor={({ id }) => id}
 				extraData={dataUpdatedAt}
 				onEndReached={loadMore}
-				ref={listRef}
 				// Keeps the listings in place when a notice above them appears or disappears (e.g. the server
 				// error notice while scrolled down); at the top, the list stays at the top so the notice shows
 				maintainVisibleContentPosition={{
