@@ -4,7 +4,8 @@ import { IsNull, Not, Repository } from "typeorm";
 
 import { Place } from "./entities/place.entity";
 
-const SUGGESTION_LIMIT = 10;
+// As many as fit between the field and the keyboard in the app, and in the web list without scrolling
+const SUGGESTION_LIMIT = 5;
 const MIN_TYPO_LENGTH = 4;
 const MAX_TYPO_LENGTH = 8;
 const ANY_CHARACTER = "\u0000";

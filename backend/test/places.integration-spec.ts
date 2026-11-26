@@ -37,6 +37,11 @@ describe("Place search (integration)", () => {
 		await app.close();
 	});
 
+	it("suggests at most 5 places", async () => {
+		expect(await search("Hamburg")).toHaveLength(5);
+		expect(await search("54655")).toHaveLength(5);
+	});
+
 	describe("postal code and name", () => {
 		it("finds a place by its postal code and the start of its name", async () => {
 			expect(await search("20038 Ham")).toEqual(["20038 Hamburg"]);
