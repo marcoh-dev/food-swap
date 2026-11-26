@@ -34,6 +34,45 @@ export function PlacePicker({
 	const canSearch = !selectedPlace && query.trim().length >= MIN_PLACE_QUERY_LENGTH;
 	const places = search.data ?? [];
 
+	let results;
+	if (search.isError) {
+		results = <Text variant="muted">Orte konnten nicht geladen werden.</Text>;
+	} else if (places.length > 0) {
+		// Results for an earlier text stay visible but dimmed until the new ones arrive, so the
+		// list doesn't jump while typing
+		results = (
+			<View
+				className={cn(
+					"overflow-hidden rounded-md border border-border",
+					search.isOutdated && "opacity-50",
+				)}
+			>
+				{places.map((place, index) => (
+					<Pressable
+						key={place.id}
+						onPress={() => onSelect(place)}
+						accessibilityRole="button"
+						className={cn(
+							"px-3 py-2 active:bg-accent",
+							index > 0 && "border-t border-border",
+						)}
+					>
+						<Text>{formatPlace(place)}</Text>
+						<Text variant="muted">{placeRegion(place)}</Text>
+					</Pressable>
+				))}
+			</View>
+		);
+	} else if (search.fetchStatus === "paused") {
+		// Offline, TanStack pauses the search and continues it once back online
+		results = <Text variant="muted">Orte werden gesucht, sobald du wieder online bist.</Text>;
+	} else if (search.isPending || search.isOutdated) {
+		// "Nothing found" only for the current text, not for an earlier one
+		results = <ActivityIndicator color={mutedForeground} />;
+	} else {
+		results = <Text variant="muted">Keinen Ort gefunden</Text>;
+	}
+
 	// The results come right below the field, before its description
 	return (
 		<TextField
@@ -46,34 +85,7 @@ export function PlacePicker({
 			autoCorrect={false}
 			autoComplete="off"
 		>
-			{canSearch &&
-				// Offline, TanStack pauses the search and continues it once back online
-				(search.isPending && search.fetchStatus === "paused" ? (
-					<Text variant="muted">Orte werden gesucht, sobald du wieder online bist.</Text>
-				) : search.isPending ? (
-					<ActivityIndicator color={mutedForeground} />
-				) : search.isError ? (
-					<Text variant="muted">Orte konnten nicht geladen werden.</Text>
-				) : places.length === 0 ? (
-					<Text variant="muted">Keinen Ort gefunden</Text>
-				) : (
-					<View className="overflow-hidden rounded-md border border-border">
-						{places.map((place, index) => (
-							<Pressable
-								key={place.id}
-								onPress={() => onSelect(place)}
-								accessibilityRole="button"
-								className={cn(
-									"px-3 py-2 active:bg-accent",
-									index > 0 && "border-t border-border",
-								)}
-							>
-								<Text>{formatPlace(place)}</Text>
-								<Text variant="muted">{placeRegion(place)}</Text>
-							</Pressable>
-						))}
-					</View>
-				))}
+			{canSearch && results}
 		</TextField>
 	);
 }
