@@ -10,6 +10,7 @@ import { RefreshToken } from "./entities/refreshToken.entity";
 import { JwtStrategy } from "./jwt.strategy";
 import { LocalStrategy } from "./local.strategy";
 import { ChatsModule } from "../chats/chats.module";
+import { PushModule } from "../push/push.module";
 import { User } from "../users/entities/user.entity";
 import { UsersModule } from "../users/users.module";
 
@@ -17,6 +18,7 @@ import { UsersModule } from "../users/users.module";
 	imports: [
 		UsersModule,
 		ChatsModule,
+		PushModule,
 		PassportModule,
 		TypeOrmModule.forFeature([RefreshToken, User]),
 		JwtModule.registerAsync({

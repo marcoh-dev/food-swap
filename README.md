@@ -136,19 +136,31 @@ The app keeps all chat data in the TanStack Query cache, under keys starting wit
 - **Deleting a chat** (header button in the conversation) hides it only for you (`DELETE /chats/:id`); the other person keeps it until they delete it too. The app removes it from the cached list and goes to the Chats tab; the socket's `chatRemoved` event does the same on your other devices and reloads the listing cards.
 - **Drafts:** unsent text is kept in memory (`mobile/src/lib/chatDrafts.ts`), per chat and per listing for a first message, until it's sent successfully, also after leaving the screen or a failed send; it's gone after closing the app or logging out.
 
+### Push notifications
+
+New chat messages also go out as push notifications to the recipient's devices, so they arrive when no FoodSwap tab is open (web push, #112; the app follows with #176). The backend part is in `backend/src/push/`:
+
+- **Subscriptions:** a browser that allows notifications sends its push subscription to `POST /push-subscriptions` (endpoint at the browser's push service plus two keys); `DELETE /push-subscriptions` removes it. They're stored per device in `push_subscriptions`, renewed on each visit (`lastSeenAt`) and moved to another account if one logs in on the same browser.
+- **Sending:** after a chat message is saved, `ChatsService` hands it to `PushService` in the background, so a failed push never fails the message. Only the other person gets it, on all their devices; the texts are built in `pushMessage.ts` (the same as the web's in-tab notification). Subscriptions the push service no longer knows (404/410) are deleted.
+- **Ending:** "Überall abmelden" deletes all of a user's subscriptions; a daily job (and one on startup) deletes those not renewed within the login lifetime (`REFRESH_TOKEN_DAYS`); deleting an account deletes its subscriptions.
+- **Keys:** web push needs a VAPID key pair (see the environment variables). Without it, everything works, only no pushes are sent, which is fine for local development and the tests.
+
 ### Environment variables
 
 **`backend/.env`**
 
-| Variable              | Local                                                         | Live                                                               |
-| --------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `DATABASE_URL`        | `postgresql://postgres:postgres@localhost:5432/foodswap`      | live database URL, ending in `?sslmode=verify-full`                |
-| `TEST_DATABASE_URL`   | `postgresql://postgres:postgres@localhost:5432/foodswap_test` | not used                                                           |
-| `PORT`                | `3000`                                                        | set by the hosting provider                                        |
-| `JWT_SECRET`          | any string                                                    | long random string, never the local one                            |
-| `CLEANUP_SECRET`      | any string, only needed to call `POST /listings/cleanup`      | long random string, the same as the `CLEANUP_SECRET` GitHub secret |
-| `SEED_PASSWORD`       | password of the local mock users, e.g. `'Local-Mock-1!'`      | not used, the live mock password goes into `backend/.env.live`     |
-| `INTERNAL_API_SECRET` | any string, the same as in `frontend/.env`                    | long random string, the same as on Vercel                          |
+| Variable              | Local                                                                                                       | Live                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `DATABASE_URL`        | `postgresql://postgres:postgres@localhost:5432/foodswap`                                                    | live database URL, ending in `?sslmode=verify-full`                       |
+| `TEST_DATABASE_URL`   | `postgresql://postgres:postgres@localhost:5432/foodswap_test`                                               | not used                                                                  |
+| `PORT`                | `3000`                                                                                                      | set by the hosting provider                                               |
+| `JWT_SECRET`          | any string                                                                                                  | long random string, never the local one                                   |
+| `CLEANUP_SECRET`      | any string, only needed to call `POST /listings/cleanup`                                                    | long random string, the same as the `CLEANUP_SECRET` GitHub secret        |
+| `SEED_PASSWORD`       | password of the local mock users, e.g. `'Local-Mock-1!'`                                                    | not used, the live mock password goes into `backend/.env.live`            |
+| `INTERNAL_API_SECRET` | any string, the same as in `frontend/.env`                                                                  | long random string, the same as on Vercel                                 |
+| `VAPID_PUBLIC_KEY`    | optional, for web push: generate a pair once with `pnpm --filter backend exec web-push generate-vapid-keys` | its own pair, generated once and kept (a new pair ends all subscriptions) |
+| `VAPID_PRIVATE_KEY`   | the private key of the same pair, never in the frontend                                                     | the private key of the live pair                                          |
+| `VAPID_SUBJECT`       | a contact for the push services, e.g. `mailto:you@example.com`                                              | the team's contact address                                                |
 
 **`backend/.env.live`** (only read by commands with `live` in their name)
 
