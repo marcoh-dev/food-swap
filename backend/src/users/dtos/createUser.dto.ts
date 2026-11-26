@@ -34,9 +34,10 @@ export class CreateUserDto {
 	})
 	password!: string;
 
+	// PROFILE_NAME_MAX_LENGTH in shared/src/schemas/user.schemas.ts
 	@IsOptional()
 	@IsString()
-	@MaxLength(100)
+	@MaxLength(40)
 	@Transform(trimString)
 	name?: string | null;
 }

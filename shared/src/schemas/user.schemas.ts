@@ -18,6 +18,8 @@ export const USERNAME_MIN_LENGTH = 5;
 export const USERNAME_MAX_LENGTH = 20;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
+// Long enough for e.g. "Gemüsegarten Familie Müller", short enough for chat headers and lists
+export const PROFILE_NAME_MAX_LENGTH = 40;
 
 /** Shown below the username field when registering: the rules of `registrationSchema`. */
 export const USERNAME_HINT = `${USERNAME_MIN_LENGTH} bis ${USERNAME_MAX_LENGTH} Zeichen. Erlaubt sind Buchstaben, Ziffern und _ . -`;
@@ -27,6 +29,10 @@ export const USERNAME_HINT = `${USERNAME_MIN_LENGTH} bis ${USERNAME_MAX_LENGTH} 
  * maximum is left out, hardly anyone reaches it, and the error message names it.
  */
 export const PASSWORD_HINT = `Mindestens ${PASSWORD_MIN_LENGTH} Zeichen mit Groß- und Kleinbuchstaben, einer Zahl und einem Sonderzeichen.`;
+
+/** Shown below the profile name field: it's optional, and what others see without one. */
+export const PROFILE_NAME_HINT =
+	"Für andere User sichtbar. Ohne Profilnamen wird dein Benutzername angezeigt.";
 
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
@@ -69,12 +75,15 @@ export const registrationSchema = z.object({
 
 export const profileSchema = z
 	.object({
+		// Optional: an empty name is saved as null, and the apps show the username instead
 		name: z
 			.string()
 			.trim()
-			.min(1, "Bitte gib einen Profilnamen ein.")
-			.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein.")
-			.refine((name) => !isReservedName(name), NAME_UNAVAILABLE_MESSAGE),
+			.max(
+				PROFILE_NAME_MAX_LENGTH,
+				`Der Profilname darf höchstens ${PROFILE_NAME_MAX_LENGTH} Zeichen lang sein.`,
+			)
+			.refine((name) => name === "" || !isReservedName(name), NAME_UNAVAILABLE_MESSAGE),
 		placeId: z.string(),
 		placeQuery: z.string(),
 	})

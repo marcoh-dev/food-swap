@@ -1,5 +1,9 @@
 import { formatPlace } from "@food-swap/shared/places";
-import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
+import {
+	PROFILE_NAME_HINT,
+	profileSchema,
+	type ProfileValues,
+} from "@food-swap/shared/schemas/user";
 import type { CurrentUser, Place, User } from "@food-swap/shared/types";
 import { Stack, usePreventRemove, useRouter } from "expo-router";
 import { useState } from "react";
@@ -145,7 +149,7 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 				)}
 				<TextField
 					label="Profilname"
-					description="Für andere User sichtbar."
+					description={PROFILE_NAME_HINT}
 					placeholder="z. B. Tomato"
 					value={name}
 					onChangeText={(value) => {
