@@ -18,7 +18,15 @@ type Props = TextInputProps & {
 };
 
 /** A text input with a label above it, and an optional description and error text below it. */
-export function TextField({ label, description, error, accessory, multiline, children, ...props }: Props) {
+export function TextField({
+	label,
+	description,
+	error,
+	accessory,
+	multiline,
+	children,
+	...props
+}: Props) {
 	const Field = multiline ? Textarea : Input;
 
 	return (
