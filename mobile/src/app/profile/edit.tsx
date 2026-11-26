@@ -1,7 +1,7 @@
 import { formatPlace } from "@food-swap/shared/places";
 import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
 import type { CurrentUser, Place, User } from "@food-swap/shared/types";
-import { useRouter } from "expo-router";
+import { usePreventRemove, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -54,9 +54,33 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 	const updateProfile = useUpdateProfile(user.id);
 	const [name, setName] = useState(profile.name ?? "");
 	const [place, setPlace] = useState<Place | null>(user.place ?? null);
-	const [placeQuery, setPlaceQuery] = useState(user.place ? formatPlace(user.place) : "");
+	const [placeQuery, setPlaceQuery] = useState(initialPlaceQuery(user));
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-	const deleteAccount = useDeleteAccount({ onDeleted: () => router.back() });
+	const deleteAccount = useDeleteAccount({ onDeleted: leave });
+	const hasChanges = name !== (profile.name ?? "") || placeQuery !== initialPlaceQuery(user);
+
+	// Closing with X, the iOS swipe or Android back asks first when something was changed
+	const disablePrevention = usePreventRemove(hasChanges, ({ repeat }) => {
+		Alert.alert(
+			"Änderungen verwerfen?",
+			"Deine Änderungen am Profil werden nicht gespeichert.",
+			[
+				{ text: "Weiter bearbeiten", style: "cancel" },
+				{
+					text: "Verwerfen",
+					style: "destructive",
+					// Turns the prevention off and closes the screen
+					onPress: repeat,
+				},
+			],
+		);
+	});
+
+	// After saving or deleting the account, close without asking
+	function leave() {
+		disablePrevention();
+		router.back();
+	}
 
 	function handleSubmit() {
 		if (!isOnline) return;
@@ -69,7 +93,7 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 
 		updateProfile.mutate(
 			{ name: result.data.name, placeId: result.data.placeId || null },
-			{ onSuccess: () => router.back() },
+			{ onSuccess: leave },
 		);
 	}
 
@@ -158,4 +182,8 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 			<OfflineBanner header="opaque" />
 		</View>
 	);
+}
+
+function initialPlaceQuery(user: CurrentUser) {
+	return user.place ? formatPlace(user.place) : "";
 }
