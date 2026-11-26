@@ -10,6 +10,7 @@ import {
 
 import { User } from "../../users/entities/user.entity";
 
+/** Where a push goes: a browser (web push, #112) or the app (Expo push token, #176). */
 export enum PushSubscriptionType {
 	WEB = "web",
 	EXPO = "expo",
