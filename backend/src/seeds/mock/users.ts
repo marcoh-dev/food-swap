@@ -78,7 +78,7 @@ export const mockUsers: MockUser[] = [
 		// A long name, to check how the app and the web shorten it
 		key: "friederike",
 		username: "mock_friederike",
-		name: "Friederike Annemarie von Kleinschmidt-Overbeck-Rosenthal",
+		name: "Friederike von Kleinschmidt-Overbeck",
 		place: "21709-himmelpforten",
 		createdAt: "today-200 18:40",
 	},
