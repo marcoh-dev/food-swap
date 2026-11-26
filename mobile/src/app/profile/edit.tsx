@@ -58,9 +58,11 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 	const deleteAccount = useDeleteAccount({ onDeleted: leave });
 	const hasChanges = name !== (profile.name ?? "") || placeQuery !== initialPlaceQuery(user);
+	// Set when the screen may close (saved, account deleted, changes discarded)
+	const [isLeaving, setIsLeaving] = useState(false);
 
 	// Closing with X, the iOS swipe or Android back asks first when something was changed
-	const disablePrevention = usePreventRemove(hasChanges, ({ repeat }) => {
+	const disablePrevention = usePreventRemove(hasChanges && !isLeaving, ({ repeat }) => {
 		Alert.alert(
 			"Änderungen verwerfen?",
 			"Deine Änderungen am Profil werden nicht gespeichert.",
@@ -69,8 +71,11 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 				{
 					text: "Verwerfen",
 					style: "destructive",
-					// Turns the prevention off and closes the screen
-					onPress: repeat,
+					onPress: () => {
+						setIsLeaving(true);
+						// Turns the prevention off and closes the screen
+						repeat();
+					},
 				},
 			],
 		);
@@ -78,6 +83,7 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 
 	// After saving or deleting the account, close without asking
 	function leave() {
+		setIsLeaving(true);
 		disablePrevention();
 		router.back();
 	}
