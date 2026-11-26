@@ -1,12 +1,13 @@
 import { formatPlace } from "@food-swap/shared/places";
 import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
 import type { CurrentUser, Place, User } from "@food-swap/shared/types";
-import { useRouter } from "expo-router";
+import { Stack, usePreventRemove, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { z } from "zod";
 
+import { HeaderSaveButton } from "@/components/HeaderSaveButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { PlacePicker } from "@/components/PlacePicker";
 import { RequireLogin } from "@/components/RequireLogin";
@@ -54,9 +55,39 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 	const updateProfile = useUpdateProfile(user.id);
 	const [name, setName] = useState(profile.name ?? "");
 	const [place, setPlace] = useState<Place | null>(user.place ?? null);
-	const [placeQuery, setPlaceQuery] = useState(user.place ? formatPlace(user.place) : "");
+	const [placeQuery, setPlaceQuery] = useState(initialPlaceQuery(user));
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-	const deleteAccount = useDeleteAccount({ onDeleted: () => router.back() });
+	const deleteAccount = useDeleteAccount({ onDeleted: leave });
+	const hasChanges = name !== (profile.name ?? "") || placeQuery !== initialPlaceQuery(user);
+	// Set when the screen may close (saved, account deleted, changes discarded)
+	const [isLeaving, setIsLeaving] = useState(false);
+
+	// Closing with X, the iOS swipe or Android back asks first when something was changed
+	const disablePrevention = usePreventRemove(hasChanges && !isLeaving, ({ repeat }) => {
+		Alert.alert(
+			"Änderungen verwerfen?",
+			"Deine Änderungen am Profil werden nicht gespeichert.",
+			[
+				{ text: "Weiter bearbeiten", style: "cancel" },
+				{
+					text: "Verwerfen",
+					style: "destructive",
+					onPress: () => {
+						setIsLeaving(true);
+						// Turns the prevention off and closes the screen
+						repeat();
+					},
+				},
+			],
+		);
+	});
+
+	// After saving or deleting the account, close without asking
+	function leave() {
+		setIsLeaving(true);
+		disablePrevention();
+		router.back();
+	}
 
 	function handleSubmit() {
 		if (!isOnline) return;
@@ -69,7 +100,7 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 
 		updateProfile.mutate(
 			{ name: result.data.name, placeId: result.data.placeId || null },
-			{ onSuccess: () => router.back() },
+			{ onSuccess: leave },
 		);
 	}
 
@@ -90,6 +121,18 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 
 	return (
 		<View className="flex-1 bg-background">
+			{/* In the header, so it's always reachable (not under the keyboard or the place results) */}
+			<Stack.Screen
+				options={{
+					headerRight: () => (
+						<HeaderSaveButton
+							onPress={handleSubmit}
+							disabled={!isOnline || !hasChanges}
+							busy={updateProfile.isPending}
+						/>
+					),
+				}}
+			/>
 			<KeyboardAwareScrollView
 				className="flex-1 bg-background"
 				contentContainerClassName="gap-4 p-6"
@@ -130,9 +173,6 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 						Keyboard.dismiss();
 					}}
 				/>
-				<Button disabled={!isOnline || updateProfile.isPending} onPress={handleSubmit}>
-					<Text>Speichern</Text>
-				</Button>
 				<View className="mt-10 gap-2 border-t border-border pt-4">
 					<View className="flex-row items-center justify-between gap-3">
 						<Text variant="muted" className="flex-1">
@@ -158,4 +198,8 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 			<OfflineBanner header="opaque" />
 		</View>
 	);
+}
+
+function initialPlaceQuery(user: CurrentUser) {
+	return user.place ? formatPlace(user.place) : "";
 }
