@@ -33,7 +33,7 @@ export function PlacePicker({
 }: Props) {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const inputRef = useRef<TextInputInstance>(null);
-	const { search, isOutdated } = usePlaceSearch(query, { enabled: !selectedPlace });
+	const { search, isOutdated, dimResults } = usePlaceSearch(query, { enabled: !selectedPlace });
 	const canSearch = !selectedPlace && query.trim().length >= MIN_PLACE_QUERY_LENGTH;
 	const places = search.data ?? [];
 
@@ -41,13 +41,13 @@ export function PlacePicker({
 	if (search.isError) {
 		results = <Text variant="muted">Orte konnten nicht geladen werden.</Text>;
 	} else if (places.length > 0) {
-		// Results for an earlier text stay visible but dimmed until the new ones arrive, so the
-		// list doesn't jump while typing
+		// Results for an earlier text stay visible, so the list doesn't jump while typing; dimmed
+		// when the new ones take a while
 		results = (
 			<View
 				className={cn(
 					"overflow-hidden rounded-md border border-border",
-					isOutdated && "opacity-50",
+					dimResults && "opacity-50",
 				)}
 			>
 				{places.map((place, index) => (
