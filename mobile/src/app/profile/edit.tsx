@@ -7,7 +7,7 @@ import { ActivityIndicator, Alert, Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { z } from "zod";
 
-import { OfflineNotice } from "@/components/OfflineNotice";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { PlacePicker } from "@/components/PlacePicker";
 import { RequireLogin } from "@/components/RequireLogin";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
@@ -17,7 +17,6 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDeleteAccount } from "@/hooks/useDeleteAccount";
 import { useIsOnline } from "@/hooks/useIsOnline";
-import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { useUser } from "@/hooks/useUser";
@@ -52,7 +51,6 @@ function ProfileEditContent() {
 function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }) {
 	const router = useRouter();
 	const isOnline = useIsOnline();
-	const showOfflineNotice = useShowOfflineNotice();
 	const updateProfile = useUpdateProfile(user.id);
 	const [name, setName] = useState(profile.name ?? "");
 	const [place, setPlace] = useState<Place | null>(user.place ?? null);
@@ -91,72 +89,73 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 	}
 
 	return (
-		<KeyboardAwareScrollView
-			className="flex-1 bg-background"
-			contentContainerClassName="gap-4 p-6"
-			contentInsetAdjustmentBehavior="automatic"
-			keyboardShouldPersistTaps="handled"
-			bottomOffset={160}
-		>
-			{showOfflineNotice && (
-				<OfflineNotice message="Du kannst dein Profil bearbeiten, sobald du wieder online bist." />
-			)}
-			{isOnline && updateProfile.isError && (
-				<ServerErrorNotice message="Dein Profil konnte nicht gespeichert werden. Bitte versuche es später noch mal." />
-			)}
-			<TextField
-				label="Profilname"
-				description="Für andere User sichtbar."
-				placeholder="z. B. Tomato"
-				value={name}
-				onChangeText={(value) => {
-					setName(value);
-					setFieldErrors((previous) => ({ ...previous, name: undefined }));
-				}}
-				error={fieldErrors.name?.[0]}
-				returnKeyType="done"
-				onSubmitEditing={handleSubmit}
-			/>
-			<PlacePicker
-				query={placeQuery}
-				selectedPlace={place}
-				description="Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich sichtbar."
-				error={fieldErrors.placeId?.[0]}
-				onQueryChange={(value) => {
-					setPlaceQuery(value);
-					setPlace(null);
-					setFieldErrors((previous) => ({ ...previous, placeId: undefined }));
-				}}
-				onSelect={(selected) => {
-					setPlace(selected);
-					setPlaceQuery(formatPlace(selected));
-					setFieldErrors((previous) => ({ ...previous, placeId: undefined }));
-					Keyboard.dismiss();
-				}}
-			/>
-			<Button disabled={!isOnline || updateProfile.isPending} onPress={handleSubmit}>
-				<Text>Speichern</Text>
-			</Button>
-			<View className="mt-10 gap-2 border-t border-border pt-4">
-				<View className="flex-row items-center justify-between gap-3">
-					<Text variant="muted" className="flex-1">
-						FoodSwap verlassen?
-					</Text>
-					<Button
-						variant="ghost"
-						size="sm"
-						disabled={!isOnline || deleteAccount.isPending}
-						onPress={confirmDeleteAccount}
-					>
-						<Text>Konto löschen</Text>
-					</Button>
-				</View>
-				{deleteAccount.isError && (
-					<Text className="text-destructive">
-						Dein Konto konnte nicht gelöscht werden. Bitte versuche es später noch mal.
-					</Text>
+		<View className="flex-1 bg-background">
+			<KeyboardAwareScrollView
+				className="flex-1 bg-background"
+				contentContainerClassName="gap-4 p-6"
+				contentInsetAdjustmentBehavior="automatic"
+				keyboardShouldPersistTaps="handled"
+				bottomOffset={160}
+			>
+				{isOnline && updateProfile.isError && (
+					<ServerErrorNotice message="Dein Profil konnte nicht gespeichert werden. Bitte versuche es später noch mal." />
 				)}
-			</View>
-		</KeyboardAwareScrollView>
+				<TextField
+					label="Profilname"
+					description="Für andere User sichtbar."
+					placeholder="z. B. Tomato"
+					value={name}
+					onChangeText={(value) => {
+						setName(value);
+						setFieldErrors((previous) => ({ ...previous, name: undefined }));
+					}}
+					error={fieldErrors.name?.[0]}
+					returnKeyType="done"
+					onSubmitEditing={handleSubmit}
+				/>
+				<PlacePicker
+					query={placeQuery}
+					selectedPlace={place}
+					description="Wird beim Erstellen eines Angebots vorausgefüllt. Nur für dich sichtbar."
+					error={fieldErrors.placeId?.[0]}
+					onQueryChange={(value) => {
+						setPlaceQuery(value);
+						setPlace(null);
+						setFieldErrors((previous) => ({ ...previous, placeId: undefined }));
+					}}
+					onSelect={(selected) => {
+						setPlace(selected);
+						setPlaceQuery(formatPlace(selected));
+						setFieldErrors((previous) => ({ ...previous, placeId: undefined }));
+						Keyboard.dismiss();
+					}}
+				/>
+				<Button disabled={!isOnline || updateProfile.isPending} onPress={handleSubmit}>
+					<Text>Speichern</Text>
+				</Button>
+				<View className="mt-10 gap-2 border-t border-border pt-4">
+					<View className="flex-row items-center justify-between gap-3">
+						<Text variant="muted" className="flex-1">
+							FoodSwap verlassen?
+						</Text>
+						<Button
+							variant="ghost"
+							size="sm"
+							disabled={!isOnline || deleteAccount.isPending}
+							onPress={confirmDeleteAccount}
+						>
+							<Text>Konto löschen</Text>
+						</Button>
+					</View>
+					{deleteAccount.isError && (
+						<Text className="text-destructive">
+							Dein Konto konnte nicht gelöscht werden. Bitte versuche es später noch
+							mal.
+						</Text>
+					)}
+				</View>
+			</KeyboardAwareScrollView>
+			<OfflineBanner header="opaque" />
+		</View>
 	);
 }

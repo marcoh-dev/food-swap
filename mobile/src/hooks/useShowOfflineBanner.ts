@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 
 import { useIsOnline } from "@/hooks/useIsOnline";
 
-// Brief losses of the connection (e.g. right after unlocking the screen) don't show the notice
+// Brief losses of the connection (e.g. right after unlocking the screen) don't show the banner
 const SHOW_AFTER_MS = 500;
 
 /**
- * Whether to show the offline notice: after half a second without a connection, so short gaps don't
+ * Whether to show the offline banner: after half a second without a connection, so short gaps don't
  * flash it. Buttons and requests use `useIsOnline`, which reacts right away.
  */
-export function useShowOfflineNotice() {
+export function useShowOfflineBanner() {
 	const isOnline = useIsOnline();
 	const [offlineLongEnough, setOfflineLongEnough] = useState(false);
 
