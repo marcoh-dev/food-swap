@@ -6,7 +6,8 @@ import {
 	getEndDateLabel,
 } from "@food-swap/shared/dates";
 import { formatPlace } from "@food-swap/shared/places";
-import { useQueryClient } from "@tanstack/react-query";
+import type { PaginatedListingsResponse } from "@food-swap/shared/types";
+import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useEffect, useState } from "react";
@@ -16,7 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { listingChatQueryKey } from "@/api/chats";
-import { LISTINGS_QUERY_KEY } from "@/api/listings";
+import { LISTINGS_LIST_QUERY_KEY } from "@/api/listings";
 import { isNotFoundError } from "@/api/request";
 import { useAuth } from "@/components/AuthProvider";
 import { ListingChatCard } from "@/components/ListingChatCard";
@@ -76,10 +77,10 @@ export default function ListingDetail() {
 	const isNotFound = !isValidId || isNotFoundError(error);
 
 	useEffect(() => {
-		// The listing was deleted: reload the offers list so it's gone there too. Only the
-		// list itself (exact), otherwise this query would be refetched and fail again.
+		// The listing was deleted: reload the offers lists so it's gone there too. Only the
+		// lists, not this listing, otherwise this query would be refetched and fail again.
 		if (isNotFoundError(error)) {
-			void queryClient.invalidateQueries({ queryKey: LISTINGS_QUERY_KEY, exact: true });
+			void queryClient.invalidateQueries({ queryKey: LISTINGS_LIST_QUERY_KEY });
 		}
 	}, [error, queryClient]);
 
@@ -122,9 +123,16 @@ export default function ListingDetail() {
 		);
 	}
 
-	// Shown from the offers list while the listing itself hasn't loaded: as old as the list
+	// Shown from the offers list while the listing itself hasn't loaded: as old as that list
 	const loadedAt = isPlaceholderData
-		? queryClient.getQueryState(LISTINGS_QUERY_KEY)?.dataUpdatedAt
+		? queryClient
+				.getQueryCache()
+				.findAll({ queryKey: LISTINGS_LIST_QUERY_KEY })
+				.find((query) =>
+					(
+						query.state.data as InfiniteData<PaginatedListingsResponse> | undefined
+					)?.pages.some((page) => page.data.some((item) => item.id === id)),
+				)?.state.dataUpdatedAt
 		: dataUpdatedAt;
 	const daysLeft = getDaysUntil(listing.endDate);
 	const isExpired = daysLeft < 0;

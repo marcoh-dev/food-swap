@@ -1,8 +1,17 @@
-import type { ListingResponse, PaginatedListingsResponse } from "@food-swap/shared/types";
-import { type InfiniteData, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import type {
+	ListingResponse,
+	PaginatedListingsResponse,
+	SortOption,
+} from "@food-swap/shared/types";
+import {
+	type InfiniteData,
+	keepPreviousData,
+	useInfiniteQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { fetchListings, LISTINGS_QUERY_KEY } from "@/api/listings";
+import { fetchListings, LISTINGS_LIST_QUERY_KEY } from "@/api/listings";
 
 type ListingsData = InfiniteData<PaginatedListingsResponse, number>;
 
@@ -20,15 +29,17 @@ function uniqueById(pages: PaginatedListingsResponse[]): ListingResponse[] {
 }
 
 /**
- * The offers list, loaded page by page. `listings` are all loaded listings without duplicates;
- * `reload` loads the first page again (pull to refresh, try again).
+ * The offers list in the given order, loaded page by page. `listings` are all loaded listings
+ * without duplicates; `reload` loads the first page again (pull to refresh, try again).
  */
-export function useListings() {
+export function useListings(sort: SortOption) {
 	const queryClient = useQueryClient();
+	const queryKey = [...LISTINGS_LIST_QUERY_KEY, sort];
 	const query = useInfiniteQuery({
-		queryKey: LISTINGS_QUERY_KEY,
-		queryFn: ({ signal, pageParam }) => fetchListings(pageParam, signal),
+		queryKey,
+		queryFn: ({ pageParam, signal }) => fetchListings(pageParam, sort, signal),
 		initialPageParam: 1,
+		placeholderData: keepPreviousData,
 		getNextPageParam: (lastPage) =>
 			lastPage.meta.page < lastPage.meta.totalPages ? lastPage.meta.page + 1 : undefined,
 	});
@@ -38,7 +49,7 @@ export function useListings() {
 	async function reload() {
 		// Refetching an infinite query reloads every loaded page one after another; starting over
 		// with the first page is faster, and scrolling loads the rest again
-		queryClient.setQueryData<ListingsData>(LISTINGS_QUERY_KEY, (current) =>
+		queryClient.setQueryData<ListingsData>(queryKey, (current) =>
 			current
 				? { pages: current.pages.slice(0, 1), pageParams: current.pageParams.slice(0, 1) }
 				: current,

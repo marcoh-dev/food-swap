@@ -4,7 +4,7 @@ import { MISSING_PLACE_MESSAGE } from "@food-swap/shared/messages";
 import { formatPlace } from "@food-swap/shared/places";
 import type { Place } from "@food-swap/shared/types";
 import { cn } from "cn";
-import { LocateFixedIcon, MapPinIcon } from "lucide-react";
+import { LocateFixedIcon, MapPinIcon, XIcon } from "lucide-react";
 import { useEffect, useId, useImperativeHandle, useRef, useState } from "react";
 
 import { findNearestPlaceAction, searchPlacesAction } from "@/app/actions";
@@ -14,6 +14,8 @@ import { Spinner } from "@/components/ui/spinner";
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_MS = 150;
+// Shorter waits would only make the list flicker while typing
+const DIM_AFTER_MS = 300;
 const COORDINATE_DECIMALS = 3;
 const LOCATION_TIMEOUT_MS = 15000;
 const LOCATION_ERROR = "Standort konnte nicht ermittelt werden. Bitte gib einen Ort ein.";
@@ -49,7 +51,8 @@ function optionId(listId: string, place: Place) {
 	return `${listId}-${place.id}`;
 }
 
-function resultsMessage(count: number) {
+function resultsMessage(count: number, error?: string) {
+	if (error) return error;
 	if (count === 0) return "Keinen Ort gefunden";
 	return count === 1 ? "1 Ort gefunden" : `${count} Orte gefunden`;
 }
@@ -84,7 +87,8 @@ export default function PlaceCombobox({
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLocating, setIsLocating] = useState(false);
 	const [locationError, setLocationError] = useState<string | null>(null);
-	const [result, setResult] = useState<{ query: string; places: Place[] }>({
+	// `error`: the search failed, which is different from finding nothing
+	const [result, setResult] = useState<{ query: string; places: Place[]; error?: string }>({
 		query: "",
 		places: [],
 	});
@@ -93,6 +97,9 @@ export default function PlaceCombobox({
 	const trimmedQuery = query.trim();
 	const canSearch = !selectedPlace && trimmedQuery.length >= MIN_QUERY_LENGTH;
 	const isLoaded = result.query === trimmedQuery;
+	// The text whose search has taken longer than DIM_AFTER_MS; fast answers don't dim the list
+	const [slowQuery, setSlowQuery] = useState<string | null>(null);
+	const dimResults = !isLoaded && slowQuery === trimmedQuery;
 	const showList = isOpen && canSearch && (isLoaded || result.places.length > 0);
 	const hasOptions = showList && result.places.length > 0;
 	const activePlace = hasOptions ? result.places[activeIndex] : undefined;
@@ -111,7 +118,7 @@ export default function PlaceCombobox({
 		const timeout = setTimeout(async () => {
 			const response = await searchPlacesAction(trimmedQuery, withPostalCode);
 			if (!isCurrent) return;
-			setResult({ query: trimmedQuery, places: response.data ?? [] });
+			setResult({ query: trimmedQuery, places: response.data ?? [], error: response.error });
 			setActiveIndex(0);
 		}, DEBOUNCE_MS);
 
@@ -133,6 +140,13 @@ export default function PlaceCombobox({
 		form.addEventListener("formdata", applyFirstSuggestion);
 		return () => form.removeEventListener("formdata", applyFirstSuggestion);
 	}, [firstSuggestion, name, valueKey]);
+
+	useEffect(() => {
+		if (isLoaded) return;
+
+		const timeout = setTimeout(() => setSlowQuery(trimmedQuery), DIM_AFTER_MS);
+		return () => clearTimeout(timeout);
+	}, [isLoaded, trimmedQuery]);
 
 	useEffect(() => clearLocationRequest, []);
 
@@ -158,6 +172,15 @@ export default function PlaceCombobox({
 		changePlace(place);
 		setLocationError(null);
 		setIsOpen(false);
+	}
+
+	// Ready to type a new place right away
+	function clearQuery() {
+		changeQuery("");
+		if (selectedPlace) changePlace(null);
+		setLocationError(null);
+		if (isLocating) cancelLocating();
+		inputRef.current?.focus();
 	}
 
 	function clearLocationRequest() {
@@ -274,7 +297,19 @@ export default function PlaceCombobox({
 								onKeyDown={handleKeyDown}
 								className="h-8 w-full min-w-0 flex-1 bg-transparent px-2.5 py-1 text-body-small outline-none placeholder:text-muted-foreground md:text-xs dark:placeholder:text-foreground/80"
 							/>
-							<InputGroupAddon align="inline-end">
+							{/* gap-1: the clear and location buttons sit close together like one group */}
+							<InputGroupAddon align="inline-end" className="gap-1">
+								{query && (
+									<InputGroupButton
+										type="button"
+										size="icon-xs"
+										onClick={clearQuery}
+										aria-label="Ort löschen"
+										title="Ort löschen"
+									>
+										<XIcon />
+									</InputGroupButton>
+								)}
 								<InputGroupButton
 									type="button"
 									size="icon-xs"
@@ -302,13 +337,19 @@ export default function PlaceCombobox({
 					}}
 				>
 					{result.places.length === 0 ? (
-						<p className="py-6 text-center text-xs">Keinen Ort gefunden</p>
+						<p className="py-6 text-center text-xs">
+							{resultsMessage(0, result.error)}
+						</p>
 					) : (
 						<ul
 							id={listId}
 							role="listbox"
 							aria-label={label ?? "Orte"}
-							className="no-scrollbar max-h-72 overflow-y-auto"
+							// Results for an earlier text stay visible, dimmed when the new ones take a while
+							className={cn(
+								"no-scrollbar max-h-72 overflow-y-auto",
+								dimResults && "opacity-50",
+							)}
 						>
 							{result.places.map((place, index) => (
 								<li
@@ -340,7 +381,7 @@ export default function PlaceCombobox({
 				Mindestens {MIN_QUERY_LENGTH} Zeichen eingeben, dann einen Ort aus der Liste wählen.
 			</span>
 			<span role="status" className="sr-only">
-				{canSearch && isLoaded ? resultsMessage(result.places.length) : ""}
+				{canSearch && isLoaded ? resultsMessage(result.places.length, result.error) : ""}
 			</span>
 			{locationError && (
 				<p role="alert" className="mt-1 text-xs text-destructive">
