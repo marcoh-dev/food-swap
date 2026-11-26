@@ -6,6 +6,7 @@ import { TextField } from "@/components/TextField";
 import { Text } from "@/components/ui/text";
 import { MIN_PLACE_QUERY_LENGTH, usePlaceSearch } from "@/hooks/usePlaceSearch";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { cn } from "@/lib/utils";
 
 type Props = {
 	query: string;
@@ -62,7 +63,10 @@ export function PlacePicker({
 								key={place.id}
 								onPress={() => onSelect(place)}
 								accessibilityRole="button"
-								className={`px-3 py-2 active:bg-accent ${index > 0 ? "border-t border-border" : ""}`}
+								className={cn(
+									"px-3 py-2 active:bg-accent",
+									index > 0 && "border-t border-border",
+								)}
 							>
 								<Text>{formatPlace(place)}</Text>
 								<Text variant="muted">{placeRegion(place)}</Text>
