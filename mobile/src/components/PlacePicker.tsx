@@ -46,7 +46,10 @@ export function PlacePicker({
 				autoComplete="off"
 			/>
 			{canSearch &&
-				(search.isPending ? (
+				// Offline, TanStack pauses the search and continues it once back online
+				(search.isPending && search.fetchStatus === "paused" ? (
+					<Text variant="muted">Orte werden gesucht, sobald du wieder online bist.</Text>
+				) : search.isPending ? (
 					<ActivityIndicator color={mutedForeground} />
 				) : search.isError ? (
 					<Text variant="muted">Orte konnten nicht geladen werden.</Text>
