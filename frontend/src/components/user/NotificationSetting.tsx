@@ -9,6 +9,7 @@ import {
 	notificationsTurnedOff,
 	setNotificationsTurnedOff,
 } from "@/lib/notifications";
+import { subscribeToPush, unsubscribeFromPush } from "@/lib/webPush";
 
 type SettingState = { permission: NotificationPermission; off: boolean };
 
@@ -36,12 +37,16 @@ export function NotificationSetting() {
 		if (!checked) {
 			setNotificationsTurnedOff(true);
 			setSetting({ permission, off: true });
+			void unsubscribeFromPush();
 			return;
 		}
 
 		const granted =
 			permission === "granted" || (await Notification.requestPermission()) === "granted";
-		if (granted) setNotificationsTurnedOff(false);
+		if (granted) {
+			setNotificationsTurnedOff(false);
+			void subscribeToPush();
+		}
 		setSetting({ permission: granted ? "granted" : Notification.permission, off: !granted });
 	}
 
