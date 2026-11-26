@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -8,6 +8,7 @@ import {
 	RefreshControl,
 	View,
 } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import Carousel from "@/components/Carousel";
 import ListingCard from "@/components/ListingCard";
@@ -21,6 +22,12 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
 import { LISTING_STATUS_LABELS } from "@/lib/listing";
 import { cn } from "@/lib/utils";
+
+// Room for the spinner, the offline text or the error text with its button
+const FOOTER_HEIGHT = 112;
+const FOOTER_SHRINK_MS = 300;
+// The gap between the list's rows (gap-3)
+const LIST_GAP = 12;
 
 export default function Listings() {
 	const {
@@ -40,6 +47,18 @@ export default function Listings() {
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
 	const [isRefreshing, setIsRefreshing] = useState(false);
+	// While there are more pages, the end of the list keeps a box of the same height for the
+	// spinner and the offline or error text: a quick swipe to the end shows it right away, and the
+	// list doesn't jump when loading starts, fails or the connection changes. After the last page,
+	// the box shrinks smoothly instead of disappearing at once.
+	const footerHeight = useSharedValue(hasNextPage ? FOOTER_HEIGHT : 0);
+	const footerStyle = useAnimatedStyle(() => ({ minHeight: footerHeight.get() }));
+
+	useEffect(() => {
+		footerHeight.set(
+			hasNextPage ? FOOTER_HEIGHT : withTiming(0, { duration: FOOTER_SHRINK_MS }),
+		);
+	}, [hasNextPage, footerHeight]);
 
 	async function refresh() {
 		if (!isOnline) {
@@ -77,39 +96,28 @@ export default function Listings() {
 		</ServerErrorNotice>
 	);
 
-	// While there are more pages, the end of the list keeps a box for the spinner (or the offline or
-	// error text) of the same height: a quick swipe to the end shows it right away, and the list
-	// doesn't grow or jump when loading starts, fails or the connection changes
-	const footerBox = "min-h-28 justify-center gap-3 px-6";
-
 	let footer;
 	// While trying again, the spinner shows instead
 	if (isFetchNextPageError && !isFetchingNextPage) {
 		footer = (
-			<View className={footerBox}>
+			<>
 				<Text variant="muted" className="text-center">
 					Weitere Angebote konnten nicht geladen werden.
 				</Text>
 				<Button variant="outline" onPress={() => void fetchNextPage()}>
 					<Text>Erneut versuchen</Text>
 				</Button>
-			</View>
+			</>
 		);
 	} else if (hasNextPage && !isOnline) {
 		// Offline, loading the next page waits (TanStack pauses it) and continues once back online
 		footer = (
-			<View className={footerBox}>
-				<Text variant="muted" className="text-center">
-					Weitere Angebote werden geladen, sobald du wieder online bist.
-				</Text>
-			</View>
+			<Text variant="muted" className="text-center">
+				Weitere Angebote werden geladen, sobald du wieder online bist.
+			</Text>
 		);
 	} else if (hasNextPage) {
-		footer = (
-			<View className={footerBox}>
-				<ActivityIndicator color={mutedForeground} />
-			</View>
-		);
+		footer = <ActivityIndicator color={mutedForeground} />;
 	}
 
 	// The list must be the screen's first child: iOS native tabs only find a scroll
@@ -159,7 +167,14 @@ export default function Listings() {
 						<ActivityIndicator size="large" color={mutedForeground} className="py-12" />
 					) : undefined
 				}
-				ListFooterComponent={footer}
+				ListFooterComponent={
+					<Animated.View style={footerStyle} className="justify-center gap-3 px-6">
+						{footer}
+					</Animated.View>
+				}
+				// The list's wrapper around the footer: cancels the gap above it (gap-3), so nothing is
+				// left once the box has shrunk to 0
+				ListFooterComponentStyle={{ marginTop: -LIST_GAP }}
 				refreshControl={
 					<RefreshControl
 						refreshing={isRefreshing}
