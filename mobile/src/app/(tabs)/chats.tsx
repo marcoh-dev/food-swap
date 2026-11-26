@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useChats } from "@/hooks/useChats";
 import { useIsOnline } from "@/hooks/useIsOnline";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ function ChatList() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	async function refresh() {
@@ -54,7 +56,7 @@ function ChatList() {
 	}
 
 	const heading = <Text variant="h1">Chats</Text>;
-	const offlineNotice = !isOnline && (
+	const offlineNotice = showOfflineNotice && (
 		<OfflineNotice
 			message={
 				data

@@ -13,7 +13,7 @@ import { GENERAL_LIMIT, LOGIN_LIMIT, REGISTRATION_LIMIT } from "../src/common/ra
 const PASSWORD = "Tomate123!";
 
 // Some tests send 20+ logins; checking passwords (bcrypt) is slow on CI, so 5 seconds aren't enough
-jest.setTimeout(30_000);
+vi.setConfig({ testTimeout: 30_000 });
 const SECRET = process.env.INTERNAL_API_SECRET ?? "";
 
 describe("Rate limits (integration)", () => {
@@ -114,7 +114,7 @@ describe("Rate limits (integration)", () => {
 
 	it("logs a block once per source and time window, without the IP", async () => {
 		// An IP no other test uses: the guard remembers which sources it already logged
-		const warn = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
+		const warn = vi.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
 		for (let attempt = 0; attempt < LOGIN_LIMIT.limit; attempt++) {
 			await login("203.0.113.99").expect(401);
 		}

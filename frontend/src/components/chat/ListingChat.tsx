@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { listingDraftKey } from "@/lib/chatDrafts";
 import { errorTextOf, useStartChat } from "@/lib/chatQueries";
 
 import { ChatForm } from "./ChatForm";
@@ -59,6 +60,7 @@ export function ListingChat({ listingId, ownerId, ownerName, status }: ListingCh
 						return error;
 					}}
 					placeholder="Nachricht schreiben…"
+					draftKey={listingDraftKey(listingId)}
 				/>
 			}
 		>

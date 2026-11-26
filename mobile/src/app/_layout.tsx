@@ -14,6 +14,7 @@ import { syncAppFocus } from "@/api/appFocus";
 import { syncOnlineStatus } from "@/api/onlineStatus";
 import { isNotFoundError, isUnauthorizedError } from "@/api/request";
 import { AuthProvider } from "@/components/AuthProvider";
+import { ChatSocketConnector } from "@/components/ChatSocketConnector";
 import { CloseButton } from "@/components/CloseButton";
 import { EnvError } from "@/components/EnvError";
 import { envError } from "@/env";
@@ -84,6 +85,7 @@ export default function RootLayout() {
 							<EnvError message={envError} />
 						) : (
 							<AuthProvider>
+								<ChatSocketConnector />
 								<Stack screenOptions={{ headerShown: false }}>
 									<Stack.Screen
 										name="listings/[id]"
@@ -112,6 +114,15 @@ export default function RootLayout() {
 											presentation: "modal",
 											headerShown: true,
 											title: "Anmelden",
+											headerLeft: () => <CloseButton />,
+										}}
+									/>
+									<Stack.Screen
+										name="registration"
+										options={{
+											presentation: "modal",
+											headerShown: true,
+											title: "Registrieren",
 											headerLeft: () => <CloseButton />,
 										}}
 									/>

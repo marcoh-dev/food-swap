@@ -42,12 +42,12 @@ cp backend/.env.example backend/.env
 cp backend/bruno/.env.example backend/bruno/.env
 cp frontend/.env.example frontend/.env
 cp mobile/.env.example mobile/.env.local
-docker compose up -d --wait
+pnpm db:up
 pnpm --filter backend migration:run
 pnpm dev
 ```
 
-The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `docker compose up -d --wait` starts a local PostgreSQL with PostGIS on port 5432 and waits until it is ready (`docker compose down` stops it, the data is kept).
+The frontend runs on http://localhost:5173, the backend on http://localhost:3000. `pnpm db:up` starts a local PostgreSQL with PostGIS on port 5432 in Docker and waits until it is ready; `pnpm dev` does that too before it starts. `pnpm db:down` stops it (the data is kept). `pnpm db:reset` deletes the local database and creates it again with the migrations (categories, tags and places, no users or listings); `pnpm db:reset:mock` does the same and adds the mock data.
 
 ### Mobile app
 
@@ -86,7 +86,7 @@ Login and registration return two tokens:
 | Access token  | 15 minutes | every API request (`Authorization`) | no, it's only checked by its signature               |
 | Refresh token | 30 days    | only `POST /auth/refresh`           | yes, it's stored (as a SHA-256 hash) in the database |
 
-`POST /auth/refresh` exchanges a refresh token for a new pair. The old refresh token keeps working for 60 more seconds, because several requests can renew with the same token at the same time; after that it expires. `POST /auth/logout` deletes the refresh token, and deleting an account deletes all of its refresh tokens. `POST /auth/logout-all` ("Überall abmelden") deletes all refresh tokens of the user, closes their chat connections and stores the time in `users.loggedOutEverywhereAt`; access tokens issued before it are rejected, so other devices are logged out on their next request. Open browser tabs and the app notice it right away: when the server closes their chat connection, the tabs reload the page data and show the logged-out state, and the app logs out. So users are only logged out after 30 days without using the app or the site.
+`POST /auth/refresh` exchanges a refresh token for a new pair. The old refresh token keeps working for 60 more seconds, because several requests can renew with the same token at the same time; after that it expires. `POST /auth/logout` deletes the refresh token, and deleting an account deletes all of its refresh tokens. `POST /auth/logout-all` ("Überall abmelden") deletes all refresh tokens of the user, closes their chat connections and stores the time in `users.loggedOutEverywhereAt`; access tokens issued before it are rejected, so other devices are logged out on their next request. Open browser tabs and the app notice it right away: when the server closes their chat connection, the tabs reload the page data and show the logged-out state, and the app logs out. Logging in, logging out or switching accounts in one browser tab updates the other open tabs of the same browser too (`AuthSync` with a `BroadcastChannel`, `frontend/src/lib/authSync.ts`). So users are only logged out after 30 days without using the app or the site.
 
 - **Web:** both tokens are in httpOnly cookies (`auth_token`, `refresh_token`), so the browser's JavaScript can't read them. The access cookie ends after 14 minutes, a minute before the token. When it's gone, `frontend/src/proxy.ts` renews both tokens before the request and passes the new access token on to that request. Pages and server actions read the access cookie as before (`fetchAPI`).
 - **Mobile:** both tokens are in SecureStore. When a request gets a 401, `mobile/src/api/request.ts` renews the tokens once and repeats the request; requests that fail at the same time share one renewal. If the renewal fails, the app logs out.
@@ -117,7 +117,10 @@ The web chat keeps its data in the TanStack Query cache, like the app, with the 
     | `chatRead`    | a user opened a chat (only to that user, e.g. other tabs) | the chat is no longer marked unread, unread count updates                           |
     | `chatRemoved` | a user deleted a chat (only to that user)                 | the chat disappears from the list and closes if it's open                           |
 
-After a reconnect, all `["chats"]` queries are reloaded, because events sent while offline are lost; logging out removes them from the cache. A small Zustand store (`frontend/src/store/chat.store.ts`) only holds what isn't chat data: the logged-in user, which chat is open and whether the tab is visible. A message in the open chat of a visible tab counts as read; in a hidden tab, the chat is marked read once the tab becomes visible again.
+After a reconnect, all `["chats"]` queries are reloaded, because events sent while offline are lost; logging out removes them from the cache. A small Zustand store (`frontend/src/store/chat.store.ts`) only holds what isn't chat data: the logged-in user, which chat is open, whether it's scrolled to its newest message and whether the tab is visible.
+
+- **Marking as read:** like in the app, an open chat is marked read only when its newest message is from the other person and seen: the tab is visible and the chat is scrolled to the newest message (`ChatConversation`). A message that arrives while the user is scrolled up or the tab is hidden keeps the chat unread until then; while scrolled up, the button at the bottom shows "Neue Nachricht" and scrolls down. Sending a message while scrolled up scrolls down to it.
+- **Drafts:** unsent text is kept per chat, and per listing for a first message, in the tab's `sessionStorage` (`frontend/src/lib/chatDrafts.ts`) until it's sent successfully, also after switching chats, a failed send or a reload; logging out removes them.
 
 Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `NotificationPermissionPrompt` asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
 
@@ -126,7 +129,7 @@ Browser notifications are also shown from the `newMessage` listener in `chatEven
 The app keeps all chat data in the TanStack Query cache, under keys starting with `["chats"]` (`@food-swap/shared/chat-cache`, plus the listing keys in `mobile/src/api/chats.ts`): the list, the unread count (the badge on the Chats tab), each open conversation and, per listing, whether you already have a chat about it.
 
 - **Loading and sending** go straight to the REST API with the login token (`mobile/src/api/request.ts`).
-- **Live updates** come through Socket.IO. `connectChatSocket` (`mobile/src/lib/chatSocket.ts`, started by `AuthProvider` while logged in) gets the same three events as the web and writes them into the cache with `setQueryData`, so all screens update without reloading; `addMessageToCache` (shared with the web) adds a message only once, because your own messages arrive both as the answer to sending and over the socket. The socket is only connected while the app is in the foreground; after every reconnect, all `["chats"]` queries are reloaded, because events sent meanwhile are lost. If the server ends the connection because the login is no longer valid, the app logs out.
+- **Live updates** come through Socket.IO. `connectChatSocket` (`mobile/src/lib/chatSocket.ts`, started by `ChatSocketConnector` while logged in, like on the web) gets the same three events as the web and writes them into the cache with `setQueryData`, so all screens update without reloading; `addMessageToCache` (shared with the web) adds a message only once, because your own messages arrive both as the answer to sending and over the socket. The socket is only connected while the app is in the foreground; after every reconnect, all `["chats"]` queries are reloaded, because events sent meanwhile are lost. If the server ends the connection because the login is no longer valid, the app logs out.
 - **Marking as read:** an open chat is marked read only when its newest message is from the other person and visible: the screen is shown, the app is in the foreground, the user is online and scrolled to the newest message (`mobile/src/app/chats/[id].tsx`).
 - **Starting a chat:** the message card on another person's listing (`mobile/src/components/ListingChatCard.tsx`) asks `GET /chats/listing/:listingId` whether you already have a chat there. Without one, or if you deleted it, the first message goes to `POST /chats`, which also brings back a deleted chat. With a chat, "Zum Chat" opens it on top of the Chats tab, so back leads to the chat list.
 - **Deleting a chat** (header button in the conversation) hides it only for you (`DELETE /chats/:id`); the other person keeps it until they delete it too. The app removes it from the cached list and goes to the Chats tab; the socket's `chatRemoved` event does the same on your other devices and reloads the listing cards.
@@ -238,7 +241,10 @@ Put values containing `&`, `?`, `!`, `#` or `$` in single quotes, in the shell a
 
 | Command                                                          | What it does                                                                      |
 | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `pnpm dev`                                                       | starts backend and frontend                                                       |
+| `pnpm dev`                                                       | starts the local database, backend and frontend                                   |
+| `pnpm db:up` / `pnpm db:down`                                    | starts / stops the local database (the data is kept)                              |
+| `pnpm db:reset`                                                  | deletes the local database and creates it again with the migrations               |
+| `pnpm db:reset:mock`                                             | like `db:reset`, plus the mock data                                               |
 | `pnpm mobile`                                                    | starts the Expo dev server for the mobile app                                     |
 | `pnpm sync`                                                      | updates `main`, dependencies, local database and migrations                       |
 | `pnpm sync:branch`                                               | merges `main` into the current branch (without committing) and updates everything |
@@ -281,10 +287,10 @@ In VS Code, open the repository folder itself (not a parent folder), so `.vscode
 
 ### Tests
 
-- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend (Jest), `*.test.ts` in the frontend and in `shared` (Vitest). `pnpm test` runs them, and so does CI.
+- **Unit tests** check single functions without a database. They live next to the code: `*.spec.ts` in the backend, `*.test.ts` in the frontend and in `shared`, all run with Vitest (the app will use Jest with `jest-expo`, see #236). `pnpm test` runs them, and so does CI.
 - **Integration tests** start the backend and send real HTTP requests against a test database. They live in `backend/test/*.integration-spec.ts` and need a database: locally the Docker database, in CI a Postgres service.
 
-`pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The `ExperimentalWarning` about VM modules is expected: Jest needs `--experimental-vm-modules` to load the NestJS packages, which are ES modules.
+`pnpm --filter backend test:integration` runs the backend integration tests against the database in `TEST_DATABASE_URL`. The first run creates it in the local Docker database, and every run applies pending migrations to it. The tests empty the listings, users and chats tables, so `TEST_DATABASE_URL` must never point to your local or the live database; the tests refuse to start if it equals `DATABASE_URL`. The config is `backend/vitest.config.integration.ts`; the test files run one after another because they share the database.
 
 ### Updating a feature branch
 
@@ -298,7 +304,7 @@ pnpm --filter backend test:integration
 git commit
 ```
 
-`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `docker compose up -d --wait`, `pnpm --filter backend migration:run`, `pnpm check` and the tests before committing.
+`pnpm sync:branch` prepares the merge but does not commit it, so you can check it first (`git merge --abort` undoes it). If it reports `Already up to date.` (nothing new on `main`) or `Fast-forward` (your branch had no own commits and was simply moved forward), there is nothing to commit. If the merge has conflicts, it stops right away: resolve them, run `pnpm install` if `package.json` or `pnpm-lock.yaml` were affected, then `pnpm db:up`, `pnpm --filter backend migration:run`, `pnpm check` and the tests before committing.
 
 CI runs `pnpm check`, the unit tests, the integration tests and the build on every pull request to `main`.
 

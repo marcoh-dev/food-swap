@@ -1,11 +1,11 @@
 "use client";
 
 import { isSameMessageGroup } from "@food-swap/shared/chat-messages";
-import { formatDate, formatTime } from "@food-swap/shared/dates";
-import type { ChatDetail } from "@food-swap/shared/types";
+import { formatDayLabel, formatTime } from "@food-swap/shared/dates";
+import type { ChatDetail, ChatMessage } from "@food-swap/shared/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "cn";
-import { ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
+import { ArrowDownIcon, ArrowLeftIcon, CircleAlertIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
@@ -33,6 +33,7 @@ import {
 	MessageScrollerProvider,
 	MessageScrollerViewport,
 	useMessageScroller,
+	useMessageScrollerScrollable,
 } from "@/components/ui/message-scroller";
 import { Spinner } from "@/components/ui/spinner";
 import { errorTextOf, markChatRead, useChat, useDeleteChat, useSendReply } from "@/lib/chatQueries";
@@ -58,6 +59,8 @@ export function ChatConversation({
 	const setOpenChatId = useChatStore((state) => state.setOpenChatId);
 	// Deleted in this or another tab while it's open: not loaded again
 	const removed = useChatStore((state) => state.removedChatId === chatId);
+	const tabVisible = useChatStore((state) => state.tabVisible);
+	const atNewest = useChatStore((state) => state.atNewest);
 	const { data, error: loadError } = useChat(chatId, { enabled: !removed });
 	const sendReply = useSendReply(chatId);
 
@@ -71,11 +74,22 @@ export function ChatConversation({
 	const isLoaded = chat !== null;
 	const headingRef = useRef<HTMLHeadingElement>(null);
 
-	// Opening a chat in a visible tab marks it as read; in a hidden tab, that happens when the
-	// tab becomes visible (lib/chatEvents.ts)
+	const newest = chat?.messages.at(-1);
+	const markedMessageId = useRef<string | null>(null);
+
+	// Like in the app: a chat counts as read only when its newest message is actually seen, i.e.
+	// the tab is visible and the chat is scrolled to the newest message
 	useEffect(() => {
-		if (isLoaded && useChatStore.getState().tabVisible) void markChatRead(queryClient, chatId);
-	}, [isLoaded, chatId, queryClient]);
+		if (!newest || !tabVisible || !atNewest) return;
+		// Own messages never make a chat unread; each message is marked only once
+		if (newest.senderId === currentUserId || markedMessageId.current === newest.id) return;
+
+		markedMessageId.current = newest.id;
+		void markChatRead(queryClient, chatId).then((marked) => {
+			// Tried again with the next change, e.g. scrolling or a new message
+			if (!marked) markedMessageId.current = null;
+		});
+	}, [newest, tabVisible, atNewest, currentUserId, chatId, queryClient]);
 
 	useEffect(() => {
 		if (isLoaded) headingRef.current?.focus();
@@ -127,6 +141,7 @@ export function ChatConversation({
 						{chat.canReply ? (
 							<ChatForm
 								onSend={(content) => errorTextOf(sendReply.mutateAsync(content))}
+								draftKey={chat.id}
 							/>
 						) : (
 							<Alert>
@@ -202,7 +217,7 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 									{newDay && (
 										<Marker variant="separator" className="mb-3">
 											<MarkerContent>
-												{formatDate(message.createdAt)}
+												{formatDayLabel(message.createdAt)}
 											</MarkerContent>
 										</Marker>
 									)}
@@ -249,10 +264,96 @@ function ChatMessages({ chat, currentUserId }: { chat: ChatDetail; currentUserId
 						})}
 					</MessageScrollerContent>
 				</MessagesViewport>
-				<MessageScrollerButton />
+				<ScrollToNewestButton newest={lastMessage} currentUserId={currentUserId} />
+				<AtNewestReporter />
+				<ScrollToOwnMessage newest={lastMessage} currentUserId={currentUserId} />
 			</MessageScroller>
 		</MessageScrollerProvider>
 	);
+}
+
+// The scroller's button to the newest message: an arrow while scrolled up, and "Neue Nachricht"
+// like in the app when the other person wrote since the user scrolled away
+function ScrollToNewestButton({
+	newest,
+	currentUserId,
+}: {
+	newest: ChatMessage | undefined;
+	currentUserId: string;
+}) {
+	const { end: canScrollToEnd } = useMessageScrollerScrollable();
+	const [scrolledAway, setScrolledAway] = useState(canScrollToEnd);
+	// The newest message when the user scrolled away; anything newer arrived meanwhile
+	const [newestWhenScrolledAway, setNewestWhenScrolledAway] = useState(newest?.id);
+
+	// Updated while rendering, so the label is right in the same render
+	if (canScrollToEnd !== scrolledAway) {
+		setScrolledAway(canScrollToEnd);
+		setNewestWhenScrolledAway(newest?.id);
+	}
+
+	const hasNewMessage =
+		canScrollToEnd &&
+		newest !== undefined &&
+		newest.id !== newestWhenScrolledAway &&
+		newest.senderId !== currentUserId;
+
+	if (!hasNewMessage) {
+		return (
+			<MessageScrollerButton
+				// The same shape as "Neue Nachricht", more subtle
+				className="rounded-full border-background bg-muted hover:bg-muted/80"
+			/>
+		);
+	}
+
+	return (
+		<MessageScrollerButton
+			size="sm"
+			// Like in the app: in the primary colour, with a border that sets it apart from own bubbles
+			className="w-auto rounded-full border-background bg-primary px-3 text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground"
+		>
+			<ArrowDownIcon />
+			Neue Nachricht
+		</MessageScrollerButton>
+	);
+}
+
+// Like in the app: after sending while scrolled up, the chat scrolls down to show the own
+// message (at the bottom, the scroller follows new messages anyway)
+function ScrollToOwnMessage({
+	newest,
+	currentUserId,
+}: {
+	newest: ChatMessage | undefined;
+	currentUserId: string;
+}) {
+	const { scrollToEnd } = useMessageScroller();
+	const lastNewestId = useRef(newest?.id);
+
+	useEffect(() => {
+		if (!newest || newest.id === lastNewestId.current) return;
+
+		lastNewestId.current = newest.id;
+		// Smooth scrolling isn't possible here: the scroller adjusts its position itself when a
+		// message is added and turns it into a jump
+		if (newest.senderId === currentUserId) scrollToEnd();
+	}, [newest, currentUserId, scrollToEnd]);
+
+	return null;
+}
+
+// Tells the chat store whether the chat is scrolled to its newest message, i.e. can't scroll
+// further down; marking the chat read depends on it
+function AtNewestReporter() {
+	const { end: canScrollToEnd } = useMessageScrollerScrollable();
+	const setAtNewest = useChatStore((state) => state.setAtNewest);
+
+	useEffect(() => {
+		setAtNewest(!canScrollToEnd);
+	}, [canScrollToEnd, setAtNewest]);
+
+	return null;
 }
 
 // MessageScroller stops following new messages on every wheel or key event and only starts

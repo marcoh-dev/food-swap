@@ -1,8 +1,8 @@
+import { formatChatListTime } from "@food-swap/shared/dates";
 import type { ChatListItem } from "@food-swap/shared/types";
 import { View } from "react-native";
 
 import { Text } from "@/components/ui/text";
-import { formatLastMessageTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
 
 /** What a screen reader reads for a chat row, e.g. "Ungelesen, Jana, Äpfel, Hallo, 14:05". */
@@ -12,7 +12,7 @@ export function chatRowLabel(chat: ChatListItem) {
 		chat.otherName ?? "Gelöschtes Konto",
 		chat.listingTitle ?? "Gelöschtes Angebot",
 		chat.lastMessage,
-		formatLastMessageTime(chat.lastMessageAt),
+		formatChatListTime(chat.lastMessageAt),
 	]
 		.filter(Boolean)
 		.join(", ");
@@ -22,7 +22,7 @@ export function chatRowLabel(chat: ChatListItem) {
 export function ChatRow({ chat }: { chat: ChatListItem }) {
 	const name = chat.otherName ?? "Gelöschtes Konto";
 	const listingTitle = chat.listingTitle ?? "Gelöschtes Angebot";
-	const time = formatLastMessageTime(chat.lastMessageAt);
+	const time = formatChatListTime(chat.lastMessageAt);
 
 	return (
 		<View className="gap-0.5 border-b border-border px-6 py-3">

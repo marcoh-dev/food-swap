@@ -5,7 +5,6 @@ import { logout } from "@/api/auth";
 import { isUnauthorizedError } from "@/api/request";
 import { type AuthTokens, deleteTokens, getRefreshToken, getToken, saveTokens } from "@/api/token";
 import { clearChatDrafts } from "@/lib/chatDrafts";
-import { connectChatSocket } from "@/lib/chatSocket";
 
 type AuthContextValue = {
 	isLoggedIn: boolean;
@@ -50,13 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			}),
 		[queryClient, logOut],
 	);
-
-	// Live chat updates while logged in
-	useEffect(() => {
-		if (!isLoggedIn) return;
-
-		return connectChatSocket(queryClient, () => void logOut());
-	}, [isLoggedIn, queryClient, logOut]);
 
 	async function logIn(tokens: AuthTokens) {
 		await saveTokens(tokens);

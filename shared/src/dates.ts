@@ -81,6 +81,21 @@ export function formatDate(isoDate: string): string {
 	});
 }
 
+/** "Heute", "Gestern" or the date ("DD.MM.YYYY"), e.g. for the day separators in a chat. */
+export function formatDayLabel(isoDate: string, now: Date = new Date()): string {
+	const daysAgo = -getDaysUntil(isoDate, now);
+
+	if (daysAgo === 0) return "Heute";
+	if (daysAgo === 1) return "Gestern";
+	return formatDate(isoDate);
+}
+
+/** For the chat list, like messengers: the time today, "Gestern" yesterday, otherwise the date. */
+export function formatChatListTime(isoDate: string, now: Date = new Date()): string {
+	const label = formatDayLabel(isoDate, now);
+	return label === "Heute" ? formatTime(isoDate) : label;
+}
+
 /** "heute, 14:05", "gestern, 14:05" or "18.11." for older dates. */
 export function formatListingDate(
 	isoDate: string | null | undefined,

@@ -1,19 +1,23 @@
 {
 	"name": "food-swap",
 	"private": true,
-	"packageManager": "pnpm@12.18.0",
+	"packageManager": "pnpm@12.23.0",
 	"engines": {
 		"node": "24.x"
 	},
 	"devEngines": {
 		"packageManager": {
 			"name": "pnpm",
-			"version": "^12.18.0",
+			"version": "^12.23.0",
 			"onFail": "download"
 		}
 	},
 	"scripts": {
-		"dev": "concurrently -n backend,frontend \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+		"dev": "pnpm db:up && concurrently -n backend,frontend \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+		"db:up": "docker compose up -d --wait",
+		"db:down": "docker compose down",
+		"db:reset": "docker compose down -v && pnpm db:up && pnpm --filter backend migration:run",
+		"db:reset:mock": "pnpm db:reset && pnpm --filter backend seed:mock",
 		"format": "prettier --write . && pnpm -r format",
 		"format:check": "prettier --check . && pnpm -r format:check",
 		"lint": "pnpm -r lint",
@@ -21,13 +25,13 @@
 		"typecheck": "pnpm -r typecheck",
 		"build": "pnpm -r build",
 		"test": "pnpm -r test",
-		"sync": "git switch main && git pull && pnpm install && docker compose up -d --wait && pnpm --filter backend migration:run",
-		"sync:branch": "git fetch origin && git merge --no-commit origin/main && pnpm install && docker compose up -d --wait && pnpm --filter backend migration:run",
+		"sync": "git switch main && git pull && pnpm install && pnpm db:up && pnpm --filter backend migration:run",
+		"sync:branch": "git fetch origin && git merge --no-commit origin/main && pnpm install && pnpm db:up && pnpm --filter backend migration:run",
 		"check": "pnpm lint && pnpm format:check && pnpm typecheck",
 		"mobile": "pnpm --filter mobile start"
 	},
 	"devDependencies": {
 		"concurrently": "^10.0.7",
-		"prettier": "^3.9.10"
+		"prettier": "^3.10.1"
 	}
 }

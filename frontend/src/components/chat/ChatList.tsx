@@ -1,5 +1,6 @@
 "use client";
 
+import { formatChatListTime } from "@food-swap/shared/dates";
 import type { ChatListItem } from "@food-swap/shared/types";
 import { cn } from "cn";
 import { CircleAlertIcon, MessagesSquareIcon } from "lucide-react";
@@ -14,7 +15,6 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatShortDate } from "@/utils/date";
 
 type ChatListProps = {
 	chats: ChatListItem[] | null;
@@ -73,7 +73,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 						onClick={() => onSelect(chat.id)}
 						aria-current={chat.id === selectedChatId ? "true" : undefined}
 						className={cn(
-							"grid w-full gap-0.5 border-b px-4 py-3 text-left text-sm transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2",
+							"grid w-full grid-cols-1 gap-0.5 border-b px-4 py-3 text-left text-sm transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2",
 							chat.id === selectedChatId && "bg-muted",
 						)}
 					>
@@ -100,7 +100,7 @@ export function ChatList({ chats, error, selectedChatId, onSelect, onRetry }: Ch
 								</span>
 							</span>
 							<span className="shrink-0 text-xs text-muted-foreground">
-								{formatShortDate(chat.lastMessageAt)}
+								{formatChatListTime(chat.lastMessageAt)}
 							</span>
 						</span>
 						<span className="truncate text-muted-foreground">

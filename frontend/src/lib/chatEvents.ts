@@ -8,11 +8,10 @@ import {
 	setChatUnreadInCache,
 	UNREAD_CHATS_COUNT_QUERY_KEY,
 } from "@food-swap/shared/chat-cache";
-import type { ChatDetail, ChatListItem, ChatMessage } from "@food-swap/shared/types";
+import type { ChatListItem, ChatMessage } from "@food-swap/shared/types";
 import type { QueryClient } from "@tanstack/react-query";
 
 import { getChatsAction, getSocketTicketAction } from "@/app/chats/actions";
-import { markChatRead } from "@/lib/chatQueries";
 import { notificationsEnabled } from "@/lib/notifications";
 import { socket } from "@/socket";
 import { useChatStore } from "@/store/chat.store";
@@ -74,28 +73,21 @@ export function connectChat({
 	let connectedBefore = false;
 	let sessionEnded = false;
 
-	// The user sees messages in the open chat while the tab is visible
+	// The user sees new messages in the open chat while the tab is visible and the chat is
+	// scrolled to its newest message; marking it read happens in ChatConversation
 	function isSeen(chatId: string) {
-		const { openChatId, tabVisible } = useChatStore.getState();
-		return tabVisible && openChatId === chatId;
+		const { openChatId, tabVisible, atNewest } = useChatStore.getState();
+		return tabVisible && atNewest && openChatId === chatId;
 	}
 
 	function onConnect() {
-		store.setConnected(true);
 		// Events sent while the connection was down are lost, so everything is reloaded (only
 		// what is shown; the rest reloads when it's used again)
-		if (connectedBefore) {
-			void queryClient.invalidateQueries({ queryKey: CHATS_QUERY_KEY }).then(() => {
-				const { openChatId } = useChatStore.getState();
-				if (openChatId && isSeen(openChatId)) void markChatRead(queryClient, openChatId);
-			});
-		}
+		if (connectedBefore) void queryClient.invalidateQueries({ queryKey: CHATS_QUERY_KEY });
 		connectedBefore = true;
 	}
 
 	function onDisconnect(reason: string) {
-		store.setConnected(false);
-
 		// The server only ends a connection itself when the login is no longer valid, e.g. after
 		// "log out everywhere" on another device. Only once, so a server that keeps rejecting
 		// the ticket can't cause a refresh loop.
@@ -114,9 +106,8 @@ export function connectChat({
 		// First message of a new chat (or one the user deleted): the list item comes from the server
 		if (!inList) void queryClient.invalidateQueries({ queryKey: CHAT_LIST_QUERY_KEY });
 
-		if (fromOther) {
-			if (seen) void markChatRead(queryClient, message.chatId);
-			else void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
+		if (fromOther && !seen) {
+			void queryClient.invalidateQueries({ queryKey: UNREAD_CHATS_COUNT_QUERY_KEY });
 		}
 
 		void showNotification(queryClient, message, onNotificationClick);
@@ -137,18 +128,10 @@ export function connectChat({
 		queryClient.removeQueries({ queryKey: chatQueryKey(chatId) });
 	}
 
+	// Messages that arrived while the tab was hidden are marked read in ChatConversation once
+	// the tab is visible again
 	function onVisibilityChange() {
-		const visible = !document.hidden;
-		store.setTabVisible(visible);
-
-		const { openChatId } = useChatStore.getState();
-		if (!visible || !openChatId) return;
-		if (!queryClient.getQueryData<ChatDetail>(chatQueryKey(openChatId))) return;
-
-		// Messages that arrived while the tab was hidden are read once the user sees the chat
-		const chats = queryClient.getQueryData<ChatListItem[]>(CHAT_LIST_QUERY_KEY);
-		const chat = chats?.find((item) => item.id === openChatId);
-		if (!chats || chat?.unread) void markChatRead(queryClient, openChatId);
+		store.setTabVisible(!document.hidden);
 	}
 
 	store.setUserId(userId);

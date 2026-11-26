@@ -6,13 +6,16 @@ import { AccessibilityInfo, ScrollView } from "react-native";
 import { z } from "zod";
 
 import { isRateLimitedError, isUnauthorizedError } from "@/api/request";
+import { AuthSwitchLink } from "@/components/AuthSwitchLink";
 import { OfflineNotice } from "@/components/OfflineNotice";
+import { PasswordField } from "@/components/PasswordField";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogin } from "@/hooks/useLogin";
+import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { isAccountTab } from "@/lib/routes";
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>;
@@ -22,6 +25,7 @@ export default function Login() {
 	const { redirect } = useLocalSearchParams();
 	const login = useLogin();
 	const isOnline = useIsOnline();
+	const showOfflineNotice = useShowOfflineNotice();
 	const [values, setValues] = useState<LoginValues>({ username: "", password: "" });
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
@@ -75,7 +79,7 @@ export default function Login() {
 			keyboardShouldPersistTaps="handled"
 		>
 			<Text variant="h2">Schön, dass du da bist!</Text>
-			{!isOnline && (
+			{showOfflineNotice && (
 				<OfflineNotice message="Du kannst dich anmelden, sobald du wieder online bist." />
 			)}
 			{isOnline && login.isError && !loginErrorMessage && (
@@ -92,13 +96,12 @@ export default function Login() {
 				autoComplete="username"
 				textContentType="username"
 			/>
-			<TextField
+			<PasswordField
 				label="Passwort"
 				placeholder="********"
 				value={values.password}
 				onChangeText={(value) => update("password", value)}
 				error={fieldErrors.password?.[0]}
-				secureTextEntry
 				autoComplete="current-password"
 				textContentType="password"
 				returnKeyType="go"
@@ -112,6 +115,11 @@ export default function Login() {
 			<Button disabled={!isOnline || login.isPending} onPress={handleSubmit}>
 				<Text>Anmelden</Text>
 			</Button>
+			<AuthSwitchLink
+				text="Neu bei FoodSwap? Hier geht's zur"
+				linkText="Registrierung"
+				to="/registration"
+			/>
 		</ScrollView>
 	);
 }

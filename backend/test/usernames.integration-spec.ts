@@ -109,7 +109,7 @@ describe("Usernames (integration)", () => {
 		await insert("maria_2", "2026-10-09T12:00:00Z");
 		await insert("Admin", "2026-10-09T13:00:00Z", "Anna");
 		await insert("Anna Maria", "2026-10-09T14:00:00Z");
-		const log = jest.spyOn(console, "log").mockImplementation(() => undefined);
+		const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
 		await new UniqueUsernamesRegardlessOfCase1795307050316().up(queryRunner);
 

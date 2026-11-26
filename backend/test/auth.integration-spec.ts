@@ -157,7 +157,7 @@ describe("Auth tokens (integration)", () => {
 				.send({ username: "user_a", password: PASSWORD })
 				.expect(201)
 		).body as Tokens;
-		const disconnectUser = jest.spyOn(app.get(ChatsGateway), "disconnectUser");
+		const disconnectUser = vi.spyOn(app.get(ChatsGateway), "disconnectUser");
 		// Tokens only know the second they were issued; tokens from the logout's second still pass
 		await new Promise((resolve) => setTimeout(resolve, 1100));
 
