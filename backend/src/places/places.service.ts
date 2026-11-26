@@ -21,6 +21,17 @@ const POSTAL_CODE_QUERY = `
 const ALT_NAME = `lower(replace(replace(replace(replace("name", 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'), 'ß', 'ss'))`;
 const DISTRICT = `(CASE WHEN "name" <> "city" THEN substr("name", length("city") + 2) END)`;
 
+// "20038 Ham": postal codes starting with the digits, narrowed down by names starting with the
+// text (several places can share a postal code, e.g. villages). The field shows a picked place
+// like this (formatPlace), so editing it sends such a query.
+const POSTAL_CODE_NAME_QUERY = `
+  SELECT ${RESPONSE_COLUMNS}
+  FROM "places"
+  WHERE "postal_code" LIKE $1 || '%'
+    AND ("name" ILIKE $2 || '%' OR ${ALT_NAME} LIKE lower($2) || '%' OR ${DISTRICT} ILIKE $2 || '%')
+  ORDER BY "postal_code", ("name" <> "city") DESC, "name"
+  LIMIT $3`;
+
 const NEAREST_QUERY = `
   SELECT ${RESPONSE_COLUMNS}
   FROM "places"
@@ -94,6 +105,11 @@ export class PlacesService {
 	search(query: string, withPostalCode: boolean): Promise<Place[]> {
 		if (/^\d+$/.test(query)) {
 			return this.places.query(POSTAL_CODE_QUERY, [query, SUGGESTION_LIMIT]);
+		}
+		const postalCodeAndName = /^(\d+)\s+(.+)$/.exec(query);
+		if (postalCodeAndName) {
+			const [, postalCode, name] = postalCodeAndName;
+			return this.places.query(POSTAL_CODE_NAME_QUERY, [postalCode, name, SUGGESTION_LIMIT]);
 		}
 		return this.places.query(NAME_QUERY, [
 			query,
