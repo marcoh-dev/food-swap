@@ -8,6 +8,9 @@ const SUGGESTION_LIMIT = 10;
 const MIN_TYPO_LENGTH = 4;
 const MAX_TYPO_LENGTH = 8;
 const ANY_CHARACTER = "\u0000";
+// A similar name only counts if the text is at most this much longer: trigram similarity counts
+// each three-letter piece once, so "Hamxxxxxxxx" would otherwise stay similar to "Hamm" forever
+const MAX_EXTRA_LENGTH = 2;
 
 const RESPONSE_COLUMNS = `"id", "country_code" AS "countryCode", "postal_code" AS "postalCode", "name", "slug", "city", "county", "state"`;
 
@@ -47,7 +50,9 @@ const NAME_QUERY = `
       AND (
         "name" ILIKE $1 || '%' OR ${ALT_NAME} LIKE lower($1) || '%' OR ${DISTRICT} ILIKE $1 || '%'
         OR ($3::text IS NOT NULL AND ("name" ~* $3 OR ${ALT_NAME} ~ $3 OR ${DISTRICT} ~* $3))
-        OR "name" % $1 OR ${ALT_NAME} % lower($1) OR ${DISTRICT} % $1
+        OR ("name" % $1 AND length($1) <= length("name") + ${MAX_EXTRA_LENGTH})
+        OR (${ALT_NAME} % lower($1) AND length($1) <= length(${ALT_NAME}) + ${MAX_EXTRA_LENGTH})
+        OR (${DISTRICT} % $1 AND length($1) <= length(${DISTRICT}) + ${MAX_EXTRA_LENGTH})
       )
   ),
   "scored" AS (

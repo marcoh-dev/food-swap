@@ -56,4 +56,19 @@ describe("Place search (integration)", () => {
 			expect(await search("20038 Berlin")).toEqual([]);
 		});
 	});
+
+	describe("similar names", () => {
+		const names = async (q: string) => (await search(q)).map((place) => place.split(" ")[1]);
+
+		it("still finds names with a typo", async () => {
+			expect(await names("Hambrg")).toContain("Hamburg");
+			expect(await names("Dresdn")).toContain("Dresden");
+			expect(await names("Kölln")).toContain("Köln");
+			expect(await names("Hamxx")).toContain("Hamm");
+		});
+
+		it("finds nothing similar for a text much longer than the name", async () => {
+			expect(await names("Hamxxxxxxxx")).not.toContain("Hamm");
+		});
+	});
 });
