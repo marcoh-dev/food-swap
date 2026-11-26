@@ -10,7 +10,8 @@
 		"./messages": "./src/messages.ts",
 		"./schemas/user": "./src/schemas/user.schemas.ts",
 		"./assets/*": "./assets/*",
-		"./places": "./src/places.ts"
+		"./places": "./src/places.ts",
+		"./sorting": "./src/sorting.ts"
 	},
 	"scripts": {
 		"lint": "eslint .",

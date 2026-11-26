@@ -1,5 +1,6 @@
 "use client";
 
+import { SORT_LABELS } from "@food-swap/shared/sorting";
 import type { SortOption } from "@food-swap/shared/types";
 import { ArrowDownUp } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -15,12 +16,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSelectLikeMenu } from "@/hooks/useSelectLikeMenu";
-
-const SORT_LABELS: Record<SortOption, string> = {
-	newest: "Neueste zuerst",
-	endingSoon: "Endet bald",
-	nearest: "Entfernung",
-};
 
 export function SortingMenu({ sort, searchFormId }: { sort: SortOption; searchFormId?: string }) {
 	const router = useRouter();
