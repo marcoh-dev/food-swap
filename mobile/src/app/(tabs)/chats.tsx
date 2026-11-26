@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import { ChatRow, chatRowLabel } from "@/components/ChatRow";
-import { OfflineNotice } from "@/components/OfflineNotice";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Screen } from "@/components/Screen";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useChats } from "@/hooks/useChats";
 import { useIsOnline } from "@/hooks/useIsOnline";
-import { useShowOfflineNotice } from "@/hooks/useShowOfflineNotice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatLoadedAt } from "@/lib/date";
 import { cn } from "@/lib/utils";
@@ -40,7 +39,6 @@ function ChatList() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
-	const showOfflineNotice = useShowOfflineNotice();
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
 	async function refresh() {
@@ -56,15 +54,6 @@ function ChatList() {
 	}
 
 	const heading = <Text variant="h1">Chats</Text>;
-	const offlineNotice = showOfflineNotice && (
-		<OfflineNotice
-			message={
-				data
-					? `Du siehst den Stand von ${formatLoadedAt(dataUpdatedAt)}. Deine Chats werden aktualisiert, sobald du wieder online bist.`
-					: "Deine Chats werden geladen, sobald du wieder online bist."
-			}
-		/>
-	);
 	const errorNotice = isOnline && isError && (
 		<ServerErrorNotice
 			message={
@@ -88,76 +77,78 @@ function ChatList() {
 		return (
 			<Screen>
 				{heading}
-				{offlineNotice}
 				{isPending && isOnline && (
 					<View className="flex-1 items-center justify-center">
 						<ActivityIndicator size="large" color={mutedForeground} />
 					</View>
 				)}
 				{errorNotice}
+				<OfflineBanner />
 			</Screen>
 		);
 	}
 
-	// The list must be the screen's first view, like on the Angebote tab (iOS tab bar insets).
+	// The list must be the screen's first child, like on the Angebote tab (iOS tab bar insets).
 	return (
-		<FlatList
-			className="bg-background"
-			// No extra space below the last row: its own padding and border end the list
-			contentInsetAdjustmentBehavior="automatic"
-			data={data}
-			keyExtractor={({ id }) => id}
-			extraData={dataUpdatedAt}
-			ListHeaderComponent={
-				<View
-					className={cn(
-						"gap-4 border-b border-border px-6 pb-4",
-						// iOS adds the status bar inset itself (contentInsetAdjustmentBehavior)
-						Platform.OS === "android" ? "pt-safe-offset-6" : "pt-6",
-					)}
-				>
-					{heading}
-					{offlineNotice}
-					{errorNotice}
-				</View>
-			}
-			ListEmptyComponent={
-				<View className="items-center gap-2 px-6 py-12">
-					<SymbolView
-						name={{ ios: "bubble.left.and.bubble.right", android: "forum" }}
-						size={32}
-						tintColor={mutedForeground}
-					/>
-					<Text variant="large">Du hast noch keine Chats</Text>
-					<Text variant="muted" className="text-center">
-						Schreib jemandem über ein Angebot. Der Chat erscheint dann hier.
-					</Text>
-				</View>
-			}
-			refreshControl={
-				<RefreshControl
-					refreshing={isRefreshing}
-					onRefresh={refresh}
-					tintColor={mutedForeground}
-					colors={mutedForeground ? [mutedForeground] : undefined}
-					progressBackgroundColor={card}
-				/>
-			}
-			renderItem={({ item }) => (
-				<Link href={`/chats/${item.id}`} asChild>
-					<Pressable
-						accessibilityRole="button"
-						accessibilityLabel={chatRowLabel(item)}
-						accessibilityHint="Öffnet den Chat"
-					>
-						{({ pressed }) => (
-							<View className={cn(pressed && "opacity-70")}>
-								<ChatRow chat={item} />
-							</View>
+		<View className="flex-1 bg-background">
+			<FlatList
+				className="bg-background"
+				// No extra space below the last row: its own padding and border end the list
+				contentInsetAdjustmentBehavior="automatic"
+				data={data}
+				keyExtractor={({ id }) => id}
+				extraData={dataUpdatedAt}
+				ListHeaderComponent={
+					<View
+						className={cn(
+							"gap-4 border-b border-border px-6 pb-4",
+							// iOS adds the status bar inset itself (contentInsetAdjustmentBehavior)
+							Platform.OS === "android" ? "pt-safe-offset-6" : "pt-6",
 						)}
-					</Pressable>
-				</Link>
-			)}
-		/>
+					>
+						{heading}
+						{errorNotice}
+					</View>
+				}
+				ListEmptyComponent={
+					<View className="items-center gap-2 px-6 py-12">
+						<SymbolView
+							name={{ ios: "bubble.left.and.bubble.right", android: "forum" }}
+							size={32}
+							tintColor={mutedForeground}
+						/>
+						<Text variant="large">Du hast noch keine Chats</Text>
+						<Text variant="muted" className="text-center">
+							Schreib jemandem über ein Angebot. Der Chat erscheint dann hier.
+						</Text>
+					</View>
+				}
+				refreshControl={
+					<RefreshControl
+						refreshing={isRefreshing}
+						onRefresh={refresh}
+						tintColor={mutedForeground}
+						colors={mutedForeground ? [mutedForeground] : undefined}
+						progressBackgroundColor={card}
+					/>
+				}
+				renderItem={({ item }) => (
+					<Link href={`/chats/${item.id}`} asChild>
+						<Pressable
+							accessibilityRole="button"
+							accessibilityLabel={chatRowLabel(item)}
+							accessibilityHint="Öffnet den Chat"
+						>
+							{({ pressed }) => (
+								<View className={cn(pressed && "opacity-70")}>
+									<ChatRow chat={item} />
+								</View>
+							)}
+						</Pressable>
+					</Link>
+				)}
+			/>
+			<OfflineBanner loadedAt={dataUpdatedAt} />
+		</View>
 	);
 }
