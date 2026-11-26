@@ -5,4 +5,7 @@ variables:
     description: ""
   - name: listingId
     value: 6dc4eb48-74a5-40be-9999-a6c965dcdfe4
-    description: "A listing that the Login user does not own (used by the chat requests)"
+    description: A listing that the Login user does not own (used by the chat requests)
+  - name: pushEndpoint
+    value: https://fcm.googleapis.com/fcm/send/bruno-example
+    description: A made-up browser push endpoint for the push requests; no real browser receives it

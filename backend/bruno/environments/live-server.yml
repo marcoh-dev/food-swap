@@ -3,3 +3,6 @@ variables:
   - name: baseURL
     value: https://food-swap-bfh0.onrender.com
     description: ""
+  - name: pushEndpoint
+    value: https://fcm.googleapis.com/fcm/send/bruno-example
+    description: A made-up browser push endpoint for the push requests; no real browser receives it

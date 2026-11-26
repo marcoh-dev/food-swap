@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "endpoint": "https://fcm.googleapis.com/fcm/send/bruno-example"
+        "endpoint": "{{pushEndpoint}}"
       }
   auth: inherit
 
