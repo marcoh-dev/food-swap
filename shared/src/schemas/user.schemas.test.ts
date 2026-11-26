@@ -53,6 +53,13 @@ describe("profileSchema", () => {
 	const profile = (name: string) =>
 		profileSchema.safeParse({ name, placeId: "", placeQuery: "" });
 
+	it("allows up to 40 characters", () => {
+		expect(profile("a".repeat(40)).success).toBe(true);
+		expect(profile("a".repeat(41)).error?.issues[0]?.message).toBe(
+			"Der Profilname darf höchstens 40 Zeichen lang sein.",
+		);
+	});
+
 	it("allows an empty profile name", () => {
 		expect(profile("").success).toBe(true);
 		expect(profile("   ").data?.name).toBe("");

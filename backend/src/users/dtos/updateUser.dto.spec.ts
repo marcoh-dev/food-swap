@@ -12,6 +12,15 @@ describe("UpdateUserDto", () => {
 		expect(await validate(dto)).toHaveLength(0);
 	});
 
+	it("allows a profile name of up to 40 characters", async () => {
+		expect(
+			await validate(plainToInstance(UpdateUserDto, { name: "a".repeat(40) })),
+		).toHaveLength(0);
+		expect(
+			await validate(plainToInstance(UpdateUserDto, { name: "a".repeat(41) })),
+		).toHaveLength(1);
+	});
+
 	it("trims a profile name", () => {
 		expect(plainToInstance(UpdateUserDto, { name: "  Tomate " }).name).toBe("Tomate");
 	});

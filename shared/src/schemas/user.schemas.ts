@@ -18,6 +18,8 @@ export const USERNAME_MIN_LENGTH = 5;
 export const USERNAME_MAX_LENGTH = 20;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
+// Long enough for e.g. "Gemüsegarten Familie Müller", short enough for chat headers and lists
+export const PROFILE_NAME_MAX_LENGTH = 40;
 
 /** Shown below the username field when registering: the rules of `registrationSchema`. */
 export const USERNAME_HINT = `${USERNAME_MIN_LENGTH} bis ${USERNAME_MAX_LENGTH} Zeichen. Erlaubt sind Buchstaben, Ziffern und _ . -`;
@@ -77,7 +79,10 @@ export const profileSchema = z
 		name: z
 			.string()
 			.trim()
-			.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein.")
+			.max(
+				PROFILE_NAME_MAX_LENGTH,
+				`Der Profilname darf höchstens ${PROFILE_NAME_MAX_LENGTH} Zeichen lang sein.`,
+			)
 			.refine((name) => name === "" || !isReservedName(name), NAME_UNAVAILABLE_MESSAGE),
 		placeId: z.string(),
 		placeQuery: z.string(),
