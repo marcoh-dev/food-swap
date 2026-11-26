@@ -2,6 +2,7 @@ import { Geist_400Regular } from "@expo-google-fonts/geist/400Regular";
 import { Geist_500Medium } from "@expo-google-fonts/geist/500Medium";
 import { Geist_600SemiBold } from "@expo-google-fonts/geist/600SemiBold";
 import { Geist_700Bold } from "@expo-google-fonts/geist/700Bold";
+import { PortalHost } from "@rn-primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
@@ -140,6 +141,7 @@ export default function RootLayout() {
 								</Stack>
 							</AuthProvider>
 						)}
+						<PortalHost />
 					</KeyboardProvider>
 				</SafeAreaProvider>
 			</ThemeProvider>

@@ -1,7 +1,7 @@
 import type { ListingResponse, PaginatedListingsResponse } from "@food-swap/shared/types";
 import { type InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { fetchListing, LISTINGS_QUERY_KEY } from "@/api/listings";
+import { fetchListing, LISTINGS_LIST_QUERY_KEY, LISTINGS_QUERY_KEY } from "@/api/listings";
 
 /**
  * One listing. While it loads, the listing from the offers list is shown, so the
@@ -16,8 +16,11 @@ export function useListing(id: string, { enabled = true } = {}) {
 		enabled,
 		placeholderData: () =>
 			queryClient
-				.getQueryData<InfiniteData<PaginatedListingsResponse>>(LISTINGS_QUERY_KEY)
-				?.pages.flatMap((page) => page.data)
+				.getQueriesData<InfiniteData<PaginatedListingsResponse>>({
+					queryKey: LISTINGS_LIST_QUERY_KEY,
+				})
+				.flatMap(([, data]) => data?.pages ?? [])
+				.flatMap((page) => page.data)
 				.find((listing) => listing.id === id),
 	});
 }
