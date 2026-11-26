@@ -50,6 +50,14 @@ describe("registrationSchema", () => {
 });
 
 describe("profileSchema", () => {
+	const profile = (name: string) =>
+		profileSchema.safeParse({ name, placeId: "", placeQuery: "" });
+
+	it("allows an empty profile name", () => {
+		expect(profile("").success).toBe(true);
+		expect(profile("   ").data?.name).toBe("");
+	});
+
 	it("rejects a reserved profile name", () => {
 		const result = profileSchema.safeParse({
 			name: "FoodSwap Team",

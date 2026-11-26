@@ -28,6 +28,10 @@ export const USERNAME_HINT = `${USERNAME_MIN_LENGTH} bis ${USERNAME_MAX_LENGTH} 
  */
 export const PASSWORD_HINT = `Mindestens ${PASSWORD_MIN_LENGTH} Zeichen mit Groß- und Kleinbuchstaben, einer Zahl und einem Sonderzeichen.`;
 
+/** Shown below the profile name field: it's optional, and what others see without one. */
+export const PROFILE_NAME_HINT =
+	"Für andere User sichtbar. Ohne Profilnamen wird dein Benutzername angezeigt.";
+
 export const loginSchema = z.object({
 	username: z.string().trim().min(1, "Bitte gib einen Benutzernamen ein."),
 	password: z.string().min(1, "Bitte gib ein Passwort ein."),
@@ -69,12 +73,12 @@ export const registrationSchema = z.object({
 
 export const profileSchema = z
 	.object({
+		// Optional: an empty name is saved as null, and the apps show the username instead
 		name: z
 			.string()
 			.trim()
-			.min(1, "Bitte gib einen Profilnamen ein.")
 			.max(100, "Der Profilname darf höchstens 100 Zeichen lang sein.")
-			.refine((name) => !isReservedName(name), NAME_UNAVAILABLE_MESSAGE),
+			.refine((name) => name === "" || !isReservedName(name), NAME_UNAVAILABLE_MESSAGE),
 		placeId: z.string(),
 		placeQuery: z.string(),
 	})
