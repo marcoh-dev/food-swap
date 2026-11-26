@@ -1,12 +1,13 @@
 import { formatPlace } from "@food-swap/shared/places";
 import { profileSchema, type ProfileValues } from "@food-swap/shared/schemas/user";
 import type { CurrentUser, Place, User } from "@food-swap/shared/types";
-import { usePreventRemove, useRouter } from "expo-router";
+import { Stack, usePreventRemove, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { z } from "zod";
 
+import { HeaderSaveButton } from "@/components/HeaderSaveButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { PlacePicker } from "@/components/PlacePicker";
 import { RequireLogin } from "@/components/RequireLogin";
@@ -120,6 +121,18 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 
 	return (
 		<View className="flex-1 bg-background">
+			{/* In the header, so it's always reachable (not under the keyboard or the place results) */}
+			<Stack.Screen
+				options={{
+					headerRight: () => (
+						<HeaderSaveButton
+							onPress={handleSubmit}
+							disabled={!isOnline || !hasChanges}
+							busy={updateProfile.isPending}
+						/>
+					),
+				}}
+			/>
 			<KeyboardAwareScrollView
 				className="flex-1 bg-background"
 				contentContainerClassName="gap-4 p-6"
@@ -160,9 +173,6 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 						Keyboard.dismiss();
 					}}
 				/>
-				<Button disabled={!isOnline || updateProfile.isPending} onPress={handleSubmit}>
-					<Text>Speichern</Text>
-				</Button>
 				<View className="mt-10 gap-2 border-t border-border pt-4">
 					<View className="flex-row items-center justify-between gap-3">
 						<Text variant="muted" className="flex-1">
