@@ -10,10 +10,12 @@ type Props = TextInputProps & {
 	error?: string;
 	/** Shown inside the field on the right, e.g. a button that shows the password. */
 	accessory?: ReactNode;
+	/** Shown directly below the field, before the description and error, e.g. search results. */
+	children?: ReactNode;
 };
 
 /** A text input with a label above it, and an optional description and error text below it. */
-export function TextField({ label, description, error, accessory, ...props }: Props) {
+export function TextField({ label, description, error, accessory, children, ...props }: Props) {
 	return (
 		<View className="gap-2">
 			<Text variant="small">{label}</Text>
@@ -27,6 +29,7 @@ export function TextField({ label, description, error, accessory, ...props }: Pr
 				/>
 				{accessory ? <View className="absolute right-0">{accessory}</View> : null}
 			</View>
+			{children}
 			{/* Below the field like on the web; the screen reader reads it with the field (hint) */}
 			{description ? <Text variant="muted">{description}</Text> : null}
 			{error ? <Text className="text-body-small text-destructive">{error}</Text> : null}

@@ -34,18 +34,18 @@ export function PlacePicker({
 	const canSearch = !selectedPlace && query.trim().length >= MIN_PLACE_QUERY_LENGTH;
 	const places = search.data ?? [];
 
+	// The results come right below the field, before its description
 	return (
-		<View className="gap-2">
-			<TextField
-				label="Ort"
-				description={description}
-				placeholder="PLZ oder Ort"
-				value={query}
-				onChangeText={onQueryChange}
-				error={error}
-				autoCorrect={false}
-				autoComplete="off"
-			/>
+		<TextField
+			label="Ort"
+			description={canSearch ? undefined : description}
+			placeholder="PLZ oder Ort"
+			value={query}
+			onChangeText={onQueryChange}
+			error={error}
+			autoCorrect={false}
+			autoComplete="off"
+		>
 			{canSearch &&
 				// Offline, TanStack pauses the search and continues it once back online
 				(search.isPending && search.fetchStatus === "paused" ? (
@@ -74,6 +74,6 @@ export function PlacePicker({
 						))}
 					</View>
 				))}
-		</View>
+		</TextField>
 	);
 }
