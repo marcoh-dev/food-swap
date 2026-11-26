@@ -35,7 +35,8 @@ export function UserUpdate({
 	const closeProfileEdit = useCloseProfileEdit();
 
 	function handlePlaceQueryChange(query: string) {
-		form.setValue("placeQuery", query);
+		// shouldDirty: typed text counts as a change (enables "Speichern"), like the name
+		form.setValue("placeQuery", query, { shouldDirty: true });
 		if (form.formState.isSubmitted) form.trigger("placeId");
 	}
 
@@ -105,7 +106,10 @@ export function UserUpdate({
 				<FieldError className="mt-3" errors={[form.formState.errors.root]} />
 
 				<div className="mt-5 flex gap-2">
-					<Button type="submit" disabled={form.formState.isSubmitting}>
+					<Button
+						type="submit"
+						disabled={!form.formState.isDirty || form.formState.isSubmitting}
+					>
 						Speichern
 					</Button>
 					<Button
