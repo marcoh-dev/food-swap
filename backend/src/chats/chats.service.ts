@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { plainToInstance } from "class-transformer";
 import { EntityManager, Repository } from "typeorm";
@@ -13,6 +13,8 @@ import { UnreadChatsCountDto } from "./dtos/unreadChatsCount.dto";
 import { Chat } from "./entities/chat.entity";
 import { Message } from "./entities/message.entity";
 import { Listing } from "../listings/entities/listing.entity";
+import { PushService } from "../push/push.service";
+import { chatPushMessage } from "../push/pushMessage";
 import { User } from "../users/entities/user.entity";
 
 type SavedMessage = {
@@ -22,10 +24,13 @@ type SavedMessage = {
 
 @Injectable()
 export class ChatsService {
+	private readonly logger = new Logger(ChatsService.name);
+
 	constructor(
 		@InjectRepository(Chat)
 		private readonly chats: Repository<Chat>,
 		private readonly chatsGateway: ChatsGateway,
+		private readonly pushService: PushService,
 	) {}
 
 	async findAll(currentUser: User): Promise<ChatListItemDto[]> {
@@ -174,6 +179,8 @@ export class ChatsService {
 		);
 
 		this.chatsGateway.notifyNewMessage(participantIds, message);
+		// Not awaited: the push goes out in the background and can't fail sending the message
+		void this.sendPush(message, participantIds);
 
 		return message;
 	}
@@ -212,6 +219,8 @@ export class ChatsService {
 		);
 
 		this.chatsGateway.notifyNewMessage(participantIds, message);
+		// Not awaited: the push goes out in the background and can't fail sending the message
+		void this.sendPush(message, participantIds);
 
 		return message;
 	}
@@ -270,6 +279,37 @@ export class ChatsService {
 		});
 
 		this.chatsGateway.notifyChatRemoved(userId, chatId);
+	}
+
+	/** Sends the message as a push to the other person's devices (never to the sender). Never throws. */
+	private async sendPush(message: MessageResponseDto, participantIds: Array<string | null>) {
+		const recipientIds = participantIds
+			// Without deleted accounts (null); TypeScript infers that only strings remain
+			.filter((id) => id !== null)
+			.filter((id) => id !== message.senderId);
+		if (recipientIds.length === 0) return;
+
+		try {
+			const chat = await this.chats.findOne({
+				where: { id: message.chatId },
+				relations: { listing: true, owner: true, user: true },
+			});
+			const sender = chat?.owner?.id === message.senderId ? chat.owner : chat?.user;
+			if (!chat || !sender) return;
+
+			const push = chatPushMessage({
+				chatId: chat.id,
+				senderName: sender.name ?? sender.username,
+				listingTitle: chat.listing?.title ?? null,
+				content: message.content,
+			});
+			await Promise.all(recipientIds.map((id) => this.pushService.sendToUser(id, push)));
+		} catch (error) {
+			this.logger.error(
+				"Preparing a chat push failed.",
+				error instanceof Error ? error.stack : error,
+			);
+		}
 	}
 
 	private async saveMessage(
