@@ -1,6 +1,8 @@
 import { formatPlace } from "@food-swap/shared/places";
 import type { Place } from "@food-swap/shared/types";
-import { ActivityIndicator, Pressable, View } from "react-native";
+import { SymbolView } from "expo-symbols";
+import { useRef } from "react";
+import { ActivityIndicator, Pressable, type TextInputInstance, View } from "react-native";
 
 import { TextField } from "@/components/TextField";
 import { Text } from "@/components/ui/text";
@@ -30,6 +32,7 @@ export function PlacePicker({
 	onSelect,
 }: Props) {
 	const mutedForeground = useThemeColor("--muted-foreground");
+	const inputRef = useRef<TextInputInstance>(null);
 	const search = usePlaceSearch(query, { enabled: !selectedPlace });
 	const canSearch = !selectedPlace && query.trim().length >= MIN_PLACE_QUERY_LENGTH;
 	const places = search.data ?? [];
@@ -79,11 +82,33 @@ export function PlacePicker({
 			label="Ort"
 			description={canSearch ? undefined : description}
 			placeholder="PLZ oder Ort"
+			ref={inputRef}
 			value={query}
 			onChangeText={onQueryChange}
 			error={error}
 			autoCorrect={false}
 			autoComplete="off"
+			accessory={
+				query ? (
+					<Pressable
+						onPress={() => {
+							onQueryChange("");
+							// Ready to type a new place right away (iOS would otherwise leave the field)
+							inputRef.current?.focus();
+						}}
+						accessibilityRole="button"
+						accessibilityLabel="Ort löschen"
+						hitSlop={8}
+						className="h-10 w-11 items-center justify-center"
+					>
+						<SymbolView
+							name={{ ios: "xmark.circle.fill", android: "cancel" }}
+							size={18}
+							tintColor={mutedForeground}
+						/>
+					</Pressable>
+				) : undefined
+			}
 		>
 			{canSearch && results}
 		</TextField>

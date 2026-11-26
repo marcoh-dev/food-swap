@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { type TextInputProps, View } from "react-native";
+import type { ReactNode, Ref } from "react";
+import { type TextInputInstance, type TextInputProps, View } from "react-native";
 
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -12,6 +12,8 @@ type Props = TextInputProps & {
 	accessory?: ReactNode;
 	/** Shown directly below the field, before the description and error, e.g. search results. */
 	children?: ReactNode;
+	/** The input itself, e.g. to focus it. */
+	ref?: Ref<TextInputInstance>;
 };
 
 /** A text input with a label above it, and an optional description and error text below it. */
