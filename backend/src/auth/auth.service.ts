@@ -5,13 +5,13 @@ import * as bcrypt from "bcrypt";
 import { createHash, randomBytes } from "node:crypto";
 import { LessThan, MoreThan, Repository } from "typeorm";
 
+import { REFRESH_TOKEN_DAYS } from "./auth.constants";
 import { RefreshToken } from "./entities/refreshToken.entity";
 import { ChatsGateway } from "../chats/chats.gateway";
 import { PushService } from "../push/push.service";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 
-const REFRESH_TOKEN_DAYS = 30;
 const USED_REFRESH_TOKEN_SECONDS = 60;
 
 function hashToken(token: string) {

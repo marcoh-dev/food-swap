@@ -1,18 +1,21 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnApplicationBootstrap } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import webpush, { WebPushError } from "web-push";
 
 import type { CreatePushSubscriptionDto } from "./dtos/createPushSubscription.dto";
 import { PushSubscription, PushSubscriptionType } from "./entities/pushSubscription.entity";
 import type { PushMessage } from "./pushMessage";
+import { REFRESH_TOKEN_DAYS } from "../auth/auth.constants";
+import { TIME_ZONE } from "../common/utils/berlin-date";
 
 // The push service's answer when a subscription no longer exists (unsubscribed or expired)
 const GONE_STATUS_CODES = [404, 410];
 
 @Injectable()
-export class PushService {
+export class PushService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(PushService.name);
 	private readonly webPushEnabled: boolean;
 
@@ -58,6 +61,38 @@ export class PushService {
 	/** Deletes a device's subscription, but only the user's own (e.g. on logout). */
 	async remove(userId: string, endpoint: string): Promise<void> {
 		await this.subscriptions.delete({ userId, endpoint });
+	}
+
+	// Also on startup: a server that sleeps when idle can miss the daily run
+	async onApplicationBootstrap(): Promise<void> {
+		await this.runCleanup("startup");
+	}
+
+	@Cron("0 3 * * *", { timeZone: TIME_ZONE })
+	async deleteStaleDaily(): Promise<void> {
+		await this.runCleanup("daily");
+	}
+
+	private async runCleanup(trigger: "startup" | "daily"): Promise<void> {
+		try {
+			const deleted = await this.deleteStale(new Date());
+			this.logger.log(`PushCleanup (${trigger}): Deleted ${deleted} stale subscriptions.`);
+		} catch (error) {
+			this.logger.error(
+				`PushCleanup (${trigger}): Deleting stale subscriptions failed.`,
+				error instanceof Error ? error.stack : error,
+			);
+		}
+	}
+
+	/**
+	 * Deletes subscriptions that weren't renewed within the login lifetime: the device's login has
+	 * expired, so it shouldn't get pushes any more. Returns how many were deleted.
+	 */
+	async deleteStale(now: Date): Promise<number> {
+		const oldestKept = new Date(now.getTime() - REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000);
+		const result = await this.subscriptions.delete({ lastSeenAt: LessThan(oldestKept) });
+		return result.affected ?? 0;
 	}
 
 	/** Deletes all of the user's subscriptions, e.g. on "Überall abmelden". */

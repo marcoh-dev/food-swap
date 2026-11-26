@@ -7,6 +7,7 @@ import { DataSource } from "typeorm";
 import { AppModule } from "../src/app.module";
 import { resetRateLimits } from "./setup/rate-limits";
 import { PushSubscription } from "../src/push/entities/pushSubscription.entity";
+import { PushService } from "../src/push/push.service";
 
 const PASSWORD = "Tomate123!";
 const ENDPOINT = "https://fcm.googleapis.com/fcm/send/abc123";
@@ -149,6 +150,28 @@ describe("Push subscriptions (integration)", () => {
 		await api().post("/auth/logout-all").auth(a, { type: "bearer" }).expect(204);
 
 		expect((await onlySubscription()).userId).toBe(await userId(b));
+	});
+
+	it("deletes subscriptions that weren't renewed within the login lifetime", async () => {
+		await subscribe(a, webSubscription("https://fcm.googleapis.com/fcm/send/old")).expect(204);
+		await subscribe(a, webSubscription("https://fcm.googleapis.com/fcm/send/recent")).expect(
+			204,
+		);
+		const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+		const repository = dataSource.getRepository(PushSubscription);
+		await repository.update(
+			{ endpoint: "https://fcm.googleapis.com/fcm/send/old" },
+			{ lastSeenAt: daysAgo(31) },
+		);
+		await repository.update(
+			{ endpoint: "https://fcm.googleapis.com/fcm/send/recent" },
+			{ lastSeenAt: daysAgo(29) },
+		);
+
+		expect(await app.get(PushService).deleteStale(new Date())).toBe(1);
+		expect((await onlySubscription()).endpoint).toBe(
+			"https://fcm.googleapis.com/fcm/send/recent",
+		);
 	});
 
 	it("needs a login", async () => {
