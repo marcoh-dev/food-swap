@@ -135,6 +135,22 @@ describe("Push subscriptions (integration)", () => {
 		expect(await subscriptions()).toHaveLength(0);
 	});
 
+	it("deletes all of the user's subscriptions on \"Überall abmelden\", but not others'", async () => {
+		await subscribe(a, webSubscription("https://fcm.googleapis.com/fcm/send/laptop")).expect(
+			204,
+		);
+		await subscribe(a, webSubscription("https://fcm.googleapis.com/fcm/send/phone")).expect(
+			204,
+		);
+		await subscribe(b, webSubscription("https://fcm.googleapis.com/fcm/send/other")).expect(
+			204,
+		);
+
+		await api().post("/auth/logout-all").auth(a, { type: "bearer" }).expect(204);
+
+		expect((await onlySubscription()).userId).toBe(await userId(b));
+	});
+
 	it("needs a login", async () => {
 		await api().post("/push-subscriptions").send(webSubscription()).expect(401);
 		await api().delete("/push-subscriptions").send({ endpoint: ENDPOINT }).expect(401);

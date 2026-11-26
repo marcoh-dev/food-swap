@@ -60,6 +60,11 @@ export class PushService {
 		await this.subscriptions.delete({ userId, endpoint });
 	}
 
+	/** Deletes all of the user's subscriptions, e.g. on "Überall abmelden". */
+	async removeAllForUser(userId: string): Promise<void> {
+		await this.subscriptions.delete({ userId });
+	}
+
 	/**
 	 * Sends a push to all of the user's devices. Never throws: a failed push must not affect what
 	 * triggered it (e.g. sending a chat message); subscriptions the push service no longer knows

@@ -7,6 +7,7 @@ import { LessThan, MoreThan, Repository } from "typeorm";
 
 import { RefreshToken } from "./entities/refreshToken.entity";
 import { ChatsGateway } from "../chats/chats.gateway";
+import { PushService } from "../push/push.service";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 
@@ -27,6 +28,7 @@ export class AuthService {
 		@InjectRepository(User)
 		private readonly users: Repository<User>,
 		private readonly chatsGateway: ChatsGateway,
+		private readonly pushService: PushService,
 	) {}
 
 	async validateUser(username: string, password: string) {
@@ -75,11 +77,12 @@ export class AuthService {
 
 	/**
 	 * Logs the user out on all devices: access tokens issued so far stop working, refresh tokens
-	 * are deleted and open chat connections are closed.
+	 * are deleted, open chat connections are closed and no device gets pushes any more.
 	 */
 	async logoutEverywhere(userId: string) {
 		await this.users.update(userId, { loggedOutEverywhereAt: new Date() });
 		await this.refreshTokens.delete({ userId });
+		await this.pushService.removeAllForUser(userId);
 		this.chatsGateway.disconnectUser(userId);
 	}
 
