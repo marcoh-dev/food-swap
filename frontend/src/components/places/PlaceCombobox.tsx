@@ -4,7 +4,7 @@ import { MISSING_PLACE_MESSAGE } from "@food-swap/shared/messages";
 import { formatPlace } from "@food-swap/shared/places";
 import type { Place } from "@food-swap/shared/types";
 import { cn } from "cn";
-import { LocateFixedIcon, MapPinIcon } from "lucide-react";
+import { LocateFixedIcon, MapPinIcon, XIcon } from "lucide-react";
 import { useEffect, useId, useImperativeHandle, useRef, useState } from "react";
 
 import { findNearestPlaceAction, searchPlacesAction } from "@/app/actions";
@@ -162,6 +162,15 @@ export default function PlaceCombobox({
 		setIsOpen(false);
 	}
 
+	// Ready to type a new place right away
+	function clearQuery() {
+		changeQuery("");
+		if (selectedPlace) changePlace(null);
+		setLocationError(null);
+		if (isLocating) cancelLocating();
+		inputRef.current?.focus();
+	}
+
 	function clearLocationRequest() {
 		const request = locationRequestRef.current;
 		if (!request) return;
@@ -276,7 +285,19 @@ export default function PlaceCombobox({
 								onKeyDown={handleKeyDown}
 								className="h-8 w-full min-w-0 flex-1 bg-transparent px-2.5 py-1 text-body-small outline-none placeholder:text-muted-foreground md:text-xs dark:placeholder:text-foreground/80"
 							/>
-							<InputGroupAddon align="inline-end">
+							{/* gap-1: the clear and location buttons sit close together like one group */}
+							<InputGroupAddon align="inline-end" className="gap-1">
+								{query && (
+									<InputGroupButton
+										type="button"
+										size="icon-xs"
+										onClick={clearQuery}
+										aria-label="Ort löschen"
+										title="Ort löschen"
+									>
+										<XIcon />
+									</InputGroupButton>
+								)}
 								<InputGroupButton
 									type="button"
 									size="icon-xs"
