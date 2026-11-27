@@ -1,8 +1,4 @@
-import type {
-	ListingResponse,
-	PaginatedListingsResponse,
-	SortOption,
-} from "@food-swap/shared/types";
+import type { ListingResponse, PaginatedListingsResponse } from "@food-swap/shared/types";
 import {
 	type InfiniteData,
 	keepPreviousData,
@@ -11,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { fetchListings, LISTINGS_LIST_QUERY_KEY } from "@/api/listings";
+import { fetchListings, LISTINGS_LIST_QUERY_KEY, type ListingsQuery } from "@/api/listings";
 
 type ListingsData = InfiniteData<PaginatedListingsResponse, number>;
 
@@ -29,15 +25,16 @@ function uniqueById(pages: PaginatedListingsResponse[]): ListingResponse[] {
 }
 
 /**
- * The offers list in the given order, loaded page by page. `listings` are all loaded listings
- * without duplicates; `reload` loads the first page again (pull to refresh, try again).
+ * The offers list in the given order, optionally filtered by a search term, loaded page by
+ * page. `listings` are all loaded listings without duplicates; `reload` loads the first page
+ * again (pull to refresh, try again).
  */
-export function useListings(sort: SortOption) {
+export function useListings(listingsQuery: ListingsQuery) {
 	const queryClient = useQueryClient();
-	const queryKey = [...LISTINGS_LIST_QUERY_KEY, sort];
+	const queryKey = [...LISTINGS_LIST_QUERY_KEY, listingsQuery];
 	const query = useInfiniteQuery({
 		queryKey,
-		queryFn: ({ pageParam, signal }) => fetchListings(pageParam, sort, signal),
+		queryFn: ({ pageParam, signal }) => fetchListings(pageParam, listingsQuery, signal),
 		initialPageParam: 1,
 		placeholderData: keepPreviousData,
 		getNextPageParam: (lastPage) =>
