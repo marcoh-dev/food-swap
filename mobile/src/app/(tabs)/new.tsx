@@ -55,6 +55,12 @@ function NewListingForm() {
 		console.log(values);
 	}
 
+	function handleCancel() {
+		form.reset();
+		setPlace(null);
+		setPlaceQuery("");
+	}
+
 	return (
 		<View className="flex-1 bg-background">
 			<KeyboardAwareScrollView
@@ -196,6 +202,9 @@ function NewListingForm() {
 				/>
 				<Button onPress={() => form.handleSubmit(onValid)()}>
 					<Text>Erstellen</Text>
+				</Button>
+				<Button variant="outline" onPress={handleCancel}>
+					<Text>Abbrechen</Text>
 				</Button>
 			</KeyboardAwareScrollView>
 		</View>
