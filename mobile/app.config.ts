@@ -1,0 +1,58 @@
+import type { ExpoConfig } from "expo/config";
+
+// The EAS project under the Expo organization "the-tomatoes" (created with `eas init`)
+const EAS_PROJECT_ID = "84d9576c-2448-4203-b493-eb74284527e9";
+
+const config: ExpoConfig = {
+	name: "Food Swap",
+	slug: "food-swap",
+	owner: "the-tomatoes",
+	version: "1.0.0",
+	orientation: "portrait",
+	icon: "./assets/images/icon.png",
+	scheme: "foodswap",
+	userInterfaceStyle: "automatic",
+	ios: {
+		icon: "./assets/expo.icon",
+		bundleIdentifier: "dev.marcoh.foodswap",
+	},
+	android: {
+		adaptiveIcon: {
+			backgroundColor: "#E6F4FE",
+			foregroundImage: "./assets/images/android-icon-foreground.png",
+			backgroundImage: "./assets/images/android-icon-background.png",
+			monochromeImage: "./assets/images/android-icon-monochrome.png",
+		},
+		predictiveBackGestureEnabled: false,
+		package: "dev.marcoh.foodswap",
+		// Links the app to the Firebase project for push (FCM). Not in the repo (it's public): EAS
+		// builds get it from the file variable GOOGLE_SERVICES_JSON, local builds read the
+		// git-ignored copy next to this file
+		googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
+	},
+	web: {
+		output: "server",
+		favicon: "./assets/images/favicon.png",
+	},
+	plugins: [
+		"expo-router",
+		[
+			"expo-splash-screen",
+			{
+				backgroundColor: "#208AEF",
+				image: "./assets/images/splash-icon.png",
+				imageWidth: 76,
+			},
+		],
+		"expo-secure-store",
+	],
+	experiments: {
+		typedRoutes: true,
+		reactCompiler: true,
+	},
+	extra: {
+		eas: { projectId: EAS_PROJECT_ID },
+	},
+};
+
+export default config;
