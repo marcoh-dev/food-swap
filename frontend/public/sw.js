@@ -60,22 +60,28 @@ self.addEventListener("notificationclick", (event) => {
 
 	event.waitUntil(
 		(async () => {
-			const windows = await self.clients.matchAll({ type: "window" });
+			try {
+				const windows = await self.clients.matchAll({ type: "window" });
 
-			const chatTab = windows.find((client) => showsChat(client, chatId));
-			if (chatTab) {
-				await chatTab.focus();
-				return;
-			}
+				const chatTab = windows.find((client) => showsChat(client, chatId));
+				if (chatTab) {
+					await chatTab.focus();
+					return;
+				}
 
-			const tab = windows.find(onChatsPage) ?? windows[0];
-			if (!tab) {
+				const tab = windows.find(onChatsPage) ?? windows[0];
+				if (!tab) {
+					await self.clients.openWindow(chatUrl(chatId));
+					return;
+				}
+
+				await tab.focus();
+				await tab.navigate(chatUrl(chatId));
+			} catch {
+				// Some browsers don't fully support focusing or navigating tabs from here; opening
+				// the chat in a new tab still gets the user there
 				await self.clients.openWindow(chatUrl(chatId));
-				return;
 			}
-
-			await tab.focus();
-			await tab.navigate(chatUrl(chatId));
 		})(),
 	);
 });
