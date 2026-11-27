@@ -49,7 +49,15 @@ export async function subscribeToPush(): Promise<void> {
 				applicationServerKey: keyBytes(VAPID_PUBLIC_KEY),
 			}));
 
-		await savePushSubscriptionAction(subscription.toJSON() as WebPushSubscription);
+		const result = await savePushSubscriptionAction(
+			subscription.toJSON() as WebPushSubscription,
+		);
+		if (result.error) {
+			// Without the backend knowing it, the subscription would only silence this browser's
+			// in-tab notifications; ending it lets them show again until the next try
+			console.warn("Web push could not be set up:", result.error);
+			await subscription.unsubscribe();
+		}
 	} catch (error) {
 		console.warn("Web push could not be set up.", error);
 	}
