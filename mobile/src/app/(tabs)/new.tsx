@@ -11,10 +11,12 @@ import { PlacePicker } from "@/components/PlacePicker";
 import { RadioGroup } from "@/components/RadioGroup";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Select } from "@/components/Select";
+import { TagSelect } from "@/components/TagSelect";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useCategories } from "@/hooks/useCategories";
+import { useTags } from "@/hooks/useTags";
 import { cn } from "@/lib/utils";
 
 const EMPTY_VALUES = {
@@ -39,6 +41,7 @@ function NewListingForm() {
 	const [place, setPlace] = useState<Place | null>(null);
 	const [placeQuery, setPlaceQuery] = useState("");
 	const { data: categories = [] } = useCategories();
+	const { data: tags = [] } = useTags();
 	const form = useForm<ListingFormValues>({
 		resolver: zodResolver(createListingSchema()),
 		defaultValues: EMPTY_VALUES,
@@ -146,6 +149,16 @@ function NewListingForm() {
 							onValueChange={field.onChange}
 							error={fieldState.error?.message}
 						/>
+					)}
+				/>
+				<Controller
+					name="tagIds"
+					control={form.control}
+					render={({ field }) => (
+						<View className="gap-2">
+							<Text variant="small">Tags</Text>
+							<TagSelect tags={tags} value={field.value} onChange={field.onChange} />
+						</View>
 					)}
 				/>
 				<Controller
