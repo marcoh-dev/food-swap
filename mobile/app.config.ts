@@ -41,8 +41,8 @@ const config: ExpoConfig = {
 			"expo-splash-screen",
 			{
 				backgroundColor: "#f7f3eb",
-				image: "./assets/images/splash-icon.png",
-				imageWidth: 200,
+				image: "./assets/images/android-icon-foreground.png",
+				imageWidth: 300,
 			},
 		],
 		"expo-secure-store",
