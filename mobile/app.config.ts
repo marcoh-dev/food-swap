@@ -4,7 +4,7 @@ import type { ExpoConfig } from "expo/config";
 const EAS_PROJECT_ID = "84d9576c-2448-4203-b493-eb74284527e9";
 
 const config: ExpoConfig = {
-	name: "Food Swap",
+	name: "FoodSwap",
 	slug: "food-swap",
 	owner: "food-swap",
 	version: "1.0.0",
@@ -18,7 +18,8 @@ const config: ExpoConfig = {
 	},
 	android: {
 		adaptiveIcon: {
-			backgroundColor: "#E6F4FE",
+			// The light theme's background (shared/theme.css), like the web icons
+			backgroundColor: "#f7f3eb",
 			foregroundImage: "./assets/images/android-icon-foreground.png",
 			backgroundImage: "./assets/images/android-icon-background.png",
 			monochromeImage: "./assets/images/android-icon-monochrome.png",
@@ -39,9 +40,9 @@ const config: ExpoConfig = {
 		[
 			"expo-splash-screen",
 			{
-				backgroundColor: "#208AEF",
+				backgroundColor: "#f7f3eb",
 				image: "./assets/images/splash-icon.png",
-				imageWidth: 76,
+				imageWidth: 200,
 			},
 		],
 		"expo-secure-store",
