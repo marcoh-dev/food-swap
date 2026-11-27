@@ -1,0 +1,20 @@
+{
+	"cli": {
+		"version": ">= 27.11.0",
+		"appVersionSource": "remote"
+	},
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"environment": "development"
+		},
+		"preview": {
+			"distribution": "internal",
+			"environment": "preview",
+			"env": {
+				"EXPO_PUBLIC_API_URL": "https://food-swap-bfh0.onrender.com"
+			}
+		}
+	}
+}
