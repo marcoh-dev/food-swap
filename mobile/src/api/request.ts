@@ -96,8 +96,17 @@ export async function post<TData>(path: string, body: unknown): Promise<TData> {
 	return response.json();
 }
 
-export async function del(path: string): Promise<void> {
-	await send(path, { method: "DELETE" });
+export async function del(path: string, body?: unknown): Promise<void> {
+	await send(
+		path,
+		body === undefined
+			? { method: "DELETE" }
+			: {
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(body),
+				},
+	);
 }
 
 export async function postWithoutResponse(path: string, body: unknown): Promise<void> {
