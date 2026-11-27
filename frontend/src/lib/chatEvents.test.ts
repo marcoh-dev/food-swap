@@ -10,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getChatsAction, markChatReadAction } from "@/app/chats/actions";
 import { connectChat } from "@/lib/chatEvents";
+import { currentPushSubscription } from "@/lib/webPush";
 import { useChatStore } from "@/store/chat.store";
 
 // Collects the socket listeners from connectChat, so the tests can send events
@@ -35,6 +36,8 @@ vi.mock("@/app/chats/actions", () => ({
 	replyToChatAction: vi.fn(),
 	startChatAction: vi.fn(),
 }));
+
+vi.mock("@/lib/webPush", () => ({ currentPushSubscription: vi.fn() }));
 
 const ME = "user-me";
 const OTHER = "user-other";
@@ -304,6 +307,50 @@ describe("reconnect", () => {
 		expect(isOutdated(CHAT_LIST_QUERY_KEY)).toBe(true);
 		expect(isOutdated(chatQueryKey("chat-1"))).toBe(true);
 		expect(isOutdated(UNREAD_CHATS_COUNT_QUERY_KEY)).toBe(true);
+	});
+});
+
+describe("browser notifications", () => {
+	const shown: string[] = [];
+
+	// Node has no window or Notification; just enough for notifications with permission granted
+	class FakeNotification {
+		static permission = "granted";
+		onclick: (() => void) | null = null;
+		constructor(title: string) {
+			shown.push(title);
+		}
+		close() {}
+	}
+
+	beforeEach(() => {
+		shown.length = 0;
+		vi.stubGlobal("window", globalThis);
+		vi.stubGlobal("Notification", FakeNotification);
+	});
+
+	afterEach(() => {
+		vi.stubGlobal("window", undefined);
+		vi.stubGlobal("Notification", undefined);
+	});
+
+	it("shows a notification in the tab when this browser has no push subscription", async () => {
+		vi.mocked(currentPushSubscription).mockResolvedValue(null);
+		queryClient.setQueryData(CHAT_LIST_QUERY_KEY, [chatItem("chat-2")]);
+
+		emit("newMessage", message("chat-2", OTHER));
+		await flush();
+
+		expect(shown).toEqual(["Neue Nachricht von Anna"]);
+	});
+
+	it("leaves it to the service worker when this browser has a push subscription", async () => {
+		vi.mocked(currentPushSubscription).mockResolvedValue({} as PushSubscription);
+
+		emit("newMessage", message("chat-2", OTHER));
+		await flush();
+
+		expect(shown).toEqual([]);
 	});
 });
 
