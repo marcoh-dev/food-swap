@@ -14,6 +14,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-na
 import Carousel from "@/components/Carousel";
 import ListingCard from "@/components/ListingCard";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { SearchBar } from "@/components/search/SearchBar";
 import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { SortingMenu } from "@/components/SortingMenu";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ const LIST_GAP = 12;
 
 export default function Listings() {
 	const [sort, setSort] = useState<SortOption>("newest");
+
+	const [searchTerm, setSearchTerm] = useState("");
 	const {
 		data,
 		dataUpdatedAt,
@@ -46,7 +49,7 @@ export default function Listings() {
 		isPlaceholderData,
 		isFetchingNextPage,
 		isFetchNextPageError,
-	} = useListings(sort);
+	} = useListings({ sort, term: searchTerm });
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
@@ -148,6 +151,9 @@ export default function Listings() {
 					minIndexForVisible: 0,
 					autoscrollToTopThreshold: 40,
 				}}
+				// With the search keyboard open, a tap on a listing opens it right away instead of only
+				// closing the keyboard
+				keyboardShouldPersistTaps="handled"
 				ListHeaderComponent={
 					<View
 						className={cn(
@@ -159,6 +165,9 @@ export default function Listings() {
 						{heading}
 						{errorNotice}
 						<Carousel />
+
+						<SearchBar onSearch={({ term }) => setSearchTerm(term)} />
+
 						{data && (
 							<View className="mt-2 flex-row items-end justify-between gap-2">
 								<Text variant="muted">
