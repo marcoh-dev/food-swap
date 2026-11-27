@@ -9,7 +9,7 @@ import {
 	setNotificationHandler,
 } from "expo-notifications";
 import * as SecureStore from "expo-secure-store";
-import { Alert, Platform } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
 
 import { deletePushToken, savePushToken } from "@/api/push";
 
@@ -85,7 +85,7 @@ function confirmAsking() {
 	return new Promise<boolean>((resolve) => {
 		Alert.alert(
 			"Benachrichtigungen aktivieren?",
-			"Erfahre sofort, wenn dir jemand schreibt. Du kannst das jederzeit in den Android-Einstellungen ändern.",
+			"Erfahre sofort, wenn dir jemand schreibt. Du kannst das jederzeit in deinem Profil ändern.",
 			[
 				{ text: "Später", style: "cancel", onPress: () => resolve(false) },
 				{ text: "Aktivieren", onPress: () => resolve(true) },
@@ -99,7 +99,7 @@ function confirmAsking() {
 /**
  * Asks once for the notification permission, after the user sent a message: first with a short
  * explanation, then with the system dialog. Not again after "Später" or a denial; it can be turned
- * on in the system settings.
+ * on from the profile.
  */
 export async function askForPushPermission() {
 	try {
@@ -114,5 +114,45 @@ export async function askForPushPermission() {
 		if (granted) await registerForPush();
 	} catch (error) {
 		console.warn("Notification permission could not be requested.", error);
+	}
+}
+
+/** Whether notifications are allowed for the app. */
+export async function notificationsAllowed() {
+	const { granted } = await getPermissionsAsync();
+	return granted;
+}
+
+// FoodSwap's notification settings in Android; the app info page if a device doesn't have them
+async function openNotificationSettings() {
+	try {
+		await Linking.sendIntent("android.settings.APP_NOTIFICATION_SETTINGS", [
+			{
+				key: "android.provider.extra.APP_PACKAGE",
+				value: Constants.expoConfig?.android?.package ?? "",
+			},
+		]);
+	} catch {
+		await Linking.openSettings();
+	}
+}
+
+/**
+ * Lets the user turn notifications on or off from the profile: the system dialog if Android hasn't
+ * asked yet (no explanation first, the user chose this), otherwise the system settings.
+ */
+export async function changeNotificationSettings() {
+	try {
+		const { status, canAskAgain } = await getPermissionsAsync();
+		if (status === PermissionStatus.UNDETERMINED && canAskAgain) {
+			await SecureStore.setItemAsync(ASKED_KEY, "true");
+			const { granted } = await requestPermissionsAsync();
+			if (granted) await registerForPush();
+			return;
+		}
+
+		await openNotificationSettings();
+	} catch (error) {
+		console.warn("Notification settings could not be opened.", error);
 	}
 }

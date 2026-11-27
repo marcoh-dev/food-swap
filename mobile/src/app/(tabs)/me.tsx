@@ -2,7 +2,7 @@ import { formatDate } from "@food-swap/shared/dates";
 import { formatPlace } from "@food-swap/shared/places";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -14,8 +14,10 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
+import { useNotificationsAllowed } from "@/hooks/useNotificationsAllowed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUser } from "@/hooks/useUser";
+import { changeNotificationSettings } from "@/lib/pushNotifications";
 
 export default function Profile() {
 	return (
@@ -117,6 +119,7 @@ function ProfileContent() {
 
 			{!isLoading && (
 				<>
+					{Platform.OS === "android" && <NotificationsSetting />}
 					<Button variant="outline" onPress={() => void logOut()}>
 						<Text>Abmelden</Text>
 					</Button>
@@ -140,6 +143,31 @@ function ProfileContent() {
 			)}
 			<OfflineBanner loadedAt={profile && profileQuery.dataUpdatedAt} />
 		</Screen>
+	);
+}
+
+// Push notifications are Android only for now (#176)
+function NotificationsSetting() {
+	const { allowed, refresh } = useNotificationsAllowed();
+
+	return (
+		<View className="gap-2">
+			<Button
+				variant="outline"
+				onPress={() => {
+					void changeNotificationSettings().then(() => refresh());
+				}}
+			>
+				<Text>Benachrichtigungen</Text>
+			</Button>
+			{allowed !== undefined && (
+				<Text variant="muted">
+					{allowed
+						? "An: Du erfährst von neuen Nachrichten, auch wenn die App geschlossen ist."
+						: "Aus: Tippe hier, um sie einzuschalten."}
+				</Text>
+			)}
+		</View>
 	);
 }
 
