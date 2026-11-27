@@ -4,6 +4,7 @@
 	"main": "expo-router/entry",
 	"dependencies": {
 		"@expo-google-fonts/geist": "^0.4.2",
+		"@expo-google-fonts/instrument-serif": "^0.4.1",
 		"@expo/ui": "~58.0.29",
 		"@food-swap/shared": "workspace:*",
 		"@rn-primitives/dropdown-menu": "^1.5.2",
