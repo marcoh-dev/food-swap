@@ -4,7 +4,7 @@ import type { Place } from "@food-swap/shared/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Keyboard, View } from "react-native";
+import { Keyboard, Platform, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { PlacePicker } from "@/components/PlacePicker";
@@ -12,6 +12,7 @@ import { RequireLogin } from "@/components/RequireLogin";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { cn } from "@/lib/utils";
 
 const EMPTY_VALUES = {
 	title: "",
@@ -49,7 +50,11 @@ function NewListingForm() {
 		<View className="flex-1 bg-background">
 			<KeyboardAwareScrollView
 				className="flex-1 bg-background"
-				contentContainerClassName="gap-4 p-6"
+				contentContainerClassName={cn(
+					"gap-4 p-6",
+					// iOS adds the status bar inset itself (contentInsetAdjustmentBehavior)
+					Platform.OS === "android" && "pt-safe-offset-6",
+				)}
 				contentInsetAdjustmentBehavior="automatic"
 				keyboardShouldPersistTaps="handled"
 				bottomOffset={160}
