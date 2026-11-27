@@ -19,7 +19,7 @@ export function TermSearch({ value, onChangeText, onSubmit }: Props) {
 				onChangeText={onChangeText}
 				onSubmitEditing={onSubmit}
 				returnKeyType="search"
-				placeholder="Was suchst du?"
+				placeholder="Wonach suchst du?"
 				accessibilityLabel="Suchbegriff"
 				maxLength={100}
 				autoCorrect={false}
