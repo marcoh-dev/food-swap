@@ -61,6 +61,8 @@ Scan the QR code with **Expo Go** (App Store / Play Store; it must support Expo 
 
 Styling uses NativeWind 5, which is still a release candidate. `nativewind` and `react-native-css` are pinned to exact versions, and `lightningcss` is pinned to 1.30.1 for the whole workspace (`pnpm-workspace.yaml`). Don't update these three without testing the app.
 
+The **Neu** tab (`mobile/src/app/(tabs)/new.tsx`) has the listing form. It uses react-hook-form with the same `createListingSchema` as the web form (`@food-swap/shared/schemas/listing`), so the validation and the error messages are identical. Nothing is sent to the backend yet: "Erstellen" validates the form and shows the entered values below it (`ListingPreview`). The place search is the `PlacePicker` that the profile screen also uses. `Select` and `EndDatePicker` have one file per platform (`*.ios.tsx`): iOS uses the native menu and date picker from `@expo/ui`, Android a dropdown and the system date dialog.
+
 ### Shared package
 
 `shared/` (`@food-swap/shared`) holds what web and mobile both use, so it exists only once:
