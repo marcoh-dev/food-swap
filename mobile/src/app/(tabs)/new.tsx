@@ -9,9 +9,11 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { PlacePicker } from "@/components/PlacePicker";
 import { RequireLogin } from "@/components/RequireLogin";
+import { Select } from "@/components/Select";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useCategories } from "@/hooks/useCategories";
 import { cn } from "@/lib/utils";
 
 const EMPTY_VALUES = {
@@ -35,6 +37,7 @@ export default function New() {
 function NewListingForm() {
 	const [place, setPlace] = useState<Place | null>(null);
 	const [placeQuery, setPlaceQuery] = useState("");
+	const { data: categories = [] } = useCategories();
 	const form = useForm<ListingFormValues>({
 		resolver: zodResolver(createListingSchema()),
 		defaultValues: EMPTY_VALUES,
@@ -124,6 +127,23 @@ function NewListingForm() {
 								field.onChange(selected.id);
 								Keyboard.dismiss();
 							}}
+						/>
+					)}
+				/>
+				<Controller
+					name="categoryId"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<Select
+							label="Kategorie"
+							placeholder="Kategorie wählen"
+							options={categories.map((item) => ({
+								value: String(item.id),
+								label: item.name,
+							}))}
+							value={field.value}
+							onValueChange={field.onChange}
+							error={fieldState.error?.message}
 						/>
 					)}
 				/>
