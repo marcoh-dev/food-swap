@@ -36,6 +36,7 @@ self.addEventListener("push", (event) => {
 
 			await self.registration.showNotification(message.title, {
 				body: message.body,
+				icon: "/icon-192.png",
 				// One notification per chat: a new message replaces the older one, and still alerts
 				tag: message.chatId,
 				renotify: true,
