@@ -78,15 +78,27 @@ self.addEventListener("push", (event) => {
 	);
 });
 
+// Firefox for Android reports success for focusing and navigating tabs from here but does
+// neither, and that can't be detected reliably afterwards; opening a new tab works there. If it
+// ever learns to switch tabs, this only means a new tab instead of an existing one.
+const CANNOT_SWITCH_TABS =
+	/Android/.test(self.navigator.userAgent) && /Firefox/.test(self.navigator.userAgent);
+
 // Opens the chat, in this order: a tab that already shows it is only focused; a tab on the chats
 // page goes there; otherwise the most recently used FoodSwap tab (matchAll lists them in that
-// order), so another page isn't taken over while a chats tab exists; or a new window
+// order), so another page isn't taken over while a chats tab exists; or a new window (always
+// where tabs can't be switched)
 self.addEventListener("notificationclick", (event) => {
 	event.notification.close();
 	const { chatId } = event.notification.data;
 
 	event.waitUntil(
 		(async () => {
+			if (CANNOT_SWITCH_TABS) {
+				await self.clients.openWindow(chatUrl(chatId));
+				return;
+			}
+
 			try {
 				// Only tabs under this service worker's control can be navigated from here
 				const open = await tabs();
