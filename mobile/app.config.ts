@@ -46,6 +46,16 @@ const config: ExpoConfig = {
 			},
 		],
 		"expo-secure-store",
+		[
+			"expo-notifications",
+			{
+				// White silhouette for the status bar, tinted with the accent colour (shared/theme.css)
+				icon: "./assets/images/notification-icon.png",
+				color: "#ad242f",
+				// The channel the backend sends to (CHAT_CHANNEL_ID)
+				defaultChannel: "chat-messages",
+			},
+		],
 	],
 	experiments: {
 		typedRoutes: true,
