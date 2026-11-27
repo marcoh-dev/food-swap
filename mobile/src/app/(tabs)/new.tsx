@@ -12,6 +12,7 @@ import { PlacePicker } from "@/components/PlacePicker";
 import { RadioGroup } from "@/components/RadioGroup";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Select } from "@/components/Select";
+import { ServerErrorNotice } from "@/components/ServerErrorNotice";
 import { TagSelect } from "@/components/TagSelect";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
@@ -41,8 +42,8 @@ export default function New() {
 function NewListingForm() {
 	const [place, setPlace] = useState<Place | null>(null);
 	const [placeQuery, setPlaceQuery] = useState("");
-	const { data: categories = [] } = useCategories();
-	const { data: tags = [] } = useTags();
+	const { data: categories = [], isError: categoriesFailed } = useCategories();
+	const { data: tags = [], isError: tagsFailed } = useTags();
 	const form = useForm<ListingFormValues>({
 		resolver: zodResolver(createListingSchema()),
 		defaultValues: EMPTY_VALUES,
@@ -67,6 +68,9 @@ function NewListingForm() {
 				keyboardShouldPersistTaps="handled"
 				bottomOffset={160}
 			>
+				{(categoriesFailed || tagsFailed) && (
+					<ServerErrorNotice message="Die Daten konnten nicht geladen werden." />
+				)}
 				<Controller
 					name="title"
 					control={form.control}
