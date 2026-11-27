@@ -77,6 +77,23 @@ function NewListingForm() {
 						/>
 					)}
 				/>
+				<Controller
+					name="image"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<TextField
+							label="Bild (URL)"
+							placeholder="https://placeholder.png"
+							keyboardType="url"
+							autoCapitalize="none"
+							autoCorrect={false}
+							value={field.value}
+							onChangeText={field.onChange}
+							onBlur={field.onBlur}
+							error={fieldState.error?.message}
+						/>
+					)}
+				/>
 				<Button onPress={() => form.handleSubmit(onValid)()}>
 					<Text>Erstellen</Text>
 				</Button>
