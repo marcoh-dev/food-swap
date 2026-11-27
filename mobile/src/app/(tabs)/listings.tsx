@@ -128,6 +128,21 @@ export default function Listings() {
 		footer = <ActivityIndicator color={mutedForeground} />;
 	}
 
+	// Shown by the list only while it has no listings
+	let emptyList;
+	if (isPending && isOnline) {
+		emptyList = <ActivityIndicator size="large" color={mutedForeground} className="py-12" />;
+	} else if (data) {
+		// Offline or after an error without data, the banner and the error notice explain it
+		emptyList = (
+			<Text variant="muted" className="px-6 py-12 text-center">
+				{searchTerm
+					? "Keine Angebote gefunden. Versuche, deine Suche anzupassen."
+					: "Gerade gibt es keine Angebote."}
+			</Text>
+		);
+	}
+
 	// The list must be the screen's first child: iOS native tabs only find a scroll
 	// view along the first children (tab bar minimising, bottom inset, scroll to top).
 	// It's also there while nothing has loaded yet, so the header with the carousel
@@ -181,11 +196,7 @@ export default function Listings() {
 						)}
 					</View>
 				}
-				ListEmptyComponent={
-					isPending && isOnline ? (
-						<ActivityIndicator size="large" color={mutedForeground} className="py-12" />
-					) : undefined
-				}
+				ListEmptyComponent={emptyList}
 				ListFooterComponent={
 					<Animated.View style={footerStyle} className="justify-center gap-3 px-6">
 						{footer}
