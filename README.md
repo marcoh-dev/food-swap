@@ -138,12 +138,12 @@ The app keeps all chat data in the TanStack Query cache, under keys starting wit
 
 ### Push notifications
 
-New chat messages also go out as push notifications to the recipient's devices, so they arrive when no FoodSwap tab is open (web push, #112; the app follows with #176). The backend part is in `backend/src/push/`:
+New chat messages also go out as push notifications to the recipient's devices, so they arrive when no FoodSwap tab is open or the app is closed (web push, #112; the Android app, #176). The backend part is in `backend/src/push/`:
 
-- **Subscriptions:** a browser that allows notifications sends its push subscription to `POST /push-subscriptions` (endpoint at the browser's push service plus two keys); `DELETE /push-subscriptions` removes it. They're stored per device in `push_subscriptions`, renewed on each visit (`lastSeenAt`) and moved to another account if one logs in on the same browser.
-- **Sending:** after a chat message is saved, `ChatsService` hands it to `PushService` in the background, so a failed push never fails the message. Only the other person gets it, on all their devices; the texts are built in `pushMessage.ts` (the same as the web's in-tab notification). Subscriptions the push service no longer knows (404/410) are deleted.
+- **Subscriptions:** a device that allows notifications sends its subscription to `POST /push-subscriptions`: a browser with the type `web` (endpoint at the browser's push service plus two keys), the app with the type `expo` (its Expo push token, `ExponentPushToken[…]`, as the endpoint, no keys). `DELETE /push-subscriptions` removes it. They're stored per device in `push_subscriptions`, renewed on each visit or app start (`lastSeenAt`) and moved to another account if one logs in on the same device.
+- **Sending:** after a chat message is saved, `ChatsService` hands it to `PushService` in the background, so a failed push never fails the message. Only the other person gets it, on all their devices; the texts are built in `pushMessage.ts` (the same as the web's in-tab notification). Browsers get it through web push; subscriptions the push service no longer knows (404/410) are deleted. The app gets it through Expo's push service (`expo-server-sdk`), which delivers through Firebase Cloud Messaging on Android; the message carries the chat ID (to open the chat on tap) and the Android channel `chat-messages` (`CHAT_CHANNEL_ID`, which the app must create); tokens Expo reports as `DeviceNotRegistered` (e.g. app uninstalled) are deleted.
 - **Ending:** "Überall abmelden" deletes all of a user's subscriptions; a daily job (and one on startup) deletes those not renewed within the login lifetime (`REFRESH_TOKEN_DAYS`); deleting an account deletes its subscriptions.
-- **Keys:** web push needs a VAPID key pair (see the environment variables). Without it, everything works, only no pushes are sent, which is fine for local development and the tests.
+- **Keys:** web push needs a VAPID key pair (see the environment variables). Without it, everything works, only no web pushes are sent, which is fine for local development and the tests. Pushes to the app need no keys in the backend: Expo sends them with the Firebase key stored in the EAS project.
 
 In the web:
 
