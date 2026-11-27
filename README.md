@@ -150,6 +150,7 @@ In the web:
 - **Service worker** (`frontend/public/sw.js`, plain JavaScript served as `/sw.js`): the browser wakes it for each push, also with no FoodSwap tab open. It shows the notification, unless a visible tab has exactly that chat open, and a click opens the chat in an open tab or a new window.
 - **Subscribing** (`frontend/src/lib/webPush.ts`): with the permission granted and notifications switched on in the profile, the browser subscribes with `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and sends the subscription to the backend through a server action (the login token stays in its cookie). This happens on every page load (`WebPushSubscriber`, which also renews it), after "Aktivieren" in the prompt and when the setting is turned on. Turning the setting off and logging out end it, on the backend first. If saving fails, the subscription ends again, so the in-tab notifications take over.
 - **Home screen:** `frontend/src/app/manifest.ts` and the icons (`frontend/public/icon-*.png`, `frontend/src/app/apple-icon.png`) let browsers add FoodSwap to the home screen; iPhones and iPads only get web push that way (iOS 16.4+).
+- **Differences between browsers:** how pushes arrive depends on the browser, not on FoodSwap. Some deliver them even when the browser is closed, others only while it's running; some install FoodSwap from the home screen as its own app, others only add a shortcut that opens in the browser; and not every browser lets a notification click switch to an open tab (the click then opens the chat in a new tab).
 
 ### Environment variables
 
