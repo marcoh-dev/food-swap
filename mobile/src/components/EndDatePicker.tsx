@@ -18,10 +18,7 @@ export function EndDatePicker({ label, value, onChange, error }: EndDatePickerPr
 			mode: "date",
 			minimumDate,
 			maximumDate,
-			onChange: (event, selected) => {
-				// Cancelling the dialog ("dismissed") keeps the value
-				if (event.type === "set" && selected) onChange(formatIsoDate(selected));
-			},
+			onValueChange: (_event, selected) => onChange(formatIsoDate(selected)),
 		});
 	}
 
