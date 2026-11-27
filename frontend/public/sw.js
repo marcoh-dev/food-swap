@@ -12,22 +12,47 @@ function chatUrl(chatId) {
 	return `/chats?chat=${encodeURIComponent(chatId)}`;
 }
 
-/** Whether a FoodSwap window is on the chats page (the list or any chat). */
-function onChatsPage(client) {
-	return new URL(client.url).pathname === "/chats";
+/** Whether a URL is the chats page (the list or any chat). */
+function onChatsPage(url) {
+	return new URL(url).pathname === "/chats";
 }
 
-/** Whether a FoodSwap window shows this chat (visible or not). */
-function showsChat(client, chatId) {
-	return onChatsPage(client) && new URL(client.url).searchParams.get("chat") === chatId;
+/** Whether a URL shows this chat. */
+function showsChat(url, chatId) {
+	return onChatsPage(url) && new URL(url).searchParams.get("chat") === chatId;
 }
 
-/** Whether a FoodSwap window shows this chat and is visible, so a notification isn't needed. */
-async function isChatOpen(chatId) {
-	const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-	return windows.some(
-		(client) => client.visibilityState === "visible" && showsChat(client, chatId),
-	);
+// The question a FoodSwap tab answers (WebPushSubscriber); keep both the same
+const TAB_STATE_QUESTION = "tab-state";
+// Tabs the browser froze or that are still loading may not answer in time
+const ANSWER_TIMEOUT_MS = 500;
+
+/**
+ * Asks a FoodSwap tab for its current URL and whether it's visible. The tab is asked because its
+ * URL here can be outdated: some browsers (e.g. Firefox) don't pass on page changes inside the
+ * web app, which happen without loading a new page. Without an answer, the URL known here is
+ * used and the tab counts as not visible.
+ */
+function askTab(client) {
+	return new Promise((resolve) => {
+		const channel = new MessageChannel();
+		const timeout = setTimeout(
+			() => resolve({ url: client.url, visible: false }),
+			ANSWER_TIMEOUT_MS,
+		);
+		channel.port1.onmessage = (event) => {
+			clearTimeout(timeout);
+			resolve(event.data);
+		};
+		client.postMessage({ type: TAB_STATE_QUESTION }, [channel.port2]);
+	});
+}
+
+/** The FoodSwap tabs with their current URL and visibility, most recently used first. */
+async function tabs(options) {
+	const windows = await self.clients.matchAll({ type: "window", ...options });
+	const states = await Promise.all(windows.map(askTab));
+	return windows.map((client, index) => ({ client, ...states[index] }));
 }
 
 // The backend sends { title, body, chatId } (backend/src/push/pushMessage.ts)
@@ -37,7 +62,9 @@ self.addEventListener("push", (event) => {
 
 	event.waitUntil(
 		(async () => {
-			if (await isChatOpen(message.chatId)) return;
+			// No notification for a chat the user is looking at
+			const open = await tabs({ includeUncontrolled: true });
+			if (open.some((tab) => tab.visible && showsChat(tab.url, message.chatId))) return;
 
 			await self.registration.showNotification(message.title, {
 				body: message.body,
@@ -61,22 +88,23 @@ self.addEventListener("notificationclick", (event) => {
 	event.waitUntil(
 		(async () => {
 			try {
-				const windows = await self.clients.matchAll({ type: "window" });
+				// Only tabs under this service worker's control can be navigated from here
+				const open = await tabs();
 
-				const chatTab = windows.find((client) => showsChat(client, chatId));
+				const chatTab = open.find((tab) => showsChat(tab.url, chatId));
 				if (chatTab) {
-					await chatTab.focus();
+					await chatTab.client.focus();
 					return;
 				}
 
-				const tab = windows.find(onChatsPage) ?? windows[0];
+				const tab = open.find((candidate) => onChatsPage(candidate.url)) ?? open[0];
 				if (!tab) {
 					await self.clients.openWindow(chatUrl(chatId));
 					return;
 				}
 
-				await tab.focus();
-				await tab.navigate(chatUrl(chatId));
+				await tab.client.focus();
+				await tab.client.navigate(chatUrl(chatId));
 			} catch {
 				// Some browsers don't fully support focusing or navigating tabs from here; opening
 				// the chat in a new tab still gets the user there
