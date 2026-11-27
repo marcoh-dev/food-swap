@@ -8,6 +8,7 @@ import { Keyboard, Platform, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { PlacePicker } from "@/components/PlacePicker";
+import { RadioGroup } from "@/components/RadioGroup";
 import { RequireLogin } from "@/components/RequireLogin";
 import { Select } from "@/components/Select";
 import { TextField } from "@/components/TextField";
@@ -142,6 +143,22 @@ function NewListingForm() {
 								label: item.name,
 							}))}
 							value={field.value}
+							onValueChange={field.onChange}
+							error={fieldState.error?.message}
+						/>
+					)}
+				/>
+				<Controller
+					name="type"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<RadioGroup
+							label="Ich möchte …"
+							options={[
+								{ value: "swap", label: "tauschen" },
+								{ value: "giveaway", label: "verschenken" },
+							]}
+							value={field.value ?? ""}
 							onValueChange={field.onChange}
 							error={fieldState.error?.message}
 						/>
