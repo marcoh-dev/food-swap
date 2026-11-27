@@ -123,7 +123,7 @@ After a reconnect, all `["chats"]` queries are reloaded, because events sent whi
 - **Marking as read:** like in the app, an open chat is marked read only when its newest message is from the other person and seen: the tab is visible and the chat is scrolled to the newest message (`ChatConversation`). A message that arrives while the user is scrolled up or the tab is hidden keeps the chat unread until then; while scrolled up, the button at the bottom shows "Neue Nachricht" and scrolls down. Sending a message while scrolled up scrolls down to it.
 - **Drafts:** unsent text is kept per chat, and per listing for a first message, in the tab's `sessionStorage` (`frontend/src/lib/chatDrafts.ts`) until it's sent successfully, also after switching chats, a failed send or a reload; logging out removes them.
 
-Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `NotificationPermissionPrompt` asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile.
+Browser notifications are also shown from the `newMessage` listener in `chatEvents.ts` (helpers in `frontend/src/lib/notifications.ts`; `NotificationPermissionPrompt` asks for the permission). They show a notification for messages from others, unless that chat is open in a visible tab. Whether notifications are on is stored per browser in `localStorage` and can be changed in the profile. Once a browser has a push subscription, the service worker shows the notifications instead and the tab stays silent, so each message shows once (see "Push notifications").
 
 ### Chat data flow (app)
 
@@ -144,6 +144,12 @@ New chat messages also go out as push notifications to the recipient's devices, 
 - **Sending:** after a chat message is saved, `ChatsService` hands it to `PushService` in the background, so a failed push never fails the message. Only the other person gets it, on all their devices; the texts are built in `pushMessage.ts` (the same as the web's in-tab notification). Subscriptions the push service no longer knows (404/410) are deleted.
 - **Ending:** "Überall abmelden" deletes all of a user's subscriptions; a daily job (and one on startup) deletes those not renewed within the login lifetime (`REFRESH_TOKEN_DAYS`); deleting an account deletes its subscriptions.
 - **Keys:** web push needs a VAPID key pair (see the environment variables). Without it, everything works, only no pushes are sent, which is fine for local development and the tests.
+
+In the web:
+
+- **Service worker** (`frontend/public/sw.js`, plain JavaScript served as `/sw.js`): the browser wakes it for each push, also with no FoodSwap tab open. It shows the notification, unless a visible tab has exactly that chat open, and a click opens the chat in an open tab or a new window.
+- **Subscribing** (`frontend/src/lib/webPush.ts`): with the permission granted and notifications switched on in the profile, the browser subscribes with `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and sends the subscription to the backend through a server action (the login token stays in its cookie). This happens on every page load (`WebPushSubscriber`, which also renews it), after "Aktivieren" in the prompt and when the setting is turned on. Turning the setting off and logging out end it, on the backend first. If saving fails, the subscription ends again, so the in-tab notifications take over.
+- **Home screen:** `frontend/src/app/manifest.ts` and the icons (`frontend/public/icon-*.png`, `frontend/src/app/apple-icon.png`) let browsers add FoodSwap to the home screen; iPhones and iPads only get web push that way (iOS 16.4+).
 
 ### Environment variables
 
@@ -177,10 +183,11 @@ New chat messages also go out as push notifications to the recipient's devices, 
 
 **`frontend/.env`**
 
-| Variable                       | Local                         | Live                                                       |
-| ------------------------------ | ----------------------------- | ---------------------------------------------------------- |
-| `NEXT_PUBLIC_FOODSWAP_API_URL` | `http://localhost:3000`       | live backend URL                                           |
-| `INTERNAL_API_SECRET`          | the same as in `backend/.env` | the same as on Render; never prefix it with `NEXT_PUBLIC_` |
+| Variable                       | Local                                  | Live                                                                                   |
+| ------------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_FOODSWAP_API_URL` | `http://localhost:3000`                | live backend URL                                                                       |
+| `INTERNAL_API_SECRET`          | the same as in `backend/.env`          | the same as on Render; never prefix it with `NEXT_PUBLIC_`                             |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `VAPID_PUBLIC_KEY` from `backend/.env` | the live `VAPID_PUBLIC_KEY` from Render; without it, the web doesn't subscribe to push |
 
 **`mobile/.env.local`**
 
