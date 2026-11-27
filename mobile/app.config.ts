@@ -1,12 +1,12 @@
 import type { ExpoConfig } from "expo/config";
 
-// The EAS project under the Expo organization "the-tomatoes" (created with `eas init`)
+// The EAS project under the Expo organization "food-swap" (created with `eas init`)
 const EAS_PROJECT_ID = "84d9576c-2448-4203-b493-eb74284527e9";
 
 const config: ExpoConfig = {
 	name: "Food Swap",
 	slug: "food-swap",
-	owner: "the-tomatoes",
+	owner: "food-swap",
 	version: "1.0.0",
 	orientation: "portrait",
 	icon: "./assets/images/icon.png",
