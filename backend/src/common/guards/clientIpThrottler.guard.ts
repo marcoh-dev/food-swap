@@ -45,8 +45,8 @@ export class ClientIpThrottlerGuard extends ThrottlerGuard {
 	}
 
 	/**
-	 * Logs the first blocked request of a source per time window, so blocks show up in the Render
-	 * logs. Only the start of the HMAC key identifies the source, never the IP.
+	 * Logs the first blocked request of a source per time window, so blocks show up in the backend
+	 * server's logs. Only the start of the HMAC key identifies the source, never the IP.
 	 */
 	protected override async throwThrottlingException(
 		context: ExecutionContext,

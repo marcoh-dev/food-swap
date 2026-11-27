@@ -8,7 +8,7 @@ const port = process.env.PORT ?? 3000;
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
-	// Render's proxy sits in front of the app; this makes req.ip the client's IP, not Render's
+	// A proxy sits in front of the backend server; this makes req.ip the client's IP, not the proxy's
 	app.set("trust proxy", 1);
 	app.useGlobalPipes(
 		new ValidationPipe({

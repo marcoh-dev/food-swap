@@ -7,10 +7,11 @@ import { ChatsService } from "./chats.service";
 import { Chat } from "./entities/chat.entity";
 import { Message } from "./entities/message.entity";
 import { Listing } from "../listings/entities/listing.entity";
+import { PushModule } from "../push/push.module";
 import { User } from "../users/entities/user.entity";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Chat, Message, User, Listing])],
+	imports: [TypeOrmModule.forFeature([Chat, Message, User, Listing]), PushModule],
 	controllers: [ChatsController],
 	providers: [ChatsService, ChatsGateway],
 	exports: [ChatsService, ChatsGateway, TypeOrmModule],

@@ -21,6 +21,8 @@ import { Listing } from "./listings/entities/listing.entity";
 import { ListingsModule } from "./listings/listings.module";
 import { Place } from "./places/entities/place.entity";
 import { PlacesModule } from "./places/places.module";
+import { PushSubscription } from "./push/entities/pushSubscription.entity";
+import { PushModule } from "./push/push.module";
 import { Tag } from "./tags/entities/tag.entity";
 import { TagsModule } from "./tags/tags.module";
 import { User } from "./users/entities/user.entity";
@@ -36,7 +38,17 @@ import { UsersModule } from "./users/users.module";
 			useFactory: (configService: ConfigService) => ({
 				type: "postgres",
 				url: configService.getOrThrow<string>("DATABASE_URL"),
-				entities: [User, Listing, Chat, Message, Category, Tag, Place, RefreshToken],
+				entities: [
+					User,
+					Listing,
+					Chat,
+					Message,
+					Category,
+					Tag,
+					Place,
+					RefreshToken,
+					PushSubscription,
+				],
 				synchronize: false,
 				logging: false,
 				enableWAL: true,
@@ -52,6 +64,7 @@ import { UsersModule } from "./users/users.module";
 		CategoriesModule,
 		TagsModule,
 		PlacesModule,
+		PushModule,
 	],
 	controllers: [AppController],
 	providers: [

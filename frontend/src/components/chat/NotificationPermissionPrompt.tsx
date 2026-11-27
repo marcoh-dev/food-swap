@@ -9,6 +9,7 @@ import {
 	setNotificationsTurnedOff,
 	shouldAskForPermission,
 } from "@/lib/notifications";
+import { subscribeToPush } from "@/lib/webPush";
 
 export function NotificationPermissionPrompt() {
 	useEffect(() => {
@@ -23,7 +24,10 @@ export function NotificationPermissionPrompt() {
 				label: "Aktivieren",
 				onClick: async () => {
 					const permission = await Notification.requestPermission();
-					if (permission === "granted") setNotificationsTurnedOff(false);
+					if (permission === "granted") {
+						setNotificationsTurnedOff(false);
+						void subscribeToPush();
+					}
 					// Prompt closed without a choice → treat like "Später"
 					if (permission === "default") dismissPermissionPrompt();
 				},
