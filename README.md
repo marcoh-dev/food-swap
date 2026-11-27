@@ -57,7 +57,18 @@ The Expo app lives in `mobile/`. It uses the same colours as the web app (`share
 pnpm mobile
 ```
 
-Scan the QR code with **Expo Go** (App Store / Play Store; it must support Expo SDK 58). The phone and the computer need to be on the same Wi-Fi; otherwise use `pnpm mobile --tunnel`. The app needs the backend URL in `mobile/.env.local` (see below).
+The phone and the computer need to be on the same Wi-Fi; otherwise use `pnpm mobile --tunnel`. The app needs the backend URL in `mobile/.env.local` (see below).
+
+**Development build (Android):** the app runs in its own development build instead of Expo Go, because push notifications don't work in Expo Go. The build contains only the native part (libraries with native code, icon, permissions); the JavaScript still comes from `pnpm mobile`, so pulling and restarting is enough for code changes.
+
+- **Installing:** open the newest development build on [expo.dev](https://expo.dev) (organization `food-swap`, project `food-swap`, Builds) on the phone, or scan its QR code, and install the APK; Android asks once to allow installing apps from the browser. Ask the team to invite you to the organization. To update, install a newer build over the old one; login and data stay.
+- **Using:** start `pnpm mobile` and open the FoodSwap app; it lists the computer's dev server, or scan the QR code from the terminal with it.
+- **New build:** only needed for native changes: a new library with native code, plugins, icons or permissions in `mobile/app.config.ts`, an Expo SDK upgrade. Run `eas build --profile development --platform android` in `mobile/` (EAS CLI: `brew install eas-cli`, then `eas login`). The free plan allows 15 Android builds a month, so collect native changes and say in the team before starting one.
+- **Expo Go** (App Store / Play Store, it must support Expo SDK 58) still works for everything except push: press `s` in the terminal to switch `pnpm mobile` to Expo Go. On iPhones it's the only option for now, since iOS builds need the paid Apple Developer Program.
+
+**Preview build (Android):** a standalone APK with the JavaScript included that talks to the live backend, for presenting and testing without a computer: `eas build --profile preview --platform android` in `mobile/`. Every change needs a new preview build.
+
+**Build setup** (`mobile/eas.json`, `mobile/app.config.ts`): the EAS project `@food-swap/food-swap` belongs to the Expo organization `food-swap`. Android pushes go through Firebase Cloud Messaging (Firebase project `foodswap-eddc6`, Android app `dev.marcoh.foodswap`). Its config file `google-services.json` is not in the repo: EAS builds get it from the EAS environment variable `GOOGLE_SERVICES_JSON` (a file variable), and local native builds read `mobile/google-services.json` (git-ignored; ask the team). The Firebase service account key that Expo sends pushes with is uploaded to EAS only (`eas credentials`).
 
 Styling uses NativeWind 5, which is still a release candidate. `nativewind` and `react-native-css` are pinned to exact versions, and `lightningcss` is pinned to 1.30.1 for the whole workspace (`pnpm-workspace.yaml`). Don't update these three without testing the app.
 
@@ -151,6 +162,13 @@ In the web:
 - **Subscribing** (`frontend/src/lib/webPush.ts`): with the permission granted and notifications switched on in the profile, the browser subscribes with `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and sends the subscription to the backend through a server action (the login token stays in its cookie). This happens on every page load (`WebPushSubscriber`, which also renews it), after "Aktivieren" in the prompt and when the setting is turned on. Turning the setting off and logging out end it, on the backend first. If saving fails, the subscription ends again, so the in-tab notifications take over.
 - **Home screen:** `frontend/src/app/manifest.ts` and the icons (`frontend/public/icon-*.png`, `frontend/src/app/apple-icon.png`) let browsers add FoodSwap to the home screen; iPhones and iPads only get web push that way (iOS 16.4+).
 - **Differences between browsers:** how pushes arrive depends on the browser, not on FoodSwap. Some deliver them even when the browser is closed, others only while it's running; some install FoodSwap from the home screen as its own app, others only add a shortcut that opens in the browser; and not every browser lets a notification click switch to an open tab (the click then opens the chat in a new tab).
+
+In the app (Android only, `mobile/src/lib/pushNotifications.ts`; needs the development or preview build):
+
+- **Permission:** after the first sent message, the app asks once with a short explanation ("Später" / "Aktivieren"), then with Android's dialog. The profile shows whether notifications are on; its "Benachrichtigungen" button asks if Android hasn't asked yet, otherwise it opens the app's notification settings.
+- **Token:** with the permission granted, the app gets its Expo push token and sends it to `POST /push-subscriptions` on every app start while logged in (which renews it) and right after logging in or turning notifications on. Logging out removes it first, while the request is still authorised.
+- **Showing:** Android shows the notifications in the channel "Chat-Nachrichten" (created at app start) with the white tomato as the small icon. While the app is in the foreground, none are shown, since the chat updates live there. Tapping one opens the chat (`NotificationTapHandler`), also when the tap starts the app.
+- **Double notifications:** someone who uses the app and also allowed web notifications in a browser on the same phone gets each message twice (two separate subscriptions). Turn off the browser's notifications in the web profile when using the app.
 
 ### Environment variables
 
