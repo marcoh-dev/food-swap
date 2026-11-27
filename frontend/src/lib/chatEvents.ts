@@ -13,6 +13,7 @@ import type { QueryClient } from "@tanstack/react-query";
 
 import { getChatsAction, getSocketTicketAction } from "@/app/chats/actions";
 import { notificationsEnabled } from "@/lib/notifications";
+import { currentPushSubscription } from "@/lib/webPush";
 import { socket } from "@/socket";
 import { useChatStore } from "@/store/chat.store";
 
@@ -35,6 +36,9 @@ async function showNotification(
 	const { userId, openChatId, tabVisible } = useChatStore.getState();
 	if (message.senderId === userId) return;
 	if (tabVisible && openChatId === message.chatId) return;
+	// With push, the service worker shows chat notifications (public/sw.js), also while tabs are
+	// open; a second one from this tab would be a duplicate
+	if (await currentPushSubscription()) return;
 
 	const findChat = (list?: ChatListItem[] | null) =>
 		list?.find((item) => item.id === message.chatId);

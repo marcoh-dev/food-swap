@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { ChatSocketConnector } from "@/components/chat/ChatSocketConnector";
 import { NotificationPermissionPrompt } from "@/components/chat/NotificationPermissionPrompt";
 import { UnreadChatsTitle } from "@/components/chat/UnreadChatsTitle";
+import { WebPushSubscriber } from "@/components/chat/WebPushSubscriber";
 import BurgerMenu from "@/components/menu/BurgerMenu";
 import { PageSkipLink } from "@/components/shared/PageSkipLink";
 import { QueryProvider } from "@/components/shared/QueryProvider";
@@ -101,6 +102,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 						{currentUser && (
 							<>
 								<NotificationPermissionPrompt />
+								<WebPushSubscriber />
 								<UnreadChatsTitle />
 							</>
 						)}

@@ -31,6 +31,11 @@ import {
 	updateListingStatus,
 } from "@/lib/listings.service";
 import { findNearestPlace, searchPlaces } from "@/lib/places.service";
+import {
+	deletePushSubscription,
+	savePushSubscription,
+	type WebPushSubscription,
+} from "@/lib/push.service";
 import { getRedirectTarget } from "@/lib/redirectTarget";
 import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
@@ -127,6 +132,37 @@ export async function deleteUserAction() {
 	deleteAuthCookies(await cookies());
 
 	redirect("/");
+}
+
+// What a browser's PushSubscription.toJSON() contains; checked because it comes from the browser
+const pushSubscriptionSchema = z.object({
+	endpoint: z.url(),
+	keys: z.object({ p256dh: z.string().min(1), auth: z.string().min(1) }),
+});
+
+/** Saves (or renews) this browser's push subscription for the logged-in user. */
+export async function savePushSubscriptionAction(
+	subscription: WebPushSubscription,
+): Promise<ActionResult<null>> {
+	const result = pushSubscriptionSchema.safeParse(subscription);
+	if (!result.success) return { error: "Ungültige Push-Anmeldung." };
+
+	try {
+		await savePushSubscription(result.data);
+		return { data: null };
+	} catch {
+		return { error: "Push-Benachrichtigungen konnten nicht eingerichtet werden." };
+	}
+}
+
+/** Deletes this browser's push subscription, e.g. when notifications are turned off. */
+export async function deletePushSubscriptionAction(endpoint: string): Promise<ActionResult<null>> {
+	try {
+		await deletePushSubscription(endpoint);
+		return { data: null };
+	} catch {
+		return { error: "Push-Benachrichtigungen konnten nicht abgemeldet werden." };
+	}
 }
 
 export async function logoutAction() {
