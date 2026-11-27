@@ -1,9 +1,13 @@
+import { formatPlace } from "@food-swap/shared/places";
 import { createListingSchema, type ListingFormValues } from "@food-swap/shared/schemas/listing";
+import type { Place } from "@food-swap/shared/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { View } from "react-native";
+import { Keyboard, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
+import { PlacePicker } from "@/components/PlacePicker";
 import { RequireLogin } from "@/components/RequireLogin";
 import { TextField } from "@/components/TextField";
 import { Button } from "@/components/ui/button";
@@ -28,6 +32,8 @@ export default function New() {
 }
 
 function NewListingForm() {
+	const [place, setPlace] = useState<Place | null>(null);
+	const [placeQuery, setPlaceQuery] = useState("");
 	const form = useForm<ListingFormValues>({
 		resolver: zodResolver(createListingSchema()),
 		defaultValues: EMPTY_VALUES,
@@ -91,6 +97,28 @@ function NewListingForm() {
 							onChangeText={field.onChange}
 							onBlur={field.onBlur}
 							error={fieldState.error?.message}
+						/>
+					)}
+				/>
+				<Controller
+					name="placeId"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<PlacePicker
+							query={placeQuery}
+							selectedPlace={place}
+							error={fieldState.error?.message}
+							onQueryChange={(value) => {
+								setPlaceQuery(value);
+								setPlace(null);
+								field.onChange("");
+							}}
+							onSelect={(selected) => {
+								setPlace(selected);
+								setPlaceQuery(formatPlace(selected));
+								field.onChange(selected.id);
+								Keyboard.dismiss();
+							}}
 						/>
 					)}
 				/>
