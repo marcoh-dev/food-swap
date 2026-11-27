@@ -11,6 +11,7 @@ import { PushService } from "../src/push/push.service";
 
 const PASSWORD = "Tomate123!";
 const ENDPOINT = "https://fcm.googleapis.com/fcm/send/abc123";
+const EXPO_TOKEN = "ExponentPushToken[xXyZ123AbCdEfGhIjKlM]";
 
 const webSubscription = (endpoint = ENDPOINT) => ({
 	type: "web",
@@ -127,12 +128,28 @@ describe("Push subscriptions (integration)", () => {
 		expect(await subscriptions()).toHaveLength(0);
 	});
 
+	it("saves the app's Expo push token without keys", async () => {
+		await subscribe(a, { type: "expo", endpoint: EXPO_TOKEN }).expect(204);
+
+		expect(await onlySubscription()).toMatchObject({
+			type: "expo",
+			endpoint: EXPO_TOKEN,
+			p256dh: null,
+			auth: null,
+		});
+	});
+
 	it("rejects invalid subscriptions", async () => {
 		await subscribe(a, { ...webSubscription(), endpoint: "http://example.com/push" }).expect(
 			400,
 		);
 		await subscribe(a, { ...webSubscription(), keys: { p256dh: "" } }).expect(400);
-		await subscribe(a, { ...webSubscription(), type: "expo" }).expect(400);
+		await subscribe(a, { type: "web", endpoint: ENDPOINT }).expect(400);
+		// A web endpoint isn't an Expo token, and the other way round
+		await subscribe(a, { type: "expo", endpoint: ENDPOINT }).expect(400);
+		await subscribe(a, { ...webSubscription(), endpoint: EXPO_TOKEN }).expect(400);
+		await subscribe(a, { type: "expo", endpoint: "ExponentPushToken" }).expect(400);
+		await subscribe(a, { type: "fcm", endpoint: EXPO_TOKEN }).expect(400);
 		expect(await subscriptions()).toHaveLength(0);
 	});
 
