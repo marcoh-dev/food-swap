@@ -28,6 +28,10 @@
 	--text-h3--line-height: 1.3333;
 	--text-h3--letter-spacing: -0.01em;
 
+	--text-section: 32px;
+	--text-section--line-height: 1.25;
+	--text-section--letter-spacing: 0.02em;
+
 	--text-body: 18px;
 	--text-body--line-height: 1.7778;
 	--text-body--letter-spacing: 0.01em;
@@ -67,4 +71,9 @@
 }
 @utility font-bold {
 	font-family: Geist_700Bold;
+}
+
+/* The serif for the home page's section headings; it only has one weight */
+@utility font-heading {
+	font-family: InstrumentSerif_400Regular;
 }

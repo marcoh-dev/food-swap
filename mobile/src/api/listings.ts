@@ -9,8 +9,12 @@ import { get } from "@/api/request";
 export const LISTINGS_QUERY_KEY = ["listings"];
 export const LISTINGS_LIST_QUERY_KEY = [...LISTINGS_QUERY_KEY, "list"];
 
-export function fetchListings(page: number, sort: SortOption, signal: AbortSignal) {
+/** Everything the offers list is loaded by: its order and, optionally, a search term. */
+export type ListingsQuery = { sort: SortOption; term?: string };
+
+export function fetchListings(page: number, { sort, term }: ListingsQuery, signal: AbortSignal) {
 	const params = new URLSearchParams({ sort, page: String(page) });
+	if (term) params.set("term", term);
 	return get<PaginatedListingsResponse>(`/listings?${params.toString()}`, signal);
 }
 

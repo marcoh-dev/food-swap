@@ -1,7 +1,9 @@
 import { useRouter } from "expo-router";
 import { NativeTabs } from "expo-router/native-tabs";
+import { Platform } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
+import { useIsKeyboardVisible } from "@/hooks/useIsKeyboardVisible";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUnreadChatsCount } from "@/hooks/useUnreadChatsCount";
 import type { AccountTab } from "@/lib/routes";
@@ -16,6 +18,7 @@ export default function TabLayout() {
 	const { isLoggedIn } = useAuth();
 	const { data: unreadChats = 0 } = useUnreadChatsCount({ enabled: isLoggedIn });
 	const showBadge = isLoggedIn && unreadChats > 0;
+	const isKeyboardVisible = useIsKeyboardVisible();
 
 	function requireLogin(tab: AccountTab) {
 		return {
@@ -36,6 +39,9 @@ export default function TabLayout() {
 			badgeTextColor={primaryForeground}
 			minimizeBehavior="onScrollDown"
 			labelVisibilityMode="labeled"
+			// Android: the tab bar would sit above the keyboard; hidden while typing, like in other
+			// Android apps (iOS covers it with the keyboard itself)
+			hidden={Platform.OS === "android" && isKeyboardVisible}
 		>
 			<NativeTabs.Trigger name="listings">
 				<NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />

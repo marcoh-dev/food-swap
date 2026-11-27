@@ -11,7 +11,7 @@ export default function TermSearch({ defaultValue = "" }: { defaultValue?: strin
 			<InputGroupInput
 				name="term"
 				aria-label="Suchbegriff"
-				placeholder="Was suchst du?"
+				placeholder="Wonach suchst du?"
 				defaultValue={defaultValue}
 			/>
 		</InputGroup>
