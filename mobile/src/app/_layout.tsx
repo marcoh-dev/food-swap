@@ -18,6 +18,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { ChatSocketConnector } from "@/components/ChatSocketConnector";
 import { CloseButton } from "@/components/CloseButton";
 import { EnvError } from "@/components/EnvError";
+import { NotificationTapHandler } from "@/components/NotificationTapHandler";
 import { envError } from "@/env";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { setUpNotifications } from "@/lib/pushNotifications";
@@ -141,6 +142,7 @@ export default function RootLayout() {
 										}}
 									/>
 								</Stack>
+								<NotificationTapHandler />
 							</AuthProvider>
 						)}
 						<PortalHost />
