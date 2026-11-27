@@ -8,6 +8,7 @@ import { Keyboard, Platform, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { EndDatePicker } from "@/components/EndDatePicker";
+import { ListingPreview } from "@/components/ListingPreview";
 import { PlacePicker } from "@/components/PlacePicker";
 import { RadioGroup } from "@/components/RadioGroup";
 import { RequireLogin } from "@/components/RequireLogin";
@@ -42,6 +43,10 @@ export default function New() {
 function NewListingForm() {
 	const [place, setPlace] = useState<Place | null>(null);
 	const [placeQuery, setPlaceQuery] = useState("");
+	const [submitted, setSubmitted] = useState<{
+		values: ListingFormValues;
+		place: Place | null;
+	} | null>(null);
 	const { data: categories = [], isError: categoriesFailed } = useCategories();
 	const { data: tags = [], isError: tagsFailed } = useTags();
 	const form = useForm<ListingFormValues>({
@@ -52,13 +57,14 @@ function NewListingForm() {
 	});
 
 	function onValid(values: ListingFormValues) {
-		console.log(values);
+		setSubmitted({ values, place });
 	}
 
 	function handleCancel() {
 		form.reset();
 		setPlace(null);
 		setPlaceQuery("");
+		setSubmitted(null);
 	}
 
 	return (
@@ -206,6 +212,14 @@ function NewListingForm() {
 				<Button variant="outline" onPress={handleCancel}>
 					<Text>Abbrechen</Text>
 				</Button>
+				{submitted ? (
+					<ListingPreview
+						values={submitted.values}
+						place={submitted.place}
+						categories={categories}
+						tags={tags}
+					/>
+				) : null}
 			</KeyboardAwareScrollView>
 		</View>
 	);
