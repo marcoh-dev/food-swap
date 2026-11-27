@@ -12,17 +12,22 @@ function chatUrl(chatId) {
 	return `/chats?chat=${encodeURIComponent(chatId)}`;
 }
 
+/** Whether a FoodSwap window is on the chats page (the list or any chat). */
+function onChatsPage(client) {
+	return new URL(client.url).pathname === "/chats";
+}
+
+/** Whether a FoodSwap window shows this chat (visible or not). */
+function showsChat(client, chatId) {
+	return onChatsPage(client) && new URL(client.url).searchParams.get("chat") === chatId;
+}
+
 /** Whether a FoodSwap window shows this chat and is visible, so a notification isn't needed. */
 async function isChatOpen(chatId) {
 	const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-	return windows.some((client) => {
-		const url = new URL(client.url);
-		return (
-			client.visibilityState === "visible" &&
-			url.pathname === "/chats" &&
-			url.searchParams.get("chat") === chatId
-		);
-	});
+	return windows.some(
+		(client) => client.visibilityState === "visible" && showsChat(client, chatId),
+	);
 }
 
 // The backend sends { title, body, chatId } (backend/src/push/pushMessage.ts)
@@ -46,22 +51,31 @@ self.addEventListener("push", (event) => {
 	);
 });
 
-// Opens the chat: in an open FoodSwap tab if there is one, otherwise in a new window
+// Opens the chat, in this order: a tab that already shows it is only focused; a tab on the chats
+// page goes there; otherwise the most recently used FoodSwap tab (matchAll lists them in that
+// order), so another page isn't taken over while a chats tab exists; or a new window
 self.addEventListener("notificationclick", (event) => {
 	event.notification.close();
-	const url = chatUrl(event.notification.data.chatId);
+	const { chatId } = event.notification.data;
 
 	event.waitUntil(
 		(async () => {
 			const windows = await self.clients.matchAll({ type: "window" });
-			const tab = windows[0];
+
+			const chatTab = windows.find((client) => showsChat(client, chatId));
+			if (chatTab) {
+				await chatTab.focus();
+				return;
+			}
+
+			const tab = windows.find(onChatsPage) ?? windows[0];
 			if (!tab) {
-				await self.clients.openWindow(url);
+				await self.clients.openWindow(chatUrl(chatId));
 				return;
 			}
 
 			await tab.focus();
-			await tab.navigate(url);
+			await tab.navigate(chatUrl(chatId));
 		})(),
 	);
 });
