@@ -62,6 +62,21 @@ function NewListingForm() {
 						/>
 					)}
 				/>
+				<Controller
+					name="description"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<TextField
+							label="Beschreibung"
+							placeholder="3 Tomaten von meiner Ernte …"
+							multiline={true}
+							value={field.value}
+							onChangeText={field.onChange}
+							onBlur={field.onBlur}
+							error={fieldState.error?.message}
+						/>
+					)}
+				/>
 				<Button onPress={() => form.handleSubmit(onValid)()}>
 					<Text>Erstellen</Text>
 				</Button>
