@@ -21,9 +21,19 @@ export function SearchBar({ onSearch }: Props) {
 		Keyboard.dismiss();
 	}
 
+	function clearSearch() {
+		setTermInput("");
+		onSearch({ term: "" });
+	}
+
 	return (
 		<View className="gap-2">
-			<TermSearch value={termInput} onChangeText={setTermInput} onSubmit={submitSearch} />
+			<TermSearch
+				value={termInput}
+				onChangeText={setTermInput}
+				onSubmit={submitSearch}
+				onClear={clearSearch}
+			/>
 			<Button onPress={submitSearch}>
 				<Text>Suchen</Text>
 			</Button>
