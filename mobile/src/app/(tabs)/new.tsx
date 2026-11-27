@@ -7,6 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Keyboard, Platform, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
+import { EndDatePicker } from "@/components/EndDatePicker";
 import { PlacePicker } from "@/components/PlacePicker";
 import { RadioGroup } from "@/components/RadioGroup";
 import { RequireLogin } from "@/components/RequireLogin";
@@ -173,6 +174,18 @@ function NewListingForm() {
 							]}
 							value={field.value ?? ""}
 							onValueChange={field.onChange}
+							error={fieldState.error?.message}
+						/>
+					)}
+				/>
+				<Controller
+					name="endDate"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<EndDatePicker
+							label="Verfügbar bis"
+							value={field.value}
+							onChange={field.onChange}
 							error={fieldState.error?.message}
 						/>
 					)}
