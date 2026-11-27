@@ -60,12 +60,35 @@ export default function Listings() {
 	// the box shrinks smoothly instead of disappearing at once.
 	const footerHeight = useSharedValue(hasNextPage ? FOOTER_HEIGHT : 0);
 	const footerStyle = useAnimatedStyle(() => ({ minHeight: footerHeight.get() }));
+	// A new sort or search brings the listings in a different order; keeping the first visible
+	// listing in place would jump to where it is now, so that's paused until they're shown
+	const [isQueryChanging, setIsQueryChanging] = useState(false);
 
 	useEffect(() => {
 		footerHeight.set(
 			hasNextPage ? FOOTER_HEIGHT : withTiming(0, { duration: FOOTER_SHRINK_MS }),
 		);
 	}, [hasNextPage, footerHeight]);
+
+	useEffect(() => {
+		if (!isQueryChanging || isPlaceholderData) {
+			return;
+		}
+
+		// On the next frame, once the new listings are on screen, keeping the position is back on
+		const frame = requestAnimationFrame(() => setIsQueryChanging(false));
+		return () => cancelAnimationFrame(frame);
+	}, [isQueryChanging, isPlaceholderData]);
+
+	function changeSort(newSort: SortOption) {
+		setIsQueryChanging(true);
+		setSort(newSort);
+	}
+
+	function search(term: string) {
+		setIsQueryChanging(true);
+		setSearchTerm(term);
+	}
 
 	async function refresh() {
 		if (!isOnline) {
@@ -162,10 +185,11 @@ export default function Listings() {
 				onEndReachedThreshold={1}
 				// Keeps the listings in place when a notice above them appears or disappears (e.g. the server
 				// error notice while scrolled down); at the top, the list stays at the top so the notice shows
-				maintainVisibleContentPosition={{
-					minIndexForVisible: 0,
-					autoscrollToTopThreshold: 40,
-				}}
+				maintainVisibleContentPosition={
+					isQueryChanging
+						? undefined
+						: { minIndexForVisible: 0, autoscrollToTopThreshold: 40 }
+				}
 				// With the search keyboard open, a tap on a listing opens it right away instead of only
 				// closing the keyboard
 				keyboardShouldPersistTaps="handled"
@@ -184,7 +208,7 @@ export default function Listings() {
 							<Text variant="h2" className="font-heading text-section">
 								Angebote finden
 							</Text>
-							<SearchBar onSearch={({ term }) => setSearchTerm(term)} />
+							<SearchBar onSearch={({ term }) => search(term)} />
 						</View>
 						{data && (
 							<View className="mt-2 flex-row items-end justify-between gap-2">
@@ -193,7 +217,7 @@ export default function Listings() {
 									{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
 								</Text>
 								<View className="flex-row items-center gap-2">
-									<SortingMenu sort={sort} onSortChange={setSort} />
+									<SortingMenu sort={sort} onSortChange={changeSort} />
 								</View>
 							</View>
 						)}
