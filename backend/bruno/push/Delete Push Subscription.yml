@@ -1,0 +1,22 @@
+info:
+  name: Delete Push Subscription
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{baseURL}}/push-subscriptions"
+  body:
+    type: json
+    data: |-
+      {
+        "endpoint": "{{pushEndpoint}}"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
