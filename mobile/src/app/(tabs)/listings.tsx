@@ -180,12 +180,15 @@ export default function Listings() {
 						{heading}
 						{errorNotice}
 						<Carousel />
-
-						<SearchBar onSearch={({ term }) => setSearchTerm(term)} />
-
+						<View className="gap-2">
+							<Text variant="h2" className="font-heading text-section">
+								Angebote finden
+							</Text>
+							<SearchBar onSearch={({ term }) => setSearchTerm(term)} />
+						</View>
 						{data && (
 							<View className="mt-2 flex-row items-end justify-between gap-2">
-								<Text variant="muted">
+								<Text variant="h2" className="font-heading text-section">
 									{data.pages[0]?.meta.total}{" "}
 									{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
 								</Text>
