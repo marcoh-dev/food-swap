@@ -45,39 +45,49 @@ export function setUpNotifications() {
 // Whether the app already asked for permission (once, after the first sent message)
 const ASKED_KEY = "push_permission_asked";
 
-// The token saved for the logged-in user, so logout can remove it without asking Expo again
-let savedToken: string | null = null;
+// The token saved for the logged-in user. Stored, because Android restarts the app when
+// notifications are turned off, and the app must still know which token to remove then.
+const TOKEN_KEY = "push_token";
 
 /**
- * Saves this device's push token for the logged-in user, or renews it (the backend keeps tokens
- * that are renewed within the login lifetime). Does nothing without permission; errors are only
- * logged, the app works without push.
+ * Brings the backend in line with the permission: with notifications allowed, saves this device's
+ * push token for the logged-in user or renews it (the backend keeps tokens renewed within the
+ * login lifetime); without, removes the token saved before. Errors are only logged, the app works
+ * without push, and the next call tries again.
  */
-export async function registerForPush() {
+export async function syncPushToken() {
 	try {
 		const { granted } = await getPermissionsAsync();
-		if (!granted) return;
+		if (!granted) {
+			await unregisterFromPush();
+			return;
+		}
 
 		const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
 		const { data: token } = await getExpoPushTokenAsync({ projectId });
 		await savePushToken(token);
-		savedToken = token;
+		await SecureStore.setItemAsync(TOKEN_KEY, token);
 	} catch (error) {
-		console.warn("Push notifications could not be set up.", error);
+		console.warn("Push notifications could not be updated.", error);
 	}
 }
 
 /**
- * Removes this device's push token from the logged-in user. Called before logging out, while the
- * request can still be authorised. Errors are ignored: after "Überall abmelden" or deleting the
- * account the backend already removed it.
+ * Removes this device's push token from the logged-in user; also called before logging out, while
+ * the request can still be authorised. Errors are ignored: the token stays stored, so the next
+ * sync tries again; after "Überall abmelden" or deleting the account the backend already removed
+ * it, and the daily cleanup removes forgotten ones.
  */
 export async function unregisterFromPush() {
-	if (!savedToken) return;
+	const token = await SecureStore.getItemAsync(TOKEN_KEY);
+	if (!token) return;
 
-	const token = savedToken;
-	savedToken = null;
-	await deletePushToken(token).catch(() => undefined);
+	try {
+		await deletePushToken(token);
+		await SecureStore.deleteItemAsync(TOKEN_KEY);
+	} catch {
+		// Kept for the next try
+	}
 }
 
 function confirmAsking() {
@@ -110,7 +120,7 @@ export async function askForPushPermission() {
 		if (!(await confirmAsking())) return;
 
 		const { granted } = await requestPermissionsAsync();
-		if (granted) await registerForPush();
+		if (granted) await syncPushToken();
 	} catch (error) {
 		console.warn("Notification permission could not be requested.", error);
 	}
@@ -147,7 +157,7 @@ export async function changeNotificationSettings() {
 		if (!current.granted && current.canAskAgain) {
 			await SecureStore.setItemAsync(ASKED_KEY, "true");
 			const { granted } = await requestPermissionsAsync();
-			if (granted) await registerForPush();
+			if (granted) await syncPushToken();
 			return;
 		}
 
