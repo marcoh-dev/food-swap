@@ -7,11 +7,6 @@ export type StatusAction = {
 	targetStatus: ListingStatus;
 };
 
-export type ParsedEndDate =
-	{ status: "empty" } | { status: "invalid" } | { status: "valid"; date: Date };
-
-export type EndDateResult = { ok: true; date: Date | undefined } | { ok: false; error: string };
-
 export type GetListingsOptions = {
 	page?: number;
 	sort?: SortOption;

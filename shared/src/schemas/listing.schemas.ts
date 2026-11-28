@@ -1,7 +1,7 @@
-import { MISSING_PLACE_MESSAGE } from "@food-swap/shared/messages";
 import { z } from "zod";
 
-import { validateEndDate } from "@/utils/date";
+import { validateEndDate } from "../endDate";
+import { MISSING_PLACE_MESSAGE } from "../messages";
 
 const imageUrlSchema = z.url({ protocol: /^https?$/ });
 

@@ -1,5 +1,5 @@
 "use client";
-
+import { createListingSchema, type ListingFormValues } from "@food-swap/shared/schemas/listing";
 import type { Category, Place, Tag } from "@food-swap/shared/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "cn";
@@ -26,7 +26,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { FormState } from "@/lib/types/common.types";
 import { applyServerErrors } from "@/utils/form";
 

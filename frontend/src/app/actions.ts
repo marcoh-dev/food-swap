@@ -7,6 +7,7 @@ import {
 	REGISTRATION_RATE_LIMITED_MESSAGE,
 	USERNAME_UNAVAILABLE_MESSAGE,
 } from "@food-swap/shared/messages";
+import { createListingSchema, type ListingFormValues } from "@food-swap/shared/schemas/listing";
 import {
 	loginSchema,
 	type LoginValues,
@@ -37,7 +38,6 @@ import {
 	type WebPushSubscription,
 } from "@/lib/push.service";
 import { getRedirectTarget } from "@/lib/redirectTarget";
-import { createListingSchema, type ListingFormValues } from "@/lib/schemas/listing.schemas";
 import type { ActionResult, FormState } from "@/lib/types/common.types";
 import { deleteUser, getCurrentUser, updateUser } from "@/lib/users.service";
 

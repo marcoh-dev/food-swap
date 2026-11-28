@@ -1,11 +1,5 @@
 "use client";
 
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
-
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
 	formatDay,
 	formatIsoDate,
@@ -14,7 +8,13 @@ import {
 	getMinEndDay,
 	parseEndDate,
 	toLocalDate,
-} from "@/utils/date";
+} from "@food-swap/shared/endDate";
+import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type Props = {
 	value: string;

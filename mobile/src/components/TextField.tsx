@@ -3,6 +3,7 @@ import { type TextInputInstance, type TextInputProps, View } from "react-native"
 
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
+import { Textarea } from "@/components/ui/textarea";
 
 type Props = TextInputProps & {
 	label: string;
@@ -17,12 +18,22 @@ type Props = TextInputProps & {
 };
 
 /** A text input with a label above it, and an optional description and error text below it. */
-export function TextField({ label, description, error, accessory, children, ...props }: Props) {
+export function TextField({
+	label,
+	description,
+	error,
+	accessory,
+	multiline,
+	children,
+	...props
+}: Props) {
+	const Field = multiline ? Textarea : Input;
+
 	return (
 		<View className="gap-2">
 			<Text variant="small">{label}</Text>
 			<View className="justify-center">
-				<Input
+				<Field
 					accessibilityLabel={label}
 					accessibilityHint={description}
 					invalid={Boolean(error)}
