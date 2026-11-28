@@ -1,4 +1,5 @@
-import Constants, { ExecutionEnvironment } from "expo-constants";
+import { isRunningInExpoGo } from "expo";
+import Constants from "expo-constants";
 import {
 	AndroidImportance,
 	getExpoPushTokenAsync,
@@ -16,9 +17,7 @@ import { deletePushToken, savePushToken } from "@/api/push";
  * Whether the app offers push notifications: only in FoodSwap's own Android builds. Expo Go can't
  * get push tokens on Android, and iOS isn't set up yet (#176).
  */
-export const PUSH_SUPPORTED =
-	Platform.OS === "android" &&
-	Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
+export const PUSH_SUPPORTED = Platform.OS === "android" && !isRunningInExpoGo();
 
 /**
  * The Android notification channel for chat messages. The backend sends pushes to this channel
