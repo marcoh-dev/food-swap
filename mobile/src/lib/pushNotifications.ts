@@ -42,10 +42,13 @@ export function setUpNotifications() {
 			}),
 	});
 
-	if (Platform.OS === "android") {
-		void setNotificationChannelAsync(CHAT_CHANNEL_ID, {
+	// Only needed for push; Expo Go on Android rejects creating it
+	if (PUSH_SUPPORTED) {
+		setNotificationChannelAsync(CHAT_CHANNEL_ID, {
 			name: "Chat-Nachrichten",
 			importance: AndroidImportance.HIGH,
+		}).catch((error: unknown) => {
+			console.warn("The notification channel could not be created.", error);
 		});
 	}
 }
