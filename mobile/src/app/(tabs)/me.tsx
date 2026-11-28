@@ -2,7 +2,7 @@ import { formatDate } from "@food-swap/shared/dates";
 import { formatPlace } from "@food-swap/shared/places";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { useAuth } from "@/components/AuthProvider";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -17,7 +17,7 @@ import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
 import { useNotificationsAllowed } from "@/hooks/useNotificationsAllowed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUser } from "@/hooks/useUser";
-import { changeNotificationSettings } from "@/lib/pushNotifications";
+import { changeNotificationSettings, PUSH_SUPPORTED } from "@/lib/pushNotifications";
 
 export default function Profile() {
 	return (
@@ -119,7 +119,7 @@ function ProfileContent() {
 
 			{!isLoading && (
 				<>
-					{Platform.OS === "android" && <NotificationsSetting />}
+					{PUSH_SUPPORTED && <NotificationsSetting />}
 					<Button variant="outline" onPress={() => void logOut()}>
 						<Text>Abmelden</Text>
 					</Button>
@@ -146,7 +146,6 @@ function ProfileContent() {
 	);
 }
 
-// Push notifications are Android only for now (#176)
 function NotificationsSetting() {
 	const { allowed, refresh } = useNotificationsAllowed();
 

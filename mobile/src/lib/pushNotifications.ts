@@ -1,4 +1,4 @@
-import Constants from "expo-constants";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import {
 	AndroidImportance,
 	getExpoPushTokenAsync,
@@ -11,6 +11,14 @@ import * as SecureStore from "expo-secure-store";
 import { Alert, Linking, Platform } from "react-native";
 
 import { deletePushToken, savePushToken } from "@/api/push";
+
+/**
+ * Whether the app offers push notifications: only in FoodSwap's own Android builds. Expo Go can't
+ * get push tokens on Android, and iOS isn't set up yet (#176).
+ */
+export const PUSH_SUPPORTED =
+	Platform.OS === "android" &&
+	Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
 
 /**
  * The Android notification channel for chat messages. The backend sends pushes to this channel
@@ -56,6 +64,8 @@ const TOKEN_KEY = "push_token";
  * without push, and the next call tries again.
  */
 export async function syncPushToken() {
+	if (!PUSH_SUPPORTED) return;
+
 	try {
 		const { granted } = await getPermissionsAsync();
 		if (!granted) {
@@ -111,6 +121,8 @@ function confirmAsking() {
  * on from the profile.
  */
 export async function askForPushPermission() {
+	if (!PUSH_SUPPORTED) return;
+
 	try {
 		const current = await getPermissionsAsync();
 		if (current.granted || !current.canAskAgain) return;
