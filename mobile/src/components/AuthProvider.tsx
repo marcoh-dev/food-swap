@@ -4,7 +4,9 @@ import { createContext, type ReactNode, use, useCallback, useEffect, useState } 
 import { logout } from "@/api/auth";
 import { isUnauthorizedError } from "@/api/request";
 import { type AuthTokens, deleteTokens, getRefreshToken, getToken, saveTokens } from "@/api/token";
+import { useIsAppActive } from "@/hooks/useIsAppActive";
 import { clearChatDrafts } from "@/lib/chatDrafts";
+import { syncPushToken, unregisterFromPush } from "@/lib/pushNotifications";
 
 type AuthContextValue = {
 	isLoggedIn: boolean;
@@ -25,7 +27,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			.catch(() => setToken(null));
 	}, []);
 
+	const isAppActive = useIsAppActive();
+
+	// On app start, after login and on each return to the app (e.g. from the notification
+	// settings): saves, renews or removes this device's push token
+	useEffect(() => {
+		if (isLoggedIn && isAppActive) void syncPushToken();
+	}, [isLoggedIn, isAppActive]);
+
 	const logOut = useCallback(async () => {
+		// First, while the request can still be authorised
+		await unregisterFromPush();
 		const refreshToken = await getRefreshToken();
 		await deleteTokens();
 		setToken(null);

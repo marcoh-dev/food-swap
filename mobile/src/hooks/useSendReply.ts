@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { sendReply } from "@/api/chats";
 import { setChatDraft } from "@/lib/chatDrafts";
+import { askForPushPermission } from "@/lib/pushNotifications";
 
 export function useSendReply(chatId: string) {
 	const queryClient = useQueryClient();
@@ -14,6 +15,7 @@ export function useSendReply(chatId: string) {
 			addMessageToCache(queryClient, message, { unread: false });
 			// Here and not in the reply bar, so it also happens if the user left the chat meanwhile
 			setChatDraft(chatId, "");
+			void askForPushPermission();
 		},
 	});
 }

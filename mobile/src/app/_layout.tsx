@@ -18,8 +18,10 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { ChatSocketConnector } from "@/components/ChatSocketConnector";
 import { CloseButton } from "@/components/CloseButton";
 import { EnvError } from "@/components/EnvError";
+import { NotificationTapHandler } from "@/components/NotificationTapHandler";
 import { envError } from "@/env";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { setUpNotifications } from "@/lib/pushNotifications";
 import "@/global.css";
 
 const MAX_RETRIES = 3;
@@ -39,6 +41,7 @@ const queryClient = new QueryClient({
 
 syncAppFocus();
 syncOnlineStatus();
+setUpNotifications();
 
 export default function RootLayout() {
 	const isDark = useColorScheme() === "dark";
@@ -139,6 +142,7 @@ export default function RootLayout() {
 										}}
 									/>
 								</Stack>
+								<NotificationTapHandler />
 							</AuthProvider>
 						)}
 						<PortalHost />

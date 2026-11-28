@@ -14,8 +14,10 @@ import { Text } from "@/components/ui/text";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { useLogoutEverywhere } from "@/hooks/useLogoutEverywhere";
+import { useNotificationsAllowed } from "@/hooks/useNotificationsAllowed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useUser } from "@/hooks/useUser";
+import { changeNotificationSettings, PUSH_SUPPORTED } from "@/lib/pushNotifications";
 
 export default function Profile() {
 	return (
@@ -117,6 +119,7 @@ function ProfileContent() {
 
 			{!isLoading && (
 				<>
+					{PUSH_SUPPORTED && <NotificationsSetting />}
 					<Button variant="outline" onPress={() => void logOut()}>
 						<Text>Abmelden</Text>
 					</Button>
@@ -140,6 +143,36 @@ function ProfileContent() {
 			)}
 			<OfflineBanner loadedAt={profile && profileQuery.dataUpdatedAt} />
 		</Screen>
+	);
+}
+
+function NotificationsSetting() {
+	const { allowed, refresh } = useNotificationsAllowed();
+
+	return (
+		<View className="gap-2">
+			<Button
+				variant="outline"
+				onPress={() => {
+					void changeNotificationSettings().then(() => refresh());
+				}}
+			>
+				<Text>
+					{allowed === undefined
+						? "Benachrichtigungen"
+						: allowed
+							? "Benachrichtigungen deaktivieren"
+							: "Benachrichtigungen aktivieren"}
+				</Text>
+			</Button>
+			{allowed !== undefined && (
+				<Text variant="muted">
+					{allowed
+						? "Aktiviert: Du erfährst sofort von neuen Nachrichten, auch wenn die App geschlossen ist."
+						: "Deaktiviert: Neue Nachrichten siehst du erst, wenn du die App öffnest."}
+				</Text>
+			)}
+		</View>
 	);
 }
 

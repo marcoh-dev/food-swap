@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { listingChatQueryKey, startChat } from "@/api/chats";
 import { listingDraftKey, setChatDraft } from "@/lib/chatDrafts";
+import { askForPushPermission } from "@/lib/pushNotifications";
 
 export function useStartChat(listingId: string) {
 	const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ export function useStartChat(listingId: string) {
 			// A new or continued chat isn't in the list yet
 			void queryClient.invalidateQueries({ queryKey: CHAT_LIST_QUERY_KEY });
 			setChatDraft(listingDraftKey(listingId), "");
+			void askForPushPermission();
 		},
 	});
 }
