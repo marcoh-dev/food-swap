@@ -94,7 +94,8 @@ function ProfileEditForm({ user, profile }: { user: CurrentUser; profile: User }
 	}
 
 	function handleSubmit() {
-		if (!isOnline) return;
+		// The same rules as the save button, which the keyboard's done key bypasses
+		if (!isOnline || !hasChanges || updateProfile.isPending) return;
 
 		const result = profileSchema.safeParse({ name, placeId: place?.id ?? "", placeQuery });
 		if (!result.success) {

@@ -1,6 +1,6 @@
 import type { SortOption } from "@food-swap/shared/types";
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -50,6 +50,11 @@ export default function Listings() {
 	const mutedForeground = useThemeColor("--muted-foreground");
 	const card = useThemeColor("--card");
 	const isOnline = useIsOnline();
+	// Re-renders the cards when they get dimmed or undimmed, not only when new data arrives
+	const listExtraData = useMemo(
+		() => ({ dataUpdatedAt, isPlaceholderData }),
+		[dataUpdatedAt, isPlaceholderData],
+	);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	// While there are more pages, the end of the list keeps a box of the same height for the
 	// spinner and the offline or error text: a quick swipe to the end shows it right away, and the
@@ -137,7 +142,7 @@ export default function Listings() {
 				contentInsetAdjustmentBehavior="automatic"
 				data={listings}
 				keyExtractor={({ id }) => id}
-				extraData={dataUpdatedAt}
+				extraData={listExtraData}
 				onEndReached={loadMore}
 				// Loads the next page one screen height before the end (default: half), so a fast swipe
 				// rarely reaches the spinner
@@ -165,9 +170,7 @@ export default function Listings() {
 									{data.pages[0]?.meta.total}{" "}
 									{data.pages[0]?.meta.total === 1 ? "Angebot" : "Angebote"}
 								</Text>
-								<View className="flex-row items-center gap-2">
-									<SortingMenu sort={sort} onSortChange={setSort} />
-								</View>
+								<SortingMenu sort={sort} onSortChange={setSort} />
 							</View>
 						)}
 					</View>
@@ -202,7 +205,13 @@ export default function Listings() {
 							accessibilityHint="Öffnet das Angebot"
 						>
 							{({ pressed }) => (
-								<View className={cn(pressed && "opacity-70")}>
+								// Dimmed while the previous sort order is shown and the new one loads (or waits
+								// for the connection)
+								<View
+									className={cn(
+										isPlaceholderData ? "opacity-50" : pressed && "opacity-70",
+									)}
+								>
 									<ListingCard
 										title={item.title}
 										image={item.image}
