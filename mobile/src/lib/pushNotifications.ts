@@ -3,7 +3,6 @@ import {
 	AndroidImportance,
 	getExpoPushTokenAsync,
 	getPermissionsAsync,
-	PermissionStatus,
 	requestPermissionsAsync,
 	setNotificationChannelAsync,
 	setNotificationHandler,
@@ -103,8 +102,8 @@ function confirmAsking() {
  */
 export async function askForPushPermission() {
 	try {
-		const { status, canAskAgain } = await getPermissionsAsync();
-		if (status !== PermissionStatus.UNDETERMINED || !canAskAgain) return;
+		const current = await getPermissionsAsync();
+		if (current.granted || !current.canAskAgain) return;
 		if (await SecureStore.getItemAsync(ASKED_KEY)) return;
 
 		await SecureStore.setItemAsync(ASKED_KEY, "true");
@@ -138,13 +137,14 @@ async function openNotificationSettings() {
 }
 
 /**
- * Lets the user turn notifications on or off from the profile: the system dialog if Android hasn't
- * asked yet (no explanation first, the user chose this), otherwise the system settings.
+ * Lets the user turn notifications on or off from the profile: the system dialog while they're off
+ * and Android can still ask (no explanation first, the user chose this), otherwise the system
+ * settings.
  */
 export async function changeNotificationSettings() {
 	try {
-		const { status, canAskAgain } = await getPermissionsAsync();
-		if (status === PermissionStatus.UNDETERMINED && canAskAgain) {
+		const current = await getPermissionsAsync();
+		if (!current.granted && current.canAskAgain) {
 			await SecureStore.setItemAsync(ASKED_KEY, "true");
 			const { granted } = await requestPermissionsAsync();
 			if (granted) await registerForPush();
