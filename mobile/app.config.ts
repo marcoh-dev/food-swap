@@ -32,7 +32,6 @@ const config: ExpoConfig = {
 		googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
 	},
 	web: {
-		output: "server",
 		favicon: "./assets/images/favicon.png",
 	},
 	plugins: [
