@@ -157,13 +157,19 @@ function NotificationsSetting() {
 					void changeNotificationSettings().then(() => refresh());
 				}}
 			>
-				<Text>Benachrichtigungen</Text>
+				<Text>
+					{allowed === undefined
+						? "Benachrichtigungen"
+						: allowed
+							? "Benachrichtigungen deaktivieren"
+							: "Benachrichtigungen aktivieren"}
+				</Text>
 			</Button>
 			{allowed !== undefined && (
 				<Text variant="muted">
 					{allowed
-						? "An: Du erfährst von neuen Nachrichten, auch wenn die App geschlossen ist."
-						: "Aus: Tippe hier, um sie einzuschalten."}
+						? "Aktiviert: Du erfährst sofort von neuen Nachrichten, auch wenn die App geschlossen ist."
+						: "Deaktiviert: Neue Nachrichten siehst du erst, wenn du die App öffnest."}
 				</Text>
 			)}
 		</View>

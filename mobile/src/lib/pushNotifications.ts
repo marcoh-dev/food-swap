@@ -3,6 +3,7 @@ import Constants from "expo-constants";
 import {
 	AndroidImportance,
 	getExpoPushTokenAsync,
+	getNotificationChannelAsync,
 	getPermissionsAsync,
 	requestPermissionsAsync,
 	setNotificationChannelAsync,
@@ -140,10 +141,16 @@ export async function askForPushPermission() {
 	}
 }
 
-/** Whether notifications are allowed for the app. */
+/**
+ * Whether chat notifications can show: allowed for the app, and the channel "Chat-Nachrichten"
+ * not turned off on its own in the system settings.
+ */
 export async function notificationsAllowed() {
 	const { granted } = await getPermissionsAsync();
-	return granted;
+	if (!granted) return false;
+
+	const channel = await getNotificationChannelAsync(CHAT_CHANNEL_ID);
+	return channel?.importance !== AndroidImportance.NONE;
 }
 
 // FoodSwap's notification settings in Android; the app info page if a device doesn't have them
